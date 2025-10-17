@@ -1,0 +1,10 @@
+{
+  "name": "vetlib-db",
+  "version": "1.0.0",
+  "scripts": {
+    "db": "docker compose down && docker compose up -d --build"
+  },
+  "author": "Simon Iwanowski",
+  "license": "ISC",
+  "description": "stellt das Skript zum Starten der Datenbank zur Verfuegung"
+}

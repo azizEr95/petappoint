@@ -1,0 +1,10 @@
+services:
+  db:
+    build: ./db
+    container_name: postgres-db
+    environment:
+      POSTGRES_USER: vetlib
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: vetlib-db
+    ports:
+      - "5432:5432"
