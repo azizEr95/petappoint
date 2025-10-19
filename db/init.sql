@@ -1,17 +1,15 @@
-DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS termine;
+DROP TABLE IF EXISTS tierarzt_has_spezialisierung;
+DROP TABLE IF EXISTS tieraerzte;
+DROP TABLE IF EXISTS tierarztpraxen;
+DROP TABLE IF EXISTS spezialisierungen;
+DROP TABLE IF EXISTS person_has_tier;
+DROP TABLE IF EXISTS tiere;
+DROP TABLE IF EXISTS tierarten;
+DROP TABLE IF EXISTS tiergattungen;
+DROP TABLE IF EXISTS personen;
+DROP TABLE IF EXISTS addressen;
 
-CREATE TABLE users (
-  id SERIAL PRIMARY KEY,
-  name VARCHAR(100),
-  email VARCHAR(100) UNIQUE
-);
-
-INSERT INTO users (name, email)
-VALUES
-  ('Alice', 'alice@example.com'),
-  ('Bob', 'bob@example.com'),
-  ('Edgar', 'edgar@example.com'),
-  ('Edgar3', 'edgar3@example.com');
 
 CREATE TABLE IF NOT EXISTS addressen(
   id SERIAL PRIMARY KEY,
@@ -22,6 +20,7 @@ CREATE TABLE IF NOT EXISTS addressen(
 );
 
 CREATE TYPE geschlechtEnum AS ENUM ('m', 'w', 'd');
+
 CREATE TABLE IF NOT EXISTS personen(
   id SERIAL PRIMARY KEY,
   vorname VARCHAR(60) NOT NULL,
@@ -30,7 +29,7 @@ CREATE TABLE IF NOT EXISTS personen(
   geburtsdatum DATE NOT NULL,
   addresse INTEGER NOT NULL REFERENCES addressen(id),
   telefon VARCHAR(20) NOT NULL,
-  email VARCHAR(100) NOT NULL,
+  email VARCHAR(100) UNIQUE NOT NULL,
   password VARCHAR(255) NOT NULL
 );
 
@@ -53,7 +52,7 @@ CREATE TABLE IF NOT EXISTS tiere(
 );
 
 CREATE TABLE IF NOT EXISTS person_has_tier(
-  fk_personId INTEGER NOT NULL REFERENCES personen(id),
+  fk_personId INTEGER NOT NULL REFERENCES personen(id) ON DELETE CASCADE, /*wenn Person geloescht wird, wird die Zuweisung in dieser Tabelle auch geloescht (Tier wird nicht geloescht)*/
   fk_tierId INTEGER NOT NULL REFERENCES tiere(id),
   PRIMARY KEY (fk_personId, fk_tierId)
 );
@@ -84,7 +83,7 @@ CREATE TABLE IF NOT EXISTS tieraerzte(
 );
 
 CREATE TABLE IF NOT EXISTS tierarzt_has_spezialisierung(
-  fk_tierarztId INTEGER NOT NULL REFERENCES tieraerzte(id),
+  fk_tierarztId INTEGER NOT NULL REFERENCES tieraerzte(id) ON DELETE CASCADE,
   fk_spezialisierungId INTEGER NOT NULL REFERENCES spezialisierungen(id),
   PRIMARY KEY (fk_tierarztId, fk_spezialisierungId)
 );
