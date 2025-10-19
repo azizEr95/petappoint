@@ -2,9 +2,9 @@ import { PrismaClient } from "../generated/prisma";
 
 const prisma = new PrismaClient();
 
-async function getUsers(){
-    const users = await prisma.users.findMany();
-    console.log(users);
+async function getTierAerzte() {
+    const tierAerzte = await prisma.tieraerzte.findMany();
+    console.log(tierAerzte);
 }
 
-getUsers();
+getTierAerzte();
