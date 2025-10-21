@@ -1,97 +1,97 @@
-DROP TABLE IF EXISTS termine;
-DROP TABLE IF EXISTS tierarzt_has_spezialisierung;
-DROP TABLE IF EXISTS tieraerzte;
-DROP TABLE IF EXISTS tierarztpraxen;
-DROP TABLE IF EXISTS spezialisierungen;
-DROP TABLE IF EXISTS person_has_tier;
-DROP TABLE IF EXISTS tiere;
-DROP TABLE IF EXISTS tierarten;
-DROP TABLE IF EXISTS tiergattungen;
-DROP TABLE IF EXISTS personen;
-DROP TABLE IF EXISTS addressen;
+DROP TABLE IF EXISTS appointments;
+DROP TABLE IF EXISTS veterinary_has_specialization;
+DROP TABLE IF EXISTS veterinaries;
+DROP TABLE IF EXISTS veterinarypractices;
+DROP TABLE IF EXISTS specializations;
+DROP TABLE IF EXISTS person_has_animal;
+DROP TABLE IF EXISTS animals;
+DROP TABLE IF EXISTS animaltypes;
+DROP TABLE IF EXISTS animalkinds;
+DROP TABLE IF EXISTS persons;
+DROP TABLE IF EXISTS addresses;
 
 
-CREATE TABLE IF NOT EXISTS addressen(
+CREATE TABLE IF NOT EXISTS addresses(
   id SERIAL PRIMARY KEY,
-  strasse VARCHAR(80) NOT NULL,
+  street VARCHAR(80) NOT NULL,
   citycode VARCHAR(12) NOT NULL,
   city VARCHAR(60) NOT NULL,
-  country VARCHAR(150) NOT NULL
+  country VARCHAR(150) NOT NULL,
+  longitude FLOAT NOT NULL,
+  latitude FLOAT NOT NULL
 );
 
-CREATE TYPE geschlechtEnum AS ENUM ('m', 'w', 'd');
+CREATE TYPE sexes AS ENUM ('notknown', 'male', 'female', 'notapplicable');
 
-CREATE TABLE IF NOT EXISTS personen(
+CREATE TABLE IF NOT EXISTS persons(
   id SERIAL PRIMARY KEY,
-  vorname VARCHAR(60) NOT NULL,
-  nachname VARCHAR(60) NOT NULL,
-  geschlecht geschlechtEnum NOT NULL,
-  geburtsdatum DATE NOT NULL,
-  addresse INTEGER NOT NULL REFERENCES addressen(id),
-  telefon VARCHAR(20) NOT NULL,
+  firstName VARCHAR(60) NOT NULL,
+  lastName VARCHAR(60) NOT NULL,
+  sex sexes NOT NULL,
+  dateOfBirth DATE NOT NULL,
+  fk_address INTEGER NOT NULL REFERENCES addresses(id),
+  phone VARCHAR(20) NOT NULL,
   email VARCHAR(100) UNIQUE NOT NULL,
   password VARCHAR(255) NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS tiergattungen(
+CREATE TABLE IF NOT EXISTS animalkinds(
   id SERIAL PRIMARY KEY,
   name VARCHAR(100) NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS tierarten(
+CREATE TABLE IF NOT EXISTS animaltypes(
   id SERIAL PRIMARY KEY,
   name VARCHAR(100) NOT NULL,
-  fk_tiergattungId INTEGER REFERENCES tiergattungen(id)
+  fk_animalkindId INTEGER REFERENCES animalkinds(id)
 );
 
-CREATE TABLE IF NOT EXISTS tiere(
+CREATE TABLE IF NOT EXISTS animals(
   id SERIAL PRIMARY KEY,
   name VARCHAR(100) NOT NULL,
-  geburtsdatum DATE,
-  fk_tierartId INTEGER NOT NULL REFERENCES tierarten(id)
+  dateOfBirth DATE,
+  fk_animalTypeId INTEGER NOT NULL REFERENCES animaltypes(id)
 );
 
-CREATE TABLE IF NOT EXISTS person_has_tier(
-  fk_personId INTEGER NOT NULL REFERENCES personen(id) ON DELETE CASCADE, /*wenn Person geloescht wird, wird die Zuweisung in dieser Tabelle auch geloescht (Tier wird nicht geloescht)*/
-  fk_tierId INTEGER NOT NULL REFERENCES tiere(id),
-  PRIMARY KEY (fk_personId, fk_tierId)
+CREATE TABLE IF NOT EXISTS person_has_animal(
+  fk_personId INTEGER NOT NULL REFERENCES persons(id) ON DELETE CASCADE, /*wenn Person geloescht wird, wird die Zuweisung in dieser Tabelle auch geloescht (Tier wird nicht geloescht)*/
+  fk_animalId INTEGER NOT NULL REFERENCES animals(id),
+  PRIMARY KEY (fk_personId, fk_animalId)
 );
 
-CREATE TABLE IF NOT EXISTS spezialisierungen(
+CREATE TABLE IF NOT EXISTS specializations(
   id SERIAL PRIMARY KEY,
   name VARCHAR(100) NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS tierarztpraxen(
+CREATE TABLE IF NOT EXISTS veterinarypractices(
   id SERIAL PRIMARY KEY,
   name VARCHAR(200) NOT NULL,
-  longitude FLOAT NOT NULL,
-  latitude FLOAT NOT NULL,
-  telefon VARCHAR(20) NOT NULL,
+  phone VARCHAR(20) NOT NULL,
   infoEmail VARCHAR(100) NOT NULL,
   email VARCHAR(100) NOT NULL,
   password VARCHAR(255) NOT NULL,
   website VARCHAR(150),
   info TEXT,
-  fk_addresseId INTEGER NOT NULL REFERENCES addressen(id)
+  fk_addressId INTEGER NOT NULL REFERENCES addresses(id)
 );
 
-CREATE TABLE IF NOT EXISTS tieraerzte(
-  id INTEGER PRIMARY KEY REFERENCES personen(id),
+CREATE TABLE IF NOT EXISTS veterinaries(
+  id INTEGER PRIMARY KEY REFERENCES persons(id),
   infoEmail VARCHAR(100),
-  fk_tierarztpraxis INTEGER REFERENCES tierarztpraxen(id)
+  fk_veterinarypractice INTEGER REFERENCES veterinarypractices(id)
 );
 
-CREATE TABLE IF NOT EXISTS tierarzt_has_spezialisierung(
-  fk_tierarztId INTEGER NOT NULL REFERENCES tieraerzte(id) ON DELETE CASCADE,
-  fk_spezialisierungId INTEGER NOT NULL REFERENCES spezialisierungen(id),
-  PRIMARY KEY (fk_tierarztId, fk_spezialisierungId)
+CREATE TABLE IF NOT EXISTS veterinary_has_specialization(
+  fk_veterinaryId INTEGER NOT NULL REFERENCES veterinaries(id) ON DELETE CASCADE,
+  fk_specializationId INTEGER NOT NULL REFERENCES specializations(id),
+  PRIMARY KEY (fk_veterinaryId, fk_specializationId)
 );
 
-CREATE TABLE IF NOT EXISTS termine(
+CREATE TABLE IF NOT EXISTS appointments(
   id SERIAL PRIMARY KEY,
-  startZeit TIMESTAMP NOT NULL,
-  endZeit TIMESTAMP NOT NULL,
-  fk_tierId INTEGER REFERENCES tiere(id),
-  fk_tierarztId INTEGER NOT NULL REFERENCES tieraerzte(id)
+  startTime TIMESTAMP NOT NULL,
+  endTime TIMESTAMP NOT NULL,
+  fk_animalId INTEGER REFERENCES animals(id),
+  fk_veterinaryId INTEGER NOT NULL REFERENCES veterinaries(id)
 );

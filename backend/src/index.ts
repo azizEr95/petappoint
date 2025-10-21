@@ -3,13 +3,13 @@ import { PrismaClient,Prisma } from "../generated/prisma";
 const prisma = new PrismaClient();
 
 async function getPerson(id: number) {
-    const person = await prisma.personen.findMany({
+    const person = await prisma.persons.findMany({
         where: {
             id: id
         }
     })
     console.log(person)
-    await prisma.personen.delete({
+    await prisma.persons.delete({
         where: {
             id: id
         }
@@ -17,26 +17,27 @@ async function getPerson(id: number) {
 }
 
 async function createPerson() {
-    const createdAdresse = await prisma.addressen.create({
-        
+    const createdAdresse = await prisma.addresses.create({
         data: {
-            strasse: "Lesser-Ury-Weg 27",
+            street: "Lesser-Ury-Weg 27",
             citycode: "10557",
             city: "Berlin",
-            country: "Germany"
+            country: "Germany",
+            longitude: 0.0,
+            latitude: 0.0
         }
     })
 
-    const createdPerson = await prisma.personen.create({
+    const createdPerson = await prisma.persons.create({
         data: {
-            vorname: 'Aziz',
-            nachname: 'Erol',
-            geschlecht: 'm',
-            geburtsdatum: new Date("December 17, 1995 03:24:00"),
-            telefon: '015759712682',
+            firstname: 'Aziz',
+            lastname: 'Erol',
+            sex: 'male',
+            dateofbirth: new Date("December 17, 1995 03:24:00"),
+            phone: '015759712682',
             email: 'beba3606@bht-berlin.de',
             password: '123',
-            addressen: {connect: createdAdresse}
+            addresses: {connect: createdAdresse}
         }
     })
     getPerson(createdPerson.id);
@@ -45,7 +46,7 @@ async function createPerson() {
 
 
 async function getTierAerzte() {
-    const tierAerzte = await prisma.tieraerzte.findMany();
+    const tierAerzte = await prisma.veterinaries.findMany();
     console.log(tierAerzte);
 }
 
