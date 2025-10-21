@@ -8,117 +8,118 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model addressen {
-  id             Int              @id @default(autoincrement())
-  strasse        String           @db.VarChar(80)
-  citycode       String           @db.VarChar(12)
-  city           String           @db.VarChar(60)
-  country        String           @db.VarChar(150)
-  personen       personen[]
-  tierarztpraxen tierarztpraxen[]
+model addresses {
+  id                  Int                   @id @default(autoincrement())
+  street              String                @db.VarChar(80)
+  citycode            String                @db.VarChar(12)
+  city                String                @db.VarChar(60)
+  country             String                @db.VarChar(150)
+  longitude           Float
+  latitude            Float
+  persons             persons[]
+  veterinarypractices veterinarypractices[]
 }
 
-model person_has_tier {
+model animalkinds {
+  id          Int           @id @default(autoincrement())
+  name        String        @db.VarChar(100)
+  animaltypes animaltypes[]
+}
+
+model animals {
+  id                Int                 @id @default(autoincrement())
+  name              String              @db.VarChar(100)
+  dateofbirth       DateTime?           @db.Date
+  fk_animaltypeid   Int
+  animaltypes       animaltypes         @relation(fields: [fk_animaltypeid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  appointments      appointments[]
+  person_has_animal person_has_animal[]
+}
+
+model animaltypes {
+  id              Int          @id @default(autoincrement())
+  name            String       @db.VarChar(100)
+  fk_animalkindid Int?
+  animals         animals[]
+  animalkinds     animalkinds? @relation(fields: [fk_animalkindid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model appointments {
+  id              Int          @id @default(autoincrement())
+  starttime       DateTime     @db.Timestamp(6)
+  endtime         DateTime     @db.Timestamp(6)
+  fk_animalid     Int?
+  fk_veterinaryid Int
+  animals         animals?     @relation(fields: [fk_animalid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  veterinaries    veterinaries @relation(fields: [fk_veterinaryid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model person_has_animal {
   fk_personid Int
-  fk_tierid   Int
-  personen    personen @relation(fields: [fk_personid], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  tiere       tiere    @relation(fields: [fk_tierid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  fk_animalid Int
+  animals     animals @relation(fields: [fk_animalid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  persons     persons @relation(fields: [fk_personid], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
-  @@id([fk_personid, fk_tierid])
+  @@id([fk_personid, fk_animalid])
 }
 
-model personen {
-  id              Int               @id @default(autoincrement())
-  vorname         String            @db.VarChar(60)
-  nachname        String            @db.VarChar(60)
-  geschlecht      geschlechtenum
-  geburtsdatum    DateTime          @db.Date
-  addresse        Int
-  telefon         String            @db.VarChar(20)
-  email           String            @unique @db.VarChar(100)
-  password        String            @db.VarChar(255)
-  person_has_tier person_has_tier[]
-  addressen       addressen         @relation(fields: [addresse], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  tieraerzte      tieraerzte?
+model persons {
+  id                Int                 @id @default(autoincrement())
+  firstname         String              @db.VarChar(60)
+  lastname          String              @db.VarChar(60)
+  sex               sexes
+  dateofbirth       DateTime            @db.Date
+  fk_address        Int
+  phone             String              @db.VarChar(20)
+  email             String              @unique @db.VarChar(100)
+  password          String              @db.VarChar(255)
+  person_has_animal person_has_animal[]
+  addresses         addresses           @relation(fields: [fk_address], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  veterinaries      veterinaries?
 }
 
-model spezialisierungen {
-  id                           Int                            @id @default(autoincrement())
-  name                         String                         @db.VarChar(100)
-  tierarzt_has_spezialisierung tierarzt_has_spezialisierung[]
+model specializations {
+  id                            Int                             @id @default(autoincrement())
+  name                          String                          @db.VarChar(100)
+  veterinary_has_specialization veterinary_has_specialization[]
 }
 
-model termine {
-  id            Int        @id @default(autoincrement())
-  startzeit     DateTime   @db.Timestamp(6)
-  endzeit       DateTime   @db.Timestamp(6)
-  fk_tierid     Int?
-  fk_tierarztid Int
-  tieraerzte    tieraerzte @relation(fields: [fk_tierarztid], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  tiere         tiere?     @relation(fields: [fk_tierid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+model veterinaries {
+  id                            Int                             @id
+  infoemail                     String?                         @db.VarChar(100)
+  fk_veterinarypractice         Int?
+  appointments                  appointments[]
+  veterinarypractices           veterinarypractices?            @relation(fields: [fk_veterinarypractice], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  persons                       persons                         @relation(fields: [id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  veterinary_has_specialization veterinary_has_specialization[]
 }
 
-model tieraerzte {
-  id                           Int                            @id
-  infoemail                    String?                        @db.VarChar(100)
-  fk_tierarztpraxis            Int?
-  termine                      termine[]
-  tierarztpraxen               tierarztpraxen?                @relation(fields: [fk_tierarztpraxis], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  personen                     personen                       @relation(fields: [id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  tierarzt_has_spezialisierung tierarzt_has_spezialisierung[]
+model veterinary_has_specialization {
+  fk_veterinaryid     Int
+  fk_specializationid Int
+  specializations     specializations @relation(fields: [fk_specializationid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  veterinaries        veterinaries    @relation(fields: [fk_veterinaryid], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([fk_veterinaryid, fk_specializationid])
 }
 
-model tierarten {
-  id               Int            @id @default(autoincrement())
-  name             String         @db.VarChar(100)
-  fk_tiergattungid Int?
-  tiergattungen    tiergattungen? @relation(fields: [fk_tiergattungid], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  tiere            tiere[]
+model veterinarypractices {
+  id           Int            @id @default(autoincrement())
+  name         String         @db.VarChar(200)
+  phone        String         @db.VarChar(20)
+  infoemail    String         @db.VarChar(100)
+  email        String         @db.VarChar(100)
+  password     String         @db.VarChar(255)
+  website      String?        @db.VarChar(150)
+  info         String?
+  fk_addressid Int
+  veterinaries veterinaries[]
+  addresses    addresses      @relation(fields: [fk_addressid], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
-model tierarzt_has_spezialisierung {
-  fk_tierarztid        Int
-  fk_spezialisierungid Int
-  spezialisierungen    spezialisierungen @relation(fields: [fk_spezialisierungid], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  tieraerzte           tieraerzte        @relation(fields: [fk_tierarztid], references: [id], onDelete: Cascade, onUpdate: NoAction)
-
-  @@id([fk_tierarztid, fk_spezialisierungid])
-}
-
-model tierarztpraxen {
-  id            Int          @id @default(autoincrement())
-  name          String       @db.VarChar(200)
-  longitude     Float
-  latitude      Float
-  telefon       String       @db.VarChar(20)
-  infoemail     String       @db.VarChar(100)
-  email         String       @db.VarChar(100)
-  password      String       @db.VarChar(255)
-  website       String?      @db.VarChar(150)
-  info          String?
-  fk_addresseid Int
-  tieraerzte    tieraerzte[]
-  addressen     addressen    @relation(fields: [fk_addresseid], references: [id], onDelete: NoAction, onUpdate: NoAction)
-}
-
-model tiere {
-  id              Int               @id @default(autoincrement())
-  name            String            @db.VarChar(100)
-  geburtsdatum    DateTime?         @db.Date
-  fk_tierartid    Int
-  person_has_tier person_has_tier[]
-  termine         termine[]
-  tierarten       tierarten         @relation(fields: [fk_tierartid], references: [id], onDelete: NoAction, onUpdate: NoAction)
-}
-
-model tiergattungen {
-  id        Int         @id @default(autoincrement())
-  name      String      @db.VarChar(100)
-  tierarten tierarten[]
-}
-
-enum geschlechtenum {
-  m
-  w
-  d
+enum sexes {
+  notknown
+  male
+  female
+  notapplicable
 }

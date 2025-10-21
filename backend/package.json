@@ -6,6 +6,7 @@
   "scripts": {
     "build": "tsc",
     "start": "nodemon --exec \"node --inspect --require ts-node/register src/index.ts\" -e ts,mts,js,mjs --watch src",
+    "prisma": "npx prisma init --datasource-provider postgresql --output ../generated/prisma",
     "test": "jest --runInBand"
   },
   "keywords": [],
