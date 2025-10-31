@@ -20,38 +20,46 @@ model addresses {
   veterinarypractices veterinarypractices[]
 }
 
-model animalkinds {
-  id          Int           @id @default(autoincrement())
-  name        String        @db.VarChar(100)
-  animaltypes animaltypes[]
-}
-
 model animals {
-  id                Int                 @id @default(autoincrement())
-  name              String              @db.VarChar(100)
-  dateofbirth       DateTime?           @db.Date
-  fk_animaltypeid   Int
-  animaltypes       animaltypes         @relation(fields: [fk_animaltypeid], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  appointments      appointments[]
-  person_has_animal person_has_animal[]
+  id                     Int                      @id @default(autoincrement())
+  name                   String                   @db.VarChar(100)
+  dateofbirth            DateTime?                @db.Date
+  dateofbirthisexact     Boolean?
+  weightingram           Int?
+  heightincm             Int?
+  timeofdeath            DateTime?                @db.Date
+  iscastrated            Boolean?
+  lifestyle              husbandarysystem?
+  fk_animaltypeid        Int
+  fk_animalgroupid       Int
+  animal_has_races       animal_has_races[]
+  animal_has_vaccination animal_has_vaccination[]
+  animalgroup            animalgroup              @relation(fields: [fk_animalgroupid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  animaltypes            animaltypes              @relation(fields: [fk_animaltypeid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  appointments           appointments[]
+  person_has_animal      person_has_animal[]
+  recipes                recipes[]
 }
 
 model animaltypes {
-  id              Int          @id @default(autoincrement())
-  name            String       @db.VarChar(100)
-  fk_animalkindid Int?
-  animals         animals[]
-  animalkinds     animalkinds? @relation(fields: [fk_animalkindid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  id          Int           @id @default(autoincrement())
+  name        String        @db.VarChar(100)
+  animalraces animalraces[]
+  animals     animals[]
 }
 
 model appointments {
-  id              Int          @id @default(autoincrement())
-  starttime       DateTime     @db.Timestamp(6)
-  endtime         DateTime     @db.Timestamp(6)
-  fk_animalid     Int?
-  fk_veterinaryid Int
-  animals         animals?     @relation(fields: [fk_animalid], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  veterinaries    veterinaries @relation(fields: [fk_veterinaryid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  id                      Int                      @id @default(autoincrement())
+  starttime               DateTime                 @db.Timestamp(6)
+  endtime                 DateTime                 @db.Timestamp(6)
+  fk_animalid             Int?
+  fk_veterinaryid         Int
+  fk_veterinarypracticeid Int
+  appointment_has_review  appointment_has_review[]
+  animals                 animals?                 @relation(fields: [fk_animalid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  veterinaries            veterinaries             @relation(fields: [fk_veterinaryid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  veterinarypractices     veterinarypractices      @relation(fields: [fk_veterinarypracticeid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  invoices                invoices[]
 }
 
 model person_has_animal {
@@ -91,6 +99,7 @@ model veterinaries {
   appointments                  appointments[]
   veterinarypractices           veterinarypractices?            @relation(fields: [fk_veterinarypractice], references: [id], onDelete: NoAction, onUpdate: NoAction)
   persons                       persons                         @relation(fields: [id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  veterinary_has_invitation     veterinary_has_invitation[]
   veterinary_has_specialization veterinary_has_specialization[]
 }
 
@@ -104,17 +113,138 @@ model veterinary_has_specialization {
 }
 
 model veterinarypractices {
-  id           Int            @id @default(autoincrement())
-  name         String         @db.VarChar(200)
-  phone        String         @db.VarChar(20)
-  infoemail    String         @db.VarChar(100)
-  email        String         @db.VarChar(100)
-  password     String         @db.VarChar(255)
-  website      String?        @db.VarChar(150)
-  info         String?
-  fk_addressid Int
-  veterinaries veterinaries[]
-  addresses    addresses      @relation(fields: [fk_addressid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  id                        Int                         @id @default(autoincrement())
+  name                      String                      @db.VarChar(200)
+  phone                     String                      @db.VarChar(20)
+  infoemail                 String                      @db.VarChar(100)
+  email                     String                      @db.VarChar(100)
+  password                  String                      @db.VarChar(255)
+  website                   String?                     @db.VarChar(150)
+  info                      String?
+  fk_addressid              Int
+  appointments              appointments[]
+  services                  services[]
+  veterinaries              veterinaries[]
+  veterinary_has_invitation veterinary_has_invitation[]
+  addresses                 addresses                   @relation(fields: [fk_addressid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model animal_has_races {
+  fk_animalid     Int
+  fk_animalraceid Int
+  animals         animals     @relation(fields: [fk_animalid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  animalraces     animalraces @relation(fields: [fk_animalraceid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([fk_animalid, fk_animalraceid])
+}
+
+model animal_has_vaccination {
+  id                Int          @id @default(autoincrement())
+  dateofvaccination DateTime     @db.Date
+  fk_animalid       Int
+  fk_vaccinationid  Int
+  animals           animals      @relation(fields: [fk_animalid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  vaccinations      vaccinations @relation(fields: [fk_vaccinationid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model animalgroup {
+  id      Int       @id @default(autoincrement())
+  name    String?   @db.VarChar(100)
+  animals animals[]
+}
+
+model animalraces {
+  id               Int                @id @default(autoincrement())
+  name             String             @db.VarChar(100)
+  fk_animaltypeid  Int
+  animal_has_races animal_has_races[]
+  animaltypes      animaltypes        @relation(fields: [fk_animaltypeid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model appointment_has_review {
+  fk_appointmentid Int
+  fk_reviewid      Int
+  appointments     appointments @relation(fields: [fk_appointmentid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  reviews          reviews      @relation(fields: [fk_reviewid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([fk_appointmentid, fk_reviewid])
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model invoice_has_service {
+  id           Int      @id @default(autoincrement())
+  fk_invoiceid Int
+  fk_serviceid Int
+  quantity     Int      @db.SmallInt
+  discount     Float    @default(0.00) @db.Real
+  invoices     invoices @relation(fields: [fk_invoiceid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  services     services @relation(fields: [fk_serviceid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model invoices {
+  id                  Int                   @id @default(autoincrement())
+  status              paymentstatus         @default(unpaid)
+  priceincents        Int
+  discount            Float                 @default(0.00) @db.Real
+  fk_appointmentid    Int
+  invoice_has_service invoice_has_service[]
+  appointments        appointments          @relation(fields: [fk_appointmentid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model medications {
+  id      Int       @id @default(autoincrement())
+  name    String    @unique @db.VarChar(100)
+  recipes recipes[]
+}
+
+model recipes {
+  id              Int         @id @default(autoincrement())
+  fk_animalid     Int
+  fk_medicationid Int
+  starting        DateTime    @db.Date
+  enddate         DateTime    @db.Date
+  instructions    String?
+  animals         animals     @relation(fields: [fk_animalid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  medications     medications @relation(fields: [fk_medicationid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model reviews {
+  id                     Int                      @id @default(autoincrement())
+  contentment            Int                      @db.SmallInt
+  waitingtime            Int                      @db.SmallInt
+  kindness               Int                      @db.SmallInt
+  servicequality         Int                      @db.SmallInt
+  price                  Int                      @db.SmallInt
+  comment                String?
+  appointment_has_review appointment_has_review[]
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model services {
+  id                      Int                   @id @default(autoincrement())
+  name                    String                @db.VarChar(100)
+  priceincents            Int
+  fk_veterinarypracticeid Int?
+  invoice_has_service     invoice_has_service[]
+  veterinarypractices     veterinarypractices?  @relation(fields: [fk_veterinarypracticeid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model vaccinations {
+  id                     Int                      @id @default(autoincrement())
+  name                   String                   @unique @db.VarChar(100)
+  animal_has_vaccination animal_has_vaccination[]
+}
+
+model veterinary_has_invitation {
+  fk_veterinaryid         Int
+  fk_veterinarypracticeid Int
+  dateofinvitation        DateTime            @db.Date
+  veterinaries            veterinaries        @relation(fields: [fk_veterinaryid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  veterinarypractices     veterinarypractices @relation(fields: [fk_veterinarypracticeid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([fk_veterinaryid, fk_veterinarypracticeid])
 }
 
 enum sexes {
@@ -122,4 +252,18 @@ enum sexes {
   male
   female
   notapplicable
+}
+
+enum husbandarysystem {
+  indoor
+  indoorPlusSpace
+  indoorWithFreshAir
+  outdoorRunsFreeRange
+  organic
+}
+
+enum paymentstatus {
+  unpaid
+  paid
+  cancelled
 }

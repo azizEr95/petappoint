@@ -10,10 +10,6 @@ module.exports = {
   collectCoverageFrom: ['<rootDir>/src/**/*.{ts,js,mjs,tsx,jsx,mts}'],
   testPathIgnorePatterns: ["<rootDir>/dist/", "<rootDir>/node_modules/"],
   coveragePathIgnorePatterns: ["<rootDir>/dist/", "<rootDir>/node_modules/", "<rootDir>/tests/"],
-  // connect prismaClient
-  globalSetup: "<rootDir>/testConfig/globalSetup.ts",
-  // disonnect and empties database
-  globalTeardown: "<rootDir>/testConfig/globalTeardown.ts",
-
+  
   setupFilesAfterEnv: ['<rootDir>/testConfig/singleton.ts'],
 }
