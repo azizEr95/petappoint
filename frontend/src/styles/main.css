@@ -1,0 +1,19 @@
+/*
+ * Jede Komponente (tsx-Datei) hat ihr eigene css Datei datei.module.css, diese Dateien werden dann jeweils lokal importiert.
+ * In main.css werden allgemeine Styles definiert. Diese wird in main.tsx importiert.
+*/
+
+.text-center {
+    text-align: center;
+    padding: 2em;
+}
+
+.background-green {
+    background-color: rgb(88, 192, 88);
+    padding: 1em;
+    padding-bottom: 4em;
+}
+
+.button {
+    margin: 1em;
+}
