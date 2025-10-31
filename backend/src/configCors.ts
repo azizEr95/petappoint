@@ -24,7 +24,7 @@ export function configureCORS(app: express.Express) {
         }
         // logger.info(`CORS options: ${JSON.stringify(corsOptions,(k,v)=>v instanceof RegExp ? `${v.source}`:v,2)}`);
         app.use(cors(corsOptions));
-        app.options(/(.*)/, cors()) // enable pre-flight (request method "option") everywhere, you may want to specify that in detail in production
+        //app.options(/(.*)/, cors()) // enable pre-flight (request method "option") everywhere, you may want to specify that in detail in production
         // logger.info(`CORS enabled for origin ${process.env.CORS_ORIGIN}`);
     }
 }
