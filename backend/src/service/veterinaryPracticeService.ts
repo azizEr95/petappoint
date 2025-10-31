@@ -14,6 +14,10 @@ export const veterinaryPracticeService = {
     return foundPractice;
   },
 
+  async getByName(name: string): Promise<veterinarypractices[]> {
+    return await prisma.veterinarypractices.findMany({ where: { name } });
+  },
+
   async getByEmail(email: string): Promise<veterinarypractices | null> {
     return await prisma.veterinarypractices.findFirst({ where: { email } });
   },
