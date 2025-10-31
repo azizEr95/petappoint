@@ -22,6 +22,7 @@ CREATE TABLE IF NOT EXISTS addresses(
 );
 
 CREATE TYPE sexes AS ENUM ('notknown', 'male', 'female', 'notapplicable');
+CREATE TYPE husbandarySystem AS ENUM ('indoor', 'indoorPlusSpace', 'indoorWithFreshAir', 'outdoorRunsFreeRange', 'organic');
 
 CREATE TABLE IF NOT EXISTS persons(
   id SERIAL PRIMARY KEY,
@@ -35,22 +36,40 @@ CREATE TABLE IF NOT EXISTS persons(
   password VARCHAR(255) NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS animalkinds(
+CREATE TABLE IF NOT EXISTS animaltypes(
   id SERIAL PRIMARY KEY,
   name VARCHAR(100) NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS animaltypes(
+CREATE TABLE IF NOT EXISTS animalRaces(
   id SERIAL PRIMARY KEY,
   name VARCHAR(100) NOT NULL,
-  fk_animalkindId INTEGER REFERENCES animalkinds(id)
+  fk_animalTypeId INTEGER NOT NULL REFERENCES animaltypes(id)
+);
+
+CREATE TABLE IF NOT EXISTS animalgroup(
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(100)
 );
 
 CREATE TABLE IF NOT EXISTS animals(
   id SERIAL PRIMARY KEY,
   name VARCHAR(100) NOT NULL,
   dateOfBirth DATE,
-  fk_animalTypeId INTEGER NOT NULL REFERENCES animaltypes(id)
+  dateOfBirthIsExact BOOLEAN,
+  weightInGram INTEGER,
+  heightInCm INTEGER,
+  timeOfDeath DATE,
+  isCastrated BOOLEAN,
+  lifestyle husbandarySystem,
+  fk_animalTypeId INTEGER NOT NULL REFERENCES animaltypes(id),
+  fk_animalGroupId INTEGER NOT NULL REFERENCES animalgroup(id)
+);
+
+CREATE TABLE IF NOT EXISTS animal_has_races(
+  fk_animalId INTEGER NOT NULL REFERENCES animals(id),
+  fk_animalRaceId INTEGER NOT NULL REFERENCES animalRaces(id),
+  PRIMARY KEY (fk_animalId, fk_animalRaceId)
 );
 
 CREATE TABLE IF NOT EXISTS person_has_animal(
@@ -93,5 +112,81 @@ CREATE TABLE IF NOT EXISTS appointments(
   startTime TIMESTAMP NOT NULL,
   endTime TIMESTAMP NOT NULL,
   fk_animalId INTEGER REFERENCES animals(id),
-  fk_veterinaryId INTEGER NOT NULL REFERENCES veterinaries(id)
+  fk_veterinaryId INTEGER NOT NULL REFERENCES veterinaries(id),
+  fk_veterinaryPracticeId INTEGER NOT NULL REFERENCES veterinarypractices(id)
+);
+
+CREATE TABLE IF NOT EXISTS reviews(
+  id SERIAL PRIMARY KEY,
+  contentment SMALLINT NOT NULL CHECK (contentment BETWEEN 0 AND 100),
+  waitingTime SMALLINT NOT NULL CHECK (waitingTime BETWEEN 0 AND 100),
+  kindness SMALLINT NOT NULL CHECK (kindness BETWEEN 0 AND 100),
+  serviceQuality SMALLINT NOT NULL CHECK (serviceQuality BETWEEN 0 AND 100),
+  price SMALLINT NOT NULL CHECK (price BETWEEN 0 AND 100),
+  comment TEXT
+);
+
+CREATE TABLE IF NOT EXISTS appointment_has_review(
+  fk_appointmentId INTEGER NOT NULL REFERENCES appointments(id),
+  fk_reviewId INTEGER NOT NULL REFERENCES reviews(id),
+  PRIMARY KEY (fk_appointmentId, fk_reviewId)
+);
+
+CREATE TYPE paymentStatus AS ENUM('unpaid', 'paid', 'cancelled');
+
+CREATE TABLE IF NOT EXISTS invoices(
+  id SERIAL PRIMARY KEY,
+  status paymentStatus NOT NULL DEFAULT 'unpaid',
+  priceInCents INTEGER NOT NULL CHECK (priceInCents > 0),
+  discount REAL NOT NULL CHECK (discount BETWEEN 0.00 AND 100.00) DEFAULT 0.00, 
+  fk_appointmentId INTEGER NOT NULL REFERENCES appointments(id)
+);
+
+CREATE TABLE IF NOT EXISTS services(
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  priceInCents INTEGER NOT NULL CHECK (priceInCents >= 0),
+  fk_veterinaryPracticeId INTEGER REFERENCES veterinarypractices(id)
+);
+
+CREATE TABLE IF NOT EXISTS invoice_has_service(
+  id SERIAL PRIMARY KEY,
+  fk_invoiceId INTEGER NOT NULL REFERENCES invoices(id),
+  fk_serviceId INTEGER NOT NULL REFERENCES services(id),
+  quantity SMALLINT NOT NULL check (quantity > 0),
+  discount REAL NOT NULL CHECK (discount BETWEEN 0.00 AND 100.00) DEFAULT 0.00
+);
+
+CREATE TABLE IF NOT EXISTS vaccinations(
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(100) UNIQUE NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS animal_has_vaccination(
+  id SERIAL PRIMARY KEY,
+  dateOfVaccination DATE NOT NULL,
+  fk_animalId INTEGER NOT NULL REFERENCES animals(id),
+  fk_vaccinationId INTEGER NOT NULL REFERENCES vaccinations(id)
+);
+
+CREATE TABLE IF NOT EXISTS medications(
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(100) UNIQUE NOT NULL
+);
+
+/* TODO: NICHT FERTIG */
+CREATE TABLE IF NOT EXISTS recipes(
+  id SERIAL PRIMARY KEY,
+  fk_animalId INTEGER NOT NULL REFERENCES animals(id),
+  fk_medicationId INTEGER NOT NULL REFERENCES medications(id),
+  starting DATE NOT NULL,
+  endDate DATE NOT NULL,
+  instructions TEXT
+);
+
+CREATE TABLE IF NOT EXISTS veterinary_has_invitation(
+  fk_veterinaryId INTEGER NOT NULL REFERENCES veterinaries(id),
+  fk_veterinarypracticeId INTEGER NOT NULL REFERENCES veterinarypractices(id),
+  dateOfInvitation DATE NOT NULL,
+  PRIMARY KEY (fk_veterinaryId, fk_veterinarypracticeId)
 );

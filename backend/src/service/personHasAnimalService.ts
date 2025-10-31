@@ -1,24 +1,13 @@
 import { prisma } from "../singletonPC";
-import { PersonHasAnimalResource } from "src/Resource";
+import { animals, persons, person_has_animal } from "../../generated/prisma";
 
 export const personHasAnimalService = {
-  // Create (Verbindung zwischen Person und Tier)
-  async create(
-    data: PersonHasAnimalResource
-  ): Promise<PersonHasAnimalResource> {
-    const createdPersonHasAnimal = await prisma.person_has_animal.create({
-      data: {
-        fk_personid: data.personId,
-        fk_animalid: data.animalId,
-      },
-    });
-
-    return mapPersonHasAnimalToResource(createdPersonHasAnimal);
+  async create(data: person_has_animal): Promise<person_has_animal> {
+    return await prisma.person_has_animal.create({ data: data });
   },
 
-  // Find all animals for a specific person
   async getAnimalsByPersonId(personId: number) {
-    const personAnimals = await prisma.person_has_animal.findMany({
+    const personAndAnimals = await prisma.person_has_animal.findMany({
       where: { fk_personid: personId },
       include: {
         animals: true,
@@ -26,15 +15,14 @@ export const personHasAnimalService = {
       },
     });
 
-    return personAnimals.map((pa) => ({
+    return personAndAnimals.map((pa) => ({
       animal: pa.animals,
       person: pa.persons,
     }));
   },
 
-  // Find all persons for a specific animal
   async getPersonsByAnimalId(animalId: number) {
-    const animalPersons = await prisma.person_has_animal.findMany({
+    const animalAndPersons = await prisma.person_has_animal.findMany({
       where: { fk_animalid: animalId },
       include: {
         animals: true,
@@ -42,31 +30,29 @@ export const personHasAnimalService = {
       },
     });
 
-    return animalPersons.map((pa) => ({
+    return animalAndPersons.map((pa) => ({
       animal: pa.animals,
       person: pa.persons,
     }));
   },
 
-  // Remove association
-  async delete(data: PersonHasAnimalResource): Promise<void> {
+  async delete(data: person_has_animal): Promise<void> {
     await prisma.person_has_animal.delete({
       where: {
         fk_personid_fk_animalid: {
-          fk_personid: data.personId,
-          fk_animalid: data.animalId,
+          fk_personid: data.fk_personid,
+          fk_animalid: data.fk_animalid,
         },
       },
     });
   },
 
-  // Check if association exists
-  async exists(data: PersonHasAnimalResource): Promise<boolean> {
+  async exists(data: person_has_animal): Promise<boolean> {
     const association = await prisma.person_has_animal.findUnique({
       where: {
         fk_personid_fk_animalid: {
-          fk_personid: data.personId,
-          fk_animalid: data.animalId,
+          fk_personid: data.fk_personid,
+          fk_animalid: data.fk_animalid,
         },
       },
     });
@@ -74,13 +60,3 @@ export const personHasAnimalService = {
     return !!association;
   },
 };
-
-// Helper function to map Prisma person_has_animal to resource
-function mapPersonHasAnimalToResource(
-  personHasAnimal: any
-): PersonHasAnimalResource {
-  return {
-    personId: personHasAnimal.fk_personid,
-    animalId: personHasAnimal.fk_animalid,
-  };
-}

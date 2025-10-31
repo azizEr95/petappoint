@@ -1,122 +1,38 @@
 import { prisma } from "../singletonPC";
-import { VeterinaryPracticeResource } from "src/Resource";
+import { veterinarypractices } from "../../generated/prisma";
 
 export const veterinaryPracticeService = {
-  // Create
-  async create(
-    data: VeterinaryPracticeResource
-  ): Promise<VeterinaryPracticeResource> {
-    const createdPractice = await prisma.veterinarypractices.create({
-      data: {
-        name: data.name,
-        phone: data.phone,
-        infoemail: data.infoEmail,
-        email: data.email,
-        password: data.password,
-        website: data.website,
-        info: data.info,
-        fk_addressid: data.addressId,
-      },
-    });
-
-    return mapVeterinaryPracticeToResource(createdPractice);
+  async create(data: veterinarypractices): Promise<veterinarypractices> {
+    return await prisma.veterinarypractices.create({ data: data });
   },
 
-  // Read by ID
-  async getById(id: number): Promise<VeterinaryPracticeResource> {
-    const foundPractice = await prisma.veterinarypractices.findUnique({
-      where: { id },
-      include: {
-        addresses: true,
-        veterinaries: true,
-      },
-    });
+  async getById(id: number): Promise<veterinarypractices> {
+    const foundPractice = await prisma.veterinarypractices.findUnique({ where: { id } });
 
-    if (!foundPractice) {
-      throw new Error(`Veterinary Practice not found with id: ${id}`);
-    }
+    if (!foundPractice) throw new Error(`Veterinary Practice not found with id: ${id}`);
 
-    return mapVeterinaryPracticeToResource(foundPractice);
+    return foundPractice;
   },
 
-  // Update
-  async update(
-    data: VeterinaryPracticeResource
-  ): Promise<VeterinaryPracticeResource> {
-    if (!data.id) {
-      throw new Error("ID is required for update");
-    }
-
-    const updatedPractice = await prisma.veterinarypractices.update({
-      where: { id: data.id },
-      data: {
-        name: data.name,
-        phone: data.phone,
-        infoemail: data.infoEmail,
-        email: data.email,
-        password: data.password,
-        website: data.website,
-        info: data.info,
-        fk_addressid: data.addressId,
-      },
-    });
-
-    return mapVeterinaryPracticeToResource(updatedPractice);
+  async getByEmail(email: string): Promise<veterinarypractices | null> {
+    return await prisma.veterinarypractices.findFirst({ where: { email } });
   },
 
-  // Delete
+  async getByAddress(addressId: number): Promise<veterinarypractices[]> {
+    return await prisma.veterinarypractices.findMany({ where: { fk_addressid: addressId } });
+  },
+
+  async getAll(): Promise<veterinarypractices[]> {
+    return await prisma.veterinarypractices.findMany();
+  },
+
+  async update(data: veterinarypractices): Promise<veterinarypractices> {
+    if (!data.id) throw new Error("ID is required for update");
+
+    return await prisma.veterinarypractices.update({ where: { id: data.id }, data: data });
+  },
+
   async delete(id: number): Promise<void> {
-    await prisma.veterinarypractices.delete({
-      where: { id },
-    });
-  },
-
-  // List all veterinary practices
-  async getAll(): Promise<VeterinaryPracticeResource[]> {
-    const practices = await prisma.veterinarypractices.findMany({
-      include: {
-        addresses: true,
-        veterinaries: true,
-      },
-    });
-    return practices.map(mapVeterinaryPracticeToResource);
-  },
-
-  // Find by email
-  async getByEmail(email: string): Promise<VeterinaryPracticeResource | null> {
-    const practice = await prisma.veterinarypractices.findFirst({
-      where: { email },
-    });
-
-    return practice ? mapVeterinaryPracticeToResource(practice) : null;
-  },
-
-  // Find practices by address
-  async getByAddress(addressId: number): Promise<VeterinaryPracticeResource[]> {
-    const practices = await prisma.veterinarypractices.findMany({
-      where: { fk_addressid: addressId },
-      include: {
-        addresses: true,
-      },
-    });
-
-    return practices.map(mapVeterinaryPracticeToResource);
+    await prisma.veterinarypractices.delete({ where: { id } });
   },
 };
-
-// Helper function to map Prisma veterinarypractices to resource
-function mapVeterinaryPracticeToResource(
-  practice: any
-): VeterinaryPracticeResource {
-  return {
-    id: practice.id,
-    name: practice.name,
-    phone: practice.phone,
-    infoEmail: practice.infoemail,
-    email: practice.email,
-    password: practice.password,
-    website: practice.website,
-    info: practice.info,
-    addressId: practice.fk_addressid,
-  };
-}

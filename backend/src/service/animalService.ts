@@ -1,80 +1,51 @@
 import { prisma } from "../singletonPC";
-import { AnimalResource } from "src/Resource";
+import { animals } from "../../generated/prisma";
 
 export const animalService = {
-  // Create
-  async create(data: AnimalResource): Promise<AnimalResource> {
-    const createdAnimal = await prisma.animals.create({
+  async create(data: animals): Promise<animals> {
+    return await prisma.animals.create({
       data: {
         name: data.name,
-        dateofbirth: data.dateOfBirth,
-        fk_animaltypeid: data.animalTypeId,
+        dateofbirth: data.dateofbirth,
+        dateofbirthisexact: data.dateofbirthisexact,
+        weightingram: data.weightingram,
+        heightincm: data.heightincm,
+        timeofdeath: data.timeofdeath,
+        iscastrated: data.iscastrated,
+        lifestyle: data.lifestyle,
+        animalgroup: { connect: { id: data.fk_animalgroupid } },
+        animaltypes: { connect: { id: data.fk_animaltypeid } },
       },
     });
-
-    return mapAnimalToResource(createdAnimal);
   },
 
-  // Read by ID
-  async getById(id: number): Promise<AnimalResource> {
-    const foundAnimal = await prisma.animals.findUnique({
-      where: { id },
-      include: {
-        animaltypes: true, // Optional: laden der Tierart
-        appointments: true, // Optional: Termine
-        person_has_animal: true, // Optional: Besitzerinformationen
-      },
-    });
+  async getById(id: number): Promise<animals> {
+    const foundAnimal = await prisma.animals.findUnique({ where: { id } });
 
-    if (!foundAnimal) {
-      throw new Error(`Animal not found with id: ${id}`);
-    }
+    if (!foundAnimal) throw new Error(`Animal not found with id: ${id}`);
 
-    return mapAnimalToResource(foundAnimal);
+    return foundAnimal;
   },
 
-  // Update
-  async update(data: AnimalResource): Promise<AnimalResource> {
-    if (!data.id) {
-      throw new Error("ID is required for update");
-    }
+  async getByName(name: string): Promise<animals> {
+    const foundAnimal = await prisma.animals.findFirst({ where: { name } });
 
-    const updatedAnimal = await prisma.animals.update({
-      where: { id: data.id },
-      data: {
-        name: data.name,
-        dateofbirth: data.dateOfBirth,
-        fk_animaltypeid: data.animalTypeId,
-      },
-    });
+    if (!foundAnimal) throw new Error(`Animal not found with name: ${name}`);
 
-    return mapAnimalToResource(updatedAnimal);
+    return foundAnimal;
   },
 
-  // Delete
+  async getAll(): Promise<animals[]> {
+    return await prisma.animals.findMany();
+  },
+
+  async update(data: animals): Promise<animals> {
+    if (!data.id) throw new Error("ID is required for update");
+
+    return await prisma.animals.update({ where: { id: data.id }, data: data });
+  },
+
   async delete(id: number): Promise<void> {
-    await prisma.animals.delete({
-      where: { id },
-    });
-  },
-
-  // List all animals
-  async getAll(): Promise<AnimalResource[]> {
-    const animals = await prisma.animals.findMany({
-      include: {
-        animaltypes: true,
-      },
-    });
-    return animals.map(mapAnimalToResource);
+    await prisma.animals.delete({ where: { id } });
   },
 };
-
-// Helper function to map Prisma animals to resource
-function mapAnimalToResource(animal: any): AnimalResource {
-  return {
-    id: animal.id,
-    name: animal.name,
-    dateOfBirth: animal.dateofbirth,
-    animalTypeId: animal.fk_animaltypeid,
-  };
-}
