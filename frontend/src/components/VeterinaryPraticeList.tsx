@@ -1,10 +1,24 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { getAllVeterinaryPratice } from '../api/VeterinaryPractice'
+import { VeterinaryPraticeCard } from './VeterinaryPraticeCard'
+
+//noch aendern, soll typn automatisch importieren!!
+export type Praxis = {
+  id: number
+  name: string
+  phone: string
+  infoemail: string
+  email: string
+  password: string
+  website: string
+  info: string
+  fkAdresse: number
+}
 
 export function VeterinaryPraticeList() {
-  const queryClient = useQueryClient()
+  //const queryClient = useQueryClient() //wird fuer useMutation benoetigt
 
-  const { isPending, isError, isSuccess, data, error } = useQuery({
+  const { isPending, isError, isSuccess, data, error } = useQuery<Praxis[]>({
     queryKey: ['tierarztpraxen'],
     queryFn: getAllVeterinaryPratice,
   })
@@ -20,10 +34,11 @@ export function VeterinaryPraticeList() {
   }
 
   if (isSuccess) {
+    console.log('success')
     return (
       <div id="VeterinaryPracticeList">
-        {data.map((praxis: any) => {
-          return <p key={praxis.name}>{praxis.name}</p>
+        {data.map((praxis) => {
+          return <VeterinaryPraticeCard key={praxis.id} praxis={praxis} />
         })}
       </div>
     )

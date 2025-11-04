@@ -1,8 +1,8 @@
 import { createFileRoute } from '@tanstack/react-router'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import { Search } from '../components/Search'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { VeterinaryPraticeList } from '../components/VeterinaryPraticeList'
+import {useState, type JSX } from 'react'
 
 export const Route = createFileRoute('/')({
   component: App,
@@ -10,14 +10,19 @@ export const Route = createFileRoute('/')({
 
 
 function App() {
+  let [praxisList, setPraxisList] = useState<JSX.Element | null>(null);
+
+  const handleSearch = () => {
+    setPraxisList(<VeterinaryPraticeList />);
+  }
+
 
   return (
     <div className='background-green'>
       <div className="text-center">vetlib</div>
-      <Search />
-      <div id="veterinarypraticeList">
-        <VeterinaryPraticeList></VeterinaryPraticeList>
-      </div>
+      <Search search={handleSearch}/>
+      {praxisList}
     </div>
+
   )
 }

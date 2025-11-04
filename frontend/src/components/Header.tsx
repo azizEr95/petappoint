@@ -1,7 +1,16 @@
 import { Link } from '@tanstack/react-router'
 import { Container, Nav, Navbar } from 'react-bootstrap';
+import { useAuthStore } from '../stores/store';
 
 export default function Header() {
+  const { login, setLogin} = useAuthStore();
+
+  let loginButton;
+  if(!login){
+    loginButton = <Link id="LoginButtonHeader" to={"/login"} className='btn btn-outline-secondary button'>Einloggen</Link>
+  } else {
+    loginButton = <Link id="LogoutButtonHeader" to={"/"} className='btn btn-outline-secondary button' onClick={() => {setLogin(false)}}>Ausloggen</Link>
+  }
 
   return (
     <Navbar id="Header" expand="md" className="bg-body-tertiary">
@@ -16,7 +25,7 @@ export default function Header() {
           </Nav>
         </Navbar.Collapse>
       </Container>
-      <Link id="LoginButtonHeader" to={"/login"} className='btn btn-outline-secondary button'>Einloggen</Link>
+      {loginButton}
     </Navbar>
   )
 }
