@@ -1,8 +1,8 @@
-import type { Praxis } from "./VeterinaryPraticeList"
 import '../styles/veterinaryPracticeCard.modules.css';
+import type { veterinarypracticesType } from "../types/schemas/models/veterinarypractices.schema";
 
 type VeterinaryPraticeCardProps = {
-    praxis: Praxis
+    praxis: veterinarypracticesType
 }
 
 

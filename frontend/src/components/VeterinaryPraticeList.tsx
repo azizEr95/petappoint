@@ -1,6 +1,9 @@
 import { useQuery } from '@tanstack/react-query'
-import { getAllVeterinaryPratice } from '../api/VeterinaryPractice'
+import { getAllVeterinaryPratice } from '../api/VeterinaryPractice' 
 import { VeterinaryPraticeCard } from './VeterinaryPraticeCard'
+import type { veterinarypracticesType } from '../types/schemas/models/veterinarypractices.schema'
+
+
 
 //noch aendern, soll typn automatisch importieren!!
 export type Praxis = {
@@ -18,7 +21,7 @@ export type Praxis = {
 export function VeterinaryPraticeList() {
   //const queryClient = useQueryClient() //wird fuer useMutation benoetigt
 
-  const { isPending, isError, isSuccess, data, error } = useQuery<Praxis[]>({
+  const { isPending, isError, isSuccess, data, error } = useQuery<veterinarypracticesType[]>({
     queryKey: ['tierarztpraxen'],
     queryFn: getAllVeterinaryPratice,
   })
