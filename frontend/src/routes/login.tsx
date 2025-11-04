@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useState, type ChangeEvent, type MouseEvent } from 'react';
 import { Button, Form } from 'react-bootstrap'
 import '../styles/login.modules.css';
+import {useAuthStore } from '../stores/store';
 
 export const Route = createFileRoute('/login')({
     component: Login,
@@ -11,6 +12,8 @@ function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const navigate = useNavigate();
+    const {setLogin} = useAuthStore();
+
 
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         let t = e.target;
@@ -29,6 +32,8 @@ function Login() {
     }
 
     const handleSubmit = async (e: MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        setLogin(true);
         navigate({ to: "/appointments" });
     }
 

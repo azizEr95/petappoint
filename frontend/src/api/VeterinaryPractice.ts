@@ -1,7 +1,7 @@
-import { BACKEND_URL } from "../../config/config";
+
 
 
 export const getAllVeterinaryPratice = async () => {
-    let res = await fetch(BACKEND_URL + "api/veterinary-practice/all");
+    let res = await fetch(import.meta.env.VITE_API_URL + "/veterinary-practice/all");
     return res.json();
   }
