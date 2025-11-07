@@ -1,4 +1,5 @@
 services:
+  # PostgreSQL Datenbank Service
   db:
     build: ./db
     container_name: postgres-db
