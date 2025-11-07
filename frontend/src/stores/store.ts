@@ -1,12 +1,12 @@
 import { create } from "zustand";
 
-type authStore = {
-    login: boolean;
-    setLogin: (log: boolean) => void
+type store = {
+    search: string;
+    setSearch: (such: string) => void
 }
 
-export const useAuthStore = create<authStore>((set) => ({
-    login: false,
-    setLogin: (log) => set({login: log})
+export const useStore = create<store>((set) => ({
+    search: "",
+    setSearch: (such) => set({ search: such })
 })
 );

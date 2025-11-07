@@ -1,6 +1,6 @@
 import { Link } from '@tanstack/react-router'
 import { Container, Nav, Navbar } from 'react-bootstrap';
-import { useAuthStore } from '../stores/store';
+import { useAuthStore } from '../stores/authStore';
 
 export default function Header() {
   const { login, setLogin} = useAuthStore();

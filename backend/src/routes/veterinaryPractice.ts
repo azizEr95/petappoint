@@ -11,12 +11,12 @@ veterinaryPracticeRouter.get("/all",
     }
 )
 
-veterinaryPracticeRouter.get("/:name", 
+veterinaryPracticeRouter.get("/:nameORadress", 
     async (req, res) => {
         if(!req.params) {
             res.sendStatus(404);
         }
-        const allVeterinaries: veterinarypractices[] = await veterinaryPracticeService.getByName(req.params.name);
+        const allVeterinaries: veterinarypractices[] = await veterinaryPracticeService.getByNameOrAdress(req.params.nameORadress);
         res.send(allVeterinaries);
     }
 )
