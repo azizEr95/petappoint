@@ -9,10 +9,16 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as VeterinaryRegistrationRouteImport } from './routes/veterinaryRegistration'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AppointmentsRouteImport } from './routes/appointments'
 import { Route as IndexRouteImport } from './routes/index'
 
+const VeterinaryRegistrationRoute = VeterinaryRegistrationRouteImport.update({
+  id: '/veterinaryRegistration',
+  path: '/veterinaryRegistration',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -33,34 +39,45 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/appointments': typeof AppointmentsRoute
   '/login': typeof LoginRoute
+  '/veterinaryRegistration': typeof VeterinaryRegistrationRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/appointments': typeof AppointmentsRoute
   '/login': typeof LoginRoute
+  '/veterinaryRegistration': typeof VeterinaryRegistrationRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/appointments': typeof AppointmentsRoute
   '/login': typeof LoginRoute
+  '/veterinaryRegistration': typeof VeterinaryRegistrationRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/appointments' | '/login'
+  fullPaths: '/' | '/appointments' | '/login' | '/veterinaryRegistration'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/appointments' | '/login'
-  id: '__root__' | '/' | '/appointments' | '/login'
+  to: '/' | '/appointments' | '/login' | '/veterinaryRegistration'
+  id: '__root__' | '/' | '/appointments' | '/login' | '/veterinaryRegistration'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppointmentsRoute: typeof AppointmentsRoute
   LoginRoute: typeof LoginRoute
+  VeterinaryRegistrationRoute: typeof VeterinaryRegistrationRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/veterinaryRegistration': {
+      id: '/veterinaryRegistration'
+      path: '/veterinaryRegistration'
+      fullPath: '/veterinaryRegistration'
+      preLoaderRoute: typeof VeterinaryRegistrationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -89,6 +106,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppointmentsRoute: AppointmentsRoute,
   LoginRoute: LoginRoute,
+  VeterinaryRegistrationRoute: VeterinaryRegistrationRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
