@@ -1,12 +1,16 @@
 import { create } from "zustand";
 
 type store = {
-    search: string;
-    setSearch: (such: string) => void
+    searchName: string
+    searchOrt: string
+    setSearchName: (such: string) => void
+    setSearchOrt: (such: string) => void
 }
 
 export const useStore = create<store>((set) => ({
-    search: "",
-    setSearch: (such) => set({ search: such })
+    searchName: "",
+    searchOrt: "",
+    setSearchName: (name) => set({ searchName: name }),
+    setSearchOrt: (ort) => set({ searchOrt: ort })
 })
 );

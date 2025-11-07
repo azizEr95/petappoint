@@ -14,49 +14,47 @@ export const veterinaryPracticeService = {
     return foundPractice;
   },
 
-  async getByNameOrAdress(name: string): Promise<veterinarypractices[]> {
+  async getByNameOrAdress(name: string, address: string): Promise<veterinarypractices[]> {
     return await prisma.veterinarypractices.findMany({
       include: {
-        addresses: true,
+        addresses: true
       },
       where: {
-        OR: [
-          {
+        AND: [
+          name.length <= 0 ? {} : {
             name: {
               contains: name,
               mode: "insensitive"
-            },
-          },
-          {
-            addresses: {
-              street: {
-                contains: name,
-                mode: "insensitive"
-              }
             }
           },
-          {
+          address.length <= 0 ? {} : {
             addresses: {
-              citycode: {
-                contains: name,
-                mode: "insensitive"
-              }
-            }
-          },
-          {
-            addresses: {
-              city: {
-                contains: name,
-                mode: "insensitive"
-              }
-            }
-          },
-          {
-            addresses: {
-              country: {
-                contains: name,
-                mode: "insensitive"
-              }
+              OR: [
+                {
+                  street: {
+                    contains: address,
+                    mode: "insensitive"
+                  }
+                },
+                {
+                  city: {
+                    contains: address,
+                    mode: "insensitive"
+                  }
+                },
+                {
+                  citycode: {
+                    contains: address,
+                    mode: "insensitive"
+                  }
+                },
+                {
+                  country: {
+                    contains: address,
+                    mode: "insensitive"
+                  }
+                }
+              ]
             }
           }
         ]
