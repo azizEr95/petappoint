@@ -1,13 +1,7 @@
 generator client {
-  provider      = "prisma-client-js"
-  output        = "../generated/prisma"
-  binaryTargets = ["native", "linux-musl-arm64-openssl-3.0.x"]
-}
-
-generator zod {
-  provider = "prisma-zod-generator"
-  output = "../../frontend/src/types" 
-  config = "./zod-generator.config.json"
+  provider        = "prisma-client-js"
+  output          = "../generated/prisma"
+  previewFeatures = ["fullTextSearchPostgres"]
 }
 
 datasource db {

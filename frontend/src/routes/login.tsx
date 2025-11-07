@@ -1,8 +1,8 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useState, type ChangeEvent, type MouseEvent } from 'react';
-import { Button, Form } from 'react-bootstrap'
 import '../styles/login.modules.css';
-import {useAuthStore } from '../stores/store';
+import { Button, Form } from 'react-bootstrap'
+import { useAuthStore } from '../stores/authStore';
 
 export const Route = createFileRoute('/login')({
     component: Login,
@@ -12,7 +12,7 @@ function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const navigate = useNavigate();
-    const {setLogin} = useAuthStore();
+    const { setLogin } = useAuthStore();
 
 
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -37,13 +37,35 @@ function Login() {
         navigate({ to: "/appointments" });
     }
 
+    const handleClickRegristrationVeterinaryPractice = (e: MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        navigate({ to: "/veterinaryRegistration" });
+    }
 
-    return <div className='login-dialog'>
+    const handleClickRegristrationUser = (e: MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        console.log("route not implemented yet")
+        navigate({ to: "/" });
+    }
+
+
+    return <div className='loginSite'>
         <div className='text-center'>Login</div>
-        <Form>
-        <Form.Group className="mb-3"><Form.Control id="LoginDialogUserIDText" type="text" placeholder="E-Mail" name="email" onChange={handleChange} value={email} /></Form.Group>
-        <Form.Group className="mb-3"><Form.Control id="LoginDialogUserIDText" type="password" placeholder="Password" name="password" onChange={handleChange} value={password} /></Form.Group>
-        <Button id="PerformLoginButton" variant="primary" type="submit" onClick={handleSubmit}>Login</Button>
-    </Form>
-    </div>;
+       
+            <Form className='loginFormular'>
+                <Form.Group className="mb-3"><Form.Control id="LoginDialogUserIDText" type="text" placeholder="E-Mail" name="email" onChange={handleChange} value={email} /></Form.Group>
+                <Form.Group className="mb-3"><Form.Control id="LoginDialogUserIDPassword" type="password" placeholder="Password" name="password" onChange={handleChange} value={password} /></Form.Group>
+                <Button id="PerformLoginButton" variant="primary" type="submit" onClick={handleSubmit}>Login</Button>
+            </Form>
+      
+        
+            <div className="card card-body loginOption">
+                <div className="card-text text-center">Neu bei vetlib?</div>
+                <Button id="PerformRegristrationButton" className="button" variant="primary" type="submit" onClick={handleClickRegristrationUser}>Registrieren</Button>
+            </div>
+            <div className="card card-body loginOption">
+                <div className="card-text text-center">Sie sind Tierarzt?</div>
+                <Button className="button" variant="primary" type="submit" onClick={handleClickRegristrationVeterinaryPractice}>Als Praxis regristrieren</Button>
+            </div>
+        </div>;
 }
