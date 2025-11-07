@@ -6,10 +6,7 @@ export const getAllVeterinaryPractices = async () => {
   return res.json();
 }
 
-export const getVeterinaryPracticesByNameAddress = async (suche: string) => {
-  if(suche === ""){
-    return await getAllVeterinaryPractices();
-  }
-  let res = await fetch(import.meta.env.VITE_API_URL + "/veterinary-practice/" + suche);
+export const getVeterinaryPracticesByNameAddress = async (name: string, ort: string) => {
+  let res = await fetch(import.meta.env.VITE_API_URL + "/veterinary-practice/search?name=" + name + "&address=" + ort);
   return res.json();
 }

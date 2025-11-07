@@ -10,7 +10,7 @@ type SearchProps = {
 export function Search({showPraxisList}: SearchProps) {
   let [searchTermName, setSearchTermName] = useState("");
   let [searchTermOrt, setSearchTermOrt] = useState("");
-  const {setSearch} = useStore();
+  const {setSearchName, setSearchOrt} = useStore();
 
   //bei Suche ohne Ortangabe aktuellen Standort nehmen??: https://wiki.selfhtml.org/wiki/Geolocation
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -30,7 +30,8 @@ export function Search({showPraxisList}: SearchProps) {
 
   const handleSearch = () => {
     showPraxisList();
-    setSearch(searchTermName + searchTermOrt);
+    setSearchName(searchTermName);
+    setSearchOrt(searchTermOrt);
   }
 
   return (

@@ -6,13 +6,13 @@ import { useStore } from '../stores/store';
 
 
 export function VeterinaryPracticeList() {
-  const { search } = useStore();
+  const { searchName, searchOrt } = useStore();
 
   //const queryClient = useQueryClient() //wird fuer useMutation benoetigt
 
   const { isPending, isError, isSuccess, data, error } = useQuery<VeterinaryPracticesType[]>({
-    queryKey: ['tierarztpraxen', search],
-    queryFn: () => getVeterinaryPracticesByNameAddress(search)
+    queryKey: ['tierarztpraxen', searchName, searchOrt],
+    queryFn: () => getVeterinaryPracticesByNameAddress(searchName, searchOrt)
   })
 
   if (isPending) {
