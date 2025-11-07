@@ -15,7 +15,11 @@ export const veterinaryPracticeService = {
   },
 
   async getByName(name: string): Promise<veterinarypractices[]> {
-    return await prisma.veterinarypractices.findMany({ where: { name } });
+    return await prisma.veterinarypractices.findMany({ where:
+       { name: {
+        contains: name
+       }} 
+    });
   },
 
   async getByEmail(email: string): Promise<veterinarypractices | null> {
