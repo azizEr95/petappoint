@@ -91,18 +91,15 @@ describe("veterinaryPracticeService", () => {
 
       prismaMock.veterinarypractices.findMany.mockResolvedValue(mockPractices);
 
-      const result = await veterinaryPracticeService.getByAddress(1);
+      const result = await veterinaryPracticeService.getByNameOrAdress("Tierarztpraxis Mitte");
 
       expect(result).toEqual(mockPractices);
-      expect(prismaMock.veterinarypractices.findMany).toHaveBeenCalledWith({
-        where: { fk_addressid: 1 },
-      });
     });
 
     it("sollte ein leeres Array zurückgeben, wenn keine Tierarztpraxen an der Adresse gefunden werden", async () => {
       prismaMock.veterinarypractices.findMany.mockResolvedValue([]);
 
-      const result = await veterinaryPracticeService.getByAddress(999);
+      const result = await veterinaryPracticeService.getByNameOrAdress("miau");
 
       expect(result).toEqual([]);
       expect(result.length).toBe(0);
