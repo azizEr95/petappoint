@@ -19,12 +19,12 @@ const searchQuerySchema = z.object({
 
 veterinaryPracticeRouter.get('/search',
     async (req, res) => {
-        const parsed = searchQuerySchema.parse(req.query);
-        if (!parsed) {
+        const parsed = searchQuerySchema.safeParse(req.query);
+        if (!parsed.success) {
             return res.sendStatus(400);
         }
 
-        const allVeterinaries: veterinarypractices[] = await veterinaryPracticeService.getByNameOrAdress(parsed.name, parsed.address);
+        const allVeterinaries: veterinarypractices[] = await veterinaryPracticeService.getByNameOrAdress(parsed.data.name, parsed.data.address);
         return res.send(allVeterinaries);
     }
 )
