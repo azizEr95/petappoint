@@ -15,6 +15,7 @@ veterinaryPracticeRouter.get("/:nameORadress",
     async (req, res) => {
         if(!req.params) {
             res.sendStatus(404);
+            return;
         }
         const allVeterinaries: veterinarypractices[] = await veterinaryPracticeService.getByNameOrAdress(req.params.nameORadress);
         res.send(allVeterinaries);
