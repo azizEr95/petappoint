@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "vetlib": "npm --prefix ./db run db && concurrently 'npm --prefix ./backend run start' 'npm --prefix ./frontend run dev'",
+    "vetlib": "npm --prefix ./db run db && npm-run-all --parallel startBackend startFrontend",
+    "startBackend": "npm --prefix ./backend run start",
+    "startFrontend": "npm --prefix ./frontend run dev",
     "vetlib:detached": "docker-compose up --build -d",
     "stop": "docker-compose down",
     "test": "npm run test:backend && npm run test:frontend",
@@ -11,7 +13,7 @@
     "test:frontend": "cd frontend && npm test",
     "prisma": "cd backend && npm run prisma"
   },
-  "dependencies": {
-    "concurrently": "^9.2.1"
+  "devDependencies": {
+    "npm-run-all": "^4.1.5"
   }
 }
