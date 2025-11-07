@@ -22,14 +22,41 @@ export const veterinaryPracticeService = {
       where: {
         OR: [
           {
-            name: { contains: name },
+            name: {
+              contains: name,
+              mode: "insensitive"
+            },
           },
           {
             addresses: {
-              street: { contains: name },
-              citycode: { contains: name },
-              city: { contains: name },
-              country: { contains: name },
+              street: {
+                contains: name,
+                mode: "insensitive"
+              }
+            }
+          },
+          {
+            addresses: {
+              citycode: {
+                contains: name,
+                mode: "insensitive"
+              }
+            }
+          },
+          {
+            addresses: {
+              city: {
+                contains: name,
+                mode: "insensitive"
+              }
+            }
+          },
+          {
+            addresses: {
+              country: {
+                contains: name,
+                mode: "insensitive"
+              }
             }
           }
         ]
