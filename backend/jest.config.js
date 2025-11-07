@@ -9,6 +9,7 @@ module.exports = {
   testMatch: ["**/(*.)+(test).?(m)[jt]s?(x)"],
   collectCoverageFrom: ['<rootDir>/src/**/*.{ts,js,mjs,tsx,jsx,mts}'],
   testPathIgnorePatterns: ["<rootDir>/dist/", "<rootDir>/node_modules/"],
+  coverageReporters: ["cobertura","html","text","text-summary"],
   coveragePathIgnorePatterns: ["<rootDir>/dist/", "<rootDir>/node_modules/", "<rootDir>/tests/"],
   
   setupFilesAfterEnv: ['<rootDir>/testConfig/singleton.ts'],

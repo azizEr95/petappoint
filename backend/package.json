@@ -7,7 +7,8 @@
     "build": "tsc",
     "start": "nodemon --exec \"node --inspect --require ts-node/register src/index.ts\" -e ts,mts,js,mjs --watch src",
     "prisma": "npx prisma db pull && npx prisma generate",
-    "test": "jest --runInBand"
+    "test": "jest --runInBand",
+    "test:ci": "jest --config ./jest.config.js --collectCoverage --coverageDirectory=\"./coverage\" --ci --reporters=default --reporters=jest-junit --watchAll=false"
   },
   "keywords": [],
   "author": "",
