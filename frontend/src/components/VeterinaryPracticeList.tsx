@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { getVeterinaryPracticesByNameAddress } from '../api/VeterinaryPracticeAPI'
 import { VeterinaryPracticeCard } from './VeterinaryPracticeCard'
-import type { VeterinaryPracticesType } from '../schemas/ZodSchemas'
+import type { VeterinaryPracticesType } from '../../../shared/schemas/ZodSchemas'
 import { useStore } from '../stores/store';
 
 
