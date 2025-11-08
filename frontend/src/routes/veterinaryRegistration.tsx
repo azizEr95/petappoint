@@ -67,7 +67,7 @@ function veterinaryRegistration() {
                 setInfo(value);
                 break;
             default:
-                console.log("Error: Fehler beim Aendern von veterinaryRegristration State in handleChange");
+                console.log("Error: Fehler beim Aendern von veterinaryRegistration State in handleChange");
         }
     }
 
@@ -98,27 +98,27 @@ function veterinaryRegistration() {
             VeterinaryPracticeCreateSchema.parse(practice);
         }
         catch (e) {
-            console.log("Zod Error: veterinaryRegristration " + e);
+            console.log("Zod Error: veterinaryRegistration " + e);
         }
 
     }
 
-    return <div className='veterinaryRegristrationSite'>
+    return <div className='veterinaryRegistrationSite'>
         <div className='text-center'>Regristrierung Tierarztpraxis</div>
 
-        <Form className='veterinaryRegristrationFormular'>
+        <Form className='veterinaryRegistrationFormular'>
             <div className='text-CreatePractice'>Name:</div>
             <Form.Group className="mb-3"><Form.Control id="CreatePraxisName" type="text" placeholder="Tierarztpraxis Mustertier" name="name" onChange={handleChange} value={name} /></Form.Group>
             <div className='text-CreatePractice'>Straße:</div>
-            <Form.Group className="mb-3"><Form.Control id="CreatePraxisName" type="text" placeholder="Musterstraße" name="strasse" onChange={handleChange} value={strasse} /></Form.Group>
+            <Form.Group className="mb-3"><Form.Control id="CreatePraxisStrasse" type="text" placeholder="Musterstraße" name="strasse" onChange={handleChange} value={strasse} /></Form.Group>
             <div className='text-CreatePractice'>Hausnr.:</div>
-            <Form.Group className="mb-3"><Form.Control id="CreatePraxisName" type="text" placeholder="1" name="hausnr" onChange={handleChange} value={hausnr} /></Form.Group>
+            <Form.Group className="mb-3"><Form.Control id="CreatePraxisHausnr" type="text" placeholder="1" name="hausnr" onChange={handleChange} value={hausnr} /></Form.Group>
             <div className='text-CreatePractice'>Postleizahl:</div>
-            <Form.Group className="mb-3"><Form.Control id="CreatePraxisName" type="text" placeholder="12345" name="plz" onChange={handleChange} value={plz} /></Form.Group>
+            <Form.Group className="mb-3"><Form.Control id="CreatePraxisPlz" type="text" placeholder="12345" name="plz" onChange={handleChange} value={plz} /></Form.Group>
             <div className='text-CreatePractice'>Stadt:</div>
-            <Form.Group className="mb-3"><Form.Control id="CreatePraxisName" type="text" placeholder="Musterstadt" name="stadt" onChange={handleChange} value={stadt} /></Form.Group>
+            <Form.Group className="mb-3"><Form.Control id="CreatePraxisStadt" type="text" placeholder="Musterstadt" name="stadt" onChange={handleChange} value={stadt} /></Form.Group>
             <div className='text-CreatePractice'>Land:</div>
-            <Form.Group className="mb-3"><Form.Control id="CreatePraxisName" type="text" placeholder="Deutschland" name="land" onChange={handleChange} value={land} /></Form.Group>
+            <Form.Group className="mb-3"><Form.Control id="CreatePraxisLand" type="text" placeholder="Deutschland" name="land" onChange={handleChange} value={land} /></Form.Group>
             <div className='text-CreatePractice'>E-Mail:</div>
             <Form.Group className="mb-3"><Form.Control id="CreatePraxisEmail" type="text" placeholder="mustertier@tier.de" name="email" onChange={handleChange} value={email} /></Form.Group>
             <div className='text-CreatePractice'>Password:</div>
@@ -131,7 +131,7 @@ function veterinaryRegistration() {
             <Form.Group className="mb-3"><Form.Control id="CreatePraxisWebsite" type="text" placeholder="https://mustertier.de" name="website" onChange={handleChange} value={website} /></Form.Group>
             <div className='text-CreatePractice'>Praxisinfo:</div>
             <Form.Group className="mb-3"><Form.Control id="CreatePraxisInfo" type="textarea" placeholder="Beschreibung zur Praxis" name="info" onChange={handleChange} value={info} /></Form.Group>
-            <Button id="PerformVeterinaryRegristration" variant="primary" type="submit" onClick={handleSubmit}>Registrieren</Button>
+            <Button id="PerformVeterinaryRegistration" variant="primary" type="submit" onClick={handleSubmit}>Registrieren</Button>
         </Form>
     </div>;
 }

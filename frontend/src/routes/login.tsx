@@ -37,12 +37,12 @@ function Login() {
         navigate({ to: "/appointments" });
     }
 
-    const handleClickRegristrationVeterinaryPractice = (e: MouseEvent<HTMLButtonElement>) => {
+    const handleClickRegistrationVeterinaryPractice = (e: MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
         navigate({ to: "/veterinaryRegistration" });
     }
 
-    const handleClickRegristrationUser = (e: MouseEvent<HTMLButtonElement>) => {
+    const handleClickRegistrationUser = (e: MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
         console.log("route not implemented yet")
         navigate({ to: "/" });
@@ -61,11 +61,11 @@ function Login() {
         
             <div className="card card-body loginOption">
                 <div className="card-text text-center">Neu bei vetlib?</div>
-                <Button id="PerformRegristrationButton" className="button" variant="primary" type="submit" onClick={handleClickRegristrationUser}>Registrieren</Button>
+                <Button id="PerformRegistrationButton" className="button" variant="primary" type="submit" onClick={handleClickRegistrationUser}>Registrieren</Button>
             </div>
             <div className="card card-body loginOption">
                 <div className="card-text text-center">Sie sind Tierarzt?</div>
-                <Button className="button" variant="primary" type="submit" onClick={handleClickRegristrationVeterinaryPractice}>Als Praxis regristrieren</Button>
+                <Button className="button" variant="primary" type="submit" onClick={handleClickRegistrationVeterinaryPractice}>Als Praxis regristrieren</Button>
             </div>
         </div>;
 }
