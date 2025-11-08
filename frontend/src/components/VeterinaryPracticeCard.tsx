@@ -1,4 +1,4 @@
-import type { VeterinaryPracticesType } from '../schemas/ZodSchemas';
+import type { VeterinaryPracticesType } from '../../../shared/schemas/ZodSchemas';
 import '../styles/veterinaryPracticeCard.modules.css';
 
 

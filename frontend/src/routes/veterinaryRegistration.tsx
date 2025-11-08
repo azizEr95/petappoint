@@ -2,7 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { useState, type ChangeEvent, type MouseEvent } from 'react';
 import { Button, Form } from 'react-bootstrap';
 import '../styles/veterinaryRegistration.modules.css';
-import { VeterinaryPracticeCreateSchema } from '../schemas/ZodSchemas';
+import { VeterinaryPracticeCreateSchema } from '../../../shared/schemas/ZodSchemas';
 
 export const Route = createFileRoute('/veterinaryRegistration')({
     component: veterinaryRegistration,
