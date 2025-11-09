@@ -1,12 +1,40 @@
 
 .card {
     margin-top: 2em;
-    width: 60%;
-    min-width: 15em;
+    width: 80%;
+    min-width: 770px;
+    max-width: 1000px;
+    display: flex;
+    flex-direction: row;
 }
 
 #VeterinaryPracticeList {
     display: flex;
     flex-direction: column;
     align-items: center;
+}
+
+#BackwardButton, #ForwardButton {
+    align-self: flex-start;
+    margin-left: 12px;
+}
+
+#PraxisInfos {
+    min-width: 180px;
+}
+
+#TerminInfos {
+    min-width: 400px;
+    max-width: 560px;
+    margin-left: auto;
+}
+
+@media (max-width: 860px) {
+    #TerminInfos {
+        display: none; /* Blendet das Element aus */
+    }
+
+    .card {
+        min-width: 200px;
+    }
 }

@@ -32,11 +32,12 @@ export function VeterinaryPracticeList() {
       return (
         <div id="VeterinaryPracticeList">
           {data.map((praxis) => {
-            return <VeterinaryPracticeCard key={praxis.id} praxis={praxis} />
+            return <VeterinaryPracticeCard key={praxis.id} praxis={praxis}/>
           })}
         </div>
       )
     } else {
+      //return <Link to="/praxen/$praxisId" params={{praxisId: "123"}}>click</Link>
       return <div>Keine Suchergebnisse gefunden</div>
     }
   }
