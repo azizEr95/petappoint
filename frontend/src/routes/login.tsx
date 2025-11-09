@@ -51,13 +51,11 @@ function Login() {
 
     return <div className='loginSite'>
         <div className='text-center'>Login</div>
-       
             <Form className='loginFormular'>
                 <Form.Group className="mb-3"><Form.Control id="LoginDialogUserIDText" type="text" placeholder="E-Mail" name="email" onChange={handleChange} value={email} /></Form.Group>
                 <Form.Group className="mb-3"><Form.Control id="LoginDialogUserIDPassword" type="password" placeholder="Password" name="password" onChange={handleChange} value={password} /></Form.Group>
                 <Button id="PerformLoginButton" variant="primary" type="submit" onClick={handleSubmit}>Login</Button>
             </Form>
-      
         
             <div className="card card-body loginOption">
                 <div className="card-text text-center">Neu bei vetlib?</div>
