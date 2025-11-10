@@ -1,8 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import 'bootstrap/dist/css/bootstrap.min.css'
-import { Search } from '../components/Search'
-import { VeterinaryPracticeList } from '../components/VeterinaryPracticeList'
-import {useState, type JSX } from 'react'
+import { SearchField } from '../components/SearchField'
 
 export const Route = createFileRoute('/')({
   component: App,
@@ -10,18 +8,12 @@ export const Route = createFileRoute('/')({
 
 
 function App() {
-  let [praxisList, setPraxisList] = useState<JSX.Element | null>(null);
-
-  const showPraxisList = () => {
-    setPraxisList(<VeterinaryPracticeList />);
-  }
-
-
+  
   return (
     <div className='background-green'>
       <div className="text-center">vetlib</div>
-      <Search showPraxisList={showPraxisList}/>
-      {praxisList}
+      <SearchField searchNameBeginn='' searchOrtBeginn=''/>
+      {/* hier sind weitere Inhalte auf der LandingPage */}
     </div>
 
   )

@@ -4,11 +4,11 @@ import '../styles/nextAvailableAppointments.modules.css';
 import { useState } from "react";
 
 
-type NextAvailableAppointments = {
+type NextAvailableAppointmentsProps = {
     praxisID: number
 }
 
-export function NextAvailableAppointments({ praxisID}: NextAvailableAppointments) { //praxisID zum irgendwie bei Abfrage uebergeben werden
+export function NextAvailableAppointments({ praxisID}: NextAvailableAppointmentsProps) { //praxisID zum irgendwie bei Abfrage uebergeben werden
     let [dateAnsicht, setDateAnsicht] = useState(new Date());
     
     //erstmal zum Testen:

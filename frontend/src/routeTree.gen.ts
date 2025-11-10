@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as VeterinaryRegistrationRouteImport } from './routes/veterinaryRegistration'
+import { Route as SearchRouteImport } from './routes/search'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AppointmentsRouteImport } from './routes/appointments'
 import { Route as IndexRouteImport } from './routes/index'
@@ -18,6 +19,11 @@ import { Route as PraxenPraxisIdRouteImport } from './routes/praxen/$praxisId'
 const VeterinaryRegistrationRoute = VeterinaryRegistrationRouteImport.update({
   id: '/veterinaryRegistration',
   path: '/veterinaryRegistration',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SearchRoute = SearchRouteImport.update({
+  id: '/search',
+  path: '/search',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -45,6 +51,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/appointments': typeof AppointmentsRoute
   '/login': typeof LoginRoute
+  '/search': typeof SearchRoute
   '/veterinaryRegistration': typeof VeterinaryRegistrationRoute
   '/praxen/$praxisId': typeof PraxenPraxisIdRoute
 }
@@ -52,6 +59,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/appointments': typeof AppointmentsRoute
   '/login': typeof LoginRoute
+  '/search': typeof SearchRoute
   '/veterinaryRegistration': typeof VeterinaryRegistrationRoute
   '/praxen/$praxisId': typeof PraxenPraxisIdRoute
 }
@@ -60,6 +68,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/appointments': typeof AppointmentsRoute
   '/login': typeof LoginRoute
+  '/search': typeof SearchRoute
   '/veterinaryRegistration': typeof VeterinaryRegistrationRoute
   '/praxen/$praxisId': typeof PraxenPraxisIdRoute
 }
@@ -69,6 +78,7 @@ export interface FileRouteTypes {
     | '/'
     | '/appointments'
     | '/login'
+    | '/search'
     | '/veterinaryRegistration'
     | '/praxen/$praxisId'
   fileRoutesByTo: FileRoutesByTo
@@ -76,6 +86,7 @@ export interface FileRouteTypes {
     | '/'
     | '/appointments'
     | '/login'
+    | '/search'
     | '/veterinaryRegistration'
     | '/praxen/$praxisId'
   id:
@@ -83,6 +94,7 @@ export interface FileRouteTypes {
     | '/'
     | '/appointments'
     | '/login'
+    | '/search'
     | '/veterinaryRegistration'
     | '/praxen/$praxisId'
   fileRoutesById: FileRoutesById
@@ -91,6 +103,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppointmentsRoute: typeof AppointmentsRoute
   LoginRoute: typeof LoginRoute
+  SearchRoute: typeof SearchRoute
   VeterinaryRegistrationRoute: typeof VeterinaryRegistrationRoute
   PraxenPraxisIdRoute: typeof PraxenPraxisIdRoute
 }
@@ -102,6 +115,13 @@ declare module '@tanstack/react-router' {
       path: '/veterinaryRegistration'
       fullPath: '/veterinaryRegistration'
       preLoaderRoute: typeof VeterinaryRegistrationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/search': {
+      id: '/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof SearchRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -139,6 +159,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppointmentsRoute: AppointmentsRoute,
   LoginRoute: LoginRoute,
+  SearchRoute: SearchRoute,
   VeterinaryRegistrationRoute: VeterinaryRegistrationRoute,
   PraxenPraxisIdRoute: PraxenPraxisIdRoute,
 }
