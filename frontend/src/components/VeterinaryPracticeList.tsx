@@ -2,11 +2,13 @@ import { useQuery } from '@tanstack/react-query'
 import { getVeterinaryPracticesByNameAddress } from '../api/VeterinaryPracticeAPI'
 import { VeterinaryPracticeCard } from './VeterinaryPracticeCard'
 import type { VeterinaryPracticesType } from '../../../shared/schemas/ZodSchemas'
-import { useStore } from '../stores/store';
 
+type VeterinaryPracticeListProps = {
+  searchName: string,
+  searchOrt: string
+}
 
-export function VeterinaryPracticeList() {
-  const { searchName, searchOrt } = useStore();
+export function VeterinaryPracticeList({ searchName, searchOrt }: VeterinaryPracticeListProps) {
 
   //const queryClient = useQueryClient() //wird fuer useMutation benoetigt
 

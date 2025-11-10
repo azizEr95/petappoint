@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate, useRouterState } from '@tanstack/react-router'
+import { createFileRoute, useRouterState } from '@tanstack/react-router'
 import { NextAvailableAppointments } from '../../components/NextAvailableAppointments'
 import '../../styles/praxisPage.modules.css';
 import { Button } from 'react-bootstrap';
@@ -9,16 +9,16 @@ export const Route = createFileRoute('/praxen/$praxisId')({
 
 function VeterinaryPractice() {
   const routerState = useRouterState()
-  const navigate = useNavigate();
   //const { praxisId } = Route.useParams()
 
   const praxis = routerState.location.state.praxis;
 
   const handleClickBack = () => {
-    navigate({to: "/"})
+    //navigate({to: "/"})
+    window.history.back();
   }
 
-  if(praxis === undefined){ //falls keine Praxisdaten in State diese neu vom Backend laden, wenn es Praxis nicht gibt auch entsprechend anzeigen
+  if (praxis === undefined) { //falls keine Praxisdaten in State diese neu vom Backend laden, wenn es Praxis nicht gibt auch entsprechend anzeigen
     //... mit useQuery Praxis laden mit ID
     //in Varibale praxis speichern
     //wenn es Praxis nicht gibt 404 oder irgendein anderen Text anzeigen
