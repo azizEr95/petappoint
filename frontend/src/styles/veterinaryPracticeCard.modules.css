@@ -1,5 +1,5 @@
 
-.card {
+.PraxisCard {
     margin-top: 2em;
     width: 80%;
     min-width: 770px;
@@ -34,7 +34,7 @@
         display: none; /* Blendet das Element aus */
     }
 
-    .card {
+    .PraxisCard {
         min-width: 200px;
     }
 }

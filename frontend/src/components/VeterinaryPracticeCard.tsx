@@ -25,7 +25,7 @@ export function VeterinaryPracticeCard({ praxis }: VeterinaryPracticeCardProps) 
         })
     }
 
-    return <div id={"" + praxis.id} className="card card-body" >
+    return <div id={"" + praxis.id} className="card card-body PraxisCard" >
         <div id='PraxisInfos' onClick={openPraxisPage}>
             <h5 className="card-title">{praxis.name}</h5>
             <div className="card-text">{praxis.info}</div>

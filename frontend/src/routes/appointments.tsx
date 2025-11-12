@@ -7,5 +7,5 @@ export const Route = createFileRoute('/appointments')({
 function Appoinments() {
 
   
-  return <div className='text-center background-green'>Hello, du bist eingeloggt, hier stehen die anstehenden Termine</div>;
+  return <div className='text-center background-green'>Hello, hier stehen deine anstehenden Termine</div>;
 }
