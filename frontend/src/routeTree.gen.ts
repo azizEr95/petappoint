@@ -14,7 +14,8 @@ import { Route as SearchRouteImport } from './routes/search'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AppointmentsRouteImport } from './routes/appointments'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as PraxenPraxisIdRouteImport } from './routes/praxen/$praxisId'
+import { Route as PraxenPraxisIdIndexRouteImport } from './routes/praxen/$praxisId/index'
+import { Route as PraxenPraxisIdBookingTerminIdRouteImport } from './routes/praxen/$praxisId/booking/$terminId'
 
 const VeterinaryRegistrationRoute = VeterinaryRegistrationRouteImport.update({
   id: '/veterinaryRegistration',
@@ -41,11 +42,17 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PraxenPraxisIdRoute = PraxenPraxisIdRouteImport.update({
-  id: '/praxen/$praxisId',
-  path: '/praxen/$praxisId',
+const PraxenPraxisIdIndexRoute = PraxenPraxisIdIndexRouteImport.update({
+  id: '/praxen/$praxisId/',
+  path: '/praxen/$praxisId/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PraxenPraxisIdBookingTerminIdRoute =
+  PraxenPraxisIdBookingTerminIdRouteImport.update({
+    id: '/praxen/$praxisId/booking/$terminId',
+    path: '/praxen/$praxisId/booking/$terminId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -53,7 +60,8 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/search': typeof SearchRoute
   '/veterinaryRegistration': typeof VeterinaryRegistrationRoute
-  '/praxen/$praxisId': typeof PraxenPraxisIdRoute
+  '/praxen/$praxisId': typeof PraxenPraxisIdIndexRoute
+  '/praxen/$praxisId/booking/$terminId': typeof PraxenPraxisIdBookingTerminIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -61,7 +69,8 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/search': typeof SearchRoute
   '/veterinaryRegistration': typeof VeterinaryRegistrationRoute
-  '/praxen/$praxisId': typeof PraxenPraxisIdRoute
+  '/praxen/$praxisId': typeof PraxenPraxisIdIndexRoute
+  '/praxen/$praxisId/booking/$terminId': typeof PraxenPraxisIdBookingTerminIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -70,7 +79,8 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/search': typeof SearchRoute
   '/veterinaryRegistration': typeof VeterinaryRegistrationRoute
-  '/praxen/$praxisId': typeof PraxenPraxisIdRoute
+  '/praxen/$praxisId/': typeof PraxenPraxisIdIndexRoute
+  '/praxen/$praxisId/booking/$terminId': typeof PraxenPraxisIdBookingTerminIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -81,6 +91,7 @@ export interface FileRouteTypes {
     | '/search'
     | '/veterinaryRegistration'
     | '/praxen/$praxisId'
+    | '/praxen/$praxisId/booking/$terminId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -89,6 +100,7 @@ export interface FileRouteTypes {
     | '/search'
     | '/veterinaryRegistration'
     | '/praxen/$praxisId'
+    | '/praxen/$praxisId/booking/$terminId'
   id:
     | '__root__'
     | '/'
@@ -96,7 +108,8 @@ export interface FileRouteTypes {
     | '/login'
     | '/search'
     | '/veterinaryRegistration'
-    | '/praxen/$praxisId'
+    | '/praxen/$praxisId/'
+    | '/praxen/$praxisId/booking/$terminId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -105,7 +118,8 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   SearchRoute: typeof SearchRoute
   VeterinaryRegistrationRoute: typeof VeterinaryRegistrationRoute
-  PraxenPraxisIdRoute: typeof PraxenPraxisIdRoute
+  PraxenPraxisIdIndexRoute: typeof PraxenPraxisIdIndexRoute
+  PraxenPraxisIdBookingTerminIdRoute: typeof PraxenPraxisIdBookingTerminIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -145,11 +159,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/praxen/$praxisId': {
-      id: '/praxen/$praxisId'
+    '/praxen/$praxisId/': {
+      id: '/praxen/$praxisId/'
       path: '/praxen/$praxisId'
       fullPath: '/praxen/$praxisId'
-      preLoaderRoute: typeof PraxenPraxisIdRouteImport
+      preLoaderRoute: typeof PraxenPraxisIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/praxen/$praxisId/booking/$terminId': {
+      id: '/praxen/$praxisId/booking/$terminId'
+      path: '/praxen/$praxisId/booking/$terminId'
+      fullPath: '/praxen/$praxisId/booking/$terminId'
+      preLoaderRoute: typeof PraxenPraxisIdBookingTerminIdRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -161,7 +182,8 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   SearchRoute: SearchRoute,
   VeterinaryRegistrationRoute: VeterinaryRegistrationRoute,
-  PraxenPraxisIdRoute: PraxenPraxisIdRoute,
+  PraxenPraxisIdIndexRoute: PraxenPraxisIdIndexRoute,
+  PraxenPraxisIdBookingTerminIdRoute: PraxenPraxisIdBookingTerminIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

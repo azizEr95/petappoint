@@ -14,6 +14,7 @@
 }
 
 #PraxisPage {
+    position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -21,10 +22,4 @@
 
 .praxisPageText {
     margin-top: 1em;
-}
-
-#BackButtonPraxisPage {
-    margin-right: auto;
-    margin-left: 3em;
-    margin-top: 3em;
 }

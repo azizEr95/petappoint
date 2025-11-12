@@ -1,0 +1,30 @@
+
+#BookingPage {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#BookingAuswahlInfos {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+#TerminInfosUebersicht {
+    display: flex;
+    flex-direction: column;
+    margin-left: 3em;
+    max-height: 250px;
+
+}
+#bookAppointment {
+    margin: 2em;
+    margin-bottom: 5em;
+}
+
+#HeaderBookingPage {
+    display: flex;
+    flex-direction: row;
+}

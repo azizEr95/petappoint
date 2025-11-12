@@ -1,0 +1,9 @@
+#terminArtDropdown {
+    text-align: center;
+    align-items: center;
+    padding: 1em;
+    position: static;
+    width: 350px;
+    min-height: 300px;
+    max-height: 300px;
+}

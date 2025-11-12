@@ -1,0 +1,17 @@
+
+
+
+#tierList {
+    text-align: center;
+    align-items: center;
+    padding: 1em;
+    position: static;
+    width: 230px;
+    min-height: 300px;
+    max-height: 300px;
+
+}
+
+.tierCheckbox {
+    margin-right: 1em;
+}

@@ -2,61 +2,70 @@ import { Button } from "react-bootstrap";
 import type { AppointmentsType } from "../../../shared/schemas/ZodSchemas"
 import '../styles/nextAvailableAppointments.modules.css';
 import { useState } from "react";
+import { useNavigate } from "@tanstack/react-router";
 
 
 type NextAvailableAppointmentsProps = {
     praxisID: number
 }
 
-export function NextAvailableAppointments({ praxisID}: NextAvailableAppointmentsProps) { //praxisID zum irgendwie bei Abfrage uebergeben werden
+export function NextAvailableAppointments({ praxisID }: NextAvailableAppointmentsProps) { //praxisID zum irgendwie bei Abfrage uebergeben werden
     let [dateAnsicht, setDateAnsicht] = useState(new Date());
-    
+    const navigate = useNavigate();
+
     //erstmal zum Testen:
     const isSuccess = true;
     const data: AppointmentsType[] = [{
         id: 1,
-        starttime: new Date("2025-11-10T10:00:00"),
-        endtime: new Date("2025-11-10T11:00:00"),
+        starttime: new Date("2025-11-18T10:00:00"),
+        endtime: new Date("2025-11-18T11:00:00"),
         fk_veterinaryid: 1,
         fk_veterinarypracticeid: 2,
         fk_animalid: undefined
     },
     {
         id: 2,
-        starttime: new Date("2025-11-11T10:00:00"),
-        endtime: new Date("2025-11-11T11:00:00"),
+        starttime: new Date("2025-11-20T13:00:00"),
+        endtime: new Date("2025-11-20T14:00:00"),
         fk_veterinaryid: 1,
         fk_veterinarypracticeid: 2,
         fk_animalid: undefined
     },
     {
         id: 3,
-        starttime: new Date("2025-11-09T10:00:00"),
-        endtime: new Date("2025-11-09T11:00:00"),
+        starttime: new Date("2025-11-13T10:15:00"),
+        endtime: new Date("2025-11-13T11:00:00"),
         fk_veterinaryid: 1,
         fk_veterinarypracticeid: 2,
         fk_animalid: undefined
     },
     {
         id: 4,
-        starttime: new Date("2025-11-02T10:00:00"),
-        endtime: new Date("2025-11-02T11:00:00"),
+        starttime: new Date("2025-11-15T10:00:00"),
+        endtime: new Date("2025-11-15T11:00:00"),
         fk_veterinaryid: 1,
         fk_veterinarypracticeid: 2,
         fk_animalid: undefined
     },
     {
         id: 5,
-        starttime: new Date("2025-11-09T10:30:00"),
-        endtime: new Date("2025-11-09T11:00:00"),
+        starttime: new Date("2025-11-16T10:30:00"),
+        endtime: new Date("2025-11-16T11:00:00"),
         fk_veterinaryid: 1,
         fk_veterinarypracticeid: 2,
         fk_animalid: undefined
     },
     {
-        id: 5,
-        starttime: new Date("2025-11-11T20:30:00"),
-        endtime: new Date("2025-11-11T21:00:00"),
+        id: 6,
+        starttime: new Date("2025-11-14T20:30:00"),
+        endtime: new Date("2025-11-14T21:00:00"),
+        fk_veterinaryid: 1,
+        fk_veterinarypracticeid: 2,
+        fk_animalid: undefined
+    },{
+        id: 7,
+        starttime: new Date("2025-11-18T11:00:00"),
+        endtime: new Date("2025-11-18T12:00:00"),
         fk_veterinaryid: 1,
         fk_veterinarypracticeid: 2,
         fk_animalid: undefined
@@ -85,6 +94,21 @@ export function NextAvailableAppointments({ praxisID}: NextAvailableAppointments
         if (newDate < now) {
             return true;
         }
+    }
+
+    const handleBookAppiontment = (termin: AppointmentsType) => {
+        console.log("Termin:" + termin.id)
+        //navigiert zur Buchungsseite fuer den Termin
+        navigate({
+            "to": "/praxen/$praxisId/booking/$terminId",
+            params: {
+                praxisId: termin.fk_veterinarypracticeid.toString(),
+                terminId: termin.id.toString()
+            },
+            state: {
+                termin: termin
+            }
+        });
     }
 
     if (isSuccess) {
@@ -123,36 +147,36 @@ export function NextAvailableAppointments({ praxisID}: NextAvailableAppointments
         let anzeigeDate3 = new Date(dateKopie.setDate(dateKopie.getDate() + 1));
         let anzeigeDate4 = new Date(dateKopie.setDate(dateKopie.getDate() + 1));
         let anzeigeDate5 = new Date(dateKopie.setDate(dateKopie.getDate() + 1));
-        return (<div id ="TerminAuswahl" className="flex-row">
+        return (<div id="TerminAuswahl" className="flex-row">
             <Button id="BackwardButton" variant="outline-secondary" onClick={handleBackwardTermin} disabled={backwordPossibleTermin()}><i className="bi bi-arrow-left-short"></i></Button>
             <div className="TerminDate">
                 {dateToDateString(anzeigeDate1)}
                 {termineTage[0].map((termin) => {
-                    return <Button key={praxisID + termin.id} className="ButtonTermin">{dateToTimeString(termin.starttime)}</Button>
+                    return <Button key={praxisID + termin.id} className="ButtonTermin" onClick={() => handleBookAppiontment(termin)}>{dateToTimeString(termin.starttime)}</Button>
                 })}
             </div>
             <div className="TerminDate">
                 {dateToDateString(anzeigeDate2)}
                 {termineTage[1].map((termin) => {
-                    return <Button key={praxisID + termin.id} className="ButtonTermin">{dateToTimeString(termin.starttime)}</Button>
+                    return <Button key={praxisID + termin.id} className="ButtonTermin" onClick={() => handleBookAppiontment(termin)}>{dateToTimeString(termin.starttime)}</Button>
                 })}
             </div>
             <div className="TerminDate">
                 {dateToDateString(anzeigeDate3)}
                 {termineTage[2].map((termin) => {
-                    return <Button key={praxisID + termin.id} className="ButtonTermin">{dateToTimeString(termin.starttime)}</Button>
+                    return <Button key={praxisID + termin.id} className="ButtonTermin" onClick={() => handleBookAppiontment(termin)}>{dateToTimeString(termin.starttime)}</Button>
                 })}
             </div>
             <div className="TerminDate">
                 {dateToDateString(anzeigeDate4)}
                 {termineTage[3].map((termin) => {
-                    return <Button key={praxisID + termin.id} className="ButtonTermin">{dateToTimeString(termin.starttime)}</Button>
+                    return <Button key={praxisID + termin.id} className="ButtonTermin" onClick={() => handleBookAppiontment(termin)}>{dateToTimeString(termin.starttime)}</Button>
                 })}
             </div>
             <div className="TerminDate">
                 {dateToDateString(anzeigeDate5)}
                 {termineTage[4].map((termin) => {
-                    return <Button key={praxisID + termin.id} className="ButtonTermin">{dateToTimeString(termin.starttime)}</Button>
+                    return <Button key={praxisID + termin.id} className="ButtonTermin" onClick={() => handleBookAppiontment(termin)}>{dateToTimeString(termin.starttime)}</Button>
                 })}
             </div>
             <Button id="ForwardButton" variant="outline-secondary" onClick={handleForwardTermin}><i className="bi bi-arrow-right-short"></i></Button>

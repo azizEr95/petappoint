@@ -6,6 +6,7 @@
 .text-center {
     text-align: center;
     padding: 0.5em;
+    font-weight: bold;
 }
 
 .background-green {
@@ -21,5 +22,15 @@
 .flex-row {
     display: flex;
     flex-direction: row;
+}
+
+.ueberschrift {
+    font-weight: bold;
+}
+
+.backButton {
+    position: absolute;
+    top: 20px;
+    left: 30px;
 }
 
