@@ -1,27 +1,10 @@
 import { prisma } from "../singletonPC";
 import { veterinarypractices } from "../../generated/prisma";
 import type { VeterinaryPracticesType } from "../../../shared/schemas/ZodSchemas";
-
-type veterinaryPracticeWithAdress = {
-  name: string,
-  phone: string,
-  infoemail: string,
-  email: string,
-  password: string,
-  website: string,
-  info: string,
-  addresses: {
-    street: string,
-    citycode: string,
-    city: string,
-    country: string,
-    longitude: number,
-    latitude: number
-  }
-}
+import type { VeterinaryPracticesCreateType } from "../../../shared/schemas/ZodSchemas";
 
 export const veterinaryPracticeService = {
-  async create(veterinaryPracticeRe: veterinaryPracticeWithAdress): Promise<veterinarypractices> {
+  async create(veterinaryPracticeRe: VeterinaryPracticesCreateType): Promise<veterinarypractices> {
     return await prisma.veterinarypractices.create({
       data: {
         name: veterinaryPracticeRe.name,
