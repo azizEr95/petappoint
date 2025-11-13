@@ -13,8 +13,8 @@ veterinaryPracticeRouter.get("/all",
 )
 
 const searchQuerySchema = z.object({
-  name: z.string().default(''),
-  address: z.string().default(''),
+    name: z.string().default(''),
+    address: z.string().default(''),
 });
 
 veterinaryPracticeRouter.get('/search',
@@ -26,6 +26,13 @@ veterinaryPracticeRouter.get('/search',
 
         const allVeterinaries: veterinarypractices[] = await veterinaryPracticeService.getByNameOrAdress(parsed.data.name, parsed.data.address);
         return res.send(allVeterinaries);
+    }
+)
+
+veterinaryPracticeRouter.get('/:id',
+    async (req, res) => {
+        const veterinaryPractice = await veterinaryPracticeService.getById(req.params.id);
+        return res.send(veterinaryPractice);
     }
 )
 

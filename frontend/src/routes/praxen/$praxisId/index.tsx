@@ -1,26 +1,38 @@
-import { createFileRoute, useRouterState } from '@tanstack/react-router'
+import { createFileRoute, useNavigate, useRouterState } from '@tanstack/react-router'
 import { NextAvailableAppointments } from '../../../components/NextAvailableAppointments'
 import '../../../styles/praxisPage.modules.css';
 import { Button } from 'react-bootstrap';
+import { useQuery } from '@tanstack/react-query';
+import type { VeterinaryPracticesType } from '../../../../../shared/schemas/ZodSchemas';
+import { getVeterinaryPracticesById } from '../../../api/VeterinaryPracticeAPI'
 
 export const Route = createFileRoute('/praxen/$praxisId/')({
     component: VeterinaryPractice,
 })
 
 function VeterinaryPractice() {
-    const routerState = useRouterState()
-    //const { praxisId } = Route.useParams()
+    const routerState = useRouterState();
+    const { praxisId } = Route.useParams();
 
-    const praxis = routerState.location.state.praxis;
+    let praxis = routerState.location.state.praxis;
+
+    //Tierarztpraxis laden:
+    const { isError, isSuccess, data } = useQuery<VeterinaryPracticesType>({
+        queryKey: ['tierarztpraxen', praxisId],
+        queryFn: () => getVeterinaryPracticesById(praxisId)
+    })
+
+    if (isSuccess) {
+        praxis = data;
+    }
+
+    if (isError) {
+        praxis = undefined;
+    }
+
 
     const handleClickBack = () => {
         window.history.back();
-    }
-
-    if (praxis === undefined) { //falls keine Praxisdaten in State diese neu vom Backend laden, wenn es Praxis nicht gibt auch entsprechend anzeigen
-        //... mit useQuery Praxis laden mit ID
-        //in Varibale praxis speichern
-        //wenn es Praxis nicht gibt 404 oder irgendein anderen Text anzeigen
     }
 
     if (praxis !== undefined) {
@@ -41,7 +53,7 @@ function VeterinaryPractice() {
             </div>
         </div>
     } else {
-        return <div className='text-center'>direkter Zugriff auf Praxisseite, zusaetzlicher API Aufruf notig, Feature folgt noch</div>
+        //hier Fehler passiert, was anzeigen!?
+        return <div>Praxis auf PraxisPage undefined</div>
     }
-
 }

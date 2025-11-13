@@ -1,5 +1,6 @@
 import { prisma } from "../singletonPC";
 import { veterinarypractices } from "../../generated/prisma";
+import type { VeterinaryPracticesType } from "../../../shared/schemas/ZodSchemas";
 
 type veterinaryPracticeWithAdress = {
   name: string,
@@ -35,10 +36,19 @@ export const veterinaryPracticeService = {
     });
   },
 
-  async getById(id: number): Promise<veterinarypractices> {
-    const foundPractice = await prisma.veterinarypractices.findUnique({ where: { id } });
+  async getById(id: string): Promise<VeterinaryPracticesType> {
+    const foundPractice = await prisma.veterinarypractices.findUnique({
+      include: {
+        addresses: true
+      },
+      where: {
+        id: parseInt(id)
+      }
+    });
 
-    if (!foundPractice) throw new Error(`Veterinary Practice not found with id: ${id}`);
+    if (!foundPractice) {
+      throw new Error(`Veterinary Practice not found with id: ${id}`);
+    }
 
     return foundPractice;
   },

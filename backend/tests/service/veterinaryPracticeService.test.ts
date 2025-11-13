@@ -44,7 +44,7 @@ describe("veterinaryPracticeService", () => {
     it("sollte eine Tierarztpraxis anhand der ID finden", async () => {
       prismaMock.veterinarypractices.findUnique.mockResolvedValue(mockPractice);
 
-      const result = await veterinaryPracticeService.getById(1);
+      const result = await veterinaryPracticeService.getById("1");
 
       expect(result).toEqual(mockPractice);
       expect(prismaMock.veterinarypractices.findUnique).toHaveBeenCalledWith({
@@ -55,7 +55,7 @@ describe("veterinaryPracticeService", () => {
     it("sollte einen Fehler werfen, wenn die Tierarztpraxis nicht gefunden wird", async () => {
       prismaMock.veterinarypractices.findUnique.mockResolvedValue(null);
 
-      await expect(veterinaryPracticeService.getById(999)).rejects.toThrow(
+      await expect(veterinaryPracticeService.getById("999")).rejects.toThrow(
         "Veterinary Practice not found with id: 999"
       );
     });
@@ -83,7 +83,7 @@ describe("veterinaryPracticeService", () => {
   });
 
   describe("getByAddress", () => {
-    it("sollte alle Tierarztpraxen einer Adresse finden", async () => {
+    it("sollte alle Tierarztpraxen mit dem Namen finden", async () => {
       const mockPractices = [
         mockPractice,
         { ...mockPractice, id: 2, name: "Tierarztpraxis Nord", email: "nord@praxis.de" },
@@ -91,7 +91,20 @@ describe("veterinaryPracticeService", () => {
 
       prismaMock.veterinarypractices.findMany.mockResolvedValue(mockPractices);
 
-      const result = await veterinaryPracticeService.getByNameOrAdress("Tierarztpraxis Mitte");
+      const result = await veterinaryPracticeService.getByNameOrAdress("Tierarztpraxis Mitte", "");
+
+      expect(result).toEqual(mockPractices);
+    });
+
+    it("sollte alle Tierarztpraxen der Adresse finden", async () => {
+      const mockPractices = [
+        mockPractice,
+        { ...mockPractice, id: 2, name: "Tierarztpraxis Nord", email: "nord@praxis.de", },
+      ];
+
+      prismaMock.veterinarypractices.findMany.mockResolvedValue(mockPractices);
+
+      const result = await veterinaryPracticeService.getByNameOrAdress("", "adresse");
 
       expect(result).toEqual(mockPractices);
     });
@@ -99,7 +112,9 @@ describe("veterinaryPracticeService", () => {
     it("sollte ein leeres Array zurückgeben, wenn keine Tierarztpraxen an der Adresse gefunden werden", async () => {
       prismaMock.veterinarypractices.findMany.mockResolvedValue([]);
 
-      const result = await veterinaryPracticeService.getByNameOrAdress("miau");
+      const result = await veterinaryPracticeService.getByNameOrAdress("miau", "wau"
+
+      );
 
       expect(result).toEqual([]);
       expect(result.length).toBe(0);

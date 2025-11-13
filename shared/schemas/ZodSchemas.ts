@@ -143,8 +143,8 @@ export const VeterinaryPracticeSchema = z.object({
     password: z.string().min(6).max(255),
     phone: z.string().min(5).max(20),
     infoemail: z.email().max(100),
-    website: z.url().max(150).optional(),
-    info: z.string().optional(),
+    website: z.url().max(150).nullable(),
+    info: z.string().nullable(),
     addresses: AddressesSchema
 })
 

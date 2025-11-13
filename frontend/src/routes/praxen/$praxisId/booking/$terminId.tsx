@@ -4,7 +4,9 @@ import '../../../../styles/bookingPage.modules.css';
 import { useState } from 'react';
 import { SelectAppointmentType } from '../../../../components/SelectAppointmentType';
 import { SelectAnimal } from '../../../../components/SelectAnimal';
-import type { AnimalsType, AppointmentsType } from '../../../../../../shared/schemas/ZodSchemas';
+import type { AnimalsType, AppointmentsType, VeterinaryPracticesType } from '../../../../../../shared/schemas/ZodSchemas';
+import { useQuery } from '@tanstack/react-query';
+import { getVeterinaryPracticesById } from '../../../../api/VeterinaryPracticeAPI';
 
 export const Route = createFileRoute('/praxen/$praxisId/booking/$terminId')({
     component: BookingComponent,
@@ -19,7 +21,7 @@ enum StatusBooking {
 function BookingComponent() {
     const routerState = useRouterState();
     const navigate = useNavigate();
-    //const { terminId } = Route.useParams()
+    const { praxisId, terminId } = Route.useParams()
     const [selectedTerminArt, setSelectedTerminArt] = useState(""); // ausgewaehlte Terminart, bei leerem String wurde noch ncihts ausgewaehlt
     const [selectedAnimal, setSelectedAnimal] = useState<AnimalsType | null>(null); //aktuell ausgewaehltes Tier, bei null ist keins ausgewaehlt
     const [status, setStatus] = useState<StatusBooking>(StatusBooking.selectTerminArt); //Status im Terminbuchungsprozess, damit wird gesteuert was gerade angezeigt wird
@@ -30,8 +32,20 @@ function BookingComponent() {
         //Termin mit Backendabfrage laden (weil direkter Zugriff auf URL)
     }
 
-    //Daten der Praxis abfragen, damit diese angezeigt werden koennen, endpoint wird dazu benoetigt (folgt spaeter)
-    //const praxis = undefined;
+    //Tierarztpraxen laden:
+    let praxis: VeterinaryPracticesType | undefined;
+    const { isError, isSuccess, data } = useQuery<VeterinaryPracticesType>({
+        queryKey: ['tierarztpraxen', praxisId],
+        queryFn: () => getVeterinaryPracticesById(praxisId)
+    })
+
+    if (isSuccess) {
+        praxis = data;
+    }
+
+    if (isError) {
+        praxis = undefined;
+    }
 
     const handleClickBack = () => {
         //einmal auf der seite zurueck
@@ -68,7 +82,7 @@ function BookingComponent() {
         setSelectedAnimal(animal);
     }
 
-    if (termin !== undefined) {
+    if (termin !== undefined && praxis !== undefined) {
         let aktuelleAnzeige;
         let submitButton;
         switch (status) {
@@ -93,9 +107,9 @@ function BookingComponent() {
                 {aktuelleAnzeige}
 
                 <div id='TerminInfosUebersicht' className="card card-body">
-                    <h5 className="praxisPageText">Praxisname und Arztname</h5>
+                    <h5 className="praxisPageText">{praxis.name}</h5>
                     <div className="praxisPageText">Ihre Termindetails:</div>
-                    <div className="praxisPageText">- Straße Hausnr,PLZ Stadt</div>
+                    <div className="praxisPageText">- {praxis.addresses.street}, {praxis.addresses.citycode} {praxis.addresses.city}</div>
                     <div className="praxisPageText">- {dateToInfosString(termin.starttime)}</div>
                     {selectedTerminArt !== "" && <div className="praxisPageText">- {selectedTerminArt}</div>}
                 </div>
@@ -103,7 +117,8 @@ function BookingComponent() {
             {submitButton}
         </div>;
     } else {
-        return <div className='text-center'>direkter Zugriff auf Terminbuchung, zusaetzlicher API Aufruf notig, Feature folgt noch</div>;
+        return <div>praxis oder termin auf BookingPage undefined</div>
+        //navigate({to: "/"})
     }
 }
 
