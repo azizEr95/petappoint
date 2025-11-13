@@ -80,17 +80,17 @@ VALUES
   /* 05 */ ('Farm');
 
 -- animals
-INSERT INTO animals (name, dateOfBirth, dateOfBirthIsExact, weightInGram, heightInCm, timeOfDeath, isCastrated, lifestyle, fk_animalTypeId, fk_animalGroupId)
+INSERT INTO animals (name, dateOfBirth, dateOfBirthIsExact, weightInGram, heightInCm, timeOfDeath, isCastrated, lifestyle, sex, fk_animalTypeId, fk_animalGroupId)
 VALUES
   /* id */
-  /* 01 */ ('Bambi', DATE '2021-01-13', TRUE, 4000, NULL, NULL, TRUE, 'indoor', 2, NULL),
-  /* 02 */ ('Maya', DATE '2020-09-30', TRUE, 4300, NULL, NULL, TRUE, 'indoor', 2, NULL),
-  /* 03 */ ('Huhn 1', NULL, FALSE, NULL, NULL, NULL, TRUE, 'organic', 7, NULL),
-  /* 04 */ ('Huhn 2', NULL, FALSE, NULL, NULL, NULL, TRUE, 'organic', 7, NULL),
-  /* 05 */ ('Huhn 3', NULL, FALSE, NULL, NULL, NULL, TRUE, 'organic', 7, NULL),
-  /* 06 */ ('Huhn 4', NULL, FALSE, NULL, NULL, NULL, TRUE, 'organic', 7, NULL),
-  /* 07 */ ('Huhn 5', NULL, FALSE, NULL, NULL, NULL, TRUE, 'organic', 7, NULL),
-  /* 08 */ ('Cookie', '2022-09-20', FALSE, 97000, 197, NULL, TRUE, 'organic', 2, NULL);
+  /* 01 */ ('Bambi', DATE '2021-01-13', TRUE, 4000, NULL, NULL, TRUE, 'indoor', 'female', 2, NULL),
+  /* 02 */ ('Maya', DATE '2020-09-30', TRUE, 4300, NULL, NULL, TRUE, 'indoor', 'female', 2, NULL),
+  /* 03 */ ('Huhn 1', NULL, FALSE, NULL, NULL, NULL, TRUE, 'organic', 'female', 7, NULL),
+  /* 04 */ ('Huhn 2', NULL, FALSE, NULL, NULL, NULL, TRUE, 'organic', 'female', 7, NULL),
+  /* 05 */ ('Huhn 3', NULL, FALSE, NULL, NULL, NULL, TRUE, 'organic', 'female', 7, NULL),
+  /* 06 */ ('Huhn 4', NULL, FALSE, NULL, NULL, NULL, TRUE, 'organic', 'female', 7, NULL),
+  /* 07 */ ('Huhn 5', NULL, FALSE, NULL, NULL, NULL, TRUE, 'organic', 'female', 7, NULL),
+  /* 08 */ ('Cookie', '2022-09-20', FALSE, 97000, 197, NULL, TRUE, 'organic', 'notapplicable', 2, NULL);
 
 -- animal_has_races
 --

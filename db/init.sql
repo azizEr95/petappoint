@@ -62,6 +62,7 @@ CREATE TABLE IF NOT EXISTS animals(
   timeOfDeath DATE,
   isCastrated BOOLEAN,
   lifestyle husbandarySystem,
+  sex sexes NOT NULL DEFAULT 'notknown',
   fk_animalTypeId INTEGER NOT NULL REFERENCES animaltypes(id),
   fk_animalGroupId INTEGER REFERENCES animalgroup(id)
 );
