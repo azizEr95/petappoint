@@ -32,10 +32,10 @@ model animals {
   iscastrated            Boolean?
   lifestyle              husbandarysystem?
   fk_animaltypeid        Int
-  fk_animalgroupid       Int
+  fk_animalgroupid       Int?
   animal_has_races       animal_has_races[]
   animal_has_vaccination animal_has_vaccination[]
-  animalgroup            animalgroup              @relation(fields: [fk_animalgroupid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  animalgroup            animalgroup?             @relation(fields: [fk_animalgroupid], references: [id], onDelete: NoAction, onUpdate: NoAction)
   animaltypes            animaltypes              @relation(fields: [fk_animaltypeid], references: [id], onDelete: NoAction, onUpdate: NoAction)
   appointments           appointments[]
   person_has_animal      person_has_animal[]

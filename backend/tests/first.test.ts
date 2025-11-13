@@ -1,5 +1,5 @@
 import { Prisma, sexes } from "../generated/prisma";
-import { prismaMock } from "../testConfig/singleton";
+import { prismaMock } from "../testConfig/mockConfig";
 
 let createdAdresse: {
   id: number;

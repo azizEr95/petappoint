@@ -53,6 +53,16 @@ export const appointmentService = {
     });
   },
 
+  async getAppointmentsByPracticeId(veterinaryPracticeId: number): Promise<appointments[]> {
+    return await prisma.appointments.findMany({
+      where: { fk_veterinarypracticeid: veterinaryPracticeId, fk_animalid: null},
+      include: {
+        animals: true,
+        veterinaries: true,
+      },
+    });
+  },
+
   async getAll(): Promise<appointments[]> {
     return await prisma.appointments.findMany();
   },

@@ -1,7 +1,8 @@
 /** @type {import('ts-jest/dist/types').JestConfigWithTsJest} */
 module.exports = {
   preset: 'ts-jest',
-  testEnvironment: 'node',
+  testEnvironment: 'jsdom',
+  testEnvironmentOptions: { url: "http://localhost" },
   collectCoverage: true,
   reporters: [
     "default",
@@ -12,5 +13,5 @@ module.exports = {
   coverageReporters: ["cobertura","html","text","text-summary"],
   coveragePathIgnorePatterns: ["<rootDir>/dist/", "<rootDir>/node_modules/", "<rootDir>/tests/"],
   
-  setupFilesAfterEnv: ['<rootDir>/testConfig/singleton.ts'],
+  setupFilesAfterEnv: ['<rootDir>/testConfig/mockConfig.ts'],
 }
