@@ -25,8 +25,8 @@ export function VeterinaryPracticeCard({ praxis }: VeterinaryPracticeCardProps) 
         })
     }
 
-    return <div id={"" + praxis.id} className="card card-body PraxisCard" >
-        <div id='PraxisInfos' onClick={openPraxisPage}>
+    return <div className="card card-body PraxisCard" >
+        <div className='PraxisInfos' onClick={openPraxisPage}>
             <h5 className="card-title">{praxis.name}</h5>
             <div className="card-text">{praxis.info}</div>
             <div className="card-text">{praxis.addresses.street}</div>
@@ -36,8 +36,8 @@ export function VeterinaryPracticeCard({ praxis }: VeterinaryPracticeCardProps) 
             <div className="card-text">E-Mail: {praxis.infoemail}</div>
             <div className="card-text">{praxis.website}</div>
         </div>
-        <div id='TerminInfos' className='flex-row'>
-            <NextAvailableAppointments praxisID={praxis.id}></NextAvailableAppointments>
+        <div className='flex-row TerminInfos'>
+            <NextAvailableAppointments praxisID={praxis.id.toString()}></NextAvailableAppointments>
         </div>
     </div>
 }

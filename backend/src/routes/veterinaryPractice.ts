@@ -32,21 +32,25 @@ veterinaryPracticeRouter.get('/search',
 
 veterinaryPracticeRouter.get('/:id',
     async (req, res) => {
-        const veterinaryPractice = await veterinaryPracticeService.getById(req.params.id);
-        return res.send(veterinaryPractice);
+        try {
+            const veterinaryPractice = await veterinaryPracticeService.getById(req.params.id);
+            return res.send(veterinaryPractice);
+        } catch (ex) {
+            return res.sendStatus(404);
+        }
     }
 )
 
 
 veterinaryPracticeRouter.get('/:id/appointments',
     async (req, res) => {
-        const id: number = parseInt(req.params.id);
-        if (!id) {
-            return res.sendStatus(400);
+        try {
+            const id: number = parseInt(req.params.id);
+            const veterinaryPractice = await appointmentService.getForPractice(id);
+            return res.send(veterinaryPractice);
+        } catch (ex) {
+            return res.sendStatus(404);
         }
-
-        const veterinaryPractice = await appointmentService.getForPractice(id);
-        return res.send(veterinaryPractice);
     }
 )
 
@@ -56,7 +60,7 @@ veterinaryPracticeRouter.get('/:id/appointments/available',
         if (!id) {
             return res.sendStatus(400);
         }
-        
+
         const veterinaryPractice = await appointmentService.getAvailableAppointmentsForPractice(id);
         return res.send(veterinaryPractice);
     }

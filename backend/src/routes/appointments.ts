@@ -4,7 +4,7 @@ import { appointments } from "../../generated/prisma";
 
 export const appointmentRouter = express.Router();
 
-appointmentRouter.get("/all", 
+appointmentRouter.get("/all",
     async (_req, res) => {
         const allAppointments: appointments[] = await appointmentService.getAll();
         res.send(allAppointments);
@@ -12,8 +12,13 @@ appointmentRouter.get("/all",
 )
 
 appointmentRouter.get("/:id",
-    async(req, res) => {
-        const appointment = await appointmentService.getById(parseInt(req.params.id));
-        res.send(appointment);
+    async (req, res) => {
+        try {
+            const id = parseInt(req.params.id);
+            const appointment = await appointmentService.getById(id);
+            res.send(appointment);
+        } catch (ex) {
+            res.sendStatus(404);
+        }
     }
 )

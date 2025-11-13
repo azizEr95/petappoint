@@ -175,7 +175,7 @@ export const AppointmentsSchema = z.object({
     id: z.number().int(),
     starttime: z.date(),
     endtime: z.date(),
-    fk_animalid: z.number().int().optional(),
+    fk_animalid: z.number().int().nullable(),
     fk_veterinaryid: z.number().int(),
     fk_veterinarypracticeid: z.number().int(),
 });
