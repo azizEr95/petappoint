@@ -63,7 +63,7 @@ CREATE TABLE IF NOT EXISTS animals(
   isCastrated BOOLEAN,
   lifestyle husbandarySystem,
   fk_animalTypeId INTEGER NOT NULL REFERENCES animaltypes(id),
-  fk_animalGroupId INTEGER NOT NULL REFERENCES animalgroup(id)
+  fk_animalGroupId INTEGER REFERENCES animalgroup(id)
 );
 
 CREATE TABLE IF NOT EXISTS animal_has_races(
