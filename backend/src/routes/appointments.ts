@@ -13,7 +13,7 @@ appointmentRouter.get("/all",
 
 appointmentRouter.get("/:id",
     async(req, res) => {
-        const appointmentsOfPractice: appointments[] = await appointmentService.getAppointmentsByPracticeId(parseInt(req.params.id));
-        res.send(appointmentsOfPractice);
+        const appointment = await appointmentService.getById(parseInt(req.params.id));
+        res.send(appointment);
     }
 )
