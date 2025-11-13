@@ -1,9 +1,38 @@
 import { prisma } from "../singletonPC";
 import { veterinarypractices } from "../../generated/prisma";
 
+type veterinaryPracticeWithAdress = {
+  name: string,
+  phone: string,
+  infoemail: string,
+  email: string,
+  password: string,
+  website: string,
+  info: string,
+  addresses: {
+    street: string,
+    citycode: string,
+    city: string,
+    country: string,
+    longitude: number,
+    latitude: number
+  }
+}
+
 export const veterinaryPracticeService = {
-  async create(data: veterinarypractices): Promise<veterinarypractices> {
-    return await prisma.veterinarypractices.create({ data: data });
+  async create(veterinaryPracticeRe: veterinaryPracticeWithAdress): Promise<veterinarypractices> {
+    return await prisma.veterinarypractices.create({
+      data: {
+        name: veterinaryPracticeRe.name,
+        phone: veterinaryPracticeRe.phone,
+        infoemail: veterinaryPracticeRe.infoemail,
+        email: veterinaryPracticeRe.email,
+        password: veterinaryPracticeRe.password,
+        addresses: {
+          create: veterinaryPracticeRe.addresses
+        }
+      }
+    });
   },
 
   async getById(id: number): Promise<veterinarypractices> {
