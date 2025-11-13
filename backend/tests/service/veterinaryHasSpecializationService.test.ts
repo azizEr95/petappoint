@@ -1,5 +1,5 @@
 // WICHTIG: Zuerst den singleton importieren, damit das Mocking funktioniert
-import { prismaMock } from "../../testConfig/singleton";
+import { prismaMock } from "../../testConfig/mockConfig";
 // Danach die Types importieren
 import { veterinary_has_specialization } from "../../generated/prisma";
 // Dann den Service importieren
