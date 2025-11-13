@@ -1,8 +1,9 @@
 import { prisma } from "../singletonPC";
 import { appointments } from "../../generated/prisma";
+import { AppointmentsType } from "../schemas/ZodSchemas";
 
 export const appointmentService = {
-  async create(data: appointments): Promise<appointments> {
+  async create(data: appointments): Promise<AppointmentsType> {
     return await prisma.appointments.create({
       data: {
         starttime: data.starttime,
@@ -14,7 +15,7 @@ export const appointmentService = {
     });
   },
 
-  async getById(id: number): Promise<appointments> {
+  async getById(id: number): Promise<AppointmentsType> {
     const foundAppointment = await prisma.appointments.findUnique({
       where: { id },
       include: {
@@ -28,7 +29,7 @@ export const appointmentService = {
     return foundAppointment;
   },
 
-  async getAppointmentsByDateRange(startDate: Date, endDate: Date): Promise<appointments[]> {
+  async getAppointmentsByDateRange(startDate: Date, endDate: Date): Promise<AppointmentsType[]> {
     return await prisma.appointments.findMany({
       where: {
         starttime: {
@@ -43,7 +44,7 @@ export const appointmentService = {
     });
   },
 
-  async getAppointmentsByVeterinary(veterinaryId: number): Promise<appointments[]> {
+  async getAppointmentsByVeterinary(veterinaryId: number): Promise<AppointmentsType[]> {
     return await prisma.appointments.findMany({
       where: { fk_veterinaryid: veterinaryId },
       include: {
@@ -53,7 +54,7 @@ export const appointmentService = {
     });
   },
 
-  async getForPractice(veterinaryPracticeId: number): Promise<appointments[]> {
+  async getForPractice(veterinaryPracticeId: number): Promise<AppointmentsType[]> {
     return await prisma.appointments.findMany({
       where: { fk_veterinarypracticeid: veterinaryPracticeId},
       include: {
@@ -73,7 +74,7 @@ export const appointmentService = {
     });
   },
 
-  async getAll(): Promise<appointments[]> {
+  async getAll(): Promise<AppointmentsType[]> {
     return await prisma.appointments.findMany();
   },
 

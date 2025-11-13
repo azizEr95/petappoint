@@ -3,77 +3,23 @@ import type { AppointmentsType } from "../../../shared/schemas/ZodSchemas"
 import '../styles/nextAvailableAppointments.modules.css';
 import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { getAvailableAppointmentsByPracticeId } from "../api/AppointmentsAPI";
 
 
 type NextAvailableAppointmentsProps = {
-    praxisID: number
+    praxisID: string
 }
 
 export function NextAvailableAppointments({ praxisID }: NextAvailableAppointmentsProps) { //praxisID zum irgendwie bei Abfrage uebergeben werden
     let [dateAnsicht, setDateAnsicht] = useState(new Date());
     const navigate = useNavigate();
 
-    //erstmal zum Testen:
-    const isSuccess = true;
-    const data: AppointmentsType[] = [{
-        id: 1,
-        starttime: new Date("2025-11-18T10:00:00"),
-        endtime: new Date("2025-11-18T11:00:00"),
-        fk_veterinaryid: 1,
-        fk_veterinarypracticeid: 2,
-        fk_animalid: undefined
-    },
-    {
-        id: 2,
-        starttime: new Date("2025-11-20T13:00:00"),
-        endtime: new Date("2025-11-20T14:00:00"),
-        fk_veterinaryid: 1,
-        fk_veterinarypracticeid: 2,
-        fk_animalid: undefined
-    },
-    {
-        id: 3,
-        starttime: new Date("2025-11-13T10:15:00"),
-        endtime: new Date("2025-11-13T11:00:00"),
-        fk_veterinaryid: 1,
-        fk_veterinarypracticeid: 2,
-        fk_animalid: undefined
-    },
-    {
-        id: 4,
-        starttime: new Date("2025-11-15T10:00:00"),
-        endtime: new Date("2025-11-15T11:00:00"),
-        fk_veterinaryid: 1,
-        fk_veterinarypracticeid: 2,
-        fk_animalid: undefined
-    },
-    {
-        id: 5,
-        starttime: new Date("2025-11-16T10:30:00"),
-        endtime: new Date("2025-11-16T11:00:00"),
-        fk_veterinaryid: 1,
-        fk_veterinarypracticeid: 2,
-        fk_animalid: undefined
-    },
-    {
-        id: 6,
-        starttime: new Date("2025-11-14T20:30:00"),
-        endtime: new Date("2025-11-14T21:00:00"),
-        fk_veterinaryid: 1,
-        fk_veterinarypracticeid: 2,
-        fk_animalid: undefined
-    },{
-        id: 7,
-        starttime: new Date("2025-11-18T11:00:00"),
-        endtime: new Date("2025-11-18T12:00:00"),
-        fk_veterinaryid: 1,
-        fk_veterinarypracticeid: 2,
-        fk_animalid: undefined
-    }]
-    // const { isPending, isError, isSuccess, data, error } = useQuery<AppointmentsType[]>({
-    //     queryKey: ['nextAvaulableAppointments'],
-    //     queryFn: //Methode die Backend Abfrage macht
-    //   })
+    const { isPending, isError, isSuccess, data, error } = useQuery<AppointmentsType[]>({
+        queryKey: [`nextAvailableAppointments/${praxisID}`],
+        queryFn: () => getAvailableAppointmentsByPracticeId(praxisID),
+        retry: false
+    });
 
     const handleForwardTermin = () => {
         let newDate = new Date(dateAnsicht); //neues Objekt damit State sich aendert
@@ -111,10 +57,20 @@ export function NextAvailableAppointments({ praxisID }: NextAvailableAppointment
         });
     }
 
+    if (isPending) {
+        return <p>Pending...</p>;
+    }
+    
+    if (isError) {
+        console.log(error.message)
+        return <p>error...</p>;
+    }
+
     if (isSuccess) {
         data.sort((zeitA, zeitB) => { //sortiert die Termine nach Anfangszeit
             return zeitA.starttime.getTime() - zeitB.starttime.getTime()
         });
+        console.log(data)
 
         //speichert alle benoetigten Termine in Array, fuer die naechsten fuenf Tage
         //an Pos 0 sind Termine von Tag dateAnsicht, an Pos 1 von nächsten Tag, ...
@@ -147,8 +103,8 @@ export function NextAvailableAppointments({ praxisID }: NextAvailableAppointment
         let anzeigeDate3 = new Date(dateKopie.setDate(dateKopie.getDate() + 1));
         let anzeigeDate4 = new Date(dateKopie.setDate(dateKopie.getDate() + 1));
         let anzeigeDate5 = new Date(dateKopie.setDate(dateKopie.getDate() + 1));
-        return (<div id="TerminAuswahl" className="flex-row">
-            <Button id="BackwardButton" variant="outline-secondary" onClick={handleBackwardTermin} disabled={backwordPossibleTermin()}><i className="bi bi-arrow-left-short"></i></Button>
+        return (<div className="TerminAuswahl flex-row">
+            <Button className="BackwardButton" variant="outline-secondary" onClick={handleBackwardTermin} disabled={backwordPossibleTermin()}><i className="bi bi-arrow-left-short"></i></Button>
             <div className="TerminDate">
                 {dateToDateString(anzeigeDate1)}
                 {termineTage[0].map((termin) => {
@@ -179,7 +135,7 @@ export function NextAvailableAppointments({ praxisID }: NextAvailableAppointment
                     return <Button key={praxisID + termin.id} className="ButtonTermin" onClick={() => handleBookAppiontment(termin)}>{dateToTimeString(termin.starttime)}</Button>
                 })}
             </div>
-            <Button id="ForwardButton" variant="outline-secondary" onClick={handleForwardTermin}><i className="bi bi-arrow-right-short"></i></Button>
+            <Button className="ForwardButton" variant="outline-secondary" onClick={handleForwardTermin}><i className="bi bi-arrow-right-short"></i></Button>
         </div>
         )
     }
