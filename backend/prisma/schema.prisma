@@ -31,6 +31,7 @@ model animals {
   timeofdeath            DateTime?                @db.Date
   iscastrated            Boolean?
   lifestyle              husbandarysystem?
+  sex                    sexes                    @default(notknown)
   fk_animaltypeid        Int
   fk_animalgroupid       Int?
   animal_has_races       animal_has_races[]
