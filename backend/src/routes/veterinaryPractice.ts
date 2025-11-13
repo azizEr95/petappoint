@@ -2,6 +2,7 @@ import express from "express";
 import { veterinaryPracticeService } from "../service/veterinaryPracticeService"
 import { veterinarypractices } from "../../generated/prisma";
 import { z } from 'zod';
+import { appointmentService } from "../service/appointmentService";
 
 export const veterinaryPracticeRouter = express.Router();
 
@@ -32,6 +33,31 @@ veterinaryPracticeRouter.get('/search',
 veterinaryPracticeRouter.get('/:id',
     async (req, res) => {
         const veterinaryPractice = await veterinaryPracticeService.getById(req.params.id);
+        return res.send(veterinaryPractice);
+    }
+)
+
+
+veterinaryPracticeRouter.get('/:id/appointments',
+    async (req, res) => {
+        const id: number = parseInt(req.params.id);
+        if (!id) {
+            return res.sendStatus(400);
+        }
+
+        const veterinaryPractice = await appointmentService.getForPractice(id);
+        return res.send(veterinaryPractice);
+    }
+)
+
+veterinaryPracticeRouter.get('/:id/appointments/available',
+    async (req, res) => {
+        const id: number = parseInt(req.params.id);
+        if (!id) {
+            return res.sendStatus(400);
+        }
+        
+        const veterinaryPractice = await appointmentService.getAvailableAppointmentsForPractice(id);
         return res.send(veterinaryPractice);
     }
 )
