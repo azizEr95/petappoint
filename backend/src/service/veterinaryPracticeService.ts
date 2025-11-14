@@ -22,7 +22,15 @@ export const veterinaryPracticeService = {
   async getById(id: string): Promise<VeterinaryPracticesType> {
     const foundPractice = await prisma.veterinarypractices.findUnique({
       include: {
-        addresses: true
+        addresses: true,
+        services: {
+          omit: {
+            fk_veterinarypracticeid: true
+          }
+        }
+      },
+      omit: {
+        fk_addressid: true
       },
       where: {
         id: parseInt(id)

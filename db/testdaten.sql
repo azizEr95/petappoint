@@ -191,3 +191,18 @@ VALUES
   (2, 2),
   (1, 3),
   (4, 3);
+
+INSERT INTO SERVICES (name, estimatedDurationInMinutes, fk_veterinaryPracticeId)
+VALUES
+  ('Allgemeine Untersuchung', 30, 1),
+  ('Röntgen', 30, 1),
+  ('Impfung', 45, 1),
+  ('Entwurmung', 45, 1),
+  ('Blutuntersuchung', 45, 1),
+  ('Kastration', 45, 1),
+  ('Untersuchung', 45, 2),
+  ('Zahnextraktion', 45, 2),
+  ('Zahnkontrolle', 45, 2),
+  ('Physiotherapie', 45, 2),
+  ('Notfalltermin', 45, 2),
+  ('Wundversorgung', 45, 2);

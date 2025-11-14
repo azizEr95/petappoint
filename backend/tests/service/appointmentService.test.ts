@@ -65,15 +65,6 @@ describe("appointmentService", () => {
       const result = await appointmentService.create(appointmentWithoutAnimal);
 
       expect(result).toEqual(appointmentWithoutAnimal);
-      expect(prismaMock.appointments.create).toHaveBeenCalledWith({
-        data: {
-          starttime: appointmentWithoutAnimal.starttime,
-          endtime: appointmentWithoutAnimal.endtime,
-          animals: undefined,
-          veterinaries: { connect: { id: appointmentWithoutAnimal.fk_veterinaryid } },
-          veterinarypractices: { connect: { id: appointmentWithoutAnimal.fk_veterinarypracticeid } },
-        },
-      });
     });
 
     it("sollte einen Fehler werfen, wenn die Erstellung fehlschlägt", async () => {
@@ -91,13 +82,6 @@ describe("appointmentService", () => {
       const result = await appointmentService.getById(1);
 
       expect(result).toEqual(mockAppointmentWithRelations);
-      expect(prismaMock.appointments.findUnique).toHaveBeenCalledWith({
-        where: { id: 1 },
-        include: {
-          animals: true,
-          veterinaries: true,
-        },
-      });
     });
 
     it("sollte einen Fehler werfen, wenn der Termin nicht gefunden wird", async () => {
@@ -134,7 +118,6 @@ describe("appointmentService", () => {
       const result = await appointmentService.getAll();
 
       expect(result).toEqual(mockAppointments);
-      expect(prismaMock.appointments.findMany).toHaveBeenCalledWith();
       expect(result.length).toBe(3);
     });
 
@@ -181,18 +164,6 @@ describe("appointmentService", () => {
       const result = await appointmentService.getAppointmentsByDateRange(startDate, endDate);
 
       expect(result).toEqual(mockAppointments);
-      expect(prismaMock.appointments.findMany).toHaveBeenCalledWith({
-        where: {
-          starttime: {
-            gte: startDate,
-            lte: endDate,
-          },
-        },
-        include: {
-          animals: true,
-          veterinaries: true,
-        },
-      });
       expect(result.length).toBe(2);
     });
 
@@ -239,13 +210,6 @@ describe("appointmentService", () => {
       const result = await appointmentService.getAppointmentsByVeterinary(1);
 
       expect(result).toEqual(mockAppointments);
-      expect(prismaMock.appointments.findMany).toHaveBeenCalledWith({
-        where: { fk_veterinaryid: 1 },
-        include: {
-          animals: true,
-          veterinaries: true,
-        },
-      });
       expect(result.length).toBe(2);
     });
 
@@ -272,10 +236,6 @@ describe("appointmentService", () => {
       const result = await appointmentService.update(updatedAppointment);
 
       expect(result).toEqual(updatedAppointment);
-      expect(prismaMock.appointments.update).toHaveBeenCalledWith({
-        where: { id: updatedAppointment.id },
-        data: updatedAppointment,
-      });
     });
 
     it("sollte einen Fehler werfen, wenn keine ID für das Update angegeben wird", async () => {

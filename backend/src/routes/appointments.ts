@@ -1,12 +1,12 @@
 import express from "express";
 import { appointmentService } from "../service/appointmentService";
-import { appointments } from "../../generated/prisma";
+import { AppointmentsType } from "../schemas/ZodSchemas";
 
 export const appointmentRouter = express.Router();
 
 appointmentRouter.get("/all",
     async (_req, res) => {
-        const allAppointments: appointments[] = await appointmentService.getAll();
+        const allAppointments: AppointmentsType[] = await appointmentService.getAll();
         res.send(allAppointments);
     }
 )
