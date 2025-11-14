@@ -89,7 +89,7 @@ veterinaryPracticeRouter.post("/",
             info: z.string().max(100).default(''),
             addresses: adressSchema
         })
-        const createdVet = vetinarySchema.safeParse(req.params);
+        const createdVet = vetinarySchema.safeParse(req.body);
         if (!createdVet.success) {
             return res.sendStatus(400);
         }
