@@ -11,6 +11,7 @@ type NextAvailableAppointmentsProps = {
 
 export function NextAvailableAppointments({ praxisID }: NextAvailableAppointmentsProps) { //praxisID zum irgendwie bei Abfrage uebergeben werden
     let [dateAnsicht, setDateAnsicht] = useState(new Date());
+    const [expandedDays, setExpandedDays] = useState<Set<number>>(new Set());
     const navigate = useNavigate();
 
     const { isPending, isError, isSuccess, data } = useQuery<AppointmentsType[]>({
@@ -23,12 +24,24 @@ export function NextAvailableAppointments({ praxisID }: NextAvailableAppointment
     const newDate = new Date(dateAnsicht) // neues Objekt damit State sich aendert
     newDate.setDate(newDate.getDate() + 5)
     setDateAnsicht(newDate)
+    setExpandedDays(new Set()) // Reset expanded state beim Wechsel
   }
 
   const handleBackwardTermin = () => {
     const newDate = new Date(dateAnsicht) // neues Objekt damit State sich aendert
     newDate.setDate(newDate.getDate() - 5)
     setDateAnsicht(newDate)
+    setExpandedDays(new Set()) // Reset expanded state beim Wechsel
+  }
+
+  const toggleExpandDay = (dayIndex: number) => {
+    const newExpanded = new Set(expandedDays)
+    if (newExpanded.has(dayIndex)) {
+      newExpanded.delete(dayIndex)
+    } else {
+      newExpanded.add(dayIndex)
+    }
+    setExpandedDays(newExpanded)
   }
 
   const backwordPossibleTermin = () => {
@@ -108,39 +121,22 @@ export function NextAvailableAppointments({ praxisID }: NextAvailableAppointment
     const anzeigeDate4 = new Date(dateKopie.setDate(dateKopie.getDate() + 1))
     const anzeigeDate5 = new Date(dateKopie.setDate(dateKopie.getDate() + 1))
 
-    // Finde alle einzigartigen Zeitslots über alle Tage hinweg
-    const allTimeSlots = new Set<string>()
-    termineTage.forEach((tage) => {
-      tage.forEach((termin) => {
-        allTimeSlots.add(dateToTimeString(termin.starttime))
-      })
-    })
-    const sortedTimeSlots = Array.from(allTimeSlots).sort()
+    // Prüfe ob Praxis überhaupt irgendwelche Termine anbietet
+    const practiceHasNoAppointments = data.length === 0
 
-    // Erstelle Map für schnelleren Zugriff: Tag -> Zeit -> Termin
-    const terminMap = new Map<number, Map<string, AppointmentsType>>()
-    termineTage.forEach((tage, dayIndex) => {
-      const dayMap = new Map<string, AppointmentsType>()
-      tage.forEach((termin) => {
-        dayMap.set(dateToTimeString(termin.starttime), termin)
-      })
-      terminMap.set(dayIndex, dayMap)
-    })
-
-    // Prüfe ob überhaupt Termine verfügbar sind
-    const hasAnyAppointments = sortedTimeSlots.length > 0
-
-    if (!hasAnyAppointments) {
+    if (practiceHasNoAppointments) {
       return (
         <div className="no-appointments-message">
           <i className="bi bi-calendar-x"></i>
-          <p>Aktuell keine Termine verfügbar</p>
+          <p>Keine Termine verfügbar</p>
           <style>{`
             .no-appointments-message {
               display: flex;
               flex-direction: column;
               align-items: center;
               justify-content: center;
+              height: 100%;
+              width: 100%;
               padding: 2rem;
               text-align: center;
               color: var(--color-text-light);
@@ -191,27 +187,87 @@ export function NextAvailableAppointments({ praxisID }: NextAvailableAppointment
 
         {/* Spalten mit Terminen */}
         <div className="calendar-grid">
-          {[0, 1, 2, 3, 4].map((dayIndex) => (
-            <div key={dayIndex} className="day-column">
-              {sortedTimeSlots.map((timeSlot) => {
-                const termin = terminMap.get(dayIndex)?.get(timeSlot)
-                return termin ? (
-                  <button
-                    key={`${dayIndex}-${timeSlot}`}
-                    className="time-slot-btn available"
-                    onClick={() => handleBookAppiontment(termin)}
-                  >
-                    {timeSlot}
-                  </button>
-                ) : (
-                  <div key={`${dayIndex}-${timeSlot}`} className="time-slot-btn unavailable">
-                    –
-                  </div>
-                )
-              })}
-            </div>
-          ))}
+          {(() => {
+            const displayLimit = 5
+            const anyExpanded = expandedDays.size > 0
+
+            // Berechne maximale Anzahl Slots (bei expansion)
+            const maxAppointments = anyExpanded
+              ? Math.max(...termineTage.map(t => t.length))
+              : displayLimit
+
+            // Erstelle Zeilen für die Slots
+            const rows = []
+            for (let rowIndex = 0; rowIndex < maxAppointments; rowIndex++) {
+              const row = [0, 1, 2, 3, 4].map((dayIndex) => {
+                const dayAppointments = termineTage[dayIndex] || []
+                const isExpanded = expandedDays.has(dayIndex)
+                const appointmentsToShow = isExpanded ? dayAppointments : dayAppointments.slice(0, displayLimit)
+                const termin = appointmentsToShow[rowIndex]
+
+                if (termin) {
+                  return (
+                    <button
+                      key={`${dayIndex}-${rowIndex}`}
+                      className="time-slot-btn available"
+                      onClick={() => handleBookAppiontment(termin)}
+                    >
+                      {dateToTimeString(termin.starttime)}
+                    </button>
+                  )
+                } else {
+                  return (
+                    <div key={`${dayIndex}-${rowIndex}`} className="time-slot-btn unavailable">
+                      –
+                    </div>
+                  )
+                }
+              })
+              rows.push(
+                <div key={`row-${rowIndex}`} className="calendar-row">
+                  {row}
+                </div>
+              )
+            }
+
+            return rows
+          })()}
         </div>
+
+        {/* Mehr-Button als separate Zeile über alle Spalten */}
+        {(() => {
+          const displayLimit = 5
+          const hasAnyMoreButton = termineTage.some(day => day.length > displayLimit)
+
+          if (!hasAnyMoreButton) return null
+
+          const anyExpanded = expandedDays.size > 0
+
+          return (
+            <div className="mehr-button-container">
+              <button
+                className="mehr-btn-full"
+                onClick={() => {
+                  if (anyExpanded) {
+                    // Alle schließen
+                    setExpandedDays(new Set())
+                  } else {
+                    // Alle Tage mit >5 Terminen öffnen
+                    const toExpand = new Set<number>()
+                    termineTage.forEach((day, index) => {
+                      if (day.length > displayLimit) {
+                        toExpand.add(index)
+                      }
+                    })
+                    setExpandedDays(toExpand)
+                  }
+                }}
+              >
+                {anyExpanded ? 'Weniger Termine anzeigen' : 'Mehr Termine anzeigen'}
+              </button>
+            </div>
+          )
+        })()}
 
         <style>{`
           .calendar-container {
@@ -272,14 +328,14 @@ export function NextAvailableAppointments({ praxisID }: NextAvailableAppointment
           }
 
           .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
+            display: flex;
+            flex-direction: column;
             gap: 0.5rem;
           }
 
-          .day-column {
-            display: flex;
-            flex-direction: column;
+          .calendar-row {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
             gap: 0.5rem;
           }
 
@@ -290,6 +346,10 @@ export function NextAvailableAppointments({ praxisID }: NextAvailableAppointment
             font-weight: 500;
             text-align: center;
             transition: all 0.2s;
+            min-height: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
           }
 
           .time-slot-btn.available {
@@ -311,12 +371,35 @@ export function NextAvailableAppointments({ praxisID }: NextAvailableAppointment
             border: 1px solid var(--color-border);
           }
 
+          .mehr-button-container {
+            margin-top: 1rem;
+          }
+
+          .mehr-btn-full {
+            width: 100%;
+            padding: 0.6rem 1.5rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-align: center;
+            background: transparent;
+            color: var(--color-primary);
+            border: 1px solid var(--color-primary);
+            cursor: pointer;
+            transition: all 0.2s;
+          }
+
+          .mehr-btn-full:hover {
+            background: var(--color-primary);
+            color: white;
+          }
+
           @media (max-width: 768px) {
             .calendar-days-header {
               grid-template-columns: repeat(5, 1fr);
             }
 
-            .calendar-grid {
+            .calendar-row {
               grid-template-columns: repeat(5, 1fr);
             }
 
@@ -331,6 +414,7 @@ export function NextAvailableAppointments({ praxisID }: NextAvailableAppointment
             .time-slot-btn {
               padding: 0.4rem 0.3rem;
               font-size: 0.75rem;
+              min-height: 2rem;
             }
           }
         `}</style>

@@ -87,9 +87,9 @@ export function VeterinaryPracticeCard({
           background: white;
           border-radius: var(--radius-lg);
           box-shadow: var(--shadow-md);
-          height: 550px;
+          min-height: 550px;
           width: 100%;
-          overflow: hidden;
+          overflow: visible;
           transition: all 0.3s ease;
           margin-bottom: var(--spacing-lg);
         }
@@ -102,7 +102,7 @@ export function VeterinaryPracticeCard({
         .card-content {
           display: grid;
           grid-template-columns: 1fr 1fr;
-          height: 100%;
+          min-height: 550px;
           gap: 0;
         }
 
@@ -190,7 +190,7 @@ export function VeterinaryPracticeCard({
 
         .calendar-wrapper {
           flex: 1;
-          overflow-y: auto;
+          overflow-y: visible;
           overflow-x: hidden;
           min-height: 0;
           background: white;

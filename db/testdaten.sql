@@ -184,3 +184,35 @@ VALUES
   ('2025-12-05 15:00', '2025-12-05 15:45', NULL, 2, 5),
   ('2025-12-08 08:30', '2025-12-08 09:15', NULL, 4, 5),
   ('2025-12-20 13:00', '2025-12-20 13:30', NULL, 2, 5);
+
+-- ======================================================
+-- TESTDATEN für Frontend-Features
+-- ======================================================
+
+-- Neue Adresse für Testpraxen
+INSERT INTO addresses (street, citycode, city, country, longitude, latitude)
+VALUES
+  ('Teststraße 99', '10999', 'Berlin', 'Deutschland', 13.4200, 52.5100),
+  ('Vieltermineweg 7', '20099', 'Hamburg', 'Deutschland', 10.0100, 53.5600);
+
+-- Praxis OHNE Termine (ID 6)
+INSERT INTO veterinarypractices (name, phone, infoemail, email, password, website, info, fk_addressid)
+VALUES
+  ('Tierpraxis Neustart', '+49 30 999999', 'info@neustart.de', 'kontakt@neustart.de', 'hashedpw999', NULL, 'Neu eröffnete Praxis ohne Termine.', 6);
+
+-- Praxis MIT >5 Terminen an einem Tag (ID 7)
+INSERT INTO veterinarypractices (name, phone, infoemail, email, password, website, info, fk_addressid)
+VALUES
+  ('Vollbuchte Tierklinik', '+49 40 888888', 'info@vollbucht.de', 'kontakt@vollbucht.de', 'hashedpw888', 'https://www.vollbucht.de', 'Sehr beliebte Klinik mit vielen Terminen.', 7);
+
+-- Termine für Praxis 7: 8 Termine am gleichen Tag (2025-11-20)
+INSERT INTO appointments (startTime, endTime, fk_animalId, fk_veterinaryId, fk_veterinaryPracticeId)
+VALUES
+  ('2025-11-20 08:00', '2025-11-20 08:30', NULL, 1, 7),
+  ('2025-11-20 09:00', '2025-11-20 09:30', NULL, 1, 7),
+  ('2025-11-20 10:00', '2025-11-20 10:30', NULL, 1, 7),
+  ('2025-11-20 11:00', '2025-11-20 11:30', NULL, 1, 7),
+  ('2025-11-20 12:00', '2025-11-20 12:30', NULL, 1, 7),
+  ('2025-11-20 13:00', '2025-11-20 13:30', NULL, 1, 7),
+  ('2025-11-20 14:00', '2025-11-20 14:30', NULL, 1, 7),
+  ('2025-11-20 15:00', '2025-11-20 15:30', NULL, 1, 7);
