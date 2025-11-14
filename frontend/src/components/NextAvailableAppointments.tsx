@@ -129,32 +129,31 @@ export function NextAvailableAppointments({ praxisID }: NextAvailableAppointment
         <div className="no-appointments-message">
           <i className="bi bi-calendar-x"></i>
           <p>Keine Termine verfügbar</p>
-          <style>{`
-            .no-appointments-message {
-              display: flex;
-              flex-direction: column;
-              align-items: center;
-              justify-content: center;
-              height: 100%;
-              width: 100%;
-              padding: 2rem;
-              text-align: center;
-              color: var(--color-text-light);
-            }
-
-            .no-appointments-message i {
-              font-size: 2.5rem;
-              color: var(--color-text-muted);
-              margin-bottom: 1rem;
-            }
-
-            .no-appointments-message p {
-              margin: 0;
-              font-size: 1rem;
-            }
-          `}</style>
         </div>
       )
+    }
+
+    // Prüfe ob es Termine in der aktuellen Ansicht gibt
+    const hasAppointmentsInCurrentView = termineTage.some(day => day.length > 0)
+
+    // Finde nächsten verfügbaren Termin nach der aktuellen Ansicht
+    const findNextAppointmentDate = (): Date | null => {
+      const endOfCurrentView = new Date(dateAnsicht)
+      endOfCurrentView.setDate(endOfCurrentView.getDate() + 5)
+
+      const futureAppointments = data.filter(termin =>
+        compareDates(termin.starttime, endOfCurrentView) >= 0
+      )
+
+      return futureAppointments.length > 0 ? futureAppointments[0].starttime : null
+    }
+
+    const navigateToNextAppointment = () => {
+      const nextDate = findNextAppointmentDate()
+      if (nextDate) {
+        setDateAnsicht(new Date(nextDate))
+        setExpandedDays(new Set())
+      }
     }
 
     return (
@@ -238,10 +237,10 @@ export function NextAvailableAppointments({ praxisID }: NextAvailableAppointment
         {(() => {
           const displayLimit = 5
           const hasAnyMoreButton = termineTage.some(day => day.length > displayLimit)
-
-          if (!hasAnyMoreButton) return null
-
           const anyExpanded = expandedDays.size > 0
+
+          // Nur anzeigen wenn es Termine mit >5 gibt
+          if (!hasAnyMoreButton) return null
 
           return (
             <div className="mehr-button-container">
@@ -269,155 +268,18 @@ export function NextAvailableAppointments({ praxisID }: NextAvailableAppointment
           )
         })()}
 
-        <style>{`
-          .calendar-container {
-            width: 100%;
-            overflow: hidden;
-          }
-
-          .calendar-header {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
-            padding-bottom: 0.75rem;
-            border-bottom: 2px solid var(--color-border);
-          }
-
-          .nav-arrow {
-            background: none;
-            border: none;
-            color: var(--color-primary);
-            font-size: 1.5rem;
-            cursor: pointer;
-            padding: 0.25rem;
-            transition: opacity 0.2s;
-            flex-shrink: 0;
-          }
-
-          .nav-arrow:hover:not(:disabled) {
-            opacity: 0.7;
-          }
-
-          .nav-arrow:disabled {
-            opacity: 0.3;
-            cursor: not-allowed;
-          }
-
-          .calendar-days-header {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 0.5rem;
-            flex: 1;
-          }
-
-          .day-header {
-            text-align: center;
-            font-size: 0.9rem;
-          }
-
-          .day-name {
-            font-weight: 600;
-            color: var(--color-primary);
-            margin-bottom: 0.25rem;
-          }
-
-          .day-date {
-            color: var(--color-text-light);
-            font-size: 0.85rem;
-          }
-
-          .calendar-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-          }
-
-          .calendar-row {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 0.5rem;
-          }
-
-          .time-slot-btn {
-            padding: 0.6rem 0.5rem;
-            border-radius: var(--radius-sm);
-            font-size: 0.9rem;
-            font-weight: 500;
-            text-align: center;
-            transition: all 0.2s;
-            min-height: 2.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-          }
-
-          .time-slot-btn.available {
-            background: var(--color-primary);
-            color: white;
-            border: none;
-            cursor: pointer;
-          }
-
-          .time-slot-btn.available:hover {
-            background: var(--color-primary-dark);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-sm);
-          }
-
-          .time-slot-btn.unavailable {
-            background: var(--color-bg-light);
-            color: var(--color-text-muted);
-            border: 1px solid var(--color-border);
-          }
-
-          .mehr-button-container {
-            margin-top: 1rem;
-          }
-
-          .mehr-btn-full {
-            width: 100%;
-            padding: 0.6rem 1.5rem;
-            border-radius: var(--radius-sm);
-            font-size: 0.85rem;
-            font-weight: 500;
-            text-align: center;
-            background: transparent;
-            color: var(--color-primary);
-            border: 1px solid var(--color-primary);
-            cursor: pointer;
-            transition: all 0.2s;
-          }
-
-          .mehr-btn-full:hover {
-            background: var(--color-primary);
-            color: white;
-          }
-
-          @media (max-width: 768px) {
-            .calendar-days-header {
-              grid-template-columns: repeat(5, 1fr);
-            }
-
-            .calendar-row {
-              grid-template-columns: repeat(5, 1fr);
-            }
-
-            .day-header {
-              font-size: 0.75rem;
-            }
-
-            .day-date {
-              font-size: 0.7rem;
-            }
-
-            .time-slot-btn {
-              padding: 0.4rem 0.3rem;
-              font-size: 0.75rem;
-              min-height: 2rem;
-            }
-          }
-        `}</style>
+        {/* "Nächster Termin" Overlay Button wenn keine Termine in aktueller Ansicht */}
+        {!hasAppointmentsInCurrentView && findNextAppointmentDate() && (
+          <div className="next-appointment-overlay">
+            <button
+              className="next-appointment-btn"
+              onClick={navigateToNextAppointment}
+            >
+              <i className="bi bi-calendar-event"></i>
+              Nächster Termin am {getShortDate(findNextAppointmentDate()!)}
+            </button>
+          </div>
+        )}
       </div>
     )
   }
