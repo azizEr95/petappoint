@@ -1,40 +1,40 @@
-
 .PraxisCard {
-    margin-top: 2em;
-    width: 80%;
-    min-width: 770px;
-    max-width: 1000px;
-    display: flex;
-    flex-direction: row;
+  margin-top: 2em;
+  width: 80%;
+  min-width: 770px;
+  max-width: 1000px;
+  display: flex;
+  flex-direction: row;
 }
 
 #VeterinaryPracticeList {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-#BackwardButton, #ForwardButton {
-    align-self: flex-start;
-    margin-left: 12px;
+#BackwardButton,
+#ForwardButton {
+  align-self: flex-start;
+  margin-left: 12px;
 }
 
 .PraxisInfos {
-    min-width: 180px;
+  min-width: 180px;
 }
 
 .TerminInfos {
-    min-width: 400px;
-    max-width: 560px;
-    margin-left: auto;
+  min-width: 400px;
+  max-width: 560px;
+  margin-left: auto;
 }
 
 @media (max-width: 860px) {
-    #TerminInfos {
-        display: none; /* Blendet das Element aus */
-    }
+  #TerminInfos {
+    display: none; /* Blendet das Element aus */
+  }
 
-    .PraxisCard {
-        min-width: 200px;
-    }
+  .PraxisCard {
+    min-width: 200px;
+  }
 }
