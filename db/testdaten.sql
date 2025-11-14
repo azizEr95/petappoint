@@ -185,6 +185,28 @@ VALUES
   ('2025-12-08 08:30', '2025-12-08 09:15', NULL, 4, 5),
   ('2025-12-20 13:00', '2025-12-20 13:30', NULL, 2, 5);
 
+INSERT INTO person_has_favorized_veterinarypractice(fk_personId, fk_veterinaryPracticeId)
+VALUES
+  (1, 1),
+  (2, 2),
+  (1, 3),
+  (4, 3);
+
+INSERT INTO SERVICES (name, estimatedDurationInMinutes, fk_veterinaryPracticeId)
+VALUES
+  ('Allgemeine Untersuchung', 30, 1),
+  ('Röntgen', 30, 1),
+  ('Impfung', 45, 1),
+  ('Entwurmung', 45, 1),
+  ('Blutuntersuchung', 45, 1),
+  ('Kastration', 45, 1),
+  ('Untersuchung', 45, 2),
+  ('Zahnextraktion', 45, 2),
+  ('Zahnkontrolle', 45, 2),
+  ('Physiotherapie', 45, 2),
+  ('Notfalltermin', 45, 2),
+  ('Wundversorgung', 45, 2);
+
 -- ======================================================
 -- TESTDATEN für Frontend-Features
 -- ======================================================

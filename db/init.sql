@@ -1,12 +1,23 @@
+DROP TABLE IF EXISTS person_has_favorized_veterinarypractice;
+DROP TABLE IF EXISTS veterinary_has_invitation;
+DROP TABLE IF EXISTS recipes;
+DROP TABLE IF EXISTS medications;
+DROP TABLE IF EXISTS animal_has_vaccination;
+DROP TABLE IF EXISTS vaccinations;
+DROP TABLE IF EXISTS appointment_has_review;
+DROP TABLE IF EXISTS reviews;
+DROP TABLE IF EXISTS services;
 DROP TABLE IF EXISTS appointments;
 DROP TABLE IF EXISTS veterinary_has_specialization;
 DROP TABLE IF EXISTS veterinaries;
 DROP TABLE IF EXISTS veterinarypractices;
 DROP TABLE IF EXISTS specializations;
 DROP TABLE IF EXISTS person_has_animal;
+DROP TABLE IF EXISTS animal_has_races;
 DROP TABLE IF EXISTS animals;
+DROP TABLE IF EXISTS animalgroup;
+DROP TABLE IF EXISTS animalraces;
 DROP TABLE IF EXISTS animaltypes;
-DROP TABLE IF EXISTS animalkinds;
 DROP TABLE IF EXISTS persons;
 DROP TABLE IF EXISTS addresses;
 
@@ -41,7 +52,7 @@ CREATE TABLE IF NOT EXISTS animaltypes(
   name VARCHAR(100) NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS animalRaces(
+CREATE TABLE IF NOT EXISTS animalraces(
   id SERIAL PRIMARY KEY,
   name VARCHAR(100) NOT NULL,
   fk_animalTypeId INTEGER NOT NULL REFERENCES animaltypes(id)
@@ -69,7 +80,7 @@ CREATE TABLE IF NOT EXISTS animals(
 
 CREATE TABLE IF NOT EXISTS animal_has_races(
   fk_animalId INTEGER NOT NULL REFERENCES animals(id),
-  fk_animalRaceId INTEGER NOT NULL REFERENCES animalRaces(id),
+  fk_animalRaceId INTEGER NOT NULL REFERENCES animalraces(id),
   PRIMARY KEY (fk_animalId, fk_animalRaceId)
 );
 
@@ -108,13 +119,21 @@ CREATE TABLE IF NOT EXISTS veterinary_has_specialization(
   PRIMARY KEY (fk_veterinaryId, fk_specializationId)
 );
 
+CREATE TABLE IF NOT EXISTS services(
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  estimatedDurationInMinutes INTEGER NOT NULL DEFAULT 0,
+  fk_veterinaryPracticeId INTEGER REFERENCES veterinarypractices(id)
+);
+
 CREATE TABLE IF NOT EXISTS appointments(
   id SERIAL PRIMARY KEY,
   startTime TIMESTAMP NOT NULL,
   endTime TIMESTAMP NOT NULL,
   fk_animalId INTEGER REFERENCES animals(id),
   fk_veterinaryId INTEGER NOT NULL REFERENCES veterinaries(id),
-  fk_veterinaryPracticeId INTEGER NOT NULL REFERENCES veterinarypractices(id)
+  fk_veterinaryPracticeId INTEGER NOT NULL REFERENCES veterinarypractices(id),
+  fk_serviceId INTEGER REFERENCES services(id) DEFAULT NULL
 );
 
 CREATE TABLE IF NOT EXISTS reviews(
@@ -134,29 +153,6 @@ CREATE TABLE IF NOT EXISTS appointment_has_review(
 );
 
 CREATE TYPE paymentStatus AS ENUM('unpaid', 'paid', 'cancelled');
-
-CREATE TABLE IF NOT EXISTS invoices(
-  id SERIAL PRIMARY KEY,
-  status paymentStatus NOT NULL DEFAULT 'unpaid',
-  priceInCents INTEGER NOT NULL CHECK (priceInCents > 0),
-  discount REAL NOT NULL CHECK (discount BETWEEN 0.00 AND 100.00) DEFAULT 0.00, 
-  fk_appointmentId INTEGER NOT NULL REFERENCES appointments(id)
-);
-
-CREATE TABLE IF NOT EXISTS services(
-  id SERIAL PRIMARY KEY,
-  name VARCHAR(100) NOT NULL,
-  priceInCents INTEGER NOT NULL CHECK (priceInCents >= 0),
-  fk_veterinaryPracticeId INTEGER REFERENCES veterinarypractices(id)
-);
-
-CREATE TABLE IF NOT EXISTS invoice_has_service(
-  id SERIAL PRIMARY KEY,
-  fk_invoiceId INTEGER NOT NULL REFERENCES invoices(id),
-  fk_serviceId INTEGER NOT NULL REFERENCES services(id),
-  quantity SMALLINT NOT NULL check (quantity > 0),
-  discount REAL NOT NULL CHECK (discount BETWEEN 0.00 AND 100.00) DEFAULT 0.00
-);
 
 CREATE TABLE IF NOT EXISTS vaccinations(
   id SERIAL PRIMARY KEY,
@@ -190,4 +186,10 @@ CREATE TABLE IF NOT EXISTS veterinary_has_invitation(
   fk_veterinarypracticeId INTEGER NOT NULL REFERENCES veterinarypractices(id),
   dateOfInvitation DATE NOT NULL,
   PRIMARY KEY (fk_veterinaryId, fk_veterinarypracticeId)
+);
+
+CREATE TABLE IF NOT EXISTS person_has_favorized_veterinarypractice(
+  fk_personId INTEGER NOT NULL REFERENCES persons(id),
+  fk_veterinaryPracticeId INTEGER NOT NULL REFERENCES veterinarypractices(id),
+  PRIMARY KEY (fk_personId, fk_veterinaryPracticeId)
 );

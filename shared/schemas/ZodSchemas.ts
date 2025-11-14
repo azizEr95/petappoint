@@ -134,6 +134,12 @@ export const Person_has_AnimalCreateSchema = Person_has_AnimalSchema;
 export type Person_has_AnimalCreateType = z.infer<typeof Person_has_AnimalCreateSchema>;
 export type Person_has_AnimalType = z.infer<typeof Person_has_AnimalSchema>;
 
+export const ServiceSchema = z.object({
+    id: z.number().int(),
+    name: z.string().min(1).max(100),
+    estimateddurationinminutes: z.number().int().min(0)
+});
+
 
 //VeterinaryPractice:
 export const VeterinaryPracticeSchema = z.object({
@@ -145,7 +151,8 @@ export const VeterinaryPracticeSchema = z.object({
     infoemail: z.email().max(100),
     website: z.url().max(150).nullable(),
     info: z.string().nullable(),
-    addresses: AddressesSchema
+    addresses: AddressesSchema,
+    services: z.array(ServiceSchema).optional()
 })
 
 export const VeterinaryPracticeCreateSchema = VeterinaryPracticeSchema.omit({
@@ -178,11 +185,18 @@ export const AppointmentsSchema = z.object({
     fk_animalid: z.number().int().nullable(),
     fk_veterinaryid: z.number().int(),
     fk_veterinarypracticeid: z.number().int(),
+    fk_serviceid: z.number().int().nullable(),
 });
 
 export const AppointmentsCreateSchema = AppointmentsSchema.omit({
     id: true
 })
 
+export const AppointmentsUpdateAsPersonSchema = z.object({
+    id: z.number().int(),
+    fk_animalid: z.number().int()
+})
+
+export type AppointmentsUpdateAsPersonType = z.infer<typeof AppointmentsUpdateAsPersonSchema>;
 export type AppointmentsCreateType = z.infer<typeof AppointmentsCreateSchema>;
 export type AppointmentsType = z.infer<typeof AppointmentsSchema>;

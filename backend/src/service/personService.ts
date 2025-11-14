@@ -34,6 +34,56 @@ export const personService = {
     return updatedPerson;
   },
 
+  async favorizeVeterinaryPracticesByIds(personId: number, practiceIds: number[]): Promise<void> {
+    if (!Number.isInteger(personId)) {
+      throw new Error("personId needs to be an integer.");
+    }
+
+    practiceIds = practiceIds.filter(x => Number.isInteger(x));
+    if (practiceIds.length === 0) {
+      return;
+    }
+
+    const d = await prisma.person_has_favorized_veterinarypractice.createMany(
+      {
+        data: practiceIds.map(practiceId => ({fk_personid: personId, fk_veterinarypracticeid: practiceId})),
+        skipDuplicates: true
+      }
+    );
+  },
+
+  async deleteFavorizedVeterinaryPracticeId(personId: number, practiceId: number): Promise<void> {
+    if (!Number.isInteger(personId)) {
+      throw new Error("personId needs to be an integer.");
+    }
+
+    if (!Number.isInteger(practiceId)) {
+      throw new Error("practiceId needs to be an integer.");
+    }
+
+    const result = await prisma.person_has_favorized_veterinarypractice.delete({
+      where: {
+        fk_personid_fk_veterinarypracticeid: {
+          fk_personid: personId,
+          fk_veterinarypracticeid: practiceId
+        }
+      }
+    });
+  },
+
+  async getFavorizedVeterinaryPracticeIds(personId: number): Promise<number[]> {
+    if (!Number.isInteger(personId)) {
+      throw new Error("personId needs to be an integer.");
+    }
+
+    const result = await prisma.person_has_favorized_veterinarypractice.findMany({
+      where: {
+        fk_personid: personId
+      }
+    });
+    return result.map(x => x.fk_veterinarypracticeid);
+  },
+
   async delete(id: number): Promise<void> {
     await prisma.persons.delete({ where: { id } });
   },
