@@ -1,12 +1,25 @@
+DROP TABLE IF EXISTS person_has_favorized_veterinarypractice;
+DROP TABLE IF EXISTS veterinary_has_invitation;
+DROP TABLE IF EXISTS recipes;
+DROP TABLE IF EXISTS medications;
+DROP TABLE IF EXISTS animal_has_vaccination;
+DROP TABLE IF EXISTS vaccinations;
+DROP TABLE IF EXISTS invoice_has_service;
+DROP TABLE IF EXISTS services;
+DROP TABLE IF EXISTS invoices;
+DROP TABLE IF EXISTS appointment_has_review;
+DROP TABLE IF EXISTS reviews;
 DROP TABLE IF EXISTS appointments;
 DROP TABLE IF EXISTS veterinary_has_specialization;
 DROP TABLE IF EXISTS veterinaries;
 DROP TABLE IF EXISTS veterinarypractices;
 DROP TABLE IF EXISTS specializations;
 DROP TABLE IF EXISTS person_has_animal;
+DROP TABLE IF EXISTS animal_has_races;
 DROP TABLE IF EXISTS animals;
+DROP TABLE IF EXISTS animalgroup;
+DROP TABLE IF EXISTS animalraces;
 DROP TABLE IF EXISTS animaltypes;
-DROP TABLE IF EXISTS animalkinds;
 DROP TABLE IF EXISTS persons;
 DROP TABLE IF EXISTS addresses;
 
@@ -41,7 +54,7 @@ CREATE TABLE IF NOT EXISTS animaltypes(
   name VARCHAR(100) NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS animalRaces(
+CREATE TABLE IF NOT EXISTS animalraces(
   id SERIAL PRIMARY KEY,
   name VARCHAR(100) NOT NULL,
   fk_animalTypeId INTEGER NOT NULL REFERENCES animaltypes(id)
@@ -69,7 +82,7 @@ CREATE TABLE IF NOT EXISTS animals(
 
 CREATE TABLE IF NOT EXISTS animal_has_races(
   fk_animalId INTEGER NOT NULL REFERENCES animals(id),
-  fk_animalRaceId INTEGER NOT NULL REFERENCES animalRaces(id),
+  fk_animalRaceId INTEGER NOT NULL REFERENCES animalraces(id),
   PRIMARY KEY (fk_animalId, fk_animalRaceId)
 );
 
@@ -190,4 +203,10 @@ CREATE TABLE IF NOT EXISTS veterinary_has_invitation(
   fk_veterinarypracticeId INTEGER NOT NULL REFERENCES veterinarypractices(id),
   dateOfInvitation DATE NOT NULL,
   PRIMARY KEY (fk_veterinaryId, fk_veterinarypracticeId)
+);
+
+CREATE TABLE IF NOT EXISTS person_has_favorized_veterinarypractice(
+  fk_personId INTEGER NOT NULL REFERENCES persons(id),
+  fk_veterinaryPracticeId INTEGER NOT NULL REFERENCES veterinarypractices(id),
+  PRIMARY KEY (fk_personId, fk_veterinaryPracticeId)
 );
