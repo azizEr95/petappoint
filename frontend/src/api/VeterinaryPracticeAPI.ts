@@ -1,20 +1,42 @@
+import z from "zod";
+import { VeterinaryPracticeSchema, type VeterinaryPracticesType } from "../../../shared/schemas/ZodSchemas"
+
+
 export const getVeterinaryPracticesByNameAddress = async (
   name: string,
   ort: string,
-) => {
+): Promise<VeterinaryPracticesType[]> => {
   const res = await fetch(
     import.meta.env.VITE_API_URL +
-      '/veterinary-practice/search?name=' +
-      name +
-      '&address=' +
-      ort,
+    '/veterinary-practice/search?name=' +
+    name +
+    '&address=' +
+    ort,
   )
-  return res.json()
+  if (!res.ok) {
+    throw new Error('Failed to fetch getVeterinaryPracticesByNameAddress')
+  }
+
+  const data = await res.json() as VeterinaryPracticesType[];
+  const parsed = z.array(VeterinaryPracticeSchema).safeParse(data);
+  if (!parsed.success) {
+    throw new Error(parsed.error.toString());
+  }
+  return parsed.data;
 }
 
-export const getVeterinaryPracticesById = async (id: string) => {
+export const getVeterinaryPracticesById = async (id: string): Promise<VeterinaryPracticesType> => {
   const res = await fetch(
     import.meta.env.VITE_API_URL + '/veterinary-practice/' + id,
   )
-  return res.json()
+  if (!res.ok) {
+    throw new Error('Failed to fetch getVeterinaryPracticesById')
+  }
+
+  const data = await res.json() as VeterinaryPracticesType
+  const parsed = VeterinaryPracticeSchema.safeParse(data)
+  if (!parsed.success) {
+    throw new Error(parsed.error.toString());
+  }
+  return parsed.data
 }
