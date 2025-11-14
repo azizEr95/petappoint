@@ -1,5 +1,6 @@
 import { Button, Card, Col, Container, Row } from 'react-bootstrap'
 import { Link } from '@tanstack/react-router'
+import styles from '../../styles/benefitsVets.modules.css'
 
 export default function BenefitsVets() {
   const benefits = [
@@ -29,10 +30,7 @@ export default function BenefitsVets() {
   return (
     <section
       id="for-vets"
-      className="section-padding"
-      style={{
-        background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
-      }}
+      className={`section-padding ${styles.benefitsSection}`}
     >
       <Container>
         <div className="text-center mb-5">
@@ -45,9 +43,9 @@ export default function BenefitsVets() {
         <Row className="g-4 mb-5">
           {benefits.map((benefit, index) => (
             <Col key={index} md={6} lg={3}>
-              <Card className="benefit-card h-100 border-0 shadow-sm">
+              <Card className={`${styles.benefitCard} h-100 border-0 shadow-sm`}>
                 <Card.Body className="text-center p-4">
-                  <div className="benefit-icon mb-3">{benefit.icon}</div>
+                  <div className={`${styles.benefitIcon} mb-3`}>{benefit.icon}</div>
                   <Card.Title className="h5 mb-2">{benefit.title}</Card.Title>
                   <Card.Text className="text-muted small">
                     {benefit.description}
@@ -60,15 +58,13 @@ export default function BenefitsVets() {
 
         <div className="text-center">
           <div
-            className="demo-preview bg-white p-5 rounded-3 shadow-sm mb-4 mx-auto"
-            style={{ maxWidth: '700px' }}
+            className={`${styles.demoPreview} bg-white p-5 rounded-3 shadow-sm mb-4 mx-auto`}
           >
             <h5 className="mb-3">Praxis-Dashboard Vorschau</h5>
             <div className="d-flex flex-column gap-2">
               <div className="d-flex align-items-center p-3 bg-light rounded">
                 <i
-                  className="bi bi-calendar-check text-success me-3"
-                  style={{ fontSize: '2rem' }}
+                  className={`bi bi-calendar-check text-success me-3 ${styles.dashboardIcon}`}
                 ></i>
                 <div className="text-start flex-grow-1">
                   <strong>Heute: 12 Termine</strong>
@@ -77,8 +73,7 @@ export default function BenefitsVets() {
               </div>
               <div className="d-flex align-items-center p-3 bg-light rounded">
                 <i
-                  className="bi bi-people text-primary me-3"
-                  style={{ fontSize: '2rem' }}
+                  className={`bi bi-people text-primary me-3 ${styles.dashboardIcon}`}
                 ></i>
                 <div className="text-start flex-grow-1">
                   <strong>47 neue Patienten</strong>
@@ -87,8 +82,7 @@ export default function BenefitsVets() {
               </div>
               <div className="d-flex align-items-center p-3 bg-light rounded">
                 <i
-                  className="bi bi-star-fill text-warning me-3"
-                  style={{ fontSize: '2rem' }}
+                  className={`bi bi-star-fill text-warning me-3 ${styles.dashboardIcon}`}
                 ></i>
                 <div className="text-start flex-grow-1">
                   <strong>4.8 ★ Bewertung</strong>
@@ -115,26 +109,6 @@ export default function BenefitsVets() {
           </div>
         </div>
       </Container>
-
-      <style>{`
-        .benefit-card {
-          transition: transform 0.3s, box-shadow 0.3s;
-          border-radius: 12px;
-        }
-
-        .benefit-card:hover {
-          transform: translateY(-5px);
-          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
-        }
-
-        .benefit-icon {
-          font-size: 2.5rem;
-        }
-
-        .demo-preview {
-          border: 2px dashed #dee2e6;
-        }
-      `}</style>
     </section>
   )
 }

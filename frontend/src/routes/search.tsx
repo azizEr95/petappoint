@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { Container } from 'react-bootstrap'
 import { SearchField } from '../components/SearchField'
 import { VeterinaryPracticeList } from '../components/VeterinaryPracticeList'
+import styles from '../styles/searchRoute.modules.css'
 
 const searchSchema = z.object({
   name: z.string().default(''),
@@ -20,22 +21,22 @@ function SearchComponent() {
   return (
     <>
       {/* Sticky Search Bar */}
-      <div className="search-header-sticky">
-        <div className="container search-bar-container">
+      <div className={styles.searchHeaderSticky}>
+        <div className={`container ${styles.searchBarContainer}`}>
           <SearchField searchNameBeginn={name} searchOrtBeginn={ort} />
         </div>
       </div>
 
-      <div className="container search-results-container">
+      <div className={`container ${styles.searchResultsContainer}`}>
         {/* Search Summary */}
-        <div className="search-summary">
+        <div className={styles.searchSummary}>
           <h4>
             {name && <span>"{name}"</span>}
             {name && ort && <span> in </span>}
             {ort && <span>{ort}</span>}
             {!name && !ort && <span>Alle Tierarztpraxen</span>}
           </h4>
-          <p className="results-count">
+          <p className={styles.resultsCount}>
             <i className="bi bi-search"></i>
             Gefundene Ergebnisse
           </p>
@@ -44,50 +45,6 @@ function SearchComponent() {
         {/* Results List */}
         <VeterinaryPracticeList searchName={name} searchOrt={ort} />
       </div>
-
-      <style>{`
-        .search-header-sticky {
-          position: sticky;
-          top: 72px;
-          z-index: 999;
-          background: white;
-          padding: 1.5rem 0;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-          margin-bottom: 2rem;
-        }
-
-        .search-bar-container {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        }
-
-        .search-results-container {
-          padding-top: 2rem;
-          padding-bottom: 3rem;
-        }
-
-        .search-summary {
-          margin-bottom: 2rem;
-        }
-
-        .search-summary h4 {
-          color: var(--color-primary);
-          font-weight: 600;
-          margin-bottom: 0.5rem;
-        }
-
-        .results-count {
-          color: var(--color-text-light);
-          font-size: 0.95rem;
-          margin: 0;
-        }
-
-        .results-count i {
-          margin-right: 0.5rem;
-          color: var(--color-primary);
-        }
-      `}</style>
     </>
   )
 }

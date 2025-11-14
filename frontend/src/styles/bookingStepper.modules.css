@@ -1,0 +1,99 @@
+/* Booking Stepper Container */
+.bookingStepper {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.stepperContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.stepperStep {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.stepperItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+/* Stepper Circle */
+.stepperCircle {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #e9ecef;
+  color: #6c757d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1.2rem;
+  transition: all 0.3s;
+  border: 3px solid #e9ecef;
+}
+
+.stepperCircle.active {
+  background: var(--primary-green);
+  color: white;
+  border-color: var(--primary-green);
+  box-shadow: 0 4px 12px rgba(88, 192, 88, 0.3);
+}
+
+.stepperCircle.completed {
+  background: var(--primary-green-dark);
+  border-color: var(--primary-green-dark);
+}
+
+/* Stepper Label */
+.stepperLabel {
+  margin-top: 0.75rem;
+  font-size: 0.85rem;
+  color: #6c757d;
+  font-weight: 500;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* Stepper Line */
+.stepperLine {
+  flex: 1;
+  height: 3px;
+  background: #e9ecef;
+  margin: 0 0.5rem;
+  margin-bottom: 2rem;
+  transition: background 0.3s;
+}
+
+.stepperLine.active {
+  background: var(--primary-green);
+}
+
+/* Responsive Design */
+@media (max-width: 576px) {
+  .stepperCircle {
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
+  }
+
+  .stepperLabel {
+    font-size: 0.75rem;
+    max-width: 60px;
+    white-space: normal;
+  }
+
+  .stepperLine {
+    margin: 0 0.25rem;
+  }
+}

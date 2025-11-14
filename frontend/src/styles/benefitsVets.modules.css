@@ -1,0 +1,31 @@
+/* Section Background */
+.benefitsSection {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+/* Benefit Card */
+.benefitCard {
+  transition: transform 0.3s, box-shadow 0.3s;
+  border-radius: 12px;
+}
+
+.benefitCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+}
+
+/* Benefit Icon */
+.benefitIcon {
+  font-size: 2.5rem;
+}
+
+/* Demo Preview */
+.demoPreview {
+  border: 2px dashed #dee2e6;
+  max-width: 700px;
+}
+
+/* Dashboard Icon */
+.dashboardIcon {
+  font-size: 2rem;
+}

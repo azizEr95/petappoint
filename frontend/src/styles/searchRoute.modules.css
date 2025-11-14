@@ -1,0 +1,41 @@
+.searchHeaderSticky {
+  position: sticky;
+  top: 72px;
+  z-index: 999;
+  background: white;
+  padding: 1.5rem 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  margin-bottom: 2rem;
+}
+
+.searchBarContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.searchResultsContainer {
+  padding-top: 2rem;
+  padding-bottom: 3rem;
+}
+
+.searchSummary {
+  margin-bottom: 2rem;
+}
+
+.searchSummary h4 {
+  color: var(--color-primary);
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.resultsCount {
+  color: var(--color-text-light);
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.resultsCount i {
+  margin-right: 0.5rem;
+  color: var(--color-primary);
+}

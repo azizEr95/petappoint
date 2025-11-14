@@ -1,9 +1,10 @@
 import { Button, Container } from 'react-bootstrap'
 import { Link } from '@tanstack/react-router'
+import styles from '../../styles/ctaBanner.modules.css'
 
 export default function CTABanner() {
   return (
-    <section className="cta-banner section-padding text-white">
+    <section className={`${styles.ctaBanner} section-padding text-white`}>
       <Container className="text-center">
         <h2 className="display-4 fw-bold mb-4">
           Bereit für Ihren nächsten Tierarztbesuch?
@@ -42,35 +43,6 @@ export default function CTABanner() {
           </Button>
         </div>
       </Container>
-
-      <style>{`
-        .cta-banner {
-          background: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-green-dark) 100%);
-          position: relative;
-          overflow: hidden;
-        }
-
-        .cta-banner::before {
-          content: '';
-          position: absolute;
-          top: -50%;
-          left: -50%;
-          width: 200%;
-          height: 200%;
-          background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-          animation: pulse 15s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-          0%, 100% { transform: translate(0, 0) scale(1); }
-          50% { transform: translate(-10%, -10%) scale(1.1); }
-        }
-
-        .cta-banner .container {
-          position: relative;
-          z-index: 1;
-        }
-      `}</style>
     </section>
   )
 }

@@ -1,0 +1,68 @@
+/* Header */
+.headerClean {
+  background: white;
+  box-shadow: var(--shadow-sm);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  padding: 1rem 0;
+}
+
+/* Navigation */
+.navClean {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+/* Logo */
+.logoClean {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.logoIcon {
+  font-size: 1.8rem;
+}
+
+/* Navigation Links */
+.navLinksClean {
+  display: flex;
+  gap: 2rem;
+  flex: 1;
+  justify-content: center;
+}
+
+.navLinkClean {
+  text-decoration: none;
+  color: var(--color-primary);
+  font-weight: 500;
+  transition: color 0.3s;
+}
+
+.navLinkClean:hover {
+  color: var(--color-primary-dark);
+}
+
+/* Navigation Actions */
+.navActions {
+  display: flex;
+  gap: 1rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .navLinksClean {
+    display: none;
+  }
+
+  .logoText {
+    font-size: 1.3rem;
+  }
+}
