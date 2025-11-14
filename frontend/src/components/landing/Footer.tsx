@@ -1,0 +1,204 @@
+import { Button, Col, Container, Form, Row } from 'react-bootstrap'
+import { Link } from '@tanstack/react-router'
+
+export default function Footer() {
+  return (
+    <footer id="contact" className="footer bg-dark text-white pt-5 pb-3">
+      <Container>
+        <Row className="g-4">
+          {/* Logo & Description */}
+          <Col lg={3} md={6}>
+            <h4 className="fw-bold text-success mb-3">vetlib</h4>
+            <p className="text-light small">
+              Ihre moderne Plattform für einfache und schnelle
+              Tierarzt-Terminbuchungen.
+            </p>
+            <div className="d-flex gap-2 mt-3">
+              <a href="#" className="social-link">
+                <i className="bi bi-facebook"></i>
+              </a>
+              <a href="#" className="social-link">
+                <i className="bi bi-instagram"></i>
+              </a>
+              <a href="#" className="social-link">
+                <i className="bi bi-twitter"></i>
+              </a>
+              <a href="#" className="social-link">
+                <i className="bi bi-linkedin"></i>
+              </a>
+            </div>
+          </Col>
+
+          {/* Navigation */}
+          <Col lg={2} md={6}>
+            <h6 className="fw-bold mb-3">Navigation</h6>
+            <ul className="footer-links list-unstyled">
+              <li>
+                <Link to="/">Start</Link>
+              </li>
+              <li>
+                <a href="#how-it-works">So funktioniert's</a>
+              </li>
+              <li>
+                <a href="#for-vets">Für Tierärzte</a>
+              </li>
+              <li>
+                <Link to="/search">Tierarzt finden</Link>
+              </li>
+            </ul>
+          </Col>
+
+          {/* Legal */}
+          <Col lg={2} md={6}>
+            <h6 className="fw-bold mb-3">Rechtliches</h6>
+            <ul className="footer-links list-unstyled">
+              <li>
+                <a href="#">Über uns</a>
+              </li>
+              <li>
+                <a href="#">Impressum</a>
+              </li>
+              <li>
+                <a href="#">Datenschutz</a>
+              </li>
+              <li>
+                <a href="#">AGB</a>
+              </li>
+            </ul>
+          </Col>
+
+          {/* Contact */}
+          <Col lg={2} md={6}>
+            <h6 className="fw-bold mb-3">Kontakt</h6>
+            <ul className="footer-contact list-unstyled">
+              <li>
+                <i className="bi bi-envelope me-2"></i>
+                <a href="mailto:info@vetlib.de">info@vetlib.de</a>
+              </li>
+              <li>
+                <i className="bi bi-telephone me-2"></i>
+                <a href="tel:+498001234567">0800 123 4567</a>
+              </li>
+              <li>
+                <i className="bi bi-geo-alt me-2"></i>
+                Berlin, Deutschland
+              </li>
+            </ul>
+          </Col>
+
+          {/* Newsletter */}
+          <Col lg={3} md={12}>
+            <h6 className="fw-bold mb-3">Newsletter</h6>
+            <p className="small text-light mb-3">
+              Bleiben Sie informiert über neue Funktionen und Angebote
+            </p>
+            <Form className="newsletter-form">
+              <div className="input-group">
+                <Form.Control
+                  type="email"
+                  placeholder="Ihre E-Mail"
+                  className="bg-dark text-white border-secondary"
+                />
+                <Button variant="success" type="submit">
+                  <i className="bi bi-arrow-right"></i>
+                </Button>
+              </div>
+            </Form>
+            <div className="mt-3">
+              <small className="text-light">App herunterladen:</small>
+              <div className="d-flex gap-2 mt-2">
+                <Button variant="outline-light" size="sm">
+                  <i className="bi bi-apple me-1"></i>
+                  iOS
+                </Button>
+                <Button variant="outline-light" size="sm">
+                  <i className="bi bi-google-play me-1"></i>
+                  Android
+                </Button>
+              </div>
+            </div>
+          </Col>
+        </Row>
+
+        <hr className="my-4 bg-secondary" />
+
+        <Row className="align-items-center">
+          <Col md={6} className="text-center text-md-start mb-3 mb-md-0">
+            <small className="text-light">
+              © {new Date().getFullYear()} Vetlib. Alle Rechte vorbehalten.
+            </small>
+          </Col>
+          <Col md={6} className="text-center text-md-end">
+            <small className="text-light">
+              Made with <i className="bi bi-heart-fill text-danger"></i> for
+              animals
+            </small>
+          </Col>
+        </Row>
+      </Container>
+
+      <style>{`
+        .footer {
+          margin-top: auto;
+        }
+
+        .footer-links li {
+          margin-bottom: 0.5rem;
+        }
+
+        .footer-links a {
+          color: #adb5bd;
+          text-decoration: none;
+          font-size: 0.9rem;
+          transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+          color: var(--primary-green);
+        }
+
+        .footer-contact li {
+          margin-bottom: 0.75rem;
+          font-size: 0.9rem;
+          color: #adb5bd;
+        }
+
+        .footer-contact a {
+          color: #adb5bd;
+          text-decoration: none;
+          transition: color 0.3s;
+        }
+
+        .footer-contact a:hover {
+          color: var(--primary-green);
+        }
+
+        .social-link {
+          width: 40px;
+          height: 40px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: rgba(255, 255, 255, 0.1);
+          color: white;
+          border-radius: 50%;
+          text-decoration: none;
+          transition: all 0.3s;
+          font-size: 1.2rem;
+        }
+
+        .social-link:hover {
+          background: var(--primary-green);
+          color: white;
+          transform: translateY(-3px);
+        }
+
+        .newsletter-form .form-control:focus {
+          background-color: #343a40;
+          border-color: var(--primary-green);
+          color: white;
+        }
+      `}</style>
+    </footer>
+  )
+}
