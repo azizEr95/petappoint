@@ -30,22 +30,20 @@ export const getAvailableAppointmentsByPracticeId = async (
     throw new Error('Failed to fetch')
   }
 
-  const data = (await res.json()) as Array<AppointmentsType>
-  return data
-    .map((x) => {
-      const unsafeData = {
-        id: x.id,
-        starttime: new Date(x.starttime),
-        endtime: new Date(x.starttime),
-        fk_animalid: x.fk_animalid,
-        fk_veterinaryid: x.fk_veterinaryid,
-        fk_veterinarypracticeid: x.fk_veterinarypracticeid,
-      }
-      const parsed = AppointmentsSchema.safeParse(unsafeData)
-      if (parsed.success) {
-        return parsed.data
-      }
-      return null
-    })
-    .filter((x) => x !== null)
+    const data = await res.json() as AppointmentsType[];
+    return data.map(x => {
+        const unsafeData = {
+            id: x.id,
+            starttime: new Date(x.starttime),
+            endtime: new Date(x.endtime),
+            fk_animalid: x.fk_animalid,
+            fk_veterinaryid: x.fk_veterinaryid,
+            fk_veterinarypracticeid: x.fk_veterinarypracticeid,
+        }
+        const parsed = AppointmentsSchema.safeParse(unsafeData);
+        if (parsed.success) {
+            return parsed.data;
+        }
+        return null;
+    }).filter(x => x !== null);
 }
