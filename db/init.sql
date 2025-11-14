@@ -4,11 +4,9 @@ DROP TABLE IF EXISTS recipes;
 DROP TABLE IF EXISTS medications;
 DROP TABLE IF EXISTS animal_has_vaccination;
 DROP TABLE IF EXISTS vaccinations;
-DROP TABLE IF EXISTS invoice_has_service;
-DROP TABLE IF EXISTS services;
-DROP TABLE IF EXISTS invoices;
 DROP TABLE IF EXISTS appointment_has_review;
 DROP TABLE IF EXISTS reviews;
+DROP TABLE IF EXISTS services;
 DROP TABLE IF EXISTS appointments;
 DROP TABLE IF EXISTS veterinary_has_specialization;
 DROP TABLE IF EXISTS veterinaries;
@@ -121,13 +119,21 @@ CREATE TABLE IF NOT EXISTS veterinary_has_specialization(
   PRIMARY KEY (fk_veterinaryId, fk_specializationId)
 );
 
+CREATE TABLE IF NOT EXISTS services(
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  estimatedDurationInMinutes INTEGER NOT NULL DEFAULT 0,
+  fk_veterinaryPracticeId INTEGER REFERENCES veterinarypractices(id)
+);
+
 CREATE TABLE IF NOT EXISTS appointments(
   id SERIAL PRIMARY KEY,
   startTime TIMESTAMP NOT NULL,
   endTime TIMESTAMP NOT NULL,
   fk_animalId INTEGER REFERENCES animals(id),
   fk_veterinaryId INTEGER NOT NULL REFERENCES veterinaries(id),
-  fk_veterinaryPracticeId INTEGER NOT NULL REFERENCES veterinarypractices(id)
+  fk_veterinaryPracticeId INTEGER NOT NULL REFERENCES veterinarypractices(id),
+  fk_serviceId INTEGER REFERENCES services(id) DEFAULT NULL
 );
 
 CREATE TABLE IF NOT EXISTS reviews(
@@ -147,29 +153,6 @@ CREATE TABLE IF NOT EXISTS appointment_has_review(
 );
 
 CREATE TYPE paymentStatus AS ENUM('unpaid', 'paid', 'cancelled');
-
-CREATE TABLE IF NOT EXISTS invoices(
-  id SERIAL PRIMARY KEY,
-  status paymentStatus NOT NULL DEFAULT 'unpaid',
-  priceInCents INTEGER NOT NULL CHECK (priceInCents > 0),
-  discount REAL NOT NULL CHECK (discount BETWEEN 0.00 AND 100.00) DEFAULT 0.00, 
-  fk_appointmentId INTEGER NOT NULL REFERENCES appointments(id)
-);
-
-CREATE TABLE IF NOT EXISTS services(
-  id SERIAL PRIMARY KEY,
-  name VARCHAR(100) NOT NULL,
-  priceInCents INTEGER NOT NULL CHECK (priceInCents >= 0),
-  fk_veterinaryPracticeId INTEGER REFERENCES veterinarypractices(id)
-);
-
-CREATE TABLE IF NOT EXISTS invoice_has_service(
-  id SERIAL PRIMARY KEY,
-  fk_invoiceId INTEGER NOT NULL REFERENCES invoices(id),
-  fk_serviceId INTEGER NOT NULL REFERENCES services(id),
-  quantity SMALLINT NOT NULL check (quantity > 0),
-  discount REAL NOT NULL CHECK (discount BETWEEN 0.00 AND 100.00) DEFAULT 0.00
-);
 
 CREATE TABLE IF NOT EXISTS vaccinations(
   id SERIAL PRIMARY KEY,

@@ -21,10 +21,13 @@ export const appointmentService = {
       include: {
         animals: true,
         veterinaries: true,
+        services: true
       },
     });
 
-    if (!foundAppointment) throw new Error(`Appointment not found with id: ${id}`);
+    if (!foundAppointment) {
+      throw new Error(`Appointment not found with id: ${id}`);
+    }
 
     return foundAppointment;
   },
@@ -40,6 +43,7 @@ export const appointmentService = {
       include: {
         animals: true,
         veterinaries: true,
+        services: false
       },
     });
   },
@@ -50,6 +54,7 @@ export const appointmentService = {
       include: {
         animals: true,
         veterinaries: true,
+        services: true
       },
     });
   },
@@ -60,16 +65,18 @@ export const appointmentService = {
       include: {
         animals: true,
         veterinaries: true,
+        services: true
       },
     });
   },
 
-  async getAvailableAppointmentsForPractice(veterinaryPracticeId: number): Promise<appointments[]> {
+  async getAvailableAppointmentsForPractice(veterinaryPracticeId: number): Promise<AppointmentsType[]> {
     return await prisma.appointments.findMany({
       where: { fk_veterinarypracticeid: veterinaryPracticeId, fk_animalid: null},
       include: {
         animals: true,
         veterinaries: true,
+        services: true
       },
     });
   },
@@ -78,8 +85,10 @@ export const appointmentService = {
     return await prisma.appointments.findMany();
   },
 
-  async update(data: appointments): Promise<appointments> {
-    if (!data.id) throw new Error("ID is required for update");
+  async update(data: appointments): Promise<AppointmentsType> {
+    if (!data.id) {
+      throw new Error("ID is required for update");
+    }
 
     return await prisma.appointments.update({ where: { id: data.id }, data: data });
   },
