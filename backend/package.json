@@ -29,7 +29,8 @@
     "ts-jest": "^29.2.6",
     "ts-node": "^10.9.2",
     "tsx": "^4.20.6",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vetlib-shared": "file:../shared"
   },
   "dependencies": {
     "@prisma/client": "^6.19.0",

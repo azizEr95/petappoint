@@ -1,6 +1,6 @@
 import { prisma } from "../singletonPC";
 import { appointments } from "../../generated/prisma";
-import { AppointmentsType } from "../schemas/ZodSchemas";
+import { AppointmentsType } from "vetlib-shared/schemas/ZodSchemas";
 
 export const appointmentService = {
   async create(data: appointments): Promise<AppointmentsType> {

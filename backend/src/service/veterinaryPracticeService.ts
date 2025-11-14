@@ -1,7 +1,6 @@
 import { prisma } from "../singletonPC";
 import { veterinarypractices } from "../../generated/prisma";
-import type { VeterinaryPracticesType } from "../../../shared/schemas/ZodSchemas";
-import type { VeterinaryPracticesCreateType } from "../../../shared/schemas/ZodSchemas";
+import { VeterinaryPracticesCreateType, VeterinaryPracticesType } from "vetlib-shared/schemas/ZodSchemas";
 
 export const veterinaryPracticeService = {
   async create(veterinaryPracticeRe: VeterinaryPracticesCreateType): Promise<veterinarypractices> {

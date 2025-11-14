@@ -1,7 +1,6 @@
 import express from "express";
 import { appointmentService } from "../service/appointmentService";
-import { appointments } from "../../generated/prisma";
-import { AppointmentsUpdateAsPersonType, AppointmentsUpdateAsPersonSchema } from "../schemas/ZodSchemas"; 
+import { AppointmentsType, AppointmentsUpdateAsPersonSchema } from "vetlib-shared/schemas/ZodSchemas";
 
 export const appointmentRouter = express.Router();
 
