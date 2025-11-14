@@ -1,4 +1,3 @@
-import { Button } from 'react-bootstrap'
 import type { AppointmentsType } from '../../../shared/schemas/ZodSchemas'
 import '../styles/nextAvailableAppointments.modules.css'
 import { useState } from 'react'
@@ -10,20 +9,15 @@ type NextAvailableAppointmentsProps = {
   praxisID: string
 }
 
-export function NextAvailableAppointments({
-  praxisID,
-}: NextAvailableAppointmentsProps) {
-  // praxisID zum irgendwie bei Abfrage uebergeben werden
-  const [dateAnsicht, setDateAnsicht] = useState(new Date())
-  const navigate = useNavigate()
+export function NextAvailableAppointments({ praxisID }: NextAvailableAppointmentsProps) { //praxisID zum irgendwie bei Abfrage uebergeben werden
+    let [dateAnsicht, setDateAnsicht] = useState(new Date());
+    const navigate = useNavigate();
 
-  const { isPending, isError, isSuccess, data, error } = useQuery<
-    Array<AppointmentsType>
-  >({
-    queryKey: [`nextAvailableAppointments/${praxisID}`],
-    queryFn: () => getAvailableAppointmentsByPracticeId(praxisID),
-    retry: false,
-  })
+    const { isPending, isError, isSuccess, data } = useQuery<AppointmentsType[]>({
+        queryKey: [`nextAvailableAppointments/${praxisID}`],
+        queryFn: () => getAvailableAppointmentsByPracticeId(praxisID),
+        retry: false
+    });
 
   const handleForwardTermin = () => {
     const newDate = new Date(dateAnsicht) // neues Objekt damit State sich aendert
@@ -46,20 +40,19 @@ export function NextAvailableAppointments({
     }
   }
 
-  const handleBookAppiontment = (termin: AppointmentsType) => {
-    console.log('Termin:' + termin.id)
-    // navigiert zur Buchungsseite fuer den Termin
-    navigate({
-      to: '/praxen/$praxisId/booking/$terminId',
-      params: {
-        praxisId: termin.fk_veterinarypracticeid.toString(),
-        terminId: termin.id.toString(),
-      },
-      state: {
-        termin: termin,
-      },
-    })
-  }
+    const handleBookAppiontment = (termin: AppointmentsType) => {
+        //navigiert zur Buchungsseite fuer den Termin
+        navigate({
+            "to": "/praxen/$praxisId/booking/$terminId",
+            params: {
+                praxisId: termin.fk_veterinarypracticeid.toString(),
+                terminId: termin.id.toString()
+            },
+            state: {
+                termin: termin
+            }
+        });
+    }
 
   if (isPending) {
     return (
@@ -71,7 +64,6 @@ export function NextAvailableAppointments({
   }
 
   if (isError) {
-    console.log(error.message)
     return (
       <div className="no-appointments-message">
         <i className="bi bi-exclamation-circle"></i>
@@ -87,39 +79,27 @@ export function NextAvailableAppointments({
     })
     console.log(data)
 
-    // speichert alle benoetigten Termine in Array, fuer die naechsten fuenf Tage
-    // an Pos 0 sind Termine von Tag dateAnsicht, an Pos 1 von nächsten Tag, ...
-    const termineTage: Array<Array<AppointmentsType>> = Array.from(
-      { length: 5 },
-      () => [],
-    ) // erzeugt zweidimensionales Array
-    let i = 0
-    const vergleichDate = new Date(dateAnsicht) // erster Tag der in dieser Ansicht zur Auswahl steht
-    for (const termin of data) {
-      if (termin.starttime >= dateAnsicht) {
-        // Termine vor angegebenem Starttermin werden nicht angezeigt
-        while (termin.starttime.getDate() >= vergleichDate.getDate()) {
-          // wenn Date String gleich ist dann ist richtige Pos im Array gefunden, dadurch wird sichergestellt das Tag Monat und Jahr uebereinstimmen
-          if (
-            dateToDateString(termin.starttime) ===
-            dateToDateString(vergleichDate)
-          ) {
-            termineTage[i].push(termin)
-            break
-          }
-          i++
-          if (i === 5) {
-            // aufhoeren mit Terminsuche, alle Termine der naechsten 5 Tage gefunden
-            break
-          }
-          vergleichDate.setDate(vergleichDate.getDate() + 1) // der verfuegbare Termin ist noch weiter in der Zukunft (also weiter suchen)
+        //speichert alle benoetigten Termine in Array, fuer die naechsten fuenf Tage
+        //an Pos 0 sind Termine von Tag dateAnsicht, an Pos 1 von nächsten Tag, ...
+        let termineTage: AppointmentsType[][] = Array.from({ length: 5 }, () => []); //erzeugt zweidimensionales Array
+        let i = 0;
+        let vergleichDate = new Date(dateAnsicht); //erster Tag der in dieser Ansicht zur Auswahl steht
+        for (const termin of data) {
+            if (compareDates(termin.starttime, dateAnsicht) >= 0) { //Termine vor angegebenem Starttermin werden nicht angezeigt
+                while (i < 5) {
+                    //wenn Date String gleich ist dann ist richtige Pos im Array gefunden, dadurch wird sichergestellt das Tag Monat und Jahr uebereinstimmen
+                    if (dateToDateString(termin.starttime) === dateToDateString(vergleichDate)) {
+                        termineTage[i].push(termin);
+                        break;
+                    }
+                    i++;
+                    vergleichDate.setDate(vergleichDate.getDate() + 1); //der verfuegbare Termin ist noch weiter in der Zukunft (also weiter suchen)
+                }
+            }
+            if (i === 5) { //auch aussere Schleife verlassen
+                break;
+            }
         }
-      }
-      if (i === 5) {
-        // auch aussere Schleife verlassen
-        break
-      }
-    }
 
     const dateKopie = new Date(dateAnsicht)
     const anzeigeDate1 = new Date(dateAnsicht)
@@ -398,4 +378,30 @@ function getShortWeekday(date: Date): string {
  */
 function getShortDate(date: Date): string {
   return date.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' })
+}
+
+/**
+ * gibt positive Zahl zurueck wenn date1 mehr in der zukunft ist als date2
+ * wenn anders herum dann wird negative zahl zurueckgegeben
+ * bei gleichen Datum wird 0 zurueckgegeben
+ * 
+ * @param date1 erstes Datum zum vergleichen
+ * @param date2 zweites Datum zum vergleichen
+ */
+function compareDates(date1: Date, date2: Date): number {
+  const dateToDayString = (date: Date): string => {
+      return date.toISOString().split('T')[0];
+  };
+
+  const date1String = dateToDayString(date1);
+  const date2String = dateToDayString(date2);
+
+  //einfach mit Strings vergleichen
+  if (date1String > date2String) {
+      return 1; // date1 ist spaeter
+  } else if (date1String < date2String) {
+      return -1; // date2 ist spaeter
+  } else {
+      return 0; // gleicher Tag
+  }
 }
