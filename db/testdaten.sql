@@ -184,3 +184,10 @@ VALUES
   ('2025-12-05 15:00', '2025-12-05 15:45', NULL, 2, 5),
   ('2025-12-08 08:30', '2025-12-08 09:15', NULL, 4, 5),
   ('2025-12-20 13:00', '2025-12-20 13:30', NULL, 2, 5);
+
+INSERT INTO person_has_favorized_veterinarypractice(fk_personId, fk_veterinaryPracticeId)
+VALUES
+  (1, 1),
+  (2, 2),
+  (1, 3),
+  (4, 3);

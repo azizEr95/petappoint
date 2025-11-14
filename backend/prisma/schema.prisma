@@ -74,18 +74,19 @@ model person_has_animal {
 }
 
 model persons {
-  id                Int                 @id @default(autoincrement())
-  firstname         String              @db.VarChar(60)
-  lastname          String              @db.VarChar(60)
-  sex               sexes
-  dateofbirth       DateTime            @db.Date
-  fk_address        Int
-  phone             String              @db.VarChar(20)
-  email             String              @unique @db.VarChar(100)
-  password          String              @db.VarChar(255)
-  person_has_animal person_has_animal[]
-  addresses         addresses           @relation(fields: [fk_address], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  veterinaries      veterinaries?
+  id                                      Int                                       @id @default(autoincrement())
+  firstname                               String                                    @db.VarChar(60)
+  lastname                                String                                    @db.VarChar(60)
+  sex                                     sexes
+  dateofbirth                             DateTime                                  @db.Date
+  fk_address                              Int
+  phone                                   String                                    @db.VarChar(20)
+  email                                   String                                    @unique @db.VarChar(100)
+  password                                String                                    @db.VarChar(255)
+  person_has_animal                       person_has_animal[]
+  person_has_favorized_veterinarypractice person_has_favorized_veterinarypractice[]
+  addresses                               addresses                                 @relation(fields: [fk_address], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  veterinaries                            veterinaries?
 }
 
 model specializations {
@@ -115,20 +116,21 @@ model veterinary_has_specialization {
 }
 
 model veterinarypractices {
-  id                        Int                         @id @default(autoincrement())
-  name                      String                      @db.VarChar(200)
-  phone                     String                      @db.VarChar(20)
-  infoemail                 String                      @db.VarChar(100)
-  email                     String                      @db.VarChar(100)
-  password                  String                      @db.VarChar(255)
-  website                   String?                     @db.VarChar(150)
-  info                      String?
-  fk_addressid              Int
-  appointments              appointments[]
-  services                  services[]
-  veterinaries              veterinaries[]
-  veterinary_has_invitation veterinary_has_invitation[]
-  addresses                 addresses                   @relation(fields: [fk_addressid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  id                                      Int                                       @id @default(autoincrement())
+  name                                    String                                    @db.VarChar(200)
+  phone                                   String                                    @db.VarChar(20)
+  infoemail                               String                                    @db.VarChar(100)
+  email                                   String                                    @db.VarChar(100)
+  password                                String                                    @db.VarChar(255)
+  website                                 String?                                   @db.VarChar(150)
+  info                                    String?
+  fk_addressid                            Int
+  appointments                            appointments[]
+  person_has_favorized_veterinarypractice person_has_favorized_veterinarypractice[]
+  services                                services[]
+  veterinaries                            veterinaries[]
+  veterinary_has_invitation               veterinary_has_invitation[]
+  addresses                               addresses                                 @relation(fields: [fk_addressid], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model animal_has_races {
@@ -247,6 +249,15 @@ model veterinary_has_invitation {
   veterinarypractices     veterinarypractices @relation(fields: [fk_veterinarypracticeid], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@id([fk_veterinaryid, fk_veterinarypracticeid])
+}
+
+model person_has_favorized_veterinarypractice {
+  fk_personid             Int
+  fk_veterinarypracticeid Int
+  veterinarypractices     veterinarypractices @relation(fields: [fk_veterinarypracticeid], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "person_has_favorized_veterinarypra_fk_veterinarypracticeid_fkey")
+  persons                 persons             @relation(fields: [fk_personid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([fk_personid, fk_veterinarypracticeid])
 }
 
 enum sexes {
