@@ -26,3 +26,8 @@
   display: flex;
   flex-direction: row;
 }
+
+.stickyOverviewCard {
+  position: sticky;
+  top: 80px;
+}

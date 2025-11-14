@@ -1,9 +1,10 @@
 import { Button, Col, Container, Form, Row } from 'react-bootstrap'
 import { Link } from '@tanstack/react-router'
+import styles from '../../styles/footer.modules.css'
 
 export default function Footer() {
   return (
-    <footer id="contact" className="footer bg-dark text-white pt-5 pb-3">
+    <footer id="contact" className={`${styles.footer} bg-dark text-white pt-5 pb-3`}>
       <Container>
         <Row className="g-4">
           {/* Logo & Description */}
@@ -14,16 +15,16 @@ export default function Footer() {
               Tierarzt-Terminbuchungen.
             </p>
             <div className="d-flex gap-2 mt-3">
-              <a href="#" className="social-link">
+              <a href="#" className={styles.socialLink}>
                 <i className="bi bi-facebook"></i>
               </a>
-              <a href="#" className="social-link">
+              <a href="#" className={styles.socialLink}>
                 <i className="bi bi-instagram"></i>
               </a>
-              <a href="#" className="social-link">
+              <a href="#" className={styles.socialLink}>
                 <i className="bi bi-twitter"></i>
               </a>
-              <a href="#" className="social-link">
+              <a href="#" className={styles.socialLink}>
                 <i className="bi bi-linkedin"></i>
               </a>
             </div>
@@ -32,7 +33,7 @@ export default function Footer() {
           {/* Navigation */}
           <Col lg={2} md={6}>
             <h6 className="fw-bold mb-3">Navigation</h6>
-            <ul className="footer-links list-unstyled">
+            <ul className={`${styles.footerLinks} list-unstyled`}>
               <li>
                 <Link to="/">Start</Link>
               </li>
@@ -51,7 +52,7 @@ export default function Footer() {
           {/* Legal */}
           <Col lg={2} md={6}>
             <h6 className="fw-bold mb-3">Rechtliches</h6>
-            <ul className="footer-links list-unstyled">
+            <ul className={`${styles.footerLinks} list-unstyled`}>
               <li>
                 <a href="#">Über uns</a>
               </li>
@@ -70,7 +71,7 @@ export default function Footer() {
           {/* Contact */}
           <Col lg={2} md={6}>
             <h6 className="fw-bold mb-3">Kontakt</h6>
-            <ul className="footer-contact list-unstyled">
+            <ul className={`${styles.footerContact} list-unstyled`}>
               <li>
                 <i className="bi bi-envelope me-2"></i>
                 <a href="mailto:info@vetlib.de">info@vetlib.de</a>
@@ -92,7 +93,7 @@ export default function Footer() {
             <p className="small text-light mb-3">
               Bleiben Sie informiert über neue Funktionen und Angebote
             </p>
-            <Form className="newsletter-form">
+            <Form className={styles.newsletterForm}>
               <div className="input-group">
                 <Form.Control
                   type="email"
@@ -136,69 +137,6 @@ export default function Footer() {
           </Col>
         </Row>
       </Container>
-
-      <style>{`
-        .footer {
-          margin-top: auto;
-        }
-
-        .footer-links li {
-          margin-bottom: 0.5rem;
-        }
-
-        .footer-links a {
-          color: #adb5bd;
-          text-decoration: none;
-          font-size: 0.9rem;
-          transition: color 0.3s;
-        }
-
-        .footer-links a:hover {
-          color: var(--primary-green);
-        }
-
-        .footer-contact li {
-          margin-bottom: 0.75rem;
-          font-size: 0.9rem;
-          color: #adb5bd;
-        }
-
-        .footer-contact a {
-          color: #adb5bd;
-          text-decoration: none;
-          transition: color 0.3s;
-        }
-
-        .footer-contact a:hover {
-          color: var(--primary-green);
-        }
-
-        .social-link {
-          width: 40px;
-          height: 40px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          background: rgba(255, 255, 255, 0.1);
-          color: white;
-          border-radius: 50%;
-          text-decoration: none;
-          transition: all 0.3s;
-          font-size: 1.2rem;
-        }
-
-        .social-link:hover {
-          background: var(--primary-green);
-          color: white;
-          transform: translateY(-3px);
-        }
-
-        .newsletter-form .form-control:focus {
-          background-color: #343a40;
-          border-color: var(--primary-green);
-          color: white;
-        }
-      `}</style>
     </footer>
   )
 }
