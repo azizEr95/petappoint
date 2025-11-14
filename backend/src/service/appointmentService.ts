@@ -61,7 +61,7 @@ export const appointmentService = {
 
   async getForPractice(veterinaryPracticeId: number): Promise<AppointmentsType[]> {
     return await prisma.appointments.findMany({
-      where: { fk_veterinarypracticeid: veterinaryPracticeId},
+      where: { fk_veterinarypracticeid: veterinaryPracticeId },
       include: {
         animals: true,
         veterinaries: true,
@@ -72,7 +72,7 @@ export const appointmentService = {
 
   async getAvailableAppointmentsForPractice(veterinaryPracticeId: number): Promise<AppointmentsType[]> {
     return await prisma.appointments.findMany({
-      where: { fk_veterinarypracticeid: veterinaryPracticeId, fk_animalid: null},
+      where: { fk_veterinarypracticeid: veterinaryPracticeId, fk_animalid: null },
       include: {
         animals: true,
         veterinaries: true,
@@ -91,6 +91,29 @@ export const appointmentService = {
     }
 
     return await prisma.appointments.update({ where: { id: data.id }, data: data });
+  },
+
+  async updateAppointmentAsPerson(id: number, fk_animalid: number): Promise<AppointmentsType> {
+    // check if dto is complete
+    if (!id || !fk_animalid) throw new Error("ID and AnimalID is required for update");
+
+    // check if appointment is available
+    const appointment = await prisma.appointments.findUnique({
+      where: {
+        id: id
+      }
+    })
+
+    if(appointment?.fk_animalid) throw new Error("Termin is already taken");
+
+    return await prisma.appointments.update({
+      where: {
+        id: id
+      },
+      data: {
+        fk_animalid: fk_animalid
+      }
+    })
   },
 
   async delete(id: number): Promise<void> {
