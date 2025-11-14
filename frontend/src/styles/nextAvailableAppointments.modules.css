@@ -1,7 +1,211 @@
-.TerminDate {
-  margin-left: 12px;
+/* No appointments message */
+.no-appointments-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  padding: 2rem;
+  text-align: center;
+  color: var(--color-text-light);
 }
 
-.ButtonTermin {
-  margin-top: 10px;
+.no-appointments-message i {
+  font-size: 2.5rem;
+  color: var(--color-text-muted);
+  margin-bottom: 1rem;
+}
+
+.no-appointments-message p {
+  margin: 0;
+  font-size: 1rem;
+}
+
+/* Calendar container */
+.calendar-container {
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Next appointment banner */
+.next-appointment-banner {
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: center;
+}
+
+.next-appointment-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: var(--color-primary-light);
+  color: var(--color-primary-dark);
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius-md);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.next-appointment-btn:hover {
+  background: var(--color-primary);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.next-appointment-btn i {
+  font-size: 1.1rem;
+}
+
+/* Calendar header with navigation */
+.calendar-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid var(--color-border);
+}
+
+.nav-arrow {
+  background: none;
+  border: none;
+  color: var(--color-primary);
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.25rem;
+  transition: opacity 0.2s;
+  flex-shrink: 0;
+}
+
+.nav-arrow:hover:not(:disabled) {
+  opacity: 0.7;
+}
+
+.nav-arrow:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* Days header */
+.calendar-days-header {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.day-header {
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.day-name {
+  font-weight: 600;
+  color: var(--color-primary);
+  margin-bottom: 0.25rem;
+}
+
+.day-date {
+  color: var(--color-text-light);
+  font-size: 0.85rem;
+}
+
+/* Calendar grid */
+.calendar-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.calendar-row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.5rem;
+}
+
+/* Time slots */
+.time-slot-btn {
+  padding: 0.6rem 0.5rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-align: center;
+  transition: all 0.2s;
+  min-height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.time-slot-btn.available {
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.time-slot-btn.available:hover {
+  background: var(--color-primary-dark);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.time-slot-btn.unavailable {
+  background: var(--color-bg-light);
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
+}
+
+/* Mehr button */
+.mehr-button-container {
+  margin-top: 1rem;
+}
+
+.mehr-btn-full {
+  width: 100%;
+  padding: 0.6rem 1.5rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-align: center;
+  background: transparent;
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.mehr-btn-full:hover {
+  background: var(--color-primary);
+  color: white;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .calendar-days-header {
+    grid-template-columns: repeat(5, 1fr);
+  }
+
+  .calendar-row {
+    grid-template-columns: repeat(5, 1fr);
+  }
+
+  .day-header {
+    font-size: 0.75rem;
+  }
+
+  .day-date {
+    font-size: 0.7rem;
+  }
+
+  .time-slot-btn {
+    padding: 0.4rem 0.3rem;
+    font-size: 0.75rem;
+    min-height: 2rem;
+  }
 }
