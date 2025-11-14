@@ -1,5 +1,4 @@
 import { Card, Col, Container, Row } from 'react-bootstrap'
-import styles from '../../styles/benefitsOwners.modules.css'
 
 export default function BenefitsOwners() {
   const benefits = [
@@ -49,9 +48,9 @@ export default function BenefitsOwners() {
         <Row className="g-4">
           {benefits.map((benefit, index) => (
             <Col key={index} md={6} lg={4}>
-              <Card className={`${styles.benefitCard} h-100 border-0 shadow-sm`}>
+              <Card className="benefit-card h-100 border-0 shadow-sm">
                 <Card.Body className="text-center p-4">
-                  <div className={`${styles.benefitIcon} mb-3`}>{benefit.icon}</div>
+                  <div className="benefit-icon mb-3">{benefit.icon}</div>
                   <Card.Title className="h5 mb-2">{benefit.title}</Card.Title>
                   <Card.Text className="text-muted">
                     {benefit.description}
@@ -62,6 +61,22 @@ export default function BenefitsOwners() {
           ))}
         </Row>
       </Container>
+
+      <style>{`
+        .benefit-card {
+          transition: transform 0.3s, box-shadow 0.3s;
+          border-radius: 12px;
+        }
+
+        .benefit-card:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+        }
+
+        .benefit-icon {
+          font-size: 3rem;
+        }
+      `}</style>
     </section>
   )
 }

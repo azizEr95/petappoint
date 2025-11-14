@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { Button, Card, Container } from 'react-bootstrap'
-import styles from '../../../../styles/bookingPage.modules.css'
+import '../../../../styles/bookingPage.modules.css'
 import { useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { SelectAppointmentType } from '../../../../components/SelectAppointmentType'
@@ -191,7 +191,8 @@ function BookingComponent() {
 
         <div className="col-lg-4">
           <Card
-            className={`shadow-sm border-0 ${styles.stickyOverviewCard}`}
+            className="shadow-sm border-0 sticky-top"
+            style={{ top: '80px' }}
           >
             <Card.Header className="bg-success text-white">
               <i className="bi bi-info-circle me-2"></i>

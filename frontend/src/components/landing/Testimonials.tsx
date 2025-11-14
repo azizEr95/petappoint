@@ -1,5 +1,4 @@
 import { Carousel, Col, Container, Row } from 'react-bootstrap'
-import styles from '../../styles/testimonials.modules.css'
 
 export default function Testimonials() {
   const testimonials = [
@@ -40,23 +39,29 @@ export default function Testimonials() {
           </p>
         </div>
 
-        <Carousel className={`${styles.testimonialCarousel} mb-5`} indicators={false}>
+        <Carousel className="testimonial-carousel mb-5" indicators={false}>
           {testimonials.map((testimonial, index) => (
             <Carousel.Item key={index}>
               <div
-                className={`${styles.testimonialCard} bg-white p-5 rounded-3 shadow-sm mx-auto`}
+                className="testimonial-card bg-white p-5 rounded-3 shadow-sm mx-auto"
+                style={{ maxWidth: '700px' }}
               >
                 <div className="mb-3">
                   {[...Array(testimonial.rating)].map((_, i) => (
                     <i key={i} className="bi bi-star-fill text-warning"></i>
                   ))}
                 </div>
-                <p className={`${styles.testimonialText} fs-5 mb-4`}>
+                <p className="testimonial-text fs-5 mb-4">
                   "{testimonial.text}"
                 </p>
                 <div className="d-flex align-items-center">
                   <div
-                    className={`${styles.testimonialAvatar} bg-success text-white rounded-circle d-flex align-items-center justify-content-center me-3`}
+                    className="testimonial-avatar bg-success text-white rounded-circle d-flex align-items-center justify-content-center me-3"
+                    style={{
+                      width: '50px',
+                      height: '50px',
+                      fontSize: '1.5rem',
+                    }}
                   >
                     {testimonial.name.charAt(0)}
                   </div>
@@ -75,9 +80,10 @@ export default function Testimonials() {
           <Row className="justify-content-center">
             {partnerLogos.map((partner, index) => (
               <Col key={index} xs={6} md={3} className="mb-3">
-                <div className={`${styles.partnerLogo} bg-white p-4 rounded shadow-sm`}>
+                <div className="partner-logo bg-white p-4 rounded shadow-sm">
                   <div
-                    className={`${styles.partnerIcon} mb-2`}
+                    className="partner-icon mb-2"
+                    style={{ fontSize: '2.5rem' }}
                   >
                     {partner.icon}
                   </div>
@@ -108,7 +114,8 @@ export default function Testimonials() {
         <div className="text-center mt-4">
           <div className="d-inline-flex align-items-center gap-2 bg-white p-3 rounded shadow-sm">
             <i
-              className={`bi bi-shield-check text-success ${styles.dsgvoBadgeIcon}`}
+              className="bi bi-shield-check text-success"
+              style={{ fontSize: '1.5rem' }}
             ></i>
             <div className="text-start">
               <strong className="d-block">DSGVO-konform</strong>
@@ -117,6 +124,32 @@ export default function Testimonials() {
           </div>
         </div>
       </Container>
+
+      <style>{`
+        .testimonial-carousel .carousel-control-prev,
+        .testimonial-carousel .carousel-control-next {
+          width: 5%;
+        }
+
+        .testimonial-text {
+          font-style: italic;
+          color: var(--text-dark);
+          line-height: 1.6;
+        }
+
+        .partner-logo {
+          transition: transform 0.3s;
+          min-height: 120px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .partner-logo:hover {
+          transform: translateY(-5px);
+        }
+      `}</style>
     </section>
   )
 }

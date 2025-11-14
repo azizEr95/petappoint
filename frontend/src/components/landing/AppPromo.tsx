@@ -1,5 +1,4 @@
 import { Button, Col, Container, Row } from 'react-bootstrap'
-import styles from '../../styles/appPromo.modules.css'
 
 export default function AppPromo() {
   return (
@@ -16,15 +15,15 @@ export default function AppPromo() {
               Behandlungshistorie Ihrer Tiere zu.
             </p>
             <div className="d-flex flex-wrap gap-3 mb-3">
-              <div className={styles.appFeature}>
+              <div className="app-feature">
                 <i className="bi bi-check-circle-fill me-2"></i>
                 Push-Benachrichtigungen
               </div>
-              <div className={styles.appFeature}>
+              <div className="app-feature">
                 <i className="bi bi-check-circle-fill me-2"></i>
                 Offline-Zugriff
               </div>
-              <div className={styles.appFeature}>
+              <div className="app-feature">
                 <i className="bi bi-check-circle-fill me-2"></i>
                 Impfpass digital
               </div>
@@ -45,12 +44,12 @@ export default function AppPromo() {
           </Col>
           <Col lg={6} className="text-center">
             <div className="app-mockup">
-              <div className={styles.mockupPhone}>
-                <i className="bi bi-phone"></i>
+              <div className="mockup-phone">
+                <i className="bi bi-phone" style={{ fontSize: '15rem' }}></i>
               </div>
-              <div className={`${styles.qrPlaceholder} mt-3`}>
-                <div className={styles.qrCode}>
-                  <i className={`bi bi-qr-code ${styles.qrCodeIcon}`}></i>
+              <div className="qr-placeholder mt-3">
+                <div className="qr-code">
+                  <i className="bi bi-qr-code" style={{ fontSize: '6rem' }}></i>
                   <p className="mt-2 mb-0">QR-Code scannen</p>
                 </div>
               </div>
@@ -58,6 +57,31 @@ export default function AppPromo() {
           </Col>
         </Row>
       </Container>
+
+      <style>{`
+        .app-feature {
+          background: rgba(255, 255, 255, 0.2);
+          padding: 0.5rem 1rem;
+          border-radius: 20px;
+          font-size: 0.95rem;
+        }
+
+        .mockup-phone {
+          color: rgba(255, 255, 255, 0.3);
+        }
+
+        .qr-placeholder {
+          display: inline-block;
+        }
+
+        .qr-code {
+          background: white;
+          color: var(--text-dark);
+          padding: 1.5rem;
+          border-radius: 12px;
+          display: inline-block;
+        }
+      `}</style>
     </section>
   )
 }

@@ -1,5 +1,3 @@
-import styles from '../../styles/featuresOverview.modules.css'
-
 export default function FeaturesOverview() {
   const steps = [
     {
@@ -33,17 +31,79 @@ export default function FeaturesOverview() {
           In nur 3 einfachen Schritten zum Tierarzttermin
         </p>
 
-        <div className={styles.stepsGrid}>
+        <div className="steps-grid">
           {steps.map((step) => (
-            <div key={step.number} className={styles.stepCard}>
-              <div className={styles.stepNumberBadge}>{step.number}</div>
-              <div className={styles.stepIcon}>{step.icon}</div>
-              <h3 className={styles.stepTitle}>{step.title}</h3>
-              <p className={styles.stepDescription}>{step.description}</p>
+            <div key={step.number} className="step-card">
+              <div className="step-number-badge">{step.number}</div>
+              <div className="step-icon">{step.icon}</div>
+              <h3 className="step-title">{step.title}</h3>
+              <p className="step-description">{step.description}</p>
             </div>
           ))}
         </div>
       </div>
+
+      <style>{`
+        .steps-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+          gap: var(--spacing-lg);
+          margin-top: var(--spacing-xl);
+        }
+
+        .step-card {
+          background: white;
+          padding: var(--spacing-xl);
+          border-radius: var(--radius-lg);
+          box-shadow: var(--shadow-sm);
+          text-align: center;
+          transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .step-card:hover {
+          transform: translateY(-5px);
+          box-shadow: var(--shadow-lg);
+        }
+
+        .step-number-badge {
+          width: 50px;
+          height: 50px;
+          margin: 0 auto 1.5rem;
+          background: var(--color-primary);
+          color: white;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: 700;
+          font-size: 1.5rem;
+        }
+
+        .step-icon {
+          font-size: 3.5rem;
+          margin-bottom: 1rem;
+        }
+
+        .step-title {
+          font-size: 1.5rem;
+          font-weight: 600;
+          color: var(--color-primary);
+          margin-bottom: 0.75rem;
+        }
+
+        .step-description {
+          color: var(--color-text-light);
+          font-size: 1rem;
+          line-height: 1.6;
+          margin: 0;
+        }
+
+        @media (max-width: 768px) {
+          .steps-grid {
+            grid-template-columns: 1fr;
+          }
+        }
+      `}</style>
     </section>
   )
 }
