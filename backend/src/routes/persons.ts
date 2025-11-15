@@ -1,8 +1,20 @@
 import express from "express";
 import { personService } from "../service/personService";
+import { animalService } from "../service/animalService";
 
 export const userRouter = express.Router();
 
+userRouter.get('/:id/animals',
+    async (req, res) => {
+        try {
+            const id = parseInt(req.params.id);
+            const ids = await personService.getAnimalsForPersonId(id);
+            res.send(ids);
+        } catch (ex) {
+            res.sendStatus(404);
+        }
+    }
+)
 userRouter.get("/:id/favorites",
     async (req, res) => {
         try {

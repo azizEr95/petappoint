@@ -2,27 +2,22 @@ import { Form } from 'react-bootstrap'
 import '../styles/selectAnimal.modules.css'
 import { useState } from 'react'
 import type { AnimalsType } from '../../../shared/schemas/ZodSchemas'
+import { useQuery } from '@tanstack/react-query'
+import { getAnimalsFromUser } from '../api/AnimalsAPI'
 
-// Props werden spaetr erst benoetigt
 type SelectAnimalProps = {
   handleChangeAnimal: (animal: AnimalsType | null) => void
 }
 
 export function SelectAnimal({ handleChangeAnimal }: SelectAnimalProps) {
-  const [selectedAnimal, setSelectedAnimal] = useState(-1) // -1 bedeutet, das noch kein Tier ausgewaehlt wurde
+  const [selectedAnimal, setSelectedAnimal] = useState(-1) // -1 means that no animal has been selected yet
 
-  // erstmal zum testen
-  const animal: Array<AnimalsType> = [
-    {
-      id: 1,
-      name: 'Katze1',
-    },
-    {
-      id: 2,
-      name: 'Hund2',
-    },
-  ]
-  // spaeter Tiere von Backend von diesem Besitzer abrufen
+  const userId: number = 6; // for user with ID 6, to be changed...
+  const { isSuccess, data } = useQuery<AnimalsType[]>({ //for this query is no error handling implemented, if the query fails
+    queryKey: ['animals', userId],
+    queryFn: () => getAnimalsFromUser(userId),
+    retry: false
+  });
 
   const handleSelectAnimal = (animal: AnimalsType) => {
     if (selectedAnimal === animal.id) {
@@ -30,9 +25,15 @@ export function SelectAnimal({ handleChangeAnimal }: SelectAnimalProps) {
       handleChangeAnimal(null)
     } else {
       setSelectedAnimal(animal.id)
-      handleChangeAnimal(animal) // damit BookingComponent auch das ausgewaehlte Tier kennt
+      handleChangeAnimal(animal) // BookingComponent also need to know the selected animal
     }
   }
+
+  if (!isSuccess) {
+    return
+  }
+
+  const animal = data
 
   return (
     <Form id="tierList">

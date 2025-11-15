@@ -1,5 +1,6 @@
 import { prisma } from "../singletonPC";
 import { persons } from "../../generated/prisma";
+import { AnimalsType } from "vetlib-shared/schemas/ZodSchemas";
 
 export const personService = {
   async create(data: persons): Promise<persons> {
@@ -82,6 +83,27 @@ export const personService = {
       }
     });
     return result.map(x => x.fk_veterinarypracticeid);
+  },
+
+  async getAnimalsForPersonId(personId: number): Promise<AnimalsType[]> {
+    if (!Number.isInteger(personId)) {
+      throw new Error("personId needs to be an integer.");
+    }
+
+    const animals = await prisma.person_has_animal.findMany({
+      where: {
+        fk_personid: personId
+      },
+      omit: {
+        fk_personid: true,
+        fk_animalid: true
+      },
+      include: {
+        animals: true
+      }
+    });
+
+    return animals.map(x => x.animals);
   },
 
   async delete(id: number): Promise<void> {
