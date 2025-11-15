@@ -9,10 +9,13 @@ export const getAppointmentsById = async (
     throw new Error('Failed to fetch getAppointmentsById');
   }
 
-  const data = await res.json() as AppointmentsType;
+  const data = await res.json();
   data.starttime = new Date(data.starttime);
   data.endtime = new Date(data.endtime);
   const parsed = AppointmentsSchema.safeParse(data);
+  if (parsed.error !== undefined) { //if Zod throws an Error print them
+    console.log(parsed.error);
+  }
   if (!parsed.success) {
     throw new Error(parsed.error.toString());
   }
@@ -30,6 +33,7 @@ export const getAvailableAppointmentsByPracticeId = async (
   }
 
   const data = await res.json() as AppointmentsType[];
+  console.log(data)
   return data.map(x => {
     const unsafeData = {
       id: x.id,
@@ -38,8 +42,12 @@ export const getAvailableAppointmentsByPracticeId = async (
       fk_animalid: x.fk_animalid,
       fk_veterinaryid: x.fk_veterinaryid,
       fk_veterinarypracticeid: x.fk_veterinarypracticeid,
+      fk_serviceid: x.fk_animalid
     }
     const parsed = AppointmentsSchema.safeParse(unsafeData);
+    if (parsed.error !== undefined) { //if Zod throws an Error print them
+      console.log(parsed.error);
+    }
     if (parsed.success) {
       return parsed.data;
     }

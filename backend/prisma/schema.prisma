@@ -29,8 +29,8 @@ model animals {
   weightingram           Int?
   heightincm             Int?
   timeofdeath            DateTime?                @db.Date
-  iscastrated            Boolean?
-  lifestyle              husbandarysystem?
+  iscastrated            Boolean
+  lifestyle              husbandarysystem         @default(organic)
   sex                    sexes                    @default(notknown)
   fk_animaltypeid        Int
   fk_animalgroupid       Int?

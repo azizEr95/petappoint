@@ -34,13 +34,13 @@ const husbandarySystem = z.enum(['indoor', 'indoorPlusSpace', 'indoorWithFreshAi
 export const AnimalsSchema = z.object({
     id: z.number().int(),
     name: z.string().min(2).max(100),
-    dateofbirth: z.date().optional(),
-    dateofbirthisexact: z.boolean().optional(),
-    weightingram: z.number().int().optional(),
-    heightincm: z.number().int().optional(),
-    timeofdeath: z.date().optional(),
-    iscastrated: z.boolean().optional(),
-    lifestyle: husbandarySystem.optional()
+    dateofbirth: z.date().nullable(),
+    dateofbirthisexact: z.boolean().nullable(),
+    weightingram: z.number().int().nullable(),
+    heightincm: z.number().int().nullable(),
+    timeofdeath: z.date().nullable(),
+    iscastrated: z.boolean(),
+    lifestyle: husbandarySystem
 });
 
 
@@ -139,6 +139,8 @@ export const ServiceSchema = z.object({
     name: z.string().min(1).max(100),
     estimateddurationinminutes: z.number().int().min(0)
 });
+
+export type ServiceType = z.infer<typeof ServiceSchema>;
 
 
 //VeterinaryPractice:

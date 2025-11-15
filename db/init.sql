@@ -71,8 +71,8 @@ CREATE TABLE IF NOT EXISTS animals(
   weightInGram INTEGER,
   heightInCm INTEGER,
   timeOfDeath DATE,
-  isCastrated BOOLEAN,
-  lifestyle husbandarySystem,
+  isCastrated BOOLEAN NOT NULL,
+  lifestyle husbandarySystem NOT NULL DEFAULT 'organic',
   sex sexes NOT NULL DEFAULT 'notknown',
   fk_animalTypeId INTEGER NOT NULL REFERENCES animaltypes(id),
   fk_animalGroupId INTEGER REFERENCES animalgroup(id)
