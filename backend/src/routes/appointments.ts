@@ -67,7 +67,7 @@ appointmentRouter.put("/:id",
                 res.status(400).send(appointmentData.error);
                 return;
             }
-            res.status(201).send(await appointmentService.updateAppointmentAsPerson(appointmentData.data.id, appointmentData.data.fk_animalid));
+            res.status(201).send(await appointmentService.updateAppointmentAsPerson(appointmentData.data.id, appointmentData.data.fk_animalid, appointmentData.data.fk_serviceid));
             return;
         } catch (e) {
             if (String(e).includes("ID and AnimalID is required for update")) {
