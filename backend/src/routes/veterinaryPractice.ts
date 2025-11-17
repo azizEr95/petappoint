@@ -69,7 +69,7 @@ veterinaryPracticeRouter.get('/:id/appointments/available',
 // TO-DO: erstellen von tierarztpraxen
 
 veterinaryPracticeRouter.post("/",
-    async (req, res) => {
+    async (req, res, next) => {
         // validation schema
         const adressSchema = z.object({
             street: z.string().min(3).max(100),
@@ -91,11 +91,14 @@ veterinaryPracticeRouter.post("/",
         })
         const createdVet = vetinarySchema.safeParse(req.body);
         if (!createdVet.success) {
-            return res.sendStatus(400);
+            res.sendStatus(400);
+            return;
         }
-        const vetRes = await veterinaryPracticeService.create(createdVet.data);
-
-        res.sendStatus(200);
-        return;
+        try {
+            const vetRes = await veterinaryPracticeService.create(createdVet.data);
+            res.sendStatus(200).send(vetRes);
+        } catch (error) {
+            next(error);
+        }
     }
 )
