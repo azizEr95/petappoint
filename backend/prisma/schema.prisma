@@ -44,10 +44,11 @@ model animals {
 }
 
 model animaltypes {
-  id          Int           @id @default(autoincrement())
-  name        String        @db.VarChar(100)
-  animalraces animalraces[]
-  animals     animals[]
+  id                       Int                        @id @default(autoincrement())
+  name                     String                     @db.VarChar(100)
+  animalraces              animalraces[]
+  animals                  animals[]
+  animaltype_has_lifestyle animaltype_has_lifestyle[]
 }
 
 model appointments {
@@ -237,6 +238,15 @@ model person_has_favorized_veterinarypractice {
   persons                 persons             @relation(fields: [fk_personid], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@id([fk_personid, fk_veterinarypracticeid])
+}
+
+model animaltype_has_lifestyle {
+  fk_animaltypeid Int
+  namelifestyle   String?          @db.VarChar(100)
+  lifestyle       husbandarysystem @default(organic)
+  animaltypes     animaltypes      @relation(fields: [fk_animaltypeid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([fk_animaltypeid, lifestyle])
 }
 
 enum sexes {
