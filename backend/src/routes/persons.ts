@@ -2,9 +2,16 @@ import express from "express";
 import { personService } from "../service/personService";
 import { animalService } from "../service/animalService";
 
-export const userRouter = express.Router();
+export const personsRouter = express.Router();
 
-userRouter.get('/:id/animals',
+personsRouter.get('/all',
+    async (_req, res) => {
+        const persons = await personService.getAll();
+        res.send(persons);
+    }
+)
+
+personsRouter.get('/:id/animals',
     async (req, res) => {
         try {
             const id = parseInt(req.params.id);
@@ -15,7 +22,7 @@ userRouter.get('/:id/animals',
         }
     }
 )
-userRouter.get("/:id/favorites",
+personsRouter.get("/:id/favorites",
     async (req, res) => {
         try {
             const id = parseInt(req.params.id);
@@ -27,7 +34,7 @@ userRouter.get("/:id/favorites",
     }
 )
 
-userRouter.post("/:id/favorites/:practiceId",
+personsRouter.post("/:id/favorites/:practiceId",
     async (req, res) => {
         try {
             const id = parseInt(req.params.id);
@@ -41,7 +48,7 @@ userRouter.post("/:id/favorites/:practiceId",
 )
 
 
-userRouter.delete("/:id/favorites/:practiceId",
+personsRouter.delete("/:id/favorites/:practiceId",
     async (req, res) => {
         try {
             const id = parseInt(req.params.id);

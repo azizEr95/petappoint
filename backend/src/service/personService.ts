@@ -24,7 +24,11 @@ export const personService = {
   },
 
   async getAll(): Promise<persons[]> {
-    return await prisma.persons.findMany();
+    return await prisma.persons.findMany({
+      include: {
+        addresses: true
+      }
+    });
   },
 
   async update(data: persons): Promise<persons> {
