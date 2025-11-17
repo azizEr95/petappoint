@@ -150,7 +150,7 @@ export const appointmentService = {
     return await prisma.appointments.update({ where: { id: data.id }, data: data });
   },
 
-  async updateAppointmentAsPerson(id: number, fk_animalid: number): Promise<AppointmentsType> {
+  async updateAppointmentAsPerson(id: number, fk_animalid: number, fk_serviceid: number): Promise<AppointmentsType> {
     // check if dto is complete
     if (!id || !fk_animalid) throw new Error("ID and AnimalID is required for update");
 
@@ -168,7 +168,8 @@ export const appointmentService = {
         id: id
       },
       data: {
-        fk_animalid: fk_animalid
+        fk_animalid: fk_animalid,
+        fk_serviceid: fk_serviceid
       }
     })
   },

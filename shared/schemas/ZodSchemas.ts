@@ -196,7 +196,8 @@ export const AppointmentsCreateSchema = AppointmentsSchema.omit({
 
 export const AppointmentsUpdateAsPersonSchema = z.object({
     id: z.number().int(),
-    fk_animalid: z.number().int()
+    fk_animalid: z.number().int(),
+    fk_serviceid: z.number().int()
 })
 
 export type AppointmentsUpdateAsPersonType = z.infer<typeof AppointmentsUpdateAsPersonSchema>;
