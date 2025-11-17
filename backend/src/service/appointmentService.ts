@@ -1,6 +1,7 @@
 import { prisma } from "../singletonPC";
 import { appointments } from "../../generated/prisma";
 import { AppointmentsType } from "vetlib-shared/schemas/ZodSchemas";
+import { animalService } from "./animalService";
 
 export const appointmentService = {
   async create(data: appointments): Promise<AppointmentsType> {
@@ -81,6 +82,62 @@ export const appointmentService = {
     });
   },
 
+  async getPastAppointmentsForPerson(personId: number): Promise<AppointmentsType[]> {
+    const now = new Date();
+    const animals = await animalService.getByPersonId(personId);
+
+    if (animals.length == 0) {
+      return [];
+    }
+
+    const animalIds = animals.map(a => a.id);
+    const appointments = await prisma.appointments.findMany({
+      where: {
+        fk_animalid: {
+          in: animalIds // in the list
+        },
+        starttime: {
+          lt: now // less than
+        }
+      },
+      include: {
+        animals: true,
+        veterinaries: true,
+        services: true
+      }
+    });
+
+    return appointments;
+  },
+
+  async getFutureAppointmentsForPerson(personId: number) {
+    const now = new Date();
+    const animals = await animalService.getByPersonId(personId);
+
+    if (animals.length == 0) {
+      return [];
+    }
+
+    const animalIds = animals.map(a => a.id);
+    const appointments = await prisma.appointments.findMany({
+      where: {
+        fk_animalid: {
+          in: animalIds
+        },
+        starttime: {
+          gt: now // greater than
+        }
+      },
+      include: {
+        animals: true,
+        veterinaries: true,
+        services: true
+      }
+    });
+
+    return appointments;
+  },
+
   async getAll(): Promise<AppointmentsType[]> {
     return await prisma.appointments.findMany();
   },
@@ -104,7 +161,7 @@ export const appointmentService = {
       }
     })
 
-    if(appointment?.fk_animalid) throw new Error("Termin is already taken");
+    if (appointment?.fk_animalid) throw new Error("Termin is already taken");
 
     return await prisma.appointments.update({
       where: {

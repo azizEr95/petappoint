@@ -14,6 +14,7 @@ describe("appointmentService", () => {
     fk_animalid: 1,
     fk_veterinaryid: 1,
     fk_veterinarypracticeid: 1,
+    fk_serviceid: 1,
   };
 
   const mockAppointmentWithRelations = {

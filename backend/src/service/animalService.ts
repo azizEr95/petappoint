@@ -13,7 +13,7 @@ export const animalService = {
         timeofdeath: data.timeofdeath,
         iscastrated: data.iscastrated,
         lifestyle: data.lifestyle,
-        animalgroup: { connect: { id: data.fk_animalgroupid } },
+        animalgroup: { connect: { id: data.fk_animalgroupid ?? undefined } },
         animaltypes: { connect: { id: data.fk_animaltypeid } },
       },
     });
@@ -25,6 +25,19 @@ export const animalService = {
     if (!foundAnimal) throw new Error(`Animal not found with id: ${id}`);
 
     return foundAnimal;
+  },
+
+  async getByPersonId(personId: number): Promise<animals[]> {
+    const relations = await prisma.person_has_animal.findMany({
+      where: {
+        fk_personid: personId
+      },
+      include: {
+        animals: true
+      }
+    });
+    
+    return relations.map(r => r.animals);
   },
 
   async getByName(name: string): Promise<animals> {

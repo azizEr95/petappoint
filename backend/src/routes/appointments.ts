@@ -12,6 +12,41 @@ appointmentRouter.get("/all",
     }
 )
 
+
+appointmentRouter.get("/past/:personId", 
+    async (req, res,) => {
+        try {
+            const personId = parseInt(req.params.personId);
+            if (!personId) {
+                res.sendStatus(400);
+                return;
+            }
+            const pastAppointments = await appointmentService.getPastAppointmentsForPerson(personId);
+            res.send(pastAppointments);
+        } catch (e) {
+            res.sendStatus(404);
+            return;
+        }
+    }
+);
+
+appointmentRouter.get("/future/:personId", 
+    async (req, res,) => {
+        try {
+            const personId = parseInt(req.params.personId);
+            if (!personId) {
+                res.sendStatus(400);
+                return;
+            }
+            const futureAppointments = await appointmentService.getFutureAppointmentsForPerson(personId);
+            res.send(futureAppointments);
+        } catch (e) {
+            res.sendStatus(404);
+            return;
+        }
+    }
+);
+
 appointmentRouter.get("/:id",
     async (req, res) => {
         try {
@@ -47,4 +82,4 @@ appointmentRouter.put("/:id",
             next(e)
         }
     }
-)
+);
