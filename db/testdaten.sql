@@ -238,3 +238,10 @@ VALUES
   ('2025-11-20 13:00', '2025-11-20 13:30', NULL, 1, 7),
   ('2025-11-20 14:00', '2025-11-20 14:30', NULL, 1, 7),
   ('2025-11-20 15:00', '2025-11-20 15:30', NULL, 1, 7);
+
+INSERT INTO animaltype_has_lifestyle (fk_animalTypeId, namelifestyle, lifestyle)
+VALUES
+  (1, 'Haushund', 'indoor'),
+  (1, 'Frei', 'organic'),
+  (2, 'Hauskatze', 'indoor'),
+  (2, 'Frei', 'organic');
