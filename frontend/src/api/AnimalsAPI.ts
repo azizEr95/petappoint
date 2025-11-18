@@ -3,7 +3,7 @@ import { AnimalsSchema, type AnimalsType } from "../../../shared/schemas/ZodSche
 
 export const getAnimalsFromUser = async (userId: number): Promise<AnimalsType[]> => {
 
-    const res = await fetch(import.meta.env.VITE_API_URL + '/users/' + userId + "/animals");
+    const res = await fetch(import.meta.env.VITE_API_URL + '/persons/' + userId + "/animals");
     if (!res.ok) {
         throw new Error('Failed to fetch getAnimalsFromUser');
     }

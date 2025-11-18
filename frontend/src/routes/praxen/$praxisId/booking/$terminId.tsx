@@ -2,15 +2,16 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { Button, Card, Container } from 'react-bootstrap'
 import '../../../../styles/bookingPage.modules.css'
 import { useEffect, useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { SelectAppointmentType } from '../../../../components/SelectAppointmentType'
 import { SelectAnimal } from '../../../../components/SelectAnimal'
 import BookingStepper from '../../../../components/BookingStepper'
 import { getVeterinaryPracticesById } from '../../../../api/VeterinaryPracticeAPI'
-import { getAppointmentsById } from '../../../../api/AppointmentsAPI'
+import { bookAppointment, getAppointmentsById } from '../../../../api/AppointmentsAPI'
 import type {
     AnimalsType,
     AppointmentsType,
+    ServiceType,
     VeterinaryPracticesType,
 } from '../../../../../../shared/schemas/ZodSchemas'
 
@@ -27,7 +28,7 @@ enum StatusBooking {
 function BookingComponent() {
     const navigate = useNavigate()
     const { praxisId, terminId } = Route.useParams()
-    const [selectedAppointmentType, setSelectedAppointmentType] = useState('') // selectedAppointmentType, if the string is empty nothing is selected
+    const [selectedAppointmentType, setSelectedAppointmentType] = useState<ServiceType | null>(null);
     const [selectedAnimal, setSelectedAnimal] = useState<AnimalsType | null>(null) // aktuell ausgewaehltes Tier, bei null ist keins ausgewaehlt
     const [status, setStatus] = useState<StatusBooking>(
         StatusBooking.selectTerminArt,
@@ -35,29 +36,36 @@ function BookingComponent() {
 
     // load VeterinaryPractice:
     let praxis: VeterinaryPracticesType | undefined
-    const {
-        isError: isErrorPractice,
-        isSuccess: isSuccessPractice,
-        isPending: isPendingPractice,
-        data: dataPractice,
-    } = useQuery<VeterinaryPracticesType>({
+    const { isError: isErrorPractice, isSuccess: isSuccessPractice, isPending: isPendingPractice, data: dataPractice } = useQuery<VeterinaryPracticesType>({
         queryKey: ['tierarztpraxen', praxisId],
         queryFn: () => getVeterinaryPracticesById(praxisId),
         retry: false,
     })
 
     // load Appointment:
-    let termin: AppointmentsType | undefined
-    const {
-        isError: isErrorAppointment,
-        isSuccess: isSuccessAppointment,
-        isPending: isPendingAppointment,
-        data: dataAppointment,
-    } = useQuery<AppointmentsType>({
+    let termin: AppointmentsType
+    const { isError: isErrorAppointment, isSuccess: isSuccessAppointment, isPending: isPendingAppointment, data: dataAppointment } = useQuery<AppointmentsType>({
         queryKey: ['appointment', terminId],
         queryFn: () => getAppointmentsById(terminId),
         retry: false,
     })
+
+    type AppoinmentBookingPayload = {
+        appointmentID: number,
+        animalID: number,
+        serviceID: number | null
+    }
+
+    //edit appoinment, set animalID and serviceID
+    const { mutate: mutateAppointment } = useMutation({
+        mutationFn: ({ appointmentID, animalID, serviceID }: AppoinmentBookingPayload) => bookAppointment(appointmentID, animalID, serviceID),
+        onError: () => { //appoinment is not available anymore
+            navigate({ to: "/praxen/" + praxisId });
+        },
+        onSuccess: () => { //appointment was successful booked
+            navigate({ to: "/appointments" });
+        },
+    });
 
     useEffect(() => {
         if (isPendingPractice || isPendingAppointment) {
@@ -85,30 +93,33 @@ function BookingComponent() {
         // einmal auf der seite zurueck
         switch (status) {
             case StatusBooking.selectTerminArt:
-                setSelectedAppointmentType('')
+                setSelectedAppointmentType(null)
                 window.history.back()
                 break
             case StatusBooking.selectAnimal:
-                setSelectedAppointmentType('')
+                setSelectedAppointmentType(null)
                 setStatus(StatusBooking.selectTerminArt)
                 break
             default:
-                setSelectedAppointmentType('')
+                setSelectedAppointmentType(null)
                 setStatus(StatusBooking.selectTerminArt)
         }
     }
 
-    const handleSelectTerminArt = (art: string) => {
-        // wird an Select
-        setSelectedAppointmentType(art)
+    const handleSelectTerminArt = (appointmenType: ServiceType) => {
+        setSelectedAppointmentType(appointmenType)
         setStatus(StatusBooking.selectAnimal)
     }
 
-    const handleBookAppoinment = (termin: AppointmentsType) => {
-        // hier Termin erstellen, Anfrage an Backend senden
-        // TierID zu Termin hinzufuegen + weitere Infos mitschicken(Terminart??)
-        if (selectedAnimal !== null) {
-            navigate({ to: '/appointments' })
+    const handleBookAppoinment = () => {
+        if (selectedAnimal === undefined || selectedAnimal === null || selectedAppointmentType === undefined || selectedAppointmentType === null) {
+            //no animal or appointmentType was selected, booking is not possible
+            navigate({ to: "/praxen/" + praxisId + "/booking/" + terminId })
+
+        } else {
+            const serviceID = selectedAppointmentType.id;
+
+            mutateAppointment({ appointmentID: termin.id, animalID: selectedAnimal?.id, serviceID: serviceID });
         }
     }
 
@@ -130,7 +141,7 @@ function BookingComponent() {
         case StatusBooking.selectTerminArt:
             aktuelleAnzeige = (
                 <SelectAppointmentType praxis={praxis} handleSelectTerminArt={handleSelectTerminArt} />
-            ) /* spater praxis hier uebergeben */
+            )
             submitButton = null
             currentStep = 1
             break
@@ -142,7 +153,7 @@ function BookingComponent() {
                     variant="success"
                     size="lg"
                     className="w-100 mt-3"
-                    onClick={() => handleBookAppoinment(termin)}
+                    onClick={handleBookAppoinment}
                     disabled={!selectedAnimal}
                 >
                     <i className="bi bi-check-circle me-2"></i>
@@ -152,9 +163,8 @@ function BookingComponent() {
             currentStep = 2
             break
         default:
-            aktuelleAnzeige = (
-                <SelectAppointmentType praxis={praxis} handleSelectTerminArt={handleSelectTerminArt} />
-            ) /* spater praxis hier uebergeben */
+            aktuelleAnzeige = <SelectAppointmentType praxis={praxis} handleSelectTerminArt={handleSelectTerminArt} />
+
             submitButton = null
             currentStep = 1
     }
@@ -211,10 +221,10 @@ function BookingComponent() {
                                 <i className="bi bi-clock text-success me-2"></i>
                                 <small>{dateToInfosString(termin.starttime)}</small>
                             </div>
-                            {selectedAppointmentType !== '' && (
+                            {selectedAppointmentType !== null && (
                                 <div className="mb-2">
                                     <i className="bi bi-card-list text-success me-2"></i>
-                                    <small>{selectedAppointmentType}</small>
+                                    <small>{selectedAppointmentType.name}</small>
                                 </div>
                             )}
                             {selectedAnimal && (
@@ -232,11 +242,10 @@ function BookingComponent() {
 }
 
 /**
- * gibt die Uhrzeit des Datum Objekts als schoen formatierten String zurueck
+ * returns the time as formated string
  */
 function dateToInfosString(date: Date): string {
     const options: Intl.DateTimeFormatOptions = {
-        // Typ ist noetig damit kein Fehler kommt
         weekday: 'long',
         year: 'numeric',
         month: '2-digit',

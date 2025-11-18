@@ -5,36 +5,29 @@ import type { ServiceType, VeterinaryPracticesType } from '../../../shared/schem
 // Props praxis werden spaeter erst benoetigt
 type SelectAppointmentTypeProps = {
   praxis: VeterinaryPracticesType
-  handleSelectTerminArt: (art: string) => void
+  handleSelectTerminArt: (appointmenType: ServiceType) => void
 }
 
 export function SelectAppointmentType({praxis, handleSelectTerminArt}: SelectAppointmentTypeProps) {
 
   let appointmentServices: ServiceType[] = [];
-  let appointmentServicesName: string[] = [];
-  if(praxis.services !== undefined){
+  if(praxis.services !== undefined && praxis.services.length !== 0){
     appointmentServices = praxis.services;
-    appointmentServices.forEach((service) => {
-      appointmentServicesName.push(service.name)
-    })
   } else {
-    //wenn es keine Services gibt, StandardService in Datenbank anlegen
-    appointmentServicesName = ["Untersuchung"] //nur zum testen
+    //for this practice is no AppointmentType defined, Standardtyp in Backend anlegen
   }
-  
-  // spaeter Terminarten von Backend abrufen, koennen pro Praxis unetrsschiedlich sein
 
   return (
     <Dropdown.Menu id="terminArtDropdown" show>
       <div className="text-center ueberschrift">Terminart auswählen:</div>
-      {appointmentServicesName.map((art) => {
+      {appointmentServices.map((appointmenType) => {
         return (
           <Dropdown.Item
-            key={art}
-            eventKey={art}
-            onClick={() => handleSelectTerminArt(art)}
+            key={appointmenType.id}
+            eventKey={appointmenType.id}
+            onClick={() => handleSelectTerminArt(appointmenType)}
           >
-            {art}
+            {appointmenType.name}
           </Dropdown.Item>
         )
       })}
