@@ -1,4 +1,5 @@
 import { Carousel, Col, Container, Row } from 'react-bootstrap'
+import '../../styles/components/landing/Testimonials.scss'
 
 export default function Testimonials() {
   const testimonials = [
@@ -124,32 +125,6 @@ export default function Testimonials() {
           </div>
         </div>
       </Container>
-
-      <style>{`
-        .testimonial-carousel .carousel-control-prev,
-        .testimonial-carousel .carousel-control-next {
-          width: 5%;
-        }
-
-        .testimonial-text {
-          font-style: italic;
-          color: var(--text-dark);
-          line-height: 1.6;
-        }
-
-        .partner-logo {
-          transition: transform 0.3s;
-          min-height: 120px;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-        }
-
-        .partner-logo:hover {
-          transform: translateY(-5px);
-        }
-      `}</style>
     </section>
   )
 }

@@ -1,5 +1,6 @@
-import { Button, Card, Col, Container, Row } from 'react-bootstrap'
+import { Card, Col, Container, Row } from 'react-bootstrap'
 import { Link } from '@tanstack/react-router'
+import '../../styles/components/landing/BenefitsVets.scss'
 
 export default function BenefitsVets() {
   const benefits = [
@@ -27,13 +28,7 @@ export default function BenefitsVets() {
   ]
 
   return (
-    <section
-      id="for-vets"
-      className="section-padding"
-      style={{
-        background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
-      }}
-    >
+    <section id="for-vets" className="section-padding benefits-vets-section">
       <Container>
         <div className="text-center mb-5">
           <h2 className="section-title">Vorteile für Tierärzte</h2>
@@ -59,37 +54,25 @@ export default function BenefitsVets() {
         </Row>
 
         <div className="text-center">
-          <div
-            className="demo-preview bg-white p-5 rounded-3 shadow-sm mb-4 mx-auto"
-            style={{ maxWidth: '700px' }}
-          >
+          <div className="demo-preview bg-white p-5 rounded-3 shadow-sm mb-4 mx-auto">
             <h5 className="mb-3">Praxis-Dashboard Vorschau</h5>
             <div className="d-flex flex-column gap-2">
               <div className="d-flex align-items-center p-3 bg-light rounded">
-                <i
-                  className="bi bi-calendar-check text-success me-3"
-                  style={{ fontSize: '2rem' }}
-                ></i>
+                <i className="bi bi-calendar-check text-success me-3 icon-lg"></i>
                 <div className="text-start flex-grow-1">
                   <strong>Heute: 12 Termine</strong>
                   <div className="text-muted small">Nächster in 15 Min</div>
                 </div>
               </div>
               <div className="d-flex align-items-center p-3 bg-light rounded">
-                <i
-                  className="bi bi-people text-primary me-3"
-                  style={{ fontSize: '2rem' }}
-                ></i>
+                <i className="bi bi-people text-primary me-3 icon-lg"></i>
                 <div className="text-start flex-grow-1">
                   <strong>47 neue Patienten</strong>
                   <div className="text-muted small">Diesen Monat</div>
                 </div>
               </div>
               <div className="d-flex align-items-center p-3 bg-light rounded">
-                <i
-                  className="bi bi-star-fill text-warning me-3"
-                  style={{ fontSize: '2rem' }}
-                ></i>
+                <i className="bi bi-star-fill text-warning me-3 icon-lg"></i>
                 <div className="text-start flex-grow-1">
                   <strong>4.8 ★ Bewertung</strong>
                   <div className="text-muted small">128 Bewertungen</div>
@@ -98,16 +81,13 @@ export default function BenefitsVets() {
             </div>
           </div>
 
-          <Button
-            as={Link}
+          <Link
             to="/veterinaryRegistration"
-            variant="success"
-            size="lg"
-            className="px-5 py-3"
+            className="btn btn-success btn-lg px-5 py-3"
           >
             <i className="bi bi-building me-2"></i>
             Praxis jetzt anmelden
-          </Button>
+          </Link>
           <div className="mt-3">
             <small className="text-muted">
               Kostenlos für die ersten 3 Monate

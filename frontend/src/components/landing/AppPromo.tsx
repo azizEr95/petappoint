@@ -1,4 +1,5 @@
 import { Button, Col, Container, Row } from 'react-bootstrap'
+import '../../styles/components/landing/AppPromo.scss'
 
 export default function AppPromo() {
   return (
@@ -45,11 +46,11 @@ export default function AppPromo() {
           <Col lg={6} className="text-center">
             <div className="app-mockup">
               <div className="mockup-phone">
-                <i className="bi bi-phone" style={{ fontSize: '15rem' }}></i>
+                <i className="bi bi-phone"></i>
               </div>
               <div className="qr-placeholder mt-3">
                 <div className="qr-code">
-                  <i className="bi bi-qr-code" style={{ fontSize: '6rem' }}></i>
+                  <i className="bi bi-qr-code"></i>
                   <p className="mt-2 mb-0">QR-Code scannen</p>
                 </div>
               </div>
@@ -57,31 +58,6 @@ export default function AppPromo() {
           </Col>
         </Row>
       </Container>
-
-      <style>{`
-        .app-feature {
-          background: rgba(255, 255, 255, 0.2);
-          padding: 0.5rem 1rem;
-          border-radius: 20px;
-          font-size: 0.95rem;
-        }
-
-        .mockup-phone {
-          color: rgba(255, 255, 255, 0.3);
-        }
-
-        .qr-placeholder {
-          display: inline-block;
-        }
-
-        .qr-code {
-          background: white;
-          color: var(--text-dark);
-          padding: 1.5rem;
-          border-radius: 12px;
-          display: inline-block;
-        }
-      `}</style>
     </section>
   )
 }

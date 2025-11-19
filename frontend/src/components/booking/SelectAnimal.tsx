@@ -1,9 +1,9 @@
 import { Form } from 'react-bootstrap'
-import '../styles/selectAnimal.modules.css'
+import '../../styles/components/booking/SelectAnimal.scss'
 import { useState } from 'react'
-import type { AnimalsType } from '../../../shared/schemas/ZodSchemas'
 import { useQuery } from '@tanstack/react-query'
-import { getAnimalsFromUser } from '../api/AnimalsAPI'
+import { getAnimalsFromUser } from '../../api/AnimalsAPI'
+import type { AnimalsType } from '../../../../shared/schemas/ZodSchemas'
 
 type SelectAnimalProps = {
   handleChangeAnimal: (animal: AnimalsType | null) => void
@@ -12,12 +12,13 @@ type SelectAnimalProps = {
 export function SelectAnimal({ handleChangeAnimal }: SelectAnimalProps) {
   const [selectedAnimal, setSelectedAnimal] = useState(-1) // -1 means that no animal has been selected yet
 
-  const userId: number = 6; // for user with ID 6, to be changed...
-  const { isSuccess, data } = useQuery<AnimalsType[]>({ //for this query is no error handling implemented, if the query fails
+  const userId = 6 // for user with ID 6, to be changed...
+  const { isSuccess, data } = useQuery<Array<AnimalsType>>({
+    // for this query is no error handling implemented, if the query fails
     queryKey: ['animals', userId],
     queryFn: () => getAnimalsFromUser(userId),
-    retry: false
-  });
+    retry: false,
+  })
 
   const handleSelectAnimal = (animal: AnimalsType) => {
     if (selectedAnimal === animal.id) {

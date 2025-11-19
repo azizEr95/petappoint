@@ -1,6 +1,9 @@
 import { Dropdown } from 'react-bootstrap'
-import '../styles/selectAppointmentType.modules.css'
-import type { ServiceType, VeterinaryPracticesType } from '../../../shared/schemas/ZodSchemas'
+import '../../styles/components/booking/SelectAppointmentType.scss'
+import type {
+  ServiceType,
+  VeterinaryPracticesType,
+} from '../../../../shared/schemas/ZodSchemas'
 
 // Props praxis werden spaeter erst benoetigt
 type SelectAppointmentTypeProps = {
@@ -8,13 +11,15 @@ type SelectAppointmentTypeProps = {
   handleSelectTerminArt: (appointmenType: ServiceType) => void
 }
 
-export function SelectAppointmentType({praxis, handleSelectTerminArt}: SelectAppointmentTypeProps) {
-
-  let appointmentServices: ServiceType[] = [];
-  if(praxis.services !== undefined && praxis.services.length !== 0){
-    appointmentServices = praxis.services;
+export function SelectAppointmentType({
+  praxis,
+  handleSelectTerminArt,
+}: SelectAppointmentTypeProps) {
+  let appointmentServices: Array<ServiceType> = []
+  if (praxis.services !== undefined && praxis.services.length !== 0) {
+    appointmentServices = praxis.services
   } else {
-    //for this practice is no AppointmentType defined, Standardtyp in Backend anlegen
+    // for this practice is no AppointmentType defined, Standardtyp in Backend anlegen
   }
 
   return (

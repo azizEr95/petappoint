@@ -1,5 +1,6 @@
-import { Button, Container } from 'react-bootstrap'
+import { Container } from 'react-bootstrap'
 import { Link } from '@tanstack/react-router'
+import '../../styles/components/landing/CTABanner.scss'
 
 export default function CTABanner() {
   return (
@@ -13,12 +14,9 @@ export default function CTABanner() {
           wenigen Minuten
         </p>
         <div className="d-flex flex-wrap justify-content-center gap-3">
-          <Button
-            as={Link}
+          <Link
             to="/"
-            variant="light"
-            size="lg"
-            className="px-5 py-3 fw-bold"
+            className="btn btn-light btn-lg px-5 py-3 fw-bold"
             onClick={() => {
               setTimeout(() => {
                 document
@@ -29,48 +27,16 @@ export default function CTABanner() {
           >
             <i className="bi bi-search me-2"></i>
             Jetzt Termin finden
-          </Button>
-          <Button
-            as={Link}
+          </Link>
+          <Link
             to="/veterinaryRegistration"
-            variant="outline-light"
-            size="lg"
-            className="px-5 py-3 fw-bold"
+            className="btn btn-outline-light btn-lg px-5 py-3 fw-bold"
           >
             <i className="bi bi-building me-2"></i>
             Praxis registrieren
-          </Button>
+          </Link>
         </div>
       </Container>
-
-      <style>{`
-        .cta-banner {
-          background: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-green-dark) 100%);
-          position: relative;
-          overflow: hidden;
-        }
-
-        .cta-banner::before {
-          content: '';
-          position: absolute;
-          top: -50%;
-          left: -50%;
-          width: 200%;
-          height: 200%;
-          background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-          animation: pulse 15s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-          0%, 100% { transform: translate(0, 0) scale(1); }
-          50% { transform: translate(-10%, -10%) scale(1.1); }
-        }
-
-        .cta-banner .container {
-          position: relative;
-          z-index: 1;
-        }
-      `}</style>
     </section>
   )
 }

@@ -1,8 +1,8 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { z } from 'zod'
 import { Container } from 'react-bootstrap'
-import { SearchField } from '../components/SearchField'
-import { VeterinaryPracticeList } from '../components/VeterinaryPracticeList'
+import { SearchField } from '../components/common/SearchField'
+import { VeterinaryPracticeList } from '../components/practice/VeterinaryPracticeList'
 
 const searchSchema = z.object({
   name: z.string().default(''),

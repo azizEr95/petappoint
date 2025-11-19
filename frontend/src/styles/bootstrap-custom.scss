@@ -1,0 +1,136 @@
+// Vetlib Custom Bootstrap Theme
+// Überschreibt Bootstrap-Farben mit Vetlib Design System
+
+// 1. Vetlib Farben (aus design-system.css)
+$primary: #1a5d3a;
+$primary-dark: #0f3d25;
+$primary-light: #7dd89f;
+$success: #198754;
+$warning: #fbbf24;
+
+// 2. Bootstrap Variables überschreiben
+$theme-colors: (
+  'primary': $primary,
+  'success': $success,
+  'warning': $warning,
+);
+
+// Grays
+$gray-100: #f8f9fa;
+$gray-200: #e9ecef;
+$gray-600: #6c757d;
+$gray-800: #343a40;
+
+// Text Colors
+$body-color: #2d3748;
+$text-muted: #a0aec0;
+
+// Border
+$border-color: #e2e8f0;
+$border-radius: 12px;
+$border-radius-sm: 8px;
+$border-radius-lg: 15px;
+$border-radius-pill: 50px;
+
+// Shadows
+$box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+$box-shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+$box-shadow-lg: 0 10px 40px rgba(26, 93, 58, 0.15);
+
+// Buttons
+$btn-border-radius: $border-radius-pill;
+$btn-font-weight: 600;
+$btn-padding-y: 0.75rem;
+$btn-padding-x: 2rem;
+$btn-padding-y-lg: 1rem;
+$btn-padding-x-lg: 2.5rem;
+$btn-padding-y-sm: 0.5rem;
+$btn-padding-x-sm: 1.25rem;
+
+// Cards
+$card-border-radius: $border-radius-lg;
+$card-border-width: 0;
+$card-box-shadow: $box-shadow;
+
+// Container
+$container-max-widths: (
+  sm: 540px,
+  md: 720px,
+  lg: 960px,
+  xl: 1200px,
+);
+
+// 3. Bootstrap importieren
+@import 'bootstrap/scss/bootstrap';
+
+// 4. Custom Overrides
+.btn-primary {
+  &:hover {
+    background-color: $primary-dark;
+    border-color: $primary-dark;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(26, 93, 58, 0.3);
+  }
+}
+
+.btn-secondary {
+  background-color: white;
+  color: $primary;
+  border-color: $primary;
+  border-width: 2px;
+
+  &:hover {
+    background-color: $primary;
+    color: white;
+    border-color: $primary;
+  }
+}
+
+.card {
+  transition:
+    transform 0.3s,
+    box-shadow 0.3s;
+
+  &.card-hover:hover {
+    transform: translateY(-5px);
+    box-shadow: $box-shadow-lg;
+  }
+}
+
+// Hero Section
+.hero-section {
+  position: relative;
+  min-height: 600px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(0, 0, 0, 0.4) 0%,
+    rgba(88, 192, 88, 0.3) 100%
+  );
+}
+
+.hero-content {
+  position: relative;
+  z-index: 10;
+  color: white;
+  text-align: center;
+  padding: 2rem;
+}
+
+// Section Utilities
+.section-padding {
+  padding: 4rem 0;
+}
