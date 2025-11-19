@@ -87,6 +87,13 @@ function SearchComponent() {
           margin-right: 0.5rem;
           color: var(--color-primary);
         }
+
+        @media (max-width: 768px) {
+          .search-header-sticky {
+            position: relative;
+            top: 0;
+          }
+        }
       `}</style>
     </>
   )
