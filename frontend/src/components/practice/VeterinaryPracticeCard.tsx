@@ -1,8 +1,8 @@
-import type { VeterinaryPracticesType } from '../../../shared/schemas/ZodSchemas'
-import '../styles/veterinaryPracticeCard.modules.css'
-import type { MouseEvent } from 'react'
+import '../../styles/components/practice/VeterinaryPracticeCard.scss'
 import { useNavigate } from '@tanstack/react-router'
-import { NextAvailableAppointments } from './NextAvailableAppointments'
+import { NextAvailableAppointments } from './NextAvailableAppointments.tsx'
+import type { MouseEvent } from 'react'
+import type { VeterinaryPracticesType } from '../../../../shared/schemas/ZodSchemas'
 
 type VeterinaryPracticeCardProps = {
   praxis: VeterinaryPracticesType

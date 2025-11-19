@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
 import type { ChangeEvent, MouseEvent } from 'react'
-import '../styles/login.modules.css'
+import '../styles/routes/login.scss'
 import { Button, Form } from 'react-bootstrap'
 import { useAuthStore } from '../stores/authStore'
 

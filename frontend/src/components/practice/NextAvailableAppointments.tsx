@@ -1,24 +1,29 @@
-import type { AppointmentsType } from '../../../shared/schemas/ZodSchemas'
-import '../styles/nextAvailableAppointments.modules.css'
+import '../../styles/components/practice/NextAvailableAppointments.scss'
 import { useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
-import { getAvailableAppointmentsByPracticeId } from '../api/AppointmentsAPI'
+import { getAvailableAppointmentsByPracticeId } from '../../api/AppointmentsAPI'
+import type { AppointmentsType } from '../../../../shared/schemas/ZodSchemas'
 
 type NextAvailableAppointmentsProps = {
   praxisID: string
 }
 
-export function NextAvailableAppointments({ praxisID }: NextAvailableAppointmentsProps) { //praxisID zum irgendwie bei Abfrage uebergeben werden
-    let [dateAnsicht, setDateAnsicht] = useState(new Date());
-    const [expandedDays, setExpandedDays] = useState<Set<number>>(new Set());
-    const navigate = useNavigate();
+export function NextAvailableAppointments({
+  praxisID,
+}: NextAvailableAppointmentsProps) {
+  // praxisID zum irgendwie bei Abfrage uebergeben werden
+  const [dateAnsicht, setDateAnsicht] = useState(new Date())
+  const [expandedDays, setExpandedDays] = useState<Set<number>>(new Set())
+  const navigate = useNavigate()
 
-    const { isPending, isError, isSuccess, data } = useQuery<AppointmentsType[]>({
-        queryKey: [`nextAvailableAppointments/${praxisID}`],
-        queryFn: () => getAvailableAppointmentsByPracticeId(praxisID),
-        retry: false
-    });
+  const { isPending, isError, isSuccess, data } = useQuery<
+    Array<AppointmentsType>
+  >({
+    queryKey: [`nextAvailableAppointments/${praxisID}`],
+    queryFn: () => getAvailableAppointmentsByPracticeId(praxisID),
+    retry: false,
+  })
 
   const handleForwardTermin = () => {
     const newDate = new Date(dateAnsicht) // neues Objekt damit State sich aendert
@@ -53,19 +58,19 @@ export function NextAvailableAppointments({ praxisID }: NextAvailableAppointment
     }
   }
 
-    const handleBookAppiontment = (termin: AppointmentsType) => {
-        //navigiert zur Buchungsseite fuer den Termin
-        navigate({
-            "to": "/praxen/$praxisId/booking/$terminId",
-            params: {
-                praxisId: termin.fk_veterinarypracticeid.toString(),
-                terminId: termin.id.toString()
-            },
-            state: {
-                termin: termin
-            }
-        });
-    }
+  const handleBookAppiontment = (termin: AppointmentsType) => {
+    // navigiert zur Buchungsseite fuer den Termin
+    navigate({
+      to: '/praxen/$praxisId/booking/$terminId',
+      params: {
+        praxisId: termin.fk_veterinarypracticeid.toString(),
+        terminId: termin.id.toString(),
+      },
+      state: {
+        termin: termin,
+      },
+    })
+  }
 
   if (isPending) {
     return (
@@ -92,27 +97,35 @@ export function NextAvailableAppointments({ praxisID }: NextAvailableAppointment
     })
     console.log(data)
 
-        //speichert alle benoetigten Termine in Array, fuer die naechsten fuenf Tage
-        //an Pos 0 sind Termine von Tag dateAnsicht, an Pos 1 von nächsten Tag, ...
-        let termineTage: AppointmentsType[][] = Array.from({ length: 5 }, () => []); //erzeugt zweidimensionales Array
-        let i = 0;
-        let vergleichDate = new Date(dateAnsicht); //erster Tag der in dieser Ansicht zur Auswahl steht
-        for (const termin of data) {
-            if (compareDates(termin.starttime, dateAnsicht) >= 0) { //Termine vor angegebenem Starttermin werden nicht angezeigt
-                while (i < 5) {
-                    //wenn Date String gleich ist dann ist richtige Pos im Array gefunden, dadurch wird sichergestellt das Tag Monat und Jahr uebereinstimmen
-                    if (dateToDateString(termin.starttime) === dateToDateString(vergleichDate)) {
-                        termineTage[i].push(termin);
-                        break;
-                    }
-                    i++;
-                    vergleichDate.setDate(vergleichDate.getDate() + 1); //der verfuegbare Termin ist noch weiter in der Zukunft (also weiter suchen)
-                }
-            }
-            if (i === 5) { //auch aussere Schleife verlassen
-                break;
-            }
+    // speichert alle benoetigten Termine in Array, fuer die naechsten fuenf Tage
+    // an Pos 0 sind Termine von Tag dateAnsicht, an Pos 1 von nächsten Tag, ...
+    const termineTage: Array<Array<AppointmentsType>> = Array.from(
+      { length: 5 },
+      () => [],
+    ) // erzeugt zweidimensionales Array
+    let i = 0
+    const vergleichDate = new Date(dateAnsicht) // erster Tag der in dieser Ansicht zur Auswahl steht
+    for (const termin of data) {
+      if (compareDates(termin.starttime, dateAnsicht) >= 0) {
+        // Termine vor angegebenem Starttermin werden nicht angezeigt
+        while (i < 5) {
+          // wenn Date String gleich ist dann ist richtige Pos im Array gefunden, dadurch wird sichergestellt das Tag Monat und Jahr uebereinstimmen
+          if (
+            dateToDateString(termin.starttime) ===
+            dateToDateString(vergleichDate)
+          ) {
+            termineTage[i].push(termin)
+            break
+          }
+          i++
+          vergleichDate.setDate(vergleichDate.getDate() + 1) // der verfuegbare Termin ist noch weiter in der Zukunft (also weiter suchen)
         }
+      }
+      if (i === 5) {
+        // auch aussere Schleife verlassen
+        break
+      }
+    }
 
     const dateKopie = new Date(dateAnsicht)
     const anzeigeDate1 = new Date(dateAnsicht)
@@ -134,18 +147,22 @@ export function NextAvailableAppointments({ praxisID }: NextAvailableAppointment
     }
 
     // Prüfe ob es Termine in der aktuellen Ansicht gibt
-    const hasAppointmentsInCurrentView = termineTage.some(day => day.length > 0)
+    const hasAppointmentsInCurrentView = termineTage.some(
+      (day) => day.length > 0,
+    )
 
     // Finde nächsten verfügbaren Termin nach der aktuellen Ansicht
     const findNextAppointmentDate = (): Date | null => {
       const endOfCurrentView = new Date(dateAnsicht)
       endOfCurrentView.setDate(endOfCurrentView.getDate() + 5)
 
-      const futureAppointments = data.filter(termin =>
-        compareDates(termin.starttime, endOfCurrentView) >= 0
+      const futureAppointments = data.filter(
+        (termin) => compareDates(termin.starttime, endOfCurrentView) >= 0,
       )
 
-      return futureAppointments.length > 0 ? futureAppointments[0].starttime : null
+      return futureAppointments.length > 0
+        ? futureAppointments[0].starttime
+        : null
     }
 
     const navigateToNextAppointment = () => {
@@ -169,14 +186,18 @@ export function NextAvailableAppointments({ praxisID }: NextAvailableAppointment
           </button>
 
           <div className="calendar-days-header">
-            {[anzeigeDate1, anzeigeDate2, anzeigeDate3, anzeigeDate4, anzeigeDate5].map(
-              (date, index) => (
-                <div key={index} className="day-header">
-                  <div className="day-name">{getShortWeekday(date)}</div>
-                  <div className="day-date">{getShortDate(date)}</div>
-                </div>
-              ),
-            )}
+            {[
+              anzeigeDate1,
+              anzeigeDate2,
+              anzeigeDate3,
+              anzeigeDate4,
+              anzeigeDate5,
+            ].map((date, index) => (
+              <div key={index} className="day-header">
+                <div className="day-name">{getShortWeekday(date)}</div>
+                <div className="day-date">{getShortDate(date)}</div>
+              </div>
+            ))}
           </div>
 
           <button className="nav-arrow" onClick={handleForwardTermin}>
@@ -192,7 +213,7 @@ export function NextAvailableAppointments({ praxisID }: NextAvailableAppointment
 
             // Berechne maximale Anzahl Slots (bei expansion)
             const maxAppointments = anyExpanded
-              ? Math.max(...termineTage.map(t => t.length))
+              ? Math.max(...termineTage.map((t) => t.length))
               : displayLimit
 
             // Erstelle Zeilen für die Slots
@@ -201,7 +222,9 @@ export function NextAvailableAppointments({ praxisID }: NextAvailableAppointment
               const row = [0, 1, 2, 3, 4].map((dayIndex) => {
                 const dayAppointments = termineTage[dayIndex] || []
                 const isExpanded = expandedDays.has(dayIndex)
-                const appointmentsToShow = isExpanded ? dayAppointments : dayAppointments.slice(0, displayLimit)
+                const appointmentsToShow = isExpanded
+                  ? dayAppointments
+                  : dayAppointments.slice(0, displayLimit)
                 const termin = appointmentsToShow[rowIndex]
 
                 if (termin) {
@@ -216,7 +239,10 @@ export function NextAvailableAppointments({ praxisID }: NextAvailableAppointment
                   )
                 } else {
                   return (
-                    <div key={`${dayIndex}-${rowIndex}`} className="time-slot-btn unavailable">
+                    <div
+                      key={`${dayIndex}-${rowIndex}`}
+                      className="time-slot-btn unavailable"
+                    >
                       –
                     </div>
                   )
@@ -225,7 +251,7 @@ export function NextAvailableAppointments({ praxisID }: NextAvailableAppointment
               rows.push(
                 <div key={`row-${rowIndex}`} className="calendar-row">
                   {row}
-                </div>
+                </div>,
               )
             }
 
@@ -236,7 +262,9 @@ export function NextAvailableAppointments({ praxisID }: NextAvailableAppointment
         {/* Mehr-Button als separate Zeile über alle Spalten */}
         {(() => {
           const displayLimit = 5
-          const hasAnyMoreButton = termineTage.some(day => day.length > displayLimit)
+          const hasAnyMoreButton = termineTage.some(
+            (day) => day.length > displayLimit,
+          )
           const anyExpanded = expandedDays.size > 0
 
           // Nur anzeigen wenn es Termine mit >5 gibt
@@ -262,7 +290,9 @@ export function NextAvailableAppointments({ praxisID }: NextAvailableAppointment
                   }
                 }}
               >
-                {anyExpanded ? 'Weniger Termine anzeigen' : 'Mehr Termine anzeigen'}
+                {anyExpanded
+                  ? 'Weniger Termine anzeigen'
+                  : 'Mehr Termine anzeigen'}
               </button>
             </div>
           )
@@ -330,24 +360,24 @@ function getShortDate(date: Date): string {
  * gibt positive Zahl zurueck wenn date1 mehr in der zukunft ist als date2
  * wenn anders herum dann wird negative zahl zurueckgegeben
  * bei gleichen Datum wird 0 zurueckgegeben
- * 
+ *
  * @param date1 erstes Datum zum vergleichen
  * @param date2 zweites Datum zum vergleichen
  */
 function compareDates(date1: Date, date2: Date): number {
   const dateToDayString = (date: Date): string => {
-      return date.toISOString().split('T')[0];
-  };
+    return date.toISOString().split('T')[0]
+  }
 
-  const date1String = dateToDayString(date1);
-  const date2String = dateToDayString(date2);
+  const date1String = dateToDayString(date1)
+  const date2String = dateToDayString(date2)
 
-  //einfach mit Strings vergleichen
+  // einfach mit Strings vergleichen
   if (date1String > date2String) {
-      return 1; // date1 ist spaeter
+    return 1 // date1 ist spaeter
   } else if (date1String < date2String) {
-      return -1; // date2 ist spaeter
+    return -1 // date2 ist spaeter
   } else {
-      return 0; // gleicher Tag
+    return 0 // gleicher Tag
   }
 }

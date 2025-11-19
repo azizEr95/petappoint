@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import 'bootstrap/dist/css/bootstrap.min.css'
+import '../styles/bootstrap-custom.scss'
 import Hero from '../components/landing/Hero'
 import FeaturesOverview from '../components/landing/FeaturesOverview'
 import BenefitsOwners from '../components/landing/BenefitsOwners'

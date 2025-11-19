@@ -5,8 +5,8 @@ import { RouterProvider, createRouter } from '@tanstack/react-router'
 // Import the generated route tree
 import { routeTree } from './routeTree.gen'
 
-import './styles/design-system.css'
-import './styles/main.css'
+import './styles/design-system.scss'
+import './styles/main.scss'
 import reportWebVitals from './reportWebVitals.ts'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 

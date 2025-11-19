@@ -1,9 +1,9 @@
+import { useEffect } from 'react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { NextAvailableAppointments } from '../../../components/NextAvailableAppointments'
-import '../../../styles/praxisPage.modules.css'
 import { Button } from 'react-bootstrap'
 import { useQuery } from '@tanstack/react-query'
-import { useEffect } from 'react'
+import { NextAvailableAppointments } from '../../../components/practice/NextAvailableAppointments'
+import '../../../styles/routes/praxisPage.scss'
 import { getVeterinaryPracticesById } from '../../../api/VeterinaryPracticeAPI'
 import type { VeterinaryPracticesType } from '../../../../../shared/schemas/ZodSchemas'
 
