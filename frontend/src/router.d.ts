@@ -8,6 +8,7 @@ import type {
 declare module '@tanstack/react-router' {
   interface HistoryState {
     praxis?: VeterinaryPracticesType
-    termin?: AppointmentsType
+    termin?: AppointmentsType //TODO changed to appointment
+    appointment?: AppointmentsType
   }
 }

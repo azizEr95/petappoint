@@ -17,6 +17,7 @@ import type {
   ServiceType,
   VeterinaryPracticesType,
 } from '../../../../../../shared/schemas/ZodSchemas'
+import { dateToInfosString } from '../../../../utils/DateToStringFormat'
 
 export const Route = createFileRoute('/praxen/$praxisId/booking/$terminId')({
   component: BookingComponent,
@@ -84,7 +85,7 @@ function BookingComponent() {
     },
     onSuccess: () => {
       // appointment was successful booked
-      navigate({ to: '/appointments' })
+      navigate({ to: '/appointments' , state: { appointment: termin}})
     },
   })
 
@@ -276,23 +277,4 @@ function BookingComponent() {
       </div>
     </Container>
   )
-}
-
-/**
- * returns the time as formated string
- */
-function dateToInfosString(date: Date): string {
-  const options: Intl.DateTimeFormatOptions = {
-    weekday: 'long',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-  }
-
-  const datum = date.toLocaleDateString('de-DE', options)
-  const zeit = date.toLocaleTimeString('de-DE', {
-    hour: '2-digit',
-    minute: '2-digit',
-  })
-  return datum + ' ' + zeit
 }
