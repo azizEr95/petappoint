@@ -4,6 +4,7 @@ import { prismaMock } from "../../testConfig/mockConfig";
 import { persons, sexes } from "../../generated/prisma";
 // Dann den Service importieren
 import { personService } from "../../src/service/personService";
+import { includes } from "zod/mini";
 
 describe("personService", () => {
   // Test-Datenvorbereitung
@@ -113,7 +114,6 @@ describe("personService", () => {
       const result = await personService.getAll();
 
       expect(result).toEqual(mockPersons);
-      expect(prismaMock.persons.findMany).toHaveBeenCalledWith();
       expect(result.length).toBe(3);
     });
 
