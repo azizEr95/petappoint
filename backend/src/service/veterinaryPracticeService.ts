@@ -13,6 +13,12 @@ export const veterinaryPracticeService = {
         password: veterinaryPracticeRe.password,
         addresses: {
           create: veterinaryPracticeRe.addresses
+        },
+        services: {
+          create: {
+            name: "Allgemeine Untersuchung",
+            estimateddurationinminutes: 60,
+          }
         }
       }
     });
