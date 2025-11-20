@@ -83,3 +83,38 @@ appointmentRouter.put("/:id",
         }
     }
 );
+
+appointmentRouter.delete("/:id",
+    async (req, res) => {
+        try {
+            const id = parseInt(req.params.id);
+            if (!id) {
+                res.sendStatus(400);
+                return;
+            }
+            await appointmentService.cancelAppointmentAsPerson(id);
+            res.sendStatus(204);
+        } catch (e) {
+            res.sendStatus(404);
+        }
+    }
+);
+
+appointmentRouter.patch("/:id/notiz",
+    async (req, res) => {
+        try {
+            const id = parseInt(req.params.id);
+            const { notiz } = req.body;
+
+            if (!id) {
+                res.sendStatus(400);
+                return;
+            }
+
+            const updated = await appointmentService.updateNotiz(id, notiz || null);
+            res.status(200).send(updated);
+        } catch (e) {
+            res.sendStatus(404);
+        }
+    }
+);

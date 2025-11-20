@@ -3,78 +3,125 @@ import { AppointmentList } from '../components/appointment/AppointmentList'
 import type { AppointmentsType } from '../../../shared/schemas/ZodSchemas'
 import { useQuery } from '@tanstack/react-query';
 import { getFutureAppointmentsByUserId, getPastAppointmentsByUserId } from '../api/AppointmentsAPI';
-import { Button } from 'react-bootstrap';
 import { useEffect, useState } from 'react';
 import { AppointmentDetails } from '../components/appointment/AppointmentDetails';
+import '../styles/routes/appointments.scss';
 
 export const Route = createFileRoute('/appointments')({
-    component: Appoinments,
+    component: Appointments,
 })
 
-function Appoinments() {
+function Appointments() {
     const location = useLocation();
     const navigate = useNavigate();
-    let bookedAppointment = location.state.appointment;
-    const [showPastAppointments, setShowPastAppointments] = useState(false);
-    const [showDetailsAppointment, setShowDetailsAppointment] = useState<AppointmentsType>(); //if no value is set, showDetailsAppointments undefined
+    const bookedAppointment = location.state?.appointment;
+    const [activeTab, setActiveTab] = useState<'upcoming' | 'past'>('upcoming');
+    const [selectedAppointment, setSelectedAppointment] = useState<AppointmentsType | undefined>();
 
-    useEffect(() => {
-        if (bookedAppointment !== undefined) {
-            handleShowDetailsAppointment(bookedAppointment);
-        }
-        navigate({state: {appointment: undefined}});
-    }, []);
+    const userID = 6; // TODO: get from auth context
 
-    const userID = 6; //only for testing, later the userID from the user, who is logged in
-
-    // all appointments in the future
     const { isError: isErrorFuture, isSuccess: isSuccessFuture, data: dataFuture } = useQuery<Array<AppointmentsType>>({
         queryKey: ['appointmentsFuture', userID],
         queryFn: () => getFutureAppointmentsByUserId(userID.toString()),
     })
 
-    // all appointments in the past
     const { isError: isErrorPast, isSuccess: isSuccessPast, data: dataPast } = useQuery<Array<AppointmentsType>>({
         queryKey: ['appointmentsPast', userID],
         queryFn: () => getPastAppointmentsByUserId(userID.toString()),
     })
 
-    const handleShowDetailsAppointment = (appointment: AppointmentsType) => {
-        setShowDetailsAppointment(appointment);
-    }
-
-    if (isErrorPast) { // if is error, dont show past appointments
-        setShowPastAppointments(false);
-    }
-
-    if (isSuccessFuture && isSuccessPast) {
-        dataFuture.sort((zeitA, zeitB) => {
-            // sort the appointments, next appointment first
-            return zeitA.starttime.getTime() - zeitB.starttime.getTime();
-        });
-        dataPast.sort((zeitA, zeitB) => {
-            // sort the appointments, first appointment in the past first
-            return zeitB.starttime.getTime() - zeitA.starttime.getTime();
-        });
-
-        if (showDetailsAppointment === undefined && dataFuture.length > 0) {
-            setShowDetailsAppointment(dataFuture[0]);
+    useEffect(() => {
+        if (bookedAppointment !== undefined) {
+            setSelectedAppointment(bookedAppointment);
+            setActiveTab('upcoming');
         }
+        navigate({ state: { appointment: undefined } });
+    }, []);
 
-        return (<div className='flex-row'>
-            <div>
-                <div>Meine nächsten Termine</div>
-                {isErrorFuture && <div>konnte keine Termine laden</div>}
-                {!isErrorFuture && <AppointmentList dataAppointments={dataFuture} handleShowDetailsAppointment={handleShowDetailsAppointment} />}
-                {!showPastAppointments && <Button variant="primary" onClick={() => setShowPastAppointments(true)}>Meine vergangene Termine</Button>}
-                {showPastAppointments && <>
-                    <div>Meine vergangenen Termine</div>
-                    <AppointmentList dataAppointments={dataPast} handleShowDetailsAppointment={handleShowDetailsAppointment} />
-                </>
+    useEffect(() => {
+        if (isSuccessFuture && isSuccessPast) {
+            dataFuture.sort((a, b) => a.starttime.getTime() - b.starttime.getTime());
+            dataPast.sort((a, b) => b.starttime.getTime() - a.starttime.getTime());
+
+            // Auto-select first appointment if none selected
+            if (!selectedAppointment && dataFuture.length > 0) {
+                setSelectedAppointment(dataFuture[0]);
+            }
+
+            // If selected appointment no longer exists in current list, select next one
+            if (selectedAppointment) {
+                const currentList = activeTab === 'upcoming' ? dataFuture : dataPast;
+                const stillExists = currentList.some(apt => apt.id === selectedAppointment.id);
+
+                if (!stillExists && currentList.length > 0) {
+                    setSelectedAppointment(currentList[0]);
+                } else if (!stillExists) {
+                    setSelectedAppointment(undefined);
                 }
+            }
+        }
+    }, [isSuccessFuture, isSuccessPast, dataFuture, dataPast, selectedAppointment, activeTab]);
+
+    const handleShowDetailsAppointment = (appointment: AppointmentsType) => {
+        setSelectedAppointment(appointment);
+    };
+
+    const handleAppointmentCancelled = () => {
+        // useEffect will handle selecting next appointment after query invalidation
+    };
+
+    const currentData = activeTab === 'upcoming' ? dataFuture : dataPast;
+    const isCurrentError = activeTab === 'upcoming' ? isErrorFuture : isErrorPast;
+    const isCurrentSuccess = activeTab === 'upcoming' ? isSuccessFuture : isSuccessPast;
+
+    return (
+        <div className='appointments-page'>
+            <div className="appointments-header">
+                <h1>Meine Termine</h1>
             </div>
-            {showDetailsAppointment !== undefined && <AppointmentDetails appointment={showDetailsAppointment}></AppointmentDetails>}
+
+            <div className="appointments-tabs">
+                <button
+                    className={`tab-button ${activeTab === 'upcoming' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('upcoming')}
+                >
+                    Bevorstehend
+                    {isSuccessFuture && dataFuture && dataFuture.length > 0 && ` (${dataFuture.length})`}
+                </button>
+                <button
+                    className={`tab-button ${activeTab === 'past' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('past')}
+                >
+                    Vergangen
+                    {isSuccessPast && dataPast && dataPast.length > 0 && ` (${dataPast.length})`}
+                </button>
+            </div>
+
+            <div className='appointments-layout'>
+                <div className="appointments-list-section">
+                    {isCurrentError && (
+                        <div className="empty-state">
+                            <i className="bi bi-exclamation-triangle"></i>
+                            <p>Termine konnten nicht geladen werden</p>
+                        </div>
+                    )}
+                    {isCurrentSuccess && currentData && (
+                        <AppointmentList
+                            dataAppointments={currentData}
+                            handleShowDetailsAppointment={handleShowDetailsAppointment}
+                            selectedAppointment={selectedAppointment}
+                            isPast={activeTab === 'past'}
+                        />
+                    )}
+                </div>
+
+                {selectedAppointment && (
+                    <AppointmentDetails
+                        appointment={selectedAppointment}
+                        onAppointmentCancelled={handleAppointmentCancelled}
+                    />
+                )}
+            </div>
         </div>
-        )
-    }
+    )
 }

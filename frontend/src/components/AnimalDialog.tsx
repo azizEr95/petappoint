@@ -2,6 +2,7 @@ import { useEffect, useState, type ChangeEvent } from "react";
 import { Button, Form, Modal, ToggleButton, ToggleButtonGroup } from "react-bootstrap";
 import { type AnimalsType, type husbandarySystemType, type sexesType } from "../../../shared/schemas/ZodSchemas";
 import Select, { type MultiValue } from 'react-select';
+import '../styles/components/AnimalDialog.scss';
 
 type CreateAnimalDialogProps = {
     hideDialogNewAnimal: () => void,
@@ -310,99 +311,197 @@ export function AnimalDialog({ hideDialogNewAnimal, animalEdit }: CreateAnimalDi
         }
     }
 
-    // show is always true, visibility is changed from the parent component
-    return <Modal show={true} onHide={hideDialogNewAnimal}>
-        <Modal.Header closeButton>
-            {animalEdit === undefined && <Modal.Title>Neues Tier anlegen</Modal.Title>}
-            {animalEdit !== undefined && <Modal.Title>Tier bearbeiten</Modal.Title>}
-        </Modal.Header>
+    return (
+        <Modal show={true} onHide={hideDialogNewAnimal} centered className="animal-dialog">
+            <Modal.Header closeButton>
+                <Modal.Title>
+                    {animalEdit === undefined ? 'Neues Tier anlegen' : 'Tier bearbeiten'}
+                </Modal.Title>
+            </Modal.Header>
 
-        <Modal.Body>
-            {showSelectAnimalType && <div>
-                <div>Tierart auswählen:</div>
-                {animaltypes.map((animaltype) => {
-                    return <Button key={animaltype} onClick={() => handleSelectAnimalType(animaltype)}>{animaltype}</Button>;
-                })}
-            </div>
-            }
-            {!showSelectAnimalType && <Form className="newAnimalFormular">
-                <div className="text-CreateAnimal">Tiername*:</div>
-                <Form.Group className="mb-3">
-                    <Form.Control id="CreateAnimalName" type="text" placeholder="z.B. Nala" name="name" onChange={handleChange} value={name} isInvalid={validationErrors.name !== undefined} />
-                    <Form.Control.Feedback type="invalid">{validationErrors.name}</Form.Control.Feedback>
-                </Form.Group>
-                <div className="text-CreateAnimal">Geburtsdatum*:</div>
-                <div>Ich kenne das genaue Geburtsdatum:</div>
-                <ToggleButtonGroup type="radio" value={dateOfBirthIsExact} name="dateOfBirthIsExact" onChange={handleDateOfBirthIsExactChange}>
-                    <ToggleButton id="dateOfBirthIsExactNo" value="No" variant="outline-primary">Nein</ToggleButton>
-                    <ToggleButton id="dateOfBirthIsExactYes" value="Yes" variant="outline-primary">Ja</ToggleButton>
-                </ToggleButtonGroup>
-                {dateOfBirthIsExact === "Yes" &&
-                    <Form.Group className="mb-3">
-                        <Form.Control id="CreateAnimalDateOfBirth" type="date" name="dateOfBirth" onChange={handleChange} value={dateOfBirth} isInvalid={validationErrors.dateOfBirth !== undefined} />
-                        <Form.Control.Feedback type="invalid">{validationErrors.dateOfBirth}</Form.Control.Feedback>
-                    </Form.Group>
-                }
-                {dateOfBirthIsExact === "No" &&
-                    <Form.Group className="mb-3">
-                        <Form.Control as="select" name="dateOfBirthSelect" value={ageInMonth} onChange={handleChange} isInvalid={validationErrors.dateOfBirthIsExact !== undefined} >
-                            <option value={0}>Bitte auswählen</option>
-                            <option value={6}>jünger 6 Monate</option>
-                            <option value={15}>6-24 Monate</option>
-                            <option value={36}>2-4 Jahre</option>
-                            <option value={60}>4-6 Jahre</option>
-                            <option value={84}>6-8 Jahre</option>
-                            <option value={108}>8-10 Jahre</option>
-                            <option value={150}>10-15 Jahre</option>
-                            <option value={204}>älter 15 Jahre</option>
-                        </Form.Control>
-                        <Form.Control.Feedback type="invalid">{validationErrors.dateOfBirthIsExact}</Form.Control.Feedback>
-                    </Form.Group>}
-                <div className="text-CreateAnimal">Geschlecht*:</div>
-                <Form.Group className="mb-3">
-                    <Form.Control as="select" name="sex" value={sex} onChange={handleChange} isInvalid={validationErrors.sex !== undefined}>
-                        <option value="">Bitte auswählen</option>
-                        <option value={"male"}>männlich</option>
-                        <option value={"female"}>weiblich</option>
-                        <option value={"notknown"}>unbekannt</option>
-                    </Form.Control>
-                    <Form.Control.Feedback type="invalid">{validationErrors.sex}</Form.Control.Feedback>
-                </Form.Group>
-                <div className="text-CreateAnimal">Kastriert*:</div>
-                <Form.Group className="mb-3">
-                    <Form.Control as="select" name="castrated" value={castrated} onChange={handleChange} isInvalid={validationErrors.castrated !== undefined}>
-                        <option value="">Bitte auswählen</option>
-                        <option value="castrated">kastriert</option>
-                        <option value="notCastrated">nicht kastriert</option>
-                    </Form.Control>
-                    <Form.Control.Feedback type="invalid">{validationErrors.castrated}</Form.Control.Feedback>
-                </Form.Group>
-                <div className="text-CreateAnimal">Größe in m: (optional)</div>
-                <Form.Group className="mb-3">
-                    <Form.Control id="CreateAnimalHeight" type="text" placeholder="z.B. 110" name="height" onChange={handleChange} value={height} isInvalid={validationErrors.height !== undefined} />
-                    <Form.Control.Feedback type="invalid">{validationErrors.height}</Form.Control.Feedback>
-                </Form.Group>
-                <div className="text-CreateAnimal">Gewicht in kg: (optional)</div>
-                <Form.Group className="mb-3">
-                    <Form.Control id="CreateAnimalWeight" type="text" placeholder="z.B. 1,5" name="weight" onChange={handleChange} value={weight} isInvalid={validationErrors.weight !== undefined} />
-                    <Form.Control.Feedback type="invalid">{validationErrors.weight}</Form.Control.Feedback>
-                </Form.Group>
-                {/* Lifestyle hier hinzufuegen, erst wenn zu Datenbank hinzugefuegt wurde */}
-                {races.length > 0 && <>
-                    <div>Rasse auswählen: (optional, mehrere möglich)</div>
-                    <Select closeMenuOnSelect={false} isMulti={true} placeholder="Bitte Rassen auswählen" options={races} value={selectedRaces} onChange={handleSelectRaces} />
-                </>}
-                <div>* = Pflichtfeld</div>
-            </Form>
-            }
-        </Modal.Body>
+            <Modal.Body>
+                {showSelectAnimalType && (
+                    <div className="animal-type-selection">
+                        <div className="selection-label">Tierart auswählen:</div>
+                        <div className="animal-type-buttons">
+                            {animaltypes.map((animaltype) => (
+                                <Button
+                                    key={animaltype}
+                                    variant="success"
+                                    onClick={() => handleSelectAnimalType(animaltype)}
+                                    className="animal-type-button"
+                                >
+                                    {animaltype}
+                                </Button>
+                            ))}
+                        </div>
+                    </div>
+                )}
 
-        <Modal.Footer>
-            <Button variant="secondary" onClick={hideDialogNewAnimal}>Abbrechen</Button>
-            {!showSelectAnimalType &&  animalEdit === undefined && <Button variant="primary" onClick={handleAddNewAnimal}>Tier anlegen</Button>}
-            {!showSelectAnimalType &&  animalEdit !== undefined && <Button variant="primary" onClick={handleAddNewAnimal}>Speichern</Button>}
-        </Modal.Footer>
-    </Modal>;
+                {!showSelectAnimalType && (
+                    <Form className="animal-form">
+                        <Form.Group className="mb-3">
+                            <Form.Label>Tiername*:</Form.Label>
+                            <Form.Control
+                                id="CreateAnimalName"
+                                type="text"
+                                placeholder="z.B. Bambi"
+                                name="name"
+                                onChange={handleChange}
+                                value={name}
+                                isInvalid={validationErrors.name !== undefined}
+                            />
+                            <Form.Control.Feedback type="invalid">{validationErrors.name}</Form.Control.Feedback>
+                        </Form.Group>
+
+                        <Form.Group className="mb-3">
+                            <Form.Label>Geburtsdatum*:</Form.Label>
+                            <div className="mb-2">Ich kenne das genaue Geburtsdatum:</div>
+                            <ToggleButtonGroup
+                                type="radio"
+                                value={dateOfBirthIsExact}
+                                name="dateOfBirthIsExact"
+                                onChange={handleDateOfBirthIsExactChange}
+                                className="mb-2"
+                            >
+                                <ToggleButton id="dateOfBirthIsExactNo" value="No" variant="outline-success">
+                                    Nein
+                                </ToggleButton>
+                                <ToggleButton id="dateOfBirthIsExactYes" value="Yes" variant="outline-success">
+                                    Ja
+                                </ToggleButton>
+                            </ToggleButtonGroup>
+                            {dateOfBirthIsExact === "Yes" && (
+                                <Form.Control
+                                    id="CreateAnimalDateOfBirth"
+                                    type="date"
+                                    name="dateOfBirth"
+                                    onChange={handleChange}
+                                    value={dateOfBirth}
+                                    isInvalid={validationErrors.dateOfBirth !== undefined}
+                                />
+                            )}
+                            {dateOfBirthIsExact === "No" && (
+                                <Form.Control
+                                    as="select"
+                                    name="dateOfBirthSelect"
+                                    value={ageInMonth}
+                                    onChange={handleChange}
+                                    isInvalid={validationErrors.dateOfBirthIsExact !== undefined}
+                                >
+                                    <option value={0}>Bitte auswählen</option>
+                                    <option value={6}>jünger 6 Monate</option>
+                                    <option value={15}>6-24 Monate</option>
+                                    <option value={36}>2-4 Jahre</option>
+                                    <option value={60}>4-6 Jahre</option>
+                                    <option value={84}>6-8 Jahre</option>
+                                    <option value={108}>8-10 Jahre</option>
+                                    <option value={150}>10-15 Jahre</option>
+                                    <option value={204}>älter 15 Jahre</option>
+                                </Form.Control>
+                            )}
+                            <Form.Control.Feedback type="invalid">
+                                {validationErrors.dateOfBirth || validationErrors.dateOfBirthIsExact}
+                            </Form.Control.Feedback>
+                        </Form.Group>
+
+                        <Form.Group className="mb-3">
+                            <Form.Label>Geschlecht*:</Form.Label>
+                            <Form.Control
+                                as="select"
+                                name="sex"
+                                value={sex}
+                                onChange={handleChange}
+                                isInvalid={validationErrors.sex !== undefined}
+                            >
+                                <option value="">Bitte auswählen</option>
+                                <option value="male">männlich</option>
+                                <option value="female">weiblich</option>
+                                <option value="notknown">unbekannt</option>
+                            </Form.Control>
+                            <Form.Control.Feedback type="invalid">{validationErrors.sex}</Form.Control.Feedback>
+                        </Form.Group>
+
+                        <Form.Group className="mb-3">
+                            <Form.Label>Kastriert*:</Form.Label>
+                            <Form.Control
+                                as="select"
+                                name="castrated"
+                                value={castrated}
+                                onChange={handleChange}
+                                isInvalid={validationErrors.castrated !== undefined}
+                            >
+                                <option value="">Bitte auswählen</option>
+                                <option value="castrated">kastriert</option>
+                                <option value="notCastrated">nicht kastriert</option>
+                            </Form.Control>
+                            <Form.Control.Feedback type="invalid">{validationErrors.castrated}</Form.Control.Feedback>
+                        </Form.Group>
+
+                        <Form.Group className="mb-3">
+                            <Form.Label>Größe in m: (optional)</Form.Label>
+                            <Form.Control
+                                id="CreateAnimalHeight"
+                                type="text"
+                                placeholder="z.B. 1,10"
+                                name="height"
+                                onChange={handleChange}
+                                value={height}
+                                isInvalid={validationErrors.height !== undefined}
+                            />
+                            <Form.Control.Feedback type="invalid">{validationErrors.height}</Form.Control.Feedback>
+                        </Form.Group>
+
+                        <Form.Group className="mb-3">
+                            <Form.Label>Gewicht in kg: (optional)</Form.Label>
+                            <Form.Control
+                                id="CreateAnimalWeight"
+                                type="text"
+                                placeholder="z.B. 4"
+                                name="weight"
+                                onChange={handleChange}
+                                value={weight}
+                                isInvalid={validationErrors.weight !== undefined}
+                            />
+                            <Form.Control.Feedback type="invalid">{validationErrors.weight}</Form.Control.Feedback>
+                        </Form.Group>
+
+                        {races.length > 0 && (
+                            <Form.Group className="mb-3">
+                                <Form.Label>Rasse auswählen: (optional, mehrere möglich)</Form.Label>
+                                <Select
+                                    closeMenuOnSelect={false}
+                                    isMulti={true}
+                                    placeholder="Bitte Rassen auswählen"
+                                    options={races}
+                                    value={selectedRaces}
+                                    onChange={handleSelectRaces}
+                                />
+                            </Form.Group>
+                        )}
+
+                        <small className="text-muted">* = Pflichtfeld</small>
+                    </Form>
+                )}
+            </Modal.Body>
+
+            <Modal.Footer>
+                <Button variant="outline-secondary" onClick={hideDialogNewAnimal}>
+                    Abbrechen
+                </Button>
+                {!showSelectAnimalType && animalEdit === undefined && (
+                    <Button variant="success" onClick={handleAddNewAnimal}>
+                        Speichern
+                    </Button>
+                )}
+                {!showSelectAnimalType && animalEdit !== undefined && (
+                    <Button variant="success" onClick={handleAddNewAnimal}>
+                        Speichern
+                    </Button>
+                )}
+            </Modal.Footer>
+        </Modal>
+    );
 }
 
 // TODO: function is also in component NextAvailableAppointment, declare this only in extr file and use them in both
