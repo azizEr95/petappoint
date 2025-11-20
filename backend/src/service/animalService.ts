@@ -1,20 +1,47 @@
 import { prisma } from "../singletonPC";
-import { animals } from "../../generated/prisma";
+import { animals, Prisma } from "../../generated/prisma";
+import { AnimalsPostBodyType, AnimalUpdateType } from "vetlib-shared/schemas/ZodSchemas";
 
 export const animalService = {
-  async create(data: animals): Promise<animals> {
+  async create(data: AnimalsPostBodyType): Promise<animals> {
     return await prisma.animals.create({
       data: {
-        name: data.name,
-        dateofbirth: data.dateofbirth,
-        dateofbirthisexact: data.dateofbirthisexact,
-        weightingram: data.weightingram,
-        heightincm: data.heightincm,
-        timeofdeath: data.timeofdeath,
-        iscastrated: data.iscastrated,
-        lifestyle: data.lifestyle,
-        animalgroup: { connect: { id: data.fk_animalgroupid ?? undefined } },
-        animaltypes: { connect: { id: data.fk_animaltypeid } },
+        name: data.animal.name,
+        dateofbirth: data.animal.dateofbirth,
+        dateofbirthisexact: data.animal.dateofbirthisexact,
+        weightingram: data.animal.weightingram,
+        heightincm: data.animal.heightincm,
+        timeofdeath: data.animal.timeofdeath,
+        iscastrated: data.animal.iscastrated,
+        lifestyle: data.animal.lifestyle,
+        animalgroup: {
+          connect: {
+            id: data.groupid
+          }
+        },
+        animaltypes: {
+          connect: {
+            id: data.typeid,
+          }
+        },
+      },
+    });
+  },
+
+  async update(data: AnimalUpdateType): Promise<animals> {
+    return await prisma.animals.update({
+      where: {
+        id: data.animal.id
+      },
+      data: {
+        name: data.animal.name,
+        dateofbirth: data.animal.dateofbirth,
+        dateofbirthisexact: data.animal.dateofbirthisexact,
+        weightingram: data.animal.weightingram,
+        heightincm: data.animal.heightincm,
+        timeofdeath: data.animal.timeofdeath,
+        iscastrated: data.animal.iscastrated,
+        lifestyle: data.animal.lifestyle,
       },
     });
   },
@@ -36,7 +63,7 @@ export const animalService = {
         animals: true
       }
     });
-    
+
     return relations.map(r => r.animals);
   },
 
@@ -50,12 +77,6 @@ export const animalService = {
 
   async getAll(): Promise<animals[]> {
     return await prisma.animals.findMany();
-  },
-
-  async update(data: animals): Promise<animals> {
-    if (!data.id) throw new Error("ID is required for update");
-
-    return await prisma.animals.update({ where: { id: data.id }, data: data });
   },
 
   async delete(id: number): Promise<void> {
