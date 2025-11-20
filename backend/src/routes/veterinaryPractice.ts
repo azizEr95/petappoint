@@ -1,15 +1,14 @@
 import express from "express";
 import { veterinaryPracticeService } from "../service/veterinaryPracticeService"
-import { veterinarypractices } from "../../generated/prisma";
 import { z } from 'zod';
 import { appointmentService } from "../service/appointmentService";
-import { VeterinaryPracticeCreateSchema, VeterinarySearchQuerySchema } from "vetlib-shared/schemas/ZodSchemas";
+import { AppointmentsType, VeterinaryPracticesType, VeterinaryPracticeCreateSchema, VeterinarySearchQuerySchema } from "vetlib-shared/schemas/ZodSchemas";
 
 export const veterinaryPracticeRouter = express.Router();
 
 veterinaryPracticeRouter.get("/all",
     async (_req, res) => {
-        const allVeterinaries: veterinarypractices[] = await veterinaryPracticeService.getAll();
+        const allVeterinaries: VeterinaryPracticesType[] = await veterinaryPracticeService.getAll();
         res.send(allVeterinaries);
     }
 )
@@ -21,7 +20,7 @@ veterinaryPracticeRouter.get('/search',
             return res.sendStatus(400);
         }
 
-        const allVeterinaries: veterinarypractices[] = await veterinaryPracticeService.getByNameOrAdress(parsed.data.name, parsed.data.address);
+        const allVeterinaries: VeterinaryPracticesType[] = await veterinaryPracticeService.getByNameOrAdress(parsed.data.name, parsed.data.address);
         return res.send(allVeterinaries);
     }
 )
@@ -29,7 +28,7 @@ veterinaryPracticeRouter.get('/search',
 veterinaryPracticeRouter.get('/:id',
     async (req, res) => {
         try {
-            const veterinaryPractice = await veterinaryPracticeService.getById(req.params.id);
+            const veterinaryPractice: VeterinaryPracticesType = await veterinaryPracticeService.getById(req.params.id);
             return res.send(veterinaryPractice);
         } catch (ex) {
             return res.sendStatus(404);
@@ -42,8 +41,8 @@ veterinaryPracticeRouter.get('/:id/appointments',
     async (req, res) => {
         try {
             const id: number = parseInt(req.params.id);
-            const veterinaryPractice = await appointmentService.getForPractice(id);
-            return res.send(veterinaryPractice);
+            const veterinaryPracticeAppointments: AppointmentsType[] = await appointmentService.getForPractice(id);
+            return res.send(veterinaryPracticeAppointments);
         } catch (ex) {
             return res.sendStatus(404);
         }
@@ -57,8 +56,8 @@ veterinaryPracticeRouter.get('/:id/appointments/available',
             return res.sendStatus(400);
         }
 
-        const veterinaryPractice = await appointmentService.getAvailableAppointmentsForPractice(id);
-        return res.send(veterinaryPractice);
+        const availableAppointments: AppointmentsType[] = await appointmentService.getAvailableAppointmentsForPractice(id);
+        return res.send(availableAppointments);
     }
 )
 
@@ -72,7 +71,7 @@ veterinaryPracticeRouter.post("/",
             return;
         }
         try {
-            const vetRes = await veterinaryPracticeService.create(createdVet.data);
+            const vetRes: VeterinaryPracticesType = await veterinaryPracticeService.create(createdVet.data);
             res.sendStatus(200).send(vetRes);
         } catch (error) {
             next(error);

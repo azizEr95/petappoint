@@ -97,7 +97,17 @@ const parseAppointmentArray = (unsafeAppointments: AppointmentsType[]): Appointm
             fk_animalid: x.fk_animalid,
             fk_veterinaryid: x.fk_veterinaryid,
             fk_veterinarypracticeid: x.fk_veterinarypracticeid,
-            fk_serviceid: x.fk_serviceid
+            fk_serviceid: x.fk_serviceid,
+            animals: x.animals,
+            veterinaries: x.veterinaries,
+            veterinarypractices: x.veterinarypractices,
+            services: x.services
+            /**
+             * animals: AnimalsSchema.nullable(),
+                 veterinaries: VeterinariansSchema,
+                 veterinarypractices: VeterinaryPracticeSchema,
+                 services: ServiceSchema.nullable()
+             */
         }
         const parsed = AppointmentsSchema.safeParse(unsafeData);
         if (parsed.error !== undefined) { // if Zod throws an Error print them

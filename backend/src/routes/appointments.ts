@@ -21,7 +21,7 @@ appointmentRouter.get("/past/:personId",
                 res.sendStatus(400);
                 return;
             }
-            const pastAppointments = await appointmentService.getPastAppointmentsForPerson(personId);
+            const pastAppointments: AppointmentsType[] = await appointmentService.getPastAppointmentsForPerson(personId);
             res.send(pastAppointments);
         } catch (e) {
             res.sendStatus(404);
@@ -38,7 +38,7 @@ appointmentRouter.get("/future/:personId",
                 res.sendStatus(400);
                 return;
             }
-            const futureAppointments = await appointmentService.getFutureAppointmentsForPerson(personId);
+            const futureAppointments: AppointmentsType[] = await appointmentService.getFutureAppointmentsForPerson(personId);
             res.send(futureAppointments);
         } catch (e) {
             res.sendStatus(404);
@@ -51,7 +51,7 @@ appointmentRouter.get("/:id",
     async (req, res) => {
         try {
             const id = parseInt(req.params.id);
-            const appointment = await appointmentService.getById(id);
+            const appointment: AppointmentsType = await appointmentService.getById(id);
             res.send(appointment);
         } catch (ex) {
             res.sendStatus(404);
