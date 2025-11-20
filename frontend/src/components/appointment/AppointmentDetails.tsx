@@ -28,6 +28,9 @@ export function AppointmentDetails({ appointment, onAppointmentCancelled }: Appo
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['appointmentsFuture'] });
             queryClient.invalidateQueries({ queryKey: ['appointmentsPast'] });
+            queryClient.invalidateQueries({ predicate: (query) =>
+                query.queryKey[0]?.toString().startsWith('nextAvailableAppointments/') ?? false
+            });
             if (onAppointmentCancelled) {
                 onAppointmentCancelled();
             }
@@ -170,7 +173,7 @@ export function AppointmentDetails({ appointment, onAppointmentCancelled }: Appo
                     <div className="info-item">
                         <i className="bi bi-heart"></i>
                         <div className="info-content">
-                            <div className="value">Tier-ID: {appointment.fk_animalid || 'Nicht zugewiesen'}</div>
+                            <div className="value">{appointment.animals?.name || 'Nicht zugewiesen'}</div>
                         </div>
                     </div>
                 </div>

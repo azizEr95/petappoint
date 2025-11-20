@@ -3,7 +3,7 @@ import { AppointmentList } from '../components/appointment/AppointmentList'
 import type { AppointmentsType } from '../../../shared/schemas/ZodSchemas'
 import { useQuery } from '@tanstack/react-query';
 import { getFutureAppointmentsByUserId, getPastAppointmentsByUserId } from '../api/AppointmentsAPI';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { AppointmentDetails } from '../components/appointment/AppointmentDetails';
 import '../styles/routes/appointments.scss';
 
@@ -38,29 +38,36 @@ function Appointments() {
         navigate({ state: { appointment: undefined } });
     }, []);
 
+    // Create sorted copies (don't mutate original arrays)
+    const sortedFuture = useMemo(() =>
+        dataFuture ? [...dataFuture].sort((a, b) => a.starttime.getTime() - b.starttime.getTime()) : [],
+        [dataFuture]
+    );
+    const sortedPast = useMemo(() =>
+        dataPast ? [...dataPast].sort((a, b) => b.starttime.getTime() - a.starttime.getTime()) : [],
+        [dataPast]
+    );
+
     useEffect(() => {
-        if (isSuccessFuture && isSuccessPast) {
-            dataFuture.sort((a, b) => a.starttime.getTime() - b.starttime.getTime());
-            dataPast.sort((a, b) => b.starttime.getTime() - a.starttime.getTime());
+        // Only auto-select if no appointment was booked and none is currently selected
+        if (isSuccessFuture && sortedFuture.length > 0 && !selectedAppointment && !bookedAppointment) {
+            setSelectedAppointment(sortedFuture[0]);
+        }
+    }, [isSuccessFuture, sortedFuture, selectedAppointment, bookedAppointment]);
 
-            // Auto-select first appointment if none selected
-            if (!selectedAppointment && dataFuture.length > 0) {
-                setSelectedAppointment(dataFuture[0]);
-            }
+    useEffect(() => {
+        // If selected appointment no longer exists in current list, select next one
+        if (selectedAppointment) {
+            const currentList = activeTab === 'upcoming' ? sortedFuture : sortedPast;
+            const stillExists = currentList?.some(apt => apt.id === selectedAppointment.id);
 
-            // If selected appointment no longer exists in current list, select next one
-            if (selectedAppointment) {
-                const currentList = activeTab === 'upcoming' ? dataFuture : dataPast;
-                const stillExists = currentList.some(apt => apt.id === selectedAppointment.id);
-
-                if (!stillExists && currentList.length > 0) {
-                    setSelectedAppointment(currentList[0]);
-                } else if (!stillExists) {
-                    setSelectedAppointment(undefined);
-                }
+            if (!stillExists && currentList && currentList.length > 0) {
+                setSelectedAppointment(currentList[0]);
+            } else if (!stillExists) {
+                setSelectedAppointment(undefined);
             }
         }
-    }, [isSuccessFuture, isSuccessPast, dataFuture, dataPast, selectedAppointment, activeTab]);
+    }, [activeTab, sortedFuture, sortedPast, selectedAppointment]);
 
     const handleShowDetailsAppointment = (appointment: AppointmentsType) => {
         setSelectedAppointment(appointment);
@@ -70,7 +77,7 @@ function Appointments() {
         // useEffect will handle selecting next appointment after query invalidation
     };
 
-    const currentData = activeTab === 'upcoming' ? dataFuture : dataPast;
+    const currentData = activeTab === 'upcoming' ? sortedFuture : sortedPast;
     const isCurrentError = activeTab === 'upcoming' ? isErrorFuture : isErrorPast;
     const isCurrentSuccess = activeTab === 'upcoming' ? isSuccessFuture : isSuccessPast;
 
