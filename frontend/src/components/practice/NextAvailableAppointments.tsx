@@ -107,7 +107,14 @@ export function NextAvailableAppointments({
     let i = 0
     const vergleichDate = new Date(dateAnsicht) // erster Tag der in dieser Ansicht zur Auswahl steht
     for (const termin of data) {
-      if(termin.starttime > dateAnsicht){
+      if (compareDates(vergleichDate, new Date()) !== 0) {
+        vergleichDate.setHours(0, 0, 0, 0);
+      } else {
+        const time = new Date();
+        vergleichDate.setHours(time.getHours(), time.getMinutes(), time.getSeconds(), time.getMilliseconds())
+      }
+      
+      if (termin.starttime > vergleichDate) {
         // Termine vor angegebenem Starttermin werden nicht angezeigt
         while (i < 5) {
           // wenn Date String gleich ist dann ist richtige Pos im Array gefunden, dadurch wird sichergestellt das Tag Monat und Jahr uebereinstimmen
