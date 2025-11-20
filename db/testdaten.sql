@@ -120,7 +120,7 @@ VALUES
   (2, 'daniel@arzt.de', 1),
   (1, NULL, NULL);
 
-  INSERT INTO SERVICES (name, estimatedDurationInMinutes, fk_veterinaryPracticeId)
+INSERT INTO SERVICES (name, estimatedDurationInMinutes, fk_veterinaryPracticeId)
 VALUES
   ('Allgemeine Untersuchung', 30, 1),
   ('Röntgen', 30, 1),
@@ -133,7 +133,17 @@ VALUES
   ('Zahnkontrolle', 45, 2),
   ('Physiotherapie', 45, 2),
   ('Notfalltermin', 45, 2),
-  ('Wundversorgung', 45, 2);
+  ('Wundversorgung', 45, 2),
+  ('Untersuchung', 45, 3),
+  ('Zahnextraktion', 45, 3),
+  ('Zahnkontrolle', 45, 3),
+  ('Physiotherapie', 45, 3),
+  ('Notfalltermin', 45, 3),
+  ('Untersuchung', 45, 4),
+  ('Zahnextraktion', 45, 4),
+  ('Zahnkontrolle', 45, 5),
+  ('Physiotherapie', 45, 5),
+  ('Notfalltermin', 45, 5);
 
 -- Termine
 -- Praxis 1
@@ -259,3 +269,14 @@ VALUES
   (1, 'Frei', 'organic'),
   (2, 'Hauskatze', 'indoor'),
   (2, 'Frei', 'organic');
+
+INSERT INTO SERVICES (name, estimatedDurationInMinutes, fk_veterinaryPracticeId)
+VALUES
+  ('Allgemeine Untersuchung', 30, 6),
+  ('Röntgen', 30, 6),
+  ('Impfung', 45, 6),
+  ('Entwurmung', 45, 6),
+  ('Blutuntersuchung', 45, 7),
+  ('Kastration', 45, 7),
+  ('Untersuchung', 45, 7),
+  ('Zahnextraktion', 45, 7);
