@@ -177,4 +177,21 @@ export const appointmentService = {
   async delete(id: number): Promise<void> {
     await prisma.appointments.delete({ where: { id } });
   },
+
+  async cancelAppointmentAsPerson(id: number): Promise<AppointmentsType> {
+    return await prisma.appointments.update({
+      where: { id },
+      data: {
+        fk_animalid: null,
+        fk_serviceid: null
+      }
+    });
+  },
+
+  async updateNotiz(id: number, notiz: string | null): Promise<AppointmentsType> {
+    return await prisma.appointments.update({
+      where: { id },
+      data: { notiz }
+    });
+  },
 };

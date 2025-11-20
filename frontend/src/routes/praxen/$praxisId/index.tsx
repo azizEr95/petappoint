@@ -1,6 +1,5 @@
 import { useEffect } from 'react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { Button } from 'react-bootstrap'
 import { useQuery } from '@tanstack/react-query'
 import { NextAvailableAppointments } from '../../../components/practice/NextAvailableAppointments'
 import '../../../styles/routes/praxisPage.scss'
@@ -45,30 +44,71 @@ function VeterinaryPractice() {
   const praxis: VeterinaryPracticesType = data
 
   return (
-    <div id="PraxisPage" className="flex-column">
-      <Button
-        className="backButton"
-        variant="success"
-        onClick={handleClickBack}
-      >
-        <i className="bi bi-arrow-left"></i>
-      </Button>
-      <div id="PraxisInfosPraxisPage">
-        <h5 className="praxisPageText">{praxis.name}</h5>
-        <div className="praxisPageText">{praxis.info}</div>
-        <div className="praxisPageText">{praxis.addresses.street}</div>
-        <div className="praxisPageText">
-          {praxis.addresses.citycode} {praxis.addresses.city}
-        </div>
-        <div className="praxisPageText">{praxis.addresses.country}</div>
-        <div className="praxisPageText">Telefon: {praxis.phone}</div>
-        <div className="praxisPageText">E-Mail: {praxis.infoemail}</div>
-        <div className="praxisPageText">{praxis.website}</div>
+    <div className="praxis-page">
+      <div className="praxis-header">
+        <button className="back-button" onClick={handleClickBack}>
+          <i className="bi bi-arrow-left"></i>
+          Zurück
+        </button>
+        <h1>{praxis.name}</h1>
       </div>
-      <div id="TerminInfosPraxisPage" className="flex-row">
-        <NextAvailableAppointments
-          praxisID={praxis.id.toString()}
-        ></NextAvailableAppointments>
+
+      <div className="praxis-layout">
+        <div className="praxis-info-sidebar">
+          {praxis.info && (
+            <div className="info-description">
+              <p>{praxis.info}</p>
+            </div>
+          )}
+
+          <div className="info-section">
+            <div className="section-title">
+              <i className="bi bi-geo-alt"></i>
+              Adresse
+            </div>
+            <div className="info-content">
+              <p>{praxis.addresses.street}</p>
+              <p>
+                {praxis.addresses.citycode} {praxis.addresses.city}
+              </p>
+              <p>{praxis.addresses.country}</p>
+            </div>
+          </div>
+
+          <div className="info-section">
+            <div className="section-title">
+              <i className="bi bi-telephone"></i>
+              Kontakt
+            </div>
+            <div className="info-content">
+              <p>
+                <a href={`tel:${praxis.phone}`}>{praxis.phone}</a>
+              </p>
+              <p>
+                <a href={`mailto:${praxis.infoemail}`}>{praxis.infoemail}</a>
+              </p>
+              {praxis.website && (
+                <p>
+                  <a
+                    href={praxis.website}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <i className="bi bi-globe"></i>
+                    Website
+                  </a>
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="praxis-appointments">
+          <div className="appointments-header-section">
+            <h2>Verfügbare Termine</h2>
+          </div>
+          <NextAvailableAppointments praxisID={praxis.id.toString()} />
+        </div>
       </div>
     </div>
   )

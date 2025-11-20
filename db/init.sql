@@ -122,7 +122,8 @@ CREATE TABLE IF NOT EXISTS services(
   id SERIAL PRIMARY KEY,
   name VARCHAR(100) NOT NULL,
   estimatedDurationInMinutes INTEGER NOT NULL DEFAULT 0,
-  fk_veterinaryPracticeId INTEGER REFERENCES veterinarypractices(id)
+  fk_veterinaryPracticeId INTEGER REFERENCES veterinarypractices(id),
+  notiz TEXT
 );
 
 CREATE TABLE IF NOT EXISTS appointments(
@@ -132,7 +133,8 @@ CREATE TABLE IF NOT EXISTS appointments(
   fk_animalId INTEGER REFERENCES animals(id),
   fk_veterinaryId INTEGER NOT NULL REFERENCES veterinaries(id),
   fk_veterinaryPracticeId INTEGER NOT NULL REFERENCES veterinarypractices(id),
-  fk_serviceId INTEGER REFERENCES services(id) DEFAULT NULL
+  fk_serviceId INTEGER REFERENCES services(id) DEFAULT NULL,
+  notiz TEXT
 );
 
 CREATE TABLE IF NOT EXISTS reviews(

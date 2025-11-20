@@ -1,13 +1,89 @@
-#tierList {
-  text-align: center;
-  align-items: center;
-  padding: 1em;
-  position: static;
-  width: 230px;
-  min-height: 300px;
-  max-height: 300px;
-}
+@import '../../variables';
 
-.tierCheckbox {
-  margin-right: 1em;
+.select-animal {
+  .section-title {
+    font-size: $font-size-base;
+    font-weight: 700;
+    color: var(--color-text-dark);
+    margin-bottom: var(--spacing-md);
+  }
+
+  .animal-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
+
+    .animal-item {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--color-primary);
+      color: white;
+      border-radius: 50px;
+      padding: var(--spacing-sm) var(--spacing-lg);
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 2px solid var(--color-primary);
+      min-height: 48px;
+
+      &:hover {
+        background: var(--color-primary-dark);
+        border-color: var(--color-primary-dark);
+      }
+
+      &.selected {
+        background: var(--color-primary-dark);
+        border-color: var(--color-primary-dark);
+        box-shadow: var(--shadow-md);
+      }
+
+      .animal-name {
+        font-size: $font-size-base;
+        font-weight: 600;
+        flex: 1;
+        text-align: left;
+      }
+
+      .edit-button {
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        border-radius: 50%;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        cursor: pointer;
+        transition: all 0.2s;
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.3);
+        }
+
+        i {
+          font-size: 0.85rem;
+        }
+      }
+    }
+  }
+
+  .new-animal-button {
+    width: 100%;
+    border: 2px solid var(--color-primary);
+    color: var(--color-primary);
+    background: white;
+    font-weight: 600;
+    padding: var(--spacing-sm) var(--spacing-lg);
+    border-radius: 50px;
+    min-height: 48px;
+    transition: all 0.2s;
+
+    &:hover {
+      background: var(--color-primary-pale);
+      border-color: var(--color-primary);
+    }
+  }
 }

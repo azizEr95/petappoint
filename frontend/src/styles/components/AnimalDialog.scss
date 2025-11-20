@@ -1,0 +1,97 @@
+@import '../variables';
+
+.animal-dialog {
+  .modal-header {
+    background: var(--color-primary-lightest);
+    border-bottom: 2px solid var(--color-primary-light);
+
+    .modal-title {
+      color: var(--color-primary-dark);
+      font-weight: 700;
+      font-size: $h4-font-size;
+    }
+
+    .btn-close {
+      &:focus {
+        box-shadow: none;
+      }
+    }
+  }
+
+  .modal-body {
+    padding: var(--spacing-xl);
+  }
+
+  .modal-footer {
+    border-top: 1px solid var(--color-border);
+    padding: var(--spacing-lg) var(--spacing-xl);
+    gap: var(--spacing-sm);
+
+    .btn {
+      padding: var(--spacing-sm) var(--spacing-xl);
+      font-weight: 600;
+    }
+  }
+
+  .animal-type-selection {
+    .selection-label {
+      font-size: $font-size-base;
+      font-weight: 700;
+      color: var(--color-text-dark);
+      margin-bottom: var(--spacing-lg);
+      text-align: center;
+    }
+
+    .animal-type-buttons {
+      display: flex;
+      gap: var(--spacing-md);
+      justify-content: center;
+
+      .animal-type-button {
+        padding: var(--spacing-md) var(--spacing-xl);
+        font-weight: 600;
+        border-radius: var(--radius-md);
+        transition: all 0.2s;
+
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: var(--shadow-md);
+        }
+      }
+    }
+  }
+
+  .animal-form {
+    .form-label {
+      font-weight: 600;
+      color: var(--color-text-dark);
+      margin-bottom: var(--spacing-xs);
+    }
+
+    .form-control, .form-select {
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--spacing-sm) var(--spacing-md);
+      transition: all 0.2s;
+
+      &:focus {
+        border-color: var(--color-primary);
+        box-shadow: 0 0 0 0.2rem rgba(26, 93, 58, 0.15);
+      }
+    }
+
+    .btn-group {
+      width: 100%;
+
+      .btn {
+        flex: 1;
+        padding: var(--spacing-sm);
+      }
+    }
+
+    .text-muted {
+      font-size: $font-size-sm;
+      font-style: italic;
+    }
+  }
+}

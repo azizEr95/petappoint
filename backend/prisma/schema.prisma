@@ -58,6 +58,7 @@ model appointments {
   fk_veterinaryid         Int
   fk_veterinarypracticeid Int
   fk_serviceid            Int?
+  notiz                   String?
   appointment_has_review  appointment_has_review[]
   animals                 animals?                 @relation(fields: [fk_animalid], references: [id], onDelete: NoAction, onUpdate: NoAction)
   services                services?                @relation(fields: [fk_serviceid], references: [id], onDelete: NoAction, onUpdate: NoAction)
@@ -210,6 +211,7 @@ model services {
   name                       String               @db.VarChar(100)
   estimateddurationinminutes Int                  @default(0)
   fk_veterinarypracticeid    Int?
+  notiz                      String?
   appointments               appointments[]
   veterinarypractices        veterinarypractices? @relation(fields: [fk_veterinarypracticeid], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }

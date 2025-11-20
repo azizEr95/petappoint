@@ -181,17 +181,18 @@ function BookingComponent() {
     case StatusBooking.selectAnimal:
       aktuelleAnzeige = <SelectAnimal handleChangeAnimal={handleChangeAnimal} />
       submitButton = (
-        <Button
-          id="bookAppointment"
-          variant="success"
-          size="lg"
-          className="w-100 mt-3"
-          onClick={handleBookAppoinment}
-          disabled={!selectedAnimal}
-        >
-          <i className="bi bi-check-circle me-2"></i>
-          Terminbuchung bestätigen
-        </Button>
+        <div className="select-animal-actions">
+          <Button
+            id="bookAppointment"
+            variant="success"
+            className="booking-confirm-button"
+            onClick={handleBookAppoinment}
+            disabled={!selectedAnimal}
+          >
+            <i className="bi bi-check-circle me-2"></i>
+            Terminbuchung bestätigen
+          </Button>
+        </div>
       )
       currentStep = 2
       break
@@ -244,7 +245,7 @@ function BookingComponent() {
           >
             <Card.Header className="bg-success text-white">
               <i className="bi bi-info-circle me-2"></i>
-              Terminübersicht
+              Praxisübersicht
             </Card.Header>
             <Card.Body>
               <h5 className="mb-3">{praxis.name}</h5>

@@ -136,7 +136,8 @@ export type Person_has_AnimalType = z.infer<typeof Person_has_AnimalSchema>;
 export const ServiceSchema = z.object({
     id: z.number().int(),
     name: z.string().min(1).max(100),
-    estimateddurationinminutes: z.number().int().min(0)
+    estimateddurationinminutes: z.number().int().min(0),
+    notiz: z.string().nullable().optional()
 });
 
 export type ServiceType = z.infer<typeof ServiceSchema>;
@@ -194,6 +195,7 @@ export const AppointmentsSchema = z.object({
     fk_veterinaryid: z.number().int(),
     fk_veterinarypracticeid: z.number().int(),
     fk_serviceid: z.number().int().nullable(),
+    notiz: z.string().nullable().optional()
 });
 
 export const AppointmentsCreateSchema = AppointmentsSchema.omit({

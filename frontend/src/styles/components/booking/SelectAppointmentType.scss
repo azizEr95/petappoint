@@ -1,9 +1,38 @@
-#terminArtDropdown {
-  text-align: center;
-  align-items: center;
-  padding: 1em;
-  position: static;
-  width: 350px;
-  min-height: 300px;
-  max-height: 300px;
+@import '../../variables';
+
+.select-appointment-type {
+  .section-title {
+    font-size: $font-size-base;
+    font-weight: 700;
+    color: var(--color-text-dark);
+    margin-bottom: var(--spacing-md);
+  }
+
+  .service-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+
+    .service-item {
+      background: white;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--spacing-sm) var(--spacing-md);
+      font-size: $font-size-base;
+      color: var(--color-text-dark);
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+
+      &:hover {
+        border-color: var(--color-primary);
+        background: var(--color-primary-pale);
+        transform: translateX(4px);
+      }
+
+      &:active {
+        transform: translateX(0);
+      }
+    }
+  }
 }

@@ -1,53 +1,84 @@
-import { Card } from "react-bootstrap"
 import type { AppointmentsType, ServiceType, VeterinaryPracticesType } from "../../../../shared/schemas/ZodSchemas"
-import { dateToInfosString } from "../../utils/DateToStringFormat"
 import { useQuery } from "@tanstack/react-query"
 import { getVeterinaryPracticesById } from "../../api/VeterinaryPracticeAPI"
 
 type AppointmentCardProps = {
     appointment: AppointmentsType,
-    handleShowDetailsAppointment: (appointment: AppointmentsType) => void
+    handleShowDetailsAppointment: (appointment: AppointmentsType) => void,
+    isActive: boolean,
+    isPast: boolean
 }
 
-export function AppointmentCard({ appointment, handleShowDetailsAppointment}: AppointmentCardProps) {
+export function AppointmentCard({ appointment, handleShowDetailsAppointment, isActive, isPast }: AppointmentCardProps) {
     const practiceID = appointment.fk_veterinarypracticeid;
 
-    // load VeterinaryPractice, remove if it is in appointmentsType Issue #96
     const { isError, isSuccess, data } = useQuery<VeterinaryPracticesType>({
         queryKey: ['veterinaryPractice', practiceID],
         queryFn: () => getVeterinaryPracticesById(practiceID.toString()),
     });
 
-    // can not find the practice to the appointment
-    if(isError){
-        return <Card style={{ width: '18rem' }}>
-            <Card.Body>
-                <Card.Title>{dateToInfosString(appointment.starttime)}</Card.Title>
-                <Card.Text>
-                    <div>Praxis unbekannt</div>
-                </Card.Text>
-            </Card.Body>
-        </Card>;
+    if (isError) {
+        return (
+            <div className={`appointment-card ${isActive ? 'active' : ''}`} onClick={() => handleShowDetailsAppointment(appointment)}>
+                <div className="card-header">
+                    <div className="date-time">
+                        <div className="date">Termin</div>
+                        <div className="time">Praxis nicht gefunden</div>
+                    </div>
+                </div>
+            </div>
+        );
     }
 
     if (isSuccess) {
         const practice: VeterinaryPracticesType = data;
-        let appointmentType: ServiceType | undefined
+        let appointmentType: ServiceType | undefined;
+
         if (practice.services !== null && practice.services !== undefined) {
-            appointmentType = practice.services.find((x) => {
-                if (x.id === appointment.fk_serviceid) {
-                    return x;
-                }
-            });
+            appointmentType = practice.services.find((x) => x.id === appointment.fk_serviceid);
         }
 
-        return <Card style={{ width: '18rem' }} onClick={() => handleShowDetailsAppointment(appointment)}>
-            <Card.Body>
-                <Card.Title>{dateToInfosString(appointment.starttime)}</Card.Title>
-                <Card.Text>{practice.name}</Card.Text>
-                <Card.Text>{appointmentType?.name}</Card.Text>
-                <Card.Text>Tier: TODO feature folgt {appointment.fk_animalid}</Card.Text>
-            </Card.Body>
-        </Card>;
+        const formatDate = (date: Date) => {
+            return date.toLocaleDateString('de-DE', {
+                weekday: 'short',
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric'
+            });
+        };
+
+        const formatTime = (date: Date) => {
+            return date.toLocaleTimeString('de-DE', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        };
+
+        return (
+            <div
+                className={`appointment-card ${isActive ? 'active' : ''} ${isPast ? 'past' : 'upcoming'}`}
+                onClick={() => handleShowDetailsAppointment(appointment)}
+            >
+                <div className="card-header">
+                    <div className="date-time">
+                        <div className="date">{formatDate(appointment.starttime)}</div>
+                        <div className="time">{formatTime(appointment.starttime)} - {formatTime(appointment.endtime)}</div>
+                    </div>
+                    <div className={`status-badge ${isPast ? 'past' : 'upcoming'}`}>
+                        {isPast ? 'Vergangen' : 'Bevorstehend'}
+                    </div>
+                </div>
+                <div className="card-body">
+                    <div className="practice-name">{practice.name}</div>
+                    {appointmentType && <div className="service-type">{appointmentType.name}</div>}
+                    <div className="animal-info">
+                        <i className="bi bi-heart"></i>
+                        <span>Tier-ID: {appointment.fk_animalid || 'Nicht zugewiesen'}</span>
+                    </div>
+                </div>
+            </div>
+        );
     }
+
+    return null;
 }

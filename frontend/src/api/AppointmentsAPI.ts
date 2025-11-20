@@ -110,6 +110,34 @@ const parseAppointmentArray = (unsafeAppointments: AppointmentsType[]): Appointm
     }).filter(x => x !== null);
 }
 
+// cancel/delete an appointment
+export const cancelAppointment = async (id: number): Promise<void> => {
+    const url = import.meta.env.VITE_API_URL + '/appointments/' + id;
+    const res = await fetch(url, {
+        method: 'DELETE',
+    });
+    if (!res.ok) {
+        throw new Error('Failed to cancel appointment');
+    }
+}
+
+// update appointment notiz
+export const updateAppointmentNotiz = async (id: number, notiz: string | null): Promise<AppointmentsType> => {
+    const url = import.meta.env.VITE_API_URL + '/appointments/' + id + '/notiz';
+    const res = await fetch(url, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ notiz }),
+    });
+    if (!res.ok) {
+        throw new Error('Failed to update appointment notiz');
+    }
+    const data = await res.json();
+    return parseAppointment(data);
+}
+
 /*
  * change the date from the Appointment to Date Object and safeParse the object
  */
