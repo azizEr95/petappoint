@@ -1,28 +1,188 @@
-#BookingPage {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+// Booking Page Styles
+@import '../variables';
+
+.booking-page {
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+  padding: var(--spacing-xl) var(--container-padding);
 }
 
-#BookingAuswahlInfos {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
+.booking-header {
+  margin-bottom: var(--spacing-xl);
+
+  .back-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: white;
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-md);
+    color: var(--color-primary);
+    font-size: $font-size-base;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: var(--spacing-md);
+
+    &:hover {
+      background: var(--color-primary-pale);
+      border-color: var(--color-primary-light);
+    }
+
+    i {
+      font-size: 1.1rem;
+    }
+  }
+
+  h1 {
+    color: var(--color-primary);
+    font-size: $h2-font-size;
+    font-weight: 700;
+    margin: 0;
+  }
 }
 
-#TerminInfosUebersicht {
-  display: flex;
-  flex-direction: column;
-  margin-left: 3em;
-  max-height: 250px;
-}
-#bookAppointment {
-  margin: 2em;
-  margin-bottom: 5em;
+// Main Layout - Two Column Grid
+.booking-layout {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: var(--spacing-xl);
+  align-items: start;
+  margin-top: var(--spacing-xl);
 }
 
-#HeaderBookingPage {
-  display: flex;
-  flex-direction: row;
+// Main Content Area
+.booking-main {
+  background: white;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: var(--spacing-xl);
+}
+
+// Sidebar with Booking Summary
+.booking-sidebar {
+  position: sticky;
+  top: var(--spacing-lg);
+  background: white;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: var(--spacing-xl);
+
+  .sidebar-section-title {
+    font-size: $font-size-sm;
+    font-weight: 700;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: var(--spacing-lg);
+    padding-bottom: var(--spacing-md);
+    border-bottom: 2px solid var(--color-border);
+  }
+
+  .info-item {
+    display: flex;
+    align-items: start;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-lg);
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    i {
+      color: var(--color-primary);
+      font-size: 1.2rem;
+      margin-top: 0.15rem;
+      flex-shrink: 0;
+    }
+
+    .info-content {
+      flex: 1;
+
+      .info-label {
+        font-size: $font-size-sm;
+        font-weight: 600;
+        color: var(--color-text-muted);
+        margin-bottom: 0.25rem;
+      }
+
+      .info-value {
+        font-size: $font-size-base;
+        color: var(--color-text-dark);
+        line-height: 1.4;
+      }
+    }
+  }
+}
+
+// Select Animal Actions
+.select-animal-actions {
+  margin-top: var(--spacing-xl);
+  padding-top: var(--spacing-lg);
+  border-top: 2px solid var(--color-border);
+
+  .booking-confirm-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 1rem 2rem;
+    background: var(--color-primary);
+    border: 2px solid var(--color-primary);
+    border-radius: var(--radius-md);
+    color: white;
+    font-size: $font-size-base;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &:hover:not(:disabled) {
+      background: var(--color-primary-dark);
+      border-color: var(--color-primary-dark);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
+    }
+
+    &:disabled {
+      background: $gray-200;
+      border-color: $gray-200;
+      color: $gray-600;
+      cursor: not-allowed;
+    }
+
+    i {
+      font-size: 1.1rem;
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 992px) {
+  .booking-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .booking-sidebar {
+    position: static;
+    order: -1; // Move sidebar above main content on mobile
+  }
+}
+
+@media (max-width: 768px) {
+  .booking-page {
+    padding: var(--spacing-md) var(--container-padding-mobile);
+  }
+
+  .booking-header {
+    h1 {
+      font-size: $h3-font-size;
+    }
+  }
+
+  .booking-main,
+  .booking-sidebar {
+    padding: var(--spacing-md);
+  }
 }
