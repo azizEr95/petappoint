@@ -72,7 +72,7 @@ veterinaryPracticeRouter.post("/",
         }
         try {
             const vetRes: VeterinaryPracticesType = await veterinaryPracticeService.create(createdVet.data);
-            res.sendStatus(200).send(vetRes);
+            res.send(vetRes);
         } catch (error) {
             next(error);
         }
