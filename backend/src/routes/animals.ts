@@ -1,5 +1,5 @@
 import express from "express";
-import { AnimalracesType, AnimalsCreateSchema, AnimalsPostBodySchema, AnimalUpdateSchema } from "vetlib-shared/schemas/ZodSchemas";
+import { AnimalracesType, AnimalsCreateSchema, AnimalUpdateSchema } from "vetlib-shared/schemas/ZodSchemas";
 import { animalService } from "../service/animalService";
 import { personService } from "../service/personService";
 import { animalRaceService } from "../service/animalRaceService";
@@ -8,7 +8,7 @@ export const animalsRouter = express.Router();
 
 animalsRouter.post("/",
     async (req, res) => {
-        const parseResult = AnimalsPostBodySchema.safeParse(req.body);
+        const parseResult = AnimalsCreateSchema.safeParse(req.body);
         if (!parseResult.success) {
             res.status(400).send(parseResult.error);
             return;
@@ -39,8 +39,8 @@ animalsRouter.put('/:animalId',
             return;
         }
 
-        if (animalId !== parseResult.data.animal.id) {
-            res.status(400).send(`Mismatch in param id '${animalId}' and provided body id '${parseResult.data.animal.id}'.`);
+        if (animalId !== parseResult.data.id) {
+            res.status(400).send(`Mismatch in param id '${animalId}' and provided body id '${parseResult.data.id}'.`);
             return;
         }
 

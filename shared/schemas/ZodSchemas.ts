@@ -42,15 +42,14 @@ export const AnimalsSchema = z.object({
     timeofdeath: z.date().nullable(),
     iscastrated: z.boolean(),
     lifestyleisindoors: z.boolean(),
-    sex: sexes
+    sex: sexes,
+    fk_animaltypeid: z.int(),
+    fk_animalgroupid: z.int().nullable()
 });
 
 
 export const AnimalsCreateSchema = AnimalsSchema.omit({
     id: true
-}).extend({
-    animaltype: AnimalTypeCreateSchema,
-    animalgroup: AnimalGroupCreateSchema
 });
 
 export type AnimalsCreateType = z.infer<typeof AnimalsCreateSchema>;
@@ -204,18 +203,6 @@ export type AppointmentsUpdateAsPersonType = z.infer<typeof AppointmentsUpdateAs
 export type AppointmentsCreateType = z.infer<typeof AppointmentsCreateSchema>;
 export type AppointmentsType = z.infer<typeof AppointmentsSchema>;
 
-export const AnimalsPostBodySchema = z.object({
-    animal: AnimalsCreateSchema,
-    // animal type
-    typeid: z.int(),
-    // animal group
-    groupid: z.int().optional()
-});
 
-export type AnimalsPostBodyType = z.infer<typeof AnimalsPostBodySchema>;
-
-export const AnimalUpdateSchema = z.object({
-    animal: AnimalsSchema
-});
-
+export const AnimalUpdateSchema = AnimalsSchema;
 export type AnimalUpdateType = z.infer<typeof AnimalUpdateSchema>;

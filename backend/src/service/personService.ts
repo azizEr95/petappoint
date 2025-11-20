@@ -60,7 +60,7 @@ export const personService = {
 
     const d = await prisma.person_has_favorized_veterinarypractice.createMany(
       {
-        data: practiceIds.map(practiceId => ({fk_personid: personId, fk_veterinarypracticeid: practiceId})),
+        data: practiceIds.map(practiceId => ({ fk_personid: personId, fk_veterinarypracticeid: practiceId })),
         skipDuplicates: true
       }
     );

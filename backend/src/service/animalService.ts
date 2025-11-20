@@ -1,27 +1,27 @@
 import { prisma } from "../singletonPC";
 import { animals, Prisma } from "../../generated/prisma";
-import { AnimalsPostBodyType, AnimalUpdateType } from "vetlib-shared/schemas/ZodSchemas";
+import { AnimalsCreateType, AnimalUpdateType } from "vetlib-shared/schemas/ZodSchemas";
 
 export const animalService = {
-  async create(data: AnimalsPostBodyType): Promise<animals> {
+  async create(data: AnimalsCreateType): Promise<animals> {
     return await prisma.animals.create({
       data: {
-        name: data.animal.name,
-        dateofbirth: data.animal.dateofbirth,
-        dateofbirthisexact: data.animal.dateofbirthisexact,
-        weightingram: data.animal.weightingram,
-        heightincm: data.animal.heightincm,
-        timeofdeath: data.animal.timeofdeath,
-        iscastrated: data.animal.iscastrated,
-        lifestyleisindoors: data.animal.lifestyleisindoors,
+        name: data.name,
+        dateofbirth: data.dateofbirth,
+        dateofbirthisexact: data.dateofbirthisexact,
+        weightingram: data.weightingram,
+        heightincm: data.heightincm,
+        timeofdeath: data.timeofdeath,
+        iscastrated: data.iscastrated,
+        lifestyleisindoors: data.lifestyleisindoors,
         animalgroup: {
           connect: {
-            id: data.groupid
+            id: data.fk_animalgroupid ?? undefined
           }
         },
         animaltypes: {
           connect: {
-            id: data.typeid,
+            id: data.fk_animaltypeid,
           }
         },
       },
@@ -31,17 +31,17 @@ export const animalService = {
   async update(data: AnimalUpdateType): Promise<animals> {
     return await prisma.animals.update({
       where: {
-        id: data.animal.id
+        id: data.id
       },
       data: {
-        name: data.animal.name,
-        dateofbirth: data.animal.dateofbirth,
-        dateofbirthisexact: data.animal.dateofbirthisexact,
-        weightingram: data.animal.weightingram,
-        heightincm: data.animal.heightincm,
-        timeofdeath: data.animal.timeofdeath,
-        iscastrated: data.animal.iscastrated,
-        lifestyleisindoors: data.animal.lifestyleisindoors,
+        name: data.name,
+        dateofbirth: data.dateofbirth,
+        dateofbirthisexact: data.dateofbirthisexact,
+        weightingram: data.weightingram,
+        heightincm: data.heightincm,
+        timeofdeath: data.timeofdeath,
+        iscastrated: data.iscastrated,
+        lifestyleisindoors: data.lifestyleisindoors,
       },
     });
   },
