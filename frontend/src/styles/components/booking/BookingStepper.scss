@@ -42,15 +42,15 @@
 }
 
 .stepper-circle.active {
-  background: var(--primary-green);
+  background: var(--color-primary);
   color: white;
-  border-color: var(--primary-green);
-  box-shadow: 0 4px 12px rgba(88, 192, 88, 0.3);
+  border-color: var(--color-primary);
+  box-shadow: 0 4px 12px rgba(26, 93, 58, 0.3);
 }
 
 .stepper-circle.completed {
-  background: var(--primary-green-dark);
-  border-color: var(--primary-green-dark);
+  background: var(--color-primary-dark);
+  border-color: var(--color-primary-dark);
 }
 
 .stepper-label {
@@ -72,7 +72,7 @@
 }
 
 .stepper-line.active {
-  background: var(--primary-green);
+  background: var(--color-primary);
 }
 
 @media (max-width: 576px) {

@@ -15,7 +15,7 @@
 }
 
 .footer-links a:hover {
-  color: var(--primary-green);
+  color: var(--color-primary);
 }
 
 .footer-contact li {
@@ -31,7 +31,7 @@
 }
 
 .footer-contact a:hover {
-  color: var(--primary-green);
+  color: var(--color-primary);
 }
 
 .social-link {
@@ -49,13 +49,13 @@
 }
 
 .social-link:hover {
-  background: var(--primary-green);
+  background: var(--color-primary);
   color: white;
   transform: translateY(-3px);
 }
 
 .newsletter-form .form-control:focus {
   background-color: #343a40;
-  border-color: var(--primary-green);
+  border-color: var(--color-primary);
   color: white;
 }
