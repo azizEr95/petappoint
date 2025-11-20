@@ -7,6 +7,7 @@ import '../../../styles/routes/praxisPage.scss'
 import { getVeterinaryPracticesById } from '../../../api/VeterinaryPracticeAPI'
 import type { VeterinaryPracticesType } from '../../../../../shared/schemas/ZodSchemas'
 
+
 export const Route = createFileRoute('/praxen/$praxisId/')({
   component: VeterinaryPractice,
 })
@@ -15,8 +16,7 @@ function VeterinaryPractice() {
   const navigate = useNavigate()
   const { praxisId } = Route.useParams()
 
-  // Tierarztpraxis laden:
-  let praxis: VeterinaryPracticesType
+  // load VeterinaryPractices:
   const { isError, isSuccess, isPending, data } =
     useQuery<VeterinaryPracticesType>({
       queryKey: ['tierarztpraxen', praxisId],
@@ -26,11 +26,11 @@ function VeterinaryPractice() {
 
   useEffect(() => {
     if (isPending) {
-      return
+      return;
     }
 
-    if (isError || !isSuccess) {
-      navigate({ to: '/' })
+    if (isError) {
+      navigate({ to: '/' });
     }
   }, [isError, isSuccess, isPending])
 
@@ -42,7 +42,7 @@ function VeterinaryPractice() {
     return
   }
 
-  praxis = data
+  const praxis: VeterinaryPracticesType = data
 
   return (
     <div id="PraxisPage" className="flex-column">
