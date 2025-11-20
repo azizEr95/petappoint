@@ -1,4 +1,3 @@
-DROP TABLE IF EXISTS animaltype_has_lifestyle;
 DROP TABLE IF EXISTS person_has_favorized_veterinarypractice;
 DROP TABLE IF EXISTS veterinary_has_invitation;
 DROP TABLE IF EXISTS recipes;
@@ -34,7 +33,6 @@ CREATE TABLE IF NOT EXISTS addresses(
 );
 
 CREATE TYPE sexes AS ENUM ('notknown', 'male', 'female', 'notapplicable');
-CREATE TYPE husbandarySystem AS ENUM ('indoor', 'indoorPlusSpace', 'indoorWithFreshAir', 'outdoorRunsFreeRange', 'organic');
 
 CREATE TABLE IF NOT EXISTS persons(
   id SERIAL PRIMARY KEY,
@@ -73,7 +71,7 @@ CREATE TABLE IF NOT EXISTS animals(
   heightInCm INTEGER,
   timeOfDeath DATE,
   isCastrated BOOLEAN NOT NULL,
-  lifestyle husbandarySystem NOT NULL DEFAULT 'organic',
+  lifestyleIsIndoors BOOLEAN NOT NULL DEFAULT TRUE,
   sex sexes NOT NULL DEFAULT 'notknown',
   fk_animalTypeId INTEGER NOT NULL REFERENCES animaltypes(id),
   fk_animalGroupId INTEGER REFERENCES animalgroup(id)
@@ -193,11 +191,4 @@ CREATE TABLE IF NOT EXISTS person_has_favorized_veterinarypractice(
   fk_personId INTEGER NOT NULL REFERENCES persons(id),
   fk_veterinaryPracticeId INTEGER NOT NULL REFERENCES veterinarypractices(id),
   PRIMARY KEY (fk_personId, fk_veterinaryPracticeId)
-);
-
-CREATE TABLE IF NOT EXISTS animaltype_has_lifestyle(
-  fk_animalTypeId INTEGER NOT NULL REFERENCES animaltypes(id),
-  namelifestyle VARCHAR(100),
-  lifestyle husbandarySystem NOT NULL DEFAULT 'organic',
-  PRIMARY KEY (fk_animalTypeId, lifestyle)
 );
