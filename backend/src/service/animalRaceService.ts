@@ -1,5 +1,5 @@
 import { prisma } from "../singletonPC";
-import { animalraces } from "../../generated/prisma";
+import { animal_has_races, animalraces } from "../../generated/prisma";
 
 export const animalRaceService = {
   async create(data: animalraces): Promise<animalraces> {
@@ -34,6 +34,33 @@ export const animalRaceService = {
 
   async getAll(): Promise<animalraces[]> {
     return await prisma.animalraces.findMany();
+  },
+
+  async getAllForAnimalType(animalTypeId: number): Promise<animalraces[]> {
+    if (!Number.isInteger(animalTypeId)) {
+      throw new Error("animalTypeId needs to be an integer.");
+    }
+
+    return await prisma.animalraces.findMany({
+      where: {
+        fk_animaltypeid: animalTypeId
+      }
+    });
+  },
+
+  async getAnimalRaces(animalId: number) {
+    if (!Number.isInteger(animalId)) {
+      throw new Error("animalId needs to be an integer.");
+    }
+
+    return await prisma.animal_has_races.findMany({
+      where: {
+        fk_animalid: animalId
+      },
+      include: {
+        animalraces: true
+      }
+    })
   },
 
   async update(data: animalraces): Promise<animalraces> {

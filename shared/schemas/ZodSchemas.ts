@@ -17,7 +17,7 @@ export type AnimalGroupType = z.infer<typeof AnimalGroupSchema>;
 //Animaltype:
 export const AnimalTypeSchema = z.object({
     id: z.number().int(),
-    name: z.string().optional(),
+    name: z.string(),
 });
 
 export const AnimalTypeCreateSchema = AnimalTypeSchema.omit({ //alles ohne id
@@ -36,7 +36,7 @@ export type sexesType = z.infer<typeof sexes>;
 
 export const AnimalsSchema = z.object({
     id: z.number().int(),
-    name: z.string().min(2).max(100),
+    name: z.string().min(1).max(100),
     dateofbirth: z.date().nullable(),
     dateofbirthisexact: z.boolean().nullable(),
     weightingram: z.number().int().nullable(),
@@ -205,3 +205,19 @@ export const AppointmentsUpdateAsPersonSchema = z.object({
 export type AppointmentsUpdateAsPersonType = z.infer<typeof AppointmentsUpdateAsPersonSchema>;
 export type AppointmentsCreateType = z.infer<typeof AppointmentsCreateSchema>;
 export type AppointmentsType = z.infer<typeof AppointmentsSchema>;
+
+export const AnimalsPostBodySchema = z.object({
+    animal: AnimalsCreateSchema,
+    // animal type
+    typeid: z.int(),
+    // animal group
+    groupid: z.int().optional()
+});
+
+export type AnimalsPostBodyType = z.infer<typeof AnimalsPostBodySchema>;
+
+export const AnimalUpdateSchema = z.object({
+    animal: AnimalsSchema
+});
+
+export type AnimalUpdateType = z.infer<typeof AnimalUpdateSchema>;

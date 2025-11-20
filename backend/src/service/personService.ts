@@ -7,6 +7,15 @@ export const personService = {
     return await prisma.persons.create({ data: data });
   },
 
+  async connectAnimal(personId: number, animalId: number): Promise<void> {
+    await prisma.person_has_animal.create({
+      data: {
+        fk_animalid: animalId,
+        fk_personid: personId
+      }
+    });
+  },
+
   async getById(id: number): Promise<persons> {
     const foundPerson = await prisma.persons.findUnique({ where: { id } });
 
