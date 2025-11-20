@@ -107,9 +107,11 @@ export const PersonsSchema = z.object({
     lastname: z.string().min(2).max(60),
     sex: sexes,
     dateofbirth: z.date(),
+    addresses: AddressesSchema,
     phone: z.string().min(5).max(20),
     email: z.email().max(100),
     password: z.string().min(6).max(255),
+    
 });
 
 export const PersonsCreateSchema = PersonsSchema.omit({
@@ -176,8 +178,8 @@ export type VeterinarySearchQueryType = z.infer<typeof VeterinarySearchQuerySche
 //Veterinarians:
 export const VeterinariansSchema = z.object({
     id: z.number().int(), //ist identisch zur Personen ID
-    infoemail: z.email().optional(),
-    fk_veterinarypractice: z.number().int().optional(),
+    infoemail: z.email().nullable(),
+    fk_veterinarypractice: z.number().int().nullable(),
 });
 
 export const VeterinariansCreateSchema = VeterinariansSchema //id muss uebergeben werden, da Referenz zur Person wichtig ist
@@ -195,11 +197,20 @@ export const AppointmentsSchema = z.object({
     fk_veterinaryid: z.number().int(),
     fk_veterinarypracticeid: z.number().int(),
     fk_serviceid: z.number().int().nullable(),
+    animals: AnimalsSchema.nullable(),
+    veterinaries: VeterinariansSchema,
+    veterinarypractices: VeterinaryPracticeSchema,
+    services: ServiceSchema.nullable(),
     notiz: z.string().nullable().optional()
 });
 
-export const AppointmentsCreateSchema = AppointmentsSchema.omit({
-    id: true
+export const AppointmentsCreateSchema = z.object({
+    starttime: z.date(),
+    endtime: z.date(),
+    fk_animalid: z.number().int().nullable(),
+    fk_veterinaryid: z.number().int(),
+    fk_veterinarypracticeid: z.number().int(),
+    fk_serviceid: z.number().int().nullable(),
 })
 
 export const AppointmentsUpdateAsPersonSchema = z.object({

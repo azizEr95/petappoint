@@ -1,10 +1,13 @@
 import { prisma } from "../singletonPC";
-import { veterinarypractices } from "../../generated/prisma";
 import { VeterinaryPracticesCreateType, VeterinaryPracticesType } from "vetlib-shared/schemas/ZodSchemas";
+import { addressService } from "./addressService";
 
 export const veterinaryPracticeService = {
-  async create(veterinaryPracticeRe: VeterinaryPracticesCreateType): Promise<veterinarypractices> {
+  async create(veterinaryPracticeRe: VeterinaryPracticesCreateType): Promise<VeterinaryPracticesType> {
     return await prisma.veterinarypractices.create({
+      include: {
+        addresses: true
+      },
       data: {
         name: veterinaryPracticeRe.name,
         phone: veterinaryPracticeRe.phone,
@@ -49,7 +52,7 @@ export const veterinaryPracticeService = {
     return foundPractice;
   },
 
-  async getByNameOrAdress(name: string, address: string): Promise<veterinarypractices[]> {
+  async getByNameOrAdress(name: string, address: string): Promise<VeterinaryPracticesType[]> {
     return await prisma.veterinarypractices.findMany({
       include: {
         addresses: true
@@ -97,21 +100,52 @@ export const veterinaryPracticeService = {
     });
   },
 
-  async getByEmail(email: string): Promise<veterinarypractices | null> {
-    return await prisma.veterinarypractices.findFirst({ where: { email } });
+  async getByEmail(email: string): Promise<VeterinaryPracticesType | null> {
+    return await prisma.veterinarypractices.findFirst({
+      include: {
+        addresses: true
+      },
+
+      where: {
+        email
+      }
+    });
   },
 
-  async getAll(): Promise<veterinarypractices[]> {
-    return await prisma.veterinarypractices.findMany();
+  async getAll(): Promise<VeterinaryPracticesType[]> {
+    return await prisma.veterinarypractices.findMany({
+      include: {
+        addresses: true
+      }
+    });
   },
 
-  async update(data: veterinarypractices): Promise<veterinarypractices> {
+  async update(data: VeterinaryPracticesType): Promise<VeterinaryPracticesType> {
     if (!data.id) throw new Error("ID is required for update");
 
-    return await prisma.veterinarypractices.update({ where: { id: data.id }, data: data });
+    await addressService.update(data.addresses);
+
+    const updatedPractice = await prisma.veterinarypractices.update({
+      where: { id: data.id },
+      data: {
+        name: data.name,
+        phone: data.phone,
+        email: data.email,
+        password: data.password,
+        infoemail: data.infoemail,
+        info: data.info,
+        website: data.website,
+      },
+      include: { addresses: true },
+    });
+
+    return updatedPractice;
   },
 
+
   async delete(id: number): Promise<void> {
-    await prisma.veterinarypractices.delete({ where: { id } });
+    await prisma.veterinarypractices.delete({
+      where: { id }
+    });
   },
 };

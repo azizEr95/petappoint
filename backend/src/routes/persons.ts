@@ -1,12 +1,12 @@
 import express from "express";
 import { personService } from "../service/personService";
-import { animalService } from "../service/animalService";
+import { AnimalsType, PersonsType } from "vetlib-shared/schemas/ZodSchemas";
 
 export const personsRouter = express.Router();
 
 personsRouter.get('/all',
     async (_req, res) => {
-        const persons = await personService.getAll();
+        const persons: PersonsType[] = await personService.getAll();
         res.send(persons);
     }
 )
@@ -15,8 +15,8 @@ personsRouter.get('/:id/animals',
     async (req, res) => {
         try {
             const id = parseInt(req.params.id);
-            const ids = await personService.getAnimalsForPersonId(id);
-            res.send(ids);
+            const animalTypes: AnimalsType[] = await personService.getAnimalsForPersonId(id);
+            res.send(animalTypes);
         } catch (ex) {
             res.sendStatus(404);
         }
@@ -26,8 +26,8 @@ personsRouter.get("/:id/favorites",
     async (req, res) => {
         try {
             const id = parseInt(req.params.id);
-            const ids = await personService.getFavorizedVeterinaryPracticeIds(id);
-            res.send(ids);
+            const favoriteIDs: number[] = await personService.getFavorizedVeterinaryPracticeIds(id);
+            res.send(favoriteIDs);
         } catch (ex) {
             res.sendStatus(404);
         }
@@ -43,6 +43,7 @@ personsRouter.post("/:id/favorites/:practiceId",
             res.sendStatus(201);
         } catch (ex) {
             res.sendStatus(400);
+            return;
         }
     }
 )
@@ -57,6 +58,7 @@ personsRouter.delete("/:id/favorites/:practiceId",
             res.sendStatus(204);
         } catch (ex) {
             res.sendStatus(400);
+            return;
         }
     }
 )

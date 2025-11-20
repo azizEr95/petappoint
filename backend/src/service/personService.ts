@@ -1,10 +1,26 @@
 import { prisma } from "../singletonPC";
-import { persons } from "../../generated/prisma";
-import { AnimalsType } from "vetlib-shared/schemas/ZodSchemas";
+import { AnimalsType, PersonsCreateType, PersonsType } from "vetlib-shared/schemas/ZodSchemas";
+import { addressService } from "./addressService";
 
 export const personService = {
-  async create(data: persons): Promise<persons> {
-    return await prisma.persons.create({ data: data });
+  async create(dataRe: PersonsCreateType): Promise<PersonsType> {
+    return await prisma.persons.create({
+      include: {
+        addresses: true
+      },
+      data: {
+        firstname: dataRe.firstname,
+        lastname: dataRe.lastname,
+        sex: dataRe.sex,
+        dateofbirth: dataRe.dateofbirth,
+        addresses: {
+          create: dataRe.addresses
+        },
+        phone: dataRe.phone,
+        email: dataRe.email,
+        password: dataRe.password
+      }
+    });
   },
 
   async connectAnimal(personId: number, animalId: number): Promise<void> {
@@ -16,23 +32,33 @@ export const personService = {
     });
   },
 
-  async getById(id: number): Promise<persons> {
-    const foundPerson = await prisma.persons.findUnique({ where: { id } });
+  async getById(id: number): Promise<PersonsType> {
+    const foundPerson = await prisma.persons.findUnique({
+      include: {
+        addresses: true
+      },
+      where: { id }
+    });
 
     if (!foundPerson) throw new Error(`Person not found with id: ${id}`);
 
     return foundPerson;
   },
 
-  async getByEmail(email: string): Promise<persons> {
-    const person = await prisma.persons.findUnique({ where: { email } });
+  async getByEmail(email: string): Promise<PersonsType> {
+    const person = await prisma.persons.findUnique({
+      include: {
+        addresses: true
+      },
+      where: { email }
+    });
 
     if (!person) throw new Error(`Person not found with the email ${email}`);
 
     return person;
   },
 
-  async getAll(): Promise<persons[]> {
+  async getAll(): Promise<PersonsType[]> {
     return await prisma.persons.findMany({
       include: {
         addresses: true
@@ -40,10 +66,26 @@ export const personService = {
     });
   },
 
-  async update(data: persons): Promise<persons> {
-    if (!data.id) throw new Error("ID is required for update");
+  async update(dataRe: PersonsType): Promise<PersonsType> {
+    if (!dataRe.id) throw new Error("ID is required for update");
 
-    const updatedPerson = await prisma.persons.update({ where: { id: data.id }, data: data });
+    await addressService.update(dataRe.addresses);
+
+    const updatedPerson = await prisma.persons.update({ 
+      where: { id: dataRe.id }, 
+      data: {
+        firstname: dataRe.firstname,
+        lastname: dataRe.lastname,
+        sex: dataRe.sex,
+        dateofbirth: dataRe.dateofbirth,
+        phone: dataRe.phone,
+        email: dataRe.email,
+        password: dataRe.password,
+      },
+      include: {
+        addresses: true
+      }
+    });
 
     return updatedPerson;
   },

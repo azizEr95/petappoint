@@ -1,15 +1,29 @@
 import { prisma } from "../singletonPC";
 import { appointments } from "../../generated/prisma";
-import { AppointmentsType } from "vetlib-shared/schemas/ZodSchemas";
+import { AppointmentsCreateType, AppointmentsType } from "vetlib-shared/schemas/ZodSchemas";
 import { animalService } from "./animalService";
 
 export const appointmentService = {
-  async create(data: appointments): Promise<AppointmentsType> {
+  async create(data: AppointmentsCreateType): Promise<AppointmentsType> {
     return await prisma.appointments.create({
+      include: {
+        animals: true,
+        services: true,
+        veterinaries: true,
+        veterinarypractices: {
+          include: {
+            addresses: true
+          }
+        }
+      },
       data: {
         starttime: data.starttime,
         endtime: data.endtime,
-        animals: data.fk_animalid ? { connect: { id: data.fk_animalid } } : undefined, // Prüfung geschieht hier. Soll das aber optional sein oder einen Fehler werfen, wenn kein Tier verknüpft?
+        animals: {
+          connect: {
+            id: data.fk_animalid ?? undefined
+          }
+        },
         veterinaries: { connect: { id: data.fk_veterinaryid } },
         veterinarypractices: { connect: { id: data.fk_veterinarypracticeid } },
       },
@@ -21,8 +35,13 @@ export const appointmentService = {
       where: { id },
       include: {
         animals: true,
+        services: true,
         veterinaries: true,
-        services: true
+        veterinarypractices: {
+          include: {
+            addresses: true
+          }
+        }
       },
     });
 
@@ -35,16 +54,21 @@ export const appointmentService = {
 
   async getAppointmentsByDateRange(startDate: Date, endDate: Date): Promise<AppointmentsType[]> {
     return await prisma.appointments.findMany({
+      include: {
+        animals: true,
+        services: true,
+        veterinaries: true,
+        veterinarypractices: {
+          include: {
+            addresses: true
+          }
+        }
+      },
       where: {
         starttime: {
           gte: startDate,
           lte: endDate,
         },
-      },
-      include: {
-        animals: true,
-        veterinaries: true,
-        services: false
       },
     });
   },
@@ -54,31 +78,46 @@ export const appointmentService = {
       where: { fk_veterinaryid: veterinaryId },
       include: {
         animals: true,
+        services: true,
         veterinaries: true,
-        services: true
+        veterinarypractices: {
+          include: {
+            addresses: true
+          }
+        }
       },
     });
   },
 
   async getForPractice(veterinaryPracticeId: number): Promise<AppointmentsType[]> {
     return await prisma.appointments.findMany({
-      where: { fk_veterinarypracticeid: veterinaryPracticeId },
       include: {
         animals: true,
+        services: true,
         veterinaries: true,
-        services: true
+        veterinarypractices: {
+          include: {
+            addresses: true
+          }
+        }
       },
+      where: { fk_veterinarypracticeid: veterinaryPracticeId },
     });
   },
 
   async getAvailableAppointmentsForPractice(veterinaryPracticeId: number): Promise<AppointmentsType[]> {
     return await prisma.appointments.findMany({
-      where: { fk_veterinarypracticeid: veterinaryPracticeId, fk_animalid: null },
       include: {
         animals: true,
+        services: true,
         veterinaries: true,
-        services: true
+        veterinarypractices: {
+          include: {
+            addresses: true
+          }
+        }
       },
+      where: { fk_veterinarypracticeid: veterinaryPracticeId, fk_animalid: null },
     });
   },
 
@@ -92,6 +131,16 @@ export const appointmentService = {
 
     const animalIds = animals.map(a => a.id);
     const appointments = await prisma.appointments.findMany({
+      include: {
+        animals: true,
+        veterinaries: true,
+        services: true,
+        veterinarypractices: {
+          include: {
+            addresses: true
+          }
+        }
+      },
       where: {
         fk_animalid: {
           in: animalIds // in the list
@@ -100,11 +149,6 @@ export const appointmentService = {
           lt: now // less than
         }
       },
-      include: {
-        animals: true,
-        veterinaries: true,
-        services: true
-      }
     });
 
     return appointments;
@@ -120,6 +164,16 @@ export const appointmentService = {
 
     const animalIds = animals.map(a => a.id);
     const appointments = await prisma.appointments.findMany({
+      include: {
+        animals: true,
+        services: true,
+        veterinaries: true,
+        veterinarypractices: {
+          include: {
+            addresses: true
+          }
+        }
+      },
       where: {
         fk_animalid: {
           in: animalIds
@@ -128,18 +182,24 @@ export const appointmentService = {
           gt: now // greater than
         }
       },
-      include: {
-        animals: true,
-        veterinaries: true,
-        services: true
-      }
     });
 
     return appointments;
   },
 
   async getAll(): Promise<AppointmentsType[]> {
-    return await prisma.appointments.findMany();
+    return await prisma.appointments.findMany({
+      include: {
+        animals: true,
+        services: true,
+        veterinaries: true,
+        veterinarypractices: {
+          include: {
+            addresses: true
+          }
+        }
+      }
+    });
   },
 
   async update(data: appointments): Promise<AppointmentsType> {
@@ -147,7 +207,20 @@ export const appointmentService = {
       throw new Error("ID is required for update");
     }
 
-    return await prisma.appointments.update({ where: { id: data.id }, data: data });
+    return await prisma.appointments.update({
+      include: {
+        animals: true,
+        services: true,
+        veterinaries: true,
+        veterinarypractices: {
+          include: {
+            addresses: true
+          }
+        }
+      },
+      where: { id: data.id },
+      data: data
+    });
   },
 
   async updateAppointmentAsPerson(id: number, fk_animalid: number, fk_serviceid: number): Promise<AppointmentsType> {
@@ -164,6 +237,16 @@ export const appointmentService = {
     if (appointment?.fk_animalid) throw new Error("Termin is already taken");
 
     return await prisma.appointments.update({
+      include: {
+        animals: true,
+        services: true,
+        veterinaries: true,
+        veterinarypractices: {
+          include: {
+            addresses: true
+          }
+        }
+      },
       where: {
         id: id
       },
@@ -180,6 +263,16 @@ export const appointmentService = {
 
   async cancelAppointmentAsPerson(id: number): Promise<AppointmentsType> {
     return await prisma.appointments.update({
+      include: {
+        animals: true,
+        services: true,
+        veterinaries: true,
+        veterinarypractices: {
+          include: {
+            addresses: true
+          }
+        }
+      },
       where: { id },
       data: {
         fk_animalid: null,
@@ -190,6 +283,16 @@ export const appointmentService = {
 
   async updateNotiz(id: number, notiz: string | null): Promise<AppointmentsType> {
     return await prisma.appointments.update({
+      include: {
+        animals: true,
+        services: true,
+        veterinaries: true,
+        veterinarypractices: {
+          include: {
+            addresses: true
+          }
+        }
+      },
       where: { id },
       data: { notiz }
     });
