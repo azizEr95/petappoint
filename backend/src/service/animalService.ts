@@ -13,7 +13,7 @@ export const animalService = {
         heightincm: data.animal.heightincm,
         timeofdeath: data.animal.timeofdeath,
         iscastrated: data.animal.iscastrated,
-        lifestyle: data.animal.lifestyle,
+        lifestyleisindoors: data.animal.lifestyleisindoors,
         animalgroup: {
           connect: {
             id: data.groupid
@@ -41,7 +41,7 @@ export const animalService = {
         heightincm: data.animal.heightincm,
         timeofdeath: data.animal.timeofdeath,
         iscastrated: data.animal.iscastrated,
-        lifestyle: data.animal.lifestyle,
+        lifestyleisindoors: data.animal.lifestyleisindoors,
       },
     });
   },
