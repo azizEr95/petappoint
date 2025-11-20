@@ -15,6 +15,7 @@ describe("appointmentService", () => {
     fk_veterinaryid: 1,
     fk_veterinarypracticeid: 1,
     fk_serviceid: 1,
+    notiz: null,
   };
 
   const mockAppointmentWithRelations = {
@@ -272,6 +273,65 @@ describe("appointmentService", () => {
       prismaMock.appointments.delete.mockRejectedValue(error);
 
       await expect(appointmentService.delete(999)).rejects.toThrow("Record to delete does not exist");
+    });
+  });
+
+  describe("cancelAppointmentAsPerson", () => {
+    it("sollte einen Termin stornieren durch Setzen von fk_animalid und fk_serviceid auf null", async () => {
+      const cancelledAppointment = {
+        ...mockAppointment,
+        fk_animalid: null,
+        fk_serviceid: null,
+      };
+
+      prismaMock.appointments.update.mockResolvedValue(cancelledAppointment);
+
+      const result = await appointmentService.cancelAppointmentAsPerson(1);
+
+      expect(result).toEqual(cancelledAppointment);
+      expect(prismaMock.appointments.update).toHaveBeenCalledWith({
+        where: { id: 1 },
+        data: {
+          fk_animalid: null,
+          fk_serviceid: null,
+        },
+      });
+    });
+  });
+
+  describe("updateNotiz", () => {
+    it("sollte die Notiz eines Termins aktualisieren", async () => {
+      const updatedAppointment = {
+        ...mockAppointment,
+        notiz: "Wichtige Notiz für den Termin",
+      };
+
+      prismaMock.appointments.update.mockResolvedValue(updatedAppointment);
+
+      const result = await appointmentService.updateNotiz(1, "Wichtige Notiz für den Termin");
+
+      expect(result).toEqual(updatedAppointment);
+      expect(prismaMock.appointments.update).toHaveBeenCalledWith({
+        where: { id: 1 },
+        data: { notiz: "Wichtige Notiz für den Termin" },
+      });
+    });
+
+    it("sollte die Notiz auf null setzen können", async () => {
+      const updatedAppointment = {
+        ...mockAppointment,
+        notiz: null,
+      };
+
+      prismaMock.appointments.update.mockResolvedValue(updatedAppointment);
+
+      const result = await appointmentService.updateNotiz(1, null);
+
+      expect(result).toEqual(updatedAppointment);
+      expect(prismaMock.appointments.update).toHaveBeenCalledWith({
+        where: { id: 1 },
+        data: { notiz: null },
+      });
     });
   });
 });
