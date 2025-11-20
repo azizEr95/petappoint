@@ -73,7 +73,7 @@ export function AppointmentCard({ appointment, handleShowDetailsAppointment, isA
                     {appointmentType && <div className="service-type">{appointmentType.name}</div>}
                     <div className="animal-info">
                         <i className="bi bi-heart"></i>
-                        <span>Tier-ID: {appointment.fk_animalid || 'Nicht zugewiesen'}</span>
+                        <span>{appointment.animals?.name || 'Nicht zugewiesen'}</span>
                     </div>
                 </div>
             </div>
