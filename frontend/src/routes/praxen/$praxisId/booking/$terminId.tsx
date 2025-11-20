@@ -1,5 +1,4 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { Button, Card, Container } from 'react-bootstrap'
 import '../../../../styles/routes/bookingPage.scss'
 import { useEffect, useState } from 'react'
 import { useMutation, useQuery } from '@tanstack/react-query'
@@ -85,7 +84,7 @@ function BookingComponent() {
     },
     onSuccess: () => {
       // appointment was successful booked
-      navigate({ to: '/appointments' , state: { appointment: termin}})
+      navigate({ to: '/appointments', state: { appointment: termin } })
     },
   })
 
@@ -182,16 +181,15 @@ function BookingComponent() {
       aktuelleAnzeige = <SelectAnimal handleChangeAnimal={handleChangeAnimal} />
       submitButton = (
         <div className="select-animal-actions">
-          <Button
+          <button
             id="bookAppointment"
-            variant="success"
             className="booking-confirm-button"
             onClick={handleBookAppoinment}
             disabled={!selectedAnimal}
           >
-            <i className="bi bi-check-circle me-2"></i>
+            <i className="bi bi-check-circle"></i>
             Terminbuchung bestätigen
-          </Button>
+          </button>
         </div>
       )
       currentStep = 2
@@ -209,73 +207,76 @@ function BookingComponent() {
   }
 
   return (
-    <Container className="my-4">
-      <div className="position-relative mb-4">
-        <Button
-          id="BackButtonBookingPage"
-          variant="outline-success"
-          onClick={handleClickBack}
-          className="mb-3"
-        >
-          <i className="bi bi-arrow-left me-2"></i>
+    <div className="booking-page">
+      <div className="booking-header">
+        <button className="back-button" onClick={handleClickBack}>
+          <i className="bi bi-arrow-left"></i>
           Zurück
-        </Button>
-        <h2 className="text-center fw-bold mb-4">
-          <i className="bi bi-calendar-check text-success me-2"></i>
-          Termin buchen
-        </h2>
+        </button>
+        <h1>Termin buchen</h1>
       </div>
 
       <BookingStepper currentStep={currentStep} />
 
-      <div className="row mt-4">
-        <div className="col-lg-8 mb-4">
-          <Card className="shadow-sm border-0">
-            <Card.Body className="p-4">
-              {aktuelleAnzeige}
-              {submitButton}
-            </Card.Body>
-          </Card>
+      <div className="booking-layout">
+        <div className="booking-main">
+          {aktuelleAnzeige}
+          {submitButton}
         </div>
 
-        <div className="col-lg-4">
-          <Card
-            className="shadow-sm border-0 sticky-top"
-            style={{ top: '80px' }}
-          >
-            <Card.Header className="bg-success text-white">
-              <i className="bi bi-info-circle me-2"></i>
-              Praxisübersicht
-            </Card.Header>
-            <Card.Body>
-              <h5 className="mb-3">{praxis.name}</h5>
-              <div className="mb-2">
-                <i className="bi bi-geo-alt text-success me-2"></i>
-                <small>
-                  {praxis.addresses.street}, {praxis.addresses.citycode}{' '}
-                  {praxis.addresses.city}
-                </small>
+        <div className="booking-sidebar">
+          <div className="sidebar-section-title">Buchungsübersicht</div>
+
+          <div className="info-item">
+            <i className="bi bi-hospital"></i>
+            <div className="info-content">
+              <div className="info-label">Praxis</div>
+              <div className="info-value">{praxis.name}</div>
+            </div>
+          </div>
+
+          <div className="info-item">
+            <i className="bi bi-geo-alt"></i>
+            <div className="info-content">
+              <div className="info-label">Adresse</div>
+              <div className="info-value">
+                {praxis.addresses.street}, {praxis.addresses.citycode}{' '}
+                {praxis.addresses.city}
               </div>
-              <div className="mb-2">
-                <i className="bi bi-clock text-success me-2"></i>
-                <small>{dateToInfosString(termin.starttime)}</small>
+            </div>
+          </div>
+
+          <div className="info-item">
+            <i className="bi bi-clock"></i>
+            <div className="info-content">
+              <div className="info-label">Termin</div>
+              <div className="info-value">
+                {dateToInfosString(termin.starttime)}
               </div>
-              {selectedAppointmentType !== null && (
-                <div className="mb-2">
-                  <i className="bi bi-card-list text-success me-2"></i>
-                  <small>{selectedAppointmentType.name}</small>
-                </div>
-              )}
-              {selectedAnimal && (
-                <div className="mb-2">
-                  <i className="bi bi-paw text-success me-2"></i>
-                  <small>{selectedAnimal.name}</small>
-                </div>
-              )}
-            </Card.Body>
-          </Card>
+            </div>
+          </div>
+
+          {selectedAppointmentType !== null && (
+            <div className="info-item">
+              <i className="bi bi-card-list"></i>
+              <div className="info-content">
+                <div className="info-label">Leistung</div>
+                <div className="info-value">{selectedAppointmentType.name}</div>
+              </div>
+            </div>
+          )}
+
+          {selectedAnimal && (
+            <div className="info-item">
+              <i className="bi bi-paw"></i>
+              <div className="info-content">
+                <div className="info-label">Tier</div>
+                <div className="info-value">{selectedAnimal.name}</div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
-    </Container>
+    </div>
   )
 }
