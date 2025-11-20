@@ -165,6 +165,13 @@ export const VeterinaryPracticeCreateSchema = VeterinaryPracticeSchema.omit({
 export type VeterinaryPracticesCreateType = z.infer<typeof VeterinaryPracticeCreateSchema>;
 export type VeterinaryPracticesType = z.infer<typeof VeterinaryPracticeSchema>;
 
+export const VeterinarySearchQuerySchema = z.object({
+    name: z.string().default(''),
+    address: z.string().default(''),
+});
+
+export type VeterinarySearchQueryType = z.infer<typeof VeterinarySearchQuerySchema>;
+
 //Veterinarians:
 export const VeterinariansSchema = z.object({
     id: z.number().int(), //ist identisch zur Personen ID

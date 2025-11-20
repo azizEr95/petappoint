@@ -3,6 +3,7 @@ import { veterinaryPracticeService } from "../service/veterinaryPracticeService"
 import { veterinarypractices } from "../../generated/prisma";
 import { z } from 'zod';
 import { appointmentService } from "../service/appointmentService";
+import { VeterinaryPracticeCreateSchema, VeterinarySearchQuerySchema } from "vetlib-shared/schemas/ZodSchemas";
 
 export const veterinaryPracticeRouter = express.Router();
 
@@ -13,14 +14,9 @@ veterinaryPracticeRouter.get("/all",
     }
 )
 
-const searchQuerySchema = z.object({
-    name: z.string().default(''),
-    address: z.string().default(''),
-});
-
 veterinaryPracticeRouter.get('/search',
     async (req, res) => {
-        const parsed = searchQuerySchema.safeParse(req.query);
+        const parsed = VeterinarySearchQuerySchema.safeParse(req.query);
         if (!parsed.success) {
             return res.sendStatus(400);
         }
@@ -70,26 +66,7 @@ veterinaryPracticeRouter.get('/:id/appointments/available',
 
 veterinaryPracticeRouter.post("/",
     async (req, res, next) => {
-        // validation schema
-        const adressSchema = z.object({
-            street: z.string().min(3).max(100),
-            citycode: z.string().min(3).max(100),
-            city: z.string().min(3).max(100),
-            country: z.string().min(3).max(100),
-            longitude: z.number().default(0.0),
-            latitude: z.number().default(0.0)
-        })
-        const vetinarySchema = z.object({
-            name: z.string().min(3).max(100),
-            phone: z.string().min(3).max(100),
-            infoemail: z.email(),
-            email: z.email(),
-            password: z.string().min(12).max(100),
-            website: z.string().max(100).default(''),
-            info: z.string().max(100).default(''),
-            addresses: adressSchema
-        })
-        const createdVet = vetinarySchema.safeParse(req.body);
+        const createdVet = VeterinaryPracticeCreateSchema.safeParse(req.body);
         if (!createdVet.success) {
             res.sendStatus(400);
             return;
