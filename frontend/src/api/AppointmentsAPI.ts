@@ -98,7 +98,10 @@ const parseAppointmentArray = (unsafeAppointments: AppointmentsType[]): Appointm
             fk_veterinaryid: x.fk_veterinaryid,
             fk_veterinarypracticeid: x.fk_veterinarypracticeid,
             fk_serviceid: x.fk_serviceid,
-            animals: x.animals,
+            animals: x.animals ? {
+                ...x.animals,
+                dateofbirth: x.animals.dateofbirth ? new Date(x.animals.dateofbirth) : x.animals.dateofbirth
+            } : x.animals,
             veterinaries: x.veterinaries,
             veterinarypractices: x.veterinarypractices,
             services: x.services
@@ -154,6 +157,9 @@ export const updateAppointmentNotiz = async (id: number, notiz: string | null): 
 const parseAppointment = (unsafeAppointment: AppointmentsType): AppointmentsType => {
     unsafeAppointment.starttime = new Date(unsafeAppointment.starttime);
     unsafeAppointment.endtime = new Date(unsafeAppointment.endtime);
+    if (unsafeAppointment.animals?.dateofbirth) {
+        unsafeAppointment.animals.dateofbirth = new Date(unsafeAppointment.animals.dateofbirth);
+    }
     const parsed = AppointmentsSchema.safeParse(unsafeAppointment);
     if (parsed.error !== undefined) { //if Zod throws an Error print them
         console.log(parsed.error);
