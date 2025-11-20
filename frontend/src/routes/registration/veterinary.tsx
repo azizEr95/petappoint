@@ -1,11 +1,13 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
 import type { ChangeEvent, MouseEvent } from 'react'
 import { Button, Form } from 'react-bootstrap'
-import '../styles/routes/veterinaryRegistration.scss'
-import { VeterinaryPracticeCreateSchema } from '../../../shared/schemas/ZodSchemas'
+import '../../styles/routes/veterinaryRegistration.scss'
+import { VeterinaryPracticeCreateSchema, type VeterinariansCreateType, type VeterinaryPracticesCreateType } from '../../../../shared/schemas/ZodSchemas'
+import { useMutation } from '@tanstack/react-query'
+import { creatVeterinaryPractice } from '../../api/VeterinaryPracticeAPI'
 
-export const Route = createFileRoute('/veterinaryRegistration')({
+export const Route = createFileRoute('/registration/veterinary')({
   component: veterinaryRegistration,
 })
 
@@ -22,8 +24,25 @@ function veterinaryRegistration() {
   const [infoemail, setInfoemail] = useState('')
   const [website, setWebsite] = useState('')
   const [info, setInfo] = useState('')
+  const navigate = useNavigate();
   // TODO: Adresse fehlt noch
   // const navigate = useNavigate();
+
+  
+  // edit appoinment, set animalID and serviceID
+  const { mutate: mutateCreatePractice } = useMutation({
+    mutationFn: (practice: VeterinaryPracticesCreateType) =>
+      creatVeterinaryPractice(practice),
+    onError: (e) => {
+      // appoinment is not available anymore
+      console.log(e);
+    },
+    onSuccess: () => {
+      // appointment was successful booked
+      console.log("success");
+      navigate({to: "/"})
+    },
+  })
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const t = e.target
@@ -81,7 +100,7 @@ function veterinaryRegistration() {
     // was machen wenn ZOD Error geworfen wurde??
 
     // wie longitude und latitude uebergeben????
-    const practice = {
+    const practice:VeterinaryPracticesCreateType = {
       name: name,
       email: email,
       password: password,
@@ -93,11 +112,16 @@ function veterinaryRegistration() {
         street: strasse + hausnr,
         citycode: plz,
         city: stadt,
+        country:land,
+        longitude: 0,
+        latitude: 0,
       },
     }
     try {
-      console.log(practice)
+     
       VeterinaryPracticeCreateSchema.parse(practice)
+      mutateCreatePractice(practice)
+      console.log("mutate")
     } catch (e) {
       console.log('Zod Error: veterinaryRegistration ' + e)
     }

@@ -43,13 +43,12 @@ function Login() {
     e: MouseEvent<HTMLButtonElement>,
   ) => {
     e.preventDefault()
-    navigate({ to: '/veterinaryRegistration' })
+    navigate({ to: '/registration/veterinary' })
   }
 
   const handleClickRegistrationUser = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
-    console.log('route not implemented yet')
-    navigate({ to: '/' })
+    navigate({ to: '/registration/person' })
   }
 
   return (
