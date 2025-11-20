@@ -30,6 +30,9 @@ export type AnimalTypeType = z.infer<typeof AnimalTypeSchema>;
 
 //Animal: 
 const husbandarySystem = z.enum(['indoor', 'indoorPlusSpace', 'indoorWithFreshAir', 'outdoorRunsFreeRange', 'organic']); //Moeglichkeiten vom Lifestyle
+export type husbandarySystemType = z.infer<typeof husbandarySystem>;
+const sexes = z.enum(['notknown', 'male', 'female', 'notapplicable']);
+export type sexesType = z.infer<typeof sexes>;
 
 export const AnimalsSchema = z.object({
     id: z.number().int(),
@@ -40,7 +43,8 @@ export const AnimalsSchema = z.object({
     heightincm: z.number().int().nullable(),
     timeofdeath: z.date().nullable(),
     iscastrated: z.boolean(),
-    lifestyle: husbandarySystem
+    lifestyle: husbandarySystem,
+    sex: sexes
 });
 
 
@@ -100,8 +104,6 @@ export type AddressesType = z.infer<typeof AddressesSchema>;
 
 
 //Persons:
-const sexes = z.enum(['notknown', 'male', 'female', 'notapplicable']);
-
 export const PersonsSchema = z.object({
     id: z.number().int(),
     firstname: z.string().min(2).max(60),

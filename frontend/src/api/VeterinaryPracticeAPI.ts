@@ -17,11 +17,10 @@ export const getVeterinaryPracticesByNameAddress = async (
     throw new Error('Failed to fetch getVeterinaryPracticesByNameAddress')
   }
 
-  const data = await res.json()
-  const parsed = z.array(VeterinaryPracticeSchema).safeParse(data)
-  if (parsed.error !== undefined) {
-    // if Zod throws an Error print them
-    console.log(parsed.error)
+  const data = await res.json();
+  const parsed = z.array(VeterinaryPracticeSchema).safeParse(data);
+  if (parsed.error !== undefined) { // if Zod throws an Error print them
+    console.log(parsed.error);
   }
   if (!parsed.success) {
     throw new Error(parsed.error.toString())
@@ -39,11 +38,10 @@ export const getVeterinaryPracticesById = async (
     throw new Error('Failed to fetch getVeterinaryPracticesById')
   }
 
-  const data = await res.json()
-  const parsed = VeterinaryPracticeSchema.safeParse(data)
-  if (parsed.error !== undefined) {
-    // if Zod throws an Error print them
-    console.log(parsed.error)
+  const data = await res.json();
+  const parsed = VeterinaryPracticeSchema.safeParse(data);
+  if (parsed.error !== undefined) { // if Zod throws an Error print them
+    console.log(parsed.error);
   }
   if (!parsed.success) {
     throw new Error(parsed.error.toString())

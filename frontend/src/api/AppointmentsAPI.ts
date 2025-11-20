@@ -3,7 +3,7 @@ import type { AppointmentsType } from '../../../shared/schemas/ZodSchemas'
 
 // get one appointment by id
 export const getAppointmentsById = async (
-  id: string,
+    id: string,
 ): Promise<AppointmentsType> => {
   const res = await fetch(import.meta.env.VITE_API_URL + '/appointments/' + id)
   if (!res.ok) {
@@ -16,7 +16,7 @@ export const getAppointmentsById = async (
 
 // get all available appointents from one practice
 export const getAvailableAppointmentsByPracticeId = async (
-  practiceId: string,
+    practiceId: string,
 ): Promise<Array<AppointmentsType>> => {
   const url =
     import.meta.env.VITE_API_URL +
@@ -100,7 +100,7 @@ const parseAppointmentArray = (unsafeAppointments: AppointmentsType[]): Appointm
             fk_serviceid: x.fk_serviceid
         }
         const parsed = AppointmentsSchema.safeParse(unsafeData);
-        if (parsed.error !== undefined) { //if Zod throws an Error print them
+        if (parsed.error !== undefined) { // if Zod throws an Error print them
             console.log(parsed.error);
         }
         if (parsed.success) {
