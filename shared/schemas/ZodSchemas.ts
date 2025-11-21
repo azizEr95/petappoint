@@ -75,7 +75,7 @@ export const Animal_has_RacesSchema = z.object({
     fk_animalraceid: z.number().int(),
 });
 
-export const Animal_has_RacesCreateSchema = AnimalracesSchema;
+export const Animal_has_RacesCreateSchema = Animal_has_RacesSchema;
 
 export type Animal_has_RacesCreateType = z.infer<typeof Animal_has_RacesCreateSchema>;
 export type Animal_has_RacesType = z.infer<typeof Animal_has_RacesSchema>;

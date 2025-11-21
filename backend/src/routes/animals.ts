@@ -1,8 +1,9 @@
 import express from "express";
-import { AnimalracesType, AnimalsCreateSchema, AnimalUpdateSchema } from "vetlib-shared/schemas/ZodSchemas";
+import { AnimalracesType, AnimalsCreateSchema, AnimalUpdateSchema, AnimalracesCreateSchema, AnimalracesCreateType, Animal_has_RacesCreateSchema, Animal_has_RacesType} from "vetlib-shared/schemas/ZodSchemas";
 import { animalService } from "../service/animalService";
 import { personService } from "../service/personService";
 import { animalRaceService } from "../service/animalRaceService";
+import { animalHasRacesService } from "../service/animalHasRacesService";
 
 export const animalsRouter = express.Router();
 
@@ -54,5 +55,41 @@ animalsRouter.get('/:animalId/races',
         const animalId = parseInt(req.params.animalId);
         const animalRaces: AnimalracesType[] = (await animalRaceService.getAnimalRaces(animalId)).map(x => x.animalraces);
         return res.send(animalRaces);
+    }
+)
+
+animalsRouter.post('/:animalId/races',
+    async (req, res) => {
+        const animalId = parseInt(req.params.animalId);
+        const animalRaceData = Animal_has_RacesCreateSchema.safeParse(req.body);
+        if(!animalRaceData.success) {
+            res.status(400).send(animalRaceData.error);
+            return;
+        }
+        if(animalId !== animalRaceData.data.fk_animalid){
+            res.status(400).send(`Mismatch in param id '${animalId}' and provided body id '${animalRaceData.data.fk_animalid}'.`);
+            return;
+        }
+        try {
+            const animalRace = await animalHasRacesService.create(animalRaceData.data);
+            res.status(201).send(animalRace);
+        } catch (error) {
+            res.sendStatus(500);
+        }
+    }
+)
+
+animalsRouter.delete('/:animalId/races/:raceId',
+    async (req, res) => {
+        const data: Animal_has_RacesType = {
+            fk_animalid: parseInt(req.params.animalId),
+            fk_animalraceid: parseInt(req.params.raceId)
+        }
+        try {
+            await animalHasRacesService.delete(data);
+            res.sendStatus(204);   
+        } catch (error) {
+            res.sendStatus(500);
+        }
     }
 )
