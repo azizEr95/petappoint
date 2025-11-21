@@ -1,5 +1,5 @@
-import express from "express";
-import { AnimalracesType, AnimalsCreateSchema, AnimalUpdateSchema, AnimalracesCreateSchema, AnimalracesCreateType, Animal_has_RacesCreateSchema, Animal_has_RacesType} from "vetlib-shared/schemas/ZodSchemas";
+import express, {Request} from "express";
+import { AnimalracesType, AnimalsCreateSchema, AnimalUpdateSchema, Animal_has_RacesCreateSchema, Animal_has_RacesType} from "vetlib-shared/schemas/ZodSchemas";
 import { animalService } from "../service/animalService";
 import { personService } from "../service/personService";
 import { animalRaceService } from "../service/animalRaceService";
@@ -9,6 +9,8 @@ export const animalsRouter = express.Router();
 
 animalsRouter.post("/",
     async (req, res) => {
+        // changing String Date props to Date
+        req.body = changeStringToDate(req);
         const parseResult = AnimalsCreateSchema.safeParse(req.body);
         if (!parseResult.success) {
             res.status(400).send(parseResult.error);
@@ -33,7 +35,9 @@ animalsRouter.post("/",
 
 animalsRouter.put('/:animalId',
     async (req, res) => {
+        req.body = changeStringToDate(req);
         const animalId = parseInt(req.params.animalId);
+
         const parseResult = AnimalUpdateSchema.safeParse(req.body);
         if (!parseResult.success) {
             res.status(400).send(parseResult.error);
@@ -93,3 +97,10 @@ animalsRouter.delete('/:animalId/races/:raceId',
         }
     }
 )
+// internal function to change request properties dateOfBirth and timeofdeath
+function changeStringToDate(req: Request): Request {
+    req.body.dateofBirth = new Date(req.body.dateofBirth);
+    req.body.timeofdeath = new Date(req.body.timeofdeath);
+    return req;
+}
+

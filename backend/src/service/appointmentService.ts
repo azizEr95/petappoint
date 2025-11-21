@@ -19,11 +19,7 @@ export const appointmentService = {
       data: {
         starttime: data.starttime,
         endtime: data.endtime,
-        animals: {
-          connect: {
-            id: data.fk_animalid ?? undefined
-          }
-        },
+        animals: data.fk_animalid ? {connect: {id: data.fk_animalid} }: undefined,
         veterinaries: { connect: { id: data.fk_veterinaryid } },
         veterinarypractices: { connect: { id: data.fk_veterinarypracticeid } },
       },
