@@ -13,12 +13,9 @@ export const animalService = {
         heightincm: data.heightincm,
         timeofdeath: data.timeofdeath,
         iscastrated: data.iscastrated,
+        sex: data.sex,
         lifestyleisindoors: data.lifestyleisindoors,
-        animalgroup: {
-          connect: {
-            id: data.fk_animalgroupid ?? undefined
-          }
-        },
+        animalgroup: data.fk_animalgroupid ? {connect: {id: data.fk_animalgroupid}}: undefined,
         animaltypes: {
           connect: {
             id: data.fk_animaltypeid,
@@ -41,6 +38,7 @@ export const animalService = {
         heightincm: data.heightincm,
         timeofdeath: data.timeofdeath,
         iscastrated: data.iscastrated,
+        sex: data.sex,
         lifestyleisindoors: data.lifestyleisindoors,
       },
     });
