@@ -16,7 +16,7 @@ animalsRouter.post("/",
 
         // TODO: After implementing validation get the personId or the
         // identifier for the person from the authentification token
-        const personId = 1;
+        const personId = 6;
 
         const creationData = parseResult.data;
 
