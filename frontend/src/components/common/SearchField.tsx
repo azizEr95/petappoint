@@ -51,7 +51,7 @@ export function SearchField({
       <input
         type="text"
         className="search-input-clean"
-        placeholder="Tierarzt, Behandlung oder Klinik"
+        placeholder="Tierarzt oder Klinik"
         name="Name"
         value={searchTermName}
         onChange={handleChange}

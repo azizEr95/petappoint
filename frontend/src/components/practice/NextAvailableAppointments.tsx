@@ -99,7 +99,6 @@ export function NextAvailableAppointments({
       // sortiert die Termine nach Anfangszeit
       return zeitA.starttime.getTime() - zeitB.starttime.getTime()
     })
-    console.log(data)
 
     // speichert alle benoetigten Termine in Array, fuer die naechsten fuenf Tage
     // an Pos 0 sind Termine von Tag dateAnsicht, an Pos 1 von nächsten Tag, ...
