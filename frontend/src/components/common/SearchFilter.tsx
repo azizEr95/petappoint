@@ -1,19 +1,18 @@
-import { useState, type ChangeEvent } from "react";
+import { useState } from "react";
 import { Button, Form, Modal } from "react-bootstrap";
 import { getAllAnimalTypes } from "../../api/AnimalTypeAPI";
 import { useQuery } from "@tanstack/react-query";
-import type { AnimalTypeType, ServiceType, VeterinaryPracticesType } from "../../../../shared/schemas/ZodSchemas";
-
+import type { AnimalTypeType, AppointmentFilterType, ServiceType, VeterinaryPracticesType } from "../../../../shared/schemas/ZodSchemas";
+import '../../styles/components/common/SearchFilter.scss'
 
 type SearchFilterProps = {
-    filterServiceType: ServiceType[] | null
+    filterOptions: AppointmentFilterType
     setFilterServiceType: (newServices: ServiceType[] | null) => void
-    filterAnimalType: AnimalTypeType | null
     setFilterAnimalType: (newAnimalType: AnimalTypeType | null) => void
     practicePage: VeterinaryPracticesType | null
 }
 
-export function SearchFilter({ filterServiceType, setFilterServiceType, filterAnimalType, setFilterAnimalType, practicePage }: SearchFilterProps) {
+export function SearchFilter({ filterOptions, setFilterServiceType, setFilterAnimalType, practicePage }: SearchFilterProps) {
     const [showFilterDialog, setShowFilterDialog] = useState<boolean>(false);
 
     // get all Animaltypes 
@@ -38,8 +37,13 @@ export function SearchFilter({ filterServiceType, setFilterServiceType, filterAn
         setShowFilterDialog(false);
     }
 
+    const handleDeleteFilter = () => {
+        setFilterServiceType(null);
+        setFilterAnimalType(null);
+    }
+
     const checkSelectedServiceType = (service: ServiceType): boolean =>  {
-        const findServiceType = filterServiceType?.find((serv) => {
+        const findServiceType = filterOptions.filterServiceType?.find((serv) => {
             return service.id === serv.id; 
           });
           if(findServiceType !== undefined){
@@ -50,7 +54,7 @@ export function SearchFilter({ filterServiceType, setFilterServiceType, filterAn
     }
 
     const handleChangeAnimalType = (animaltype: AnimalTypeType) => {
-        if(filterAnimalType?.id === animaltype.id){
+        if(filterOptions.filterAnimalType?.id === animaltype.id){
             setFilterAnimalType(null);
         } else {
             setFilterAnimalType(animaltype);
@@ -58,13 +62,13 @@ export function SearchFilter({ filterServiceType, setFilterServiceType, filterAn
     }
 
     const handleChangeServiceType = (service: ServiceType) => {
-        const findServiceType = filterServiceType?.find((serv) => {
+        const findServiceType = filterOptions.filterServiceType?.find((serv) => {
             return service.id === serv.id; 
           });
         
         if(findServiceType !== undefined){
             // delete these service from array
-            let selectedServices = filterServiceType?.slice();
+            let selectedServices = filterOptions.filterServiceType?.slice();
             selectedServices?.filter((serv) => serv.id !== service.id);
             if(selectedServices !== undefined){ // it schould be always !== undefined
                 setFilterServiceType(selectedServices);
@@ -73,7 +77,7 @@ export function SearchFilter({ filterServiceType, setFilterServiceType, filterAn
             }
         } else {
             // add these service to array
-            let selectedServices = filterServiceType?.slice();
+            let selectedServices = filterOptions.filterServiceType?.slice();
             selectedServices?.push(service)
             if(selectedServices !== undefined){ // it schould be always !== undefined
                 setFilterServiceType(selectedServices);
@@ -99,7 +103,7 @@ export function SearchFilter({ filterServiceType, setFilterServiceType, filterAn
 
 
     return <>
-        <Button onClick={handleOpenFilterDialog}>Filter</Button>
+        <Button id="FilterButton" onClick={handleOpenFilterDialog}><i className="bi bi-sliders"></i> Filter</Button>
         <Modal show={showFilterDialog} onHide={handleCloseFilterDialog}>
             <Modal.Header closeButton>
                 <Modal.Title>Filter</Modal.Title>
@@ -109,19 +113,19 @@ export function SearchFilter({ filterServiceType, setFilterServiceType, filterAn
                 <Form.Group className="mb-3">
                     <Form.Label>Tierart:</Form.Label>
                     {animaltypes.map((animaltype) => {
-                        return <Form.Check type="radio" id={animaltype.id.toString()} key={animaltype.id.toString()} label={animaltype.name} name="selectAnimaltype" value={animaltype.id} checked={animaltype.id === filterAnimalType?.id} onClick={() => handleChangeAnimalType(animaltype)}/>;
+                        return <Form.Check type="radio" id={animaltype.id.toString()} key={animaltype.id.toString()} label={animaltype.name} name="selectAnimaltype" value={animaltype.id} checked={animaltype.id === filterOptions.filterAnimalType?.id} onChange={() => {}} onClick={() => handleChangeAnimalType(animaltype)}/>;
                     })}
                 </Form.Group>
                 <Form.Group className="mb-3">
                     <Form.Label>Terminart filtern:</Form.Label>
                     {services.map((service) => {
-                        return <Form.Check type="checkbox" id={service.id.toString()} key={service.id.toString()} label={service.name} name="selectServiceType" value={service.id} checked={checkSelectedServiceType(service)} onClick={() => handleChangeServiceType(service)}/>;
+                        return <Form.Check type="checkbox" id={service.id.toString()} key={service.id.toString()} label={service.name} name="selectServiceType" value={service.id} checked={checkSelectedServiceType(service)} onChange={() => handleChangeServiceType(service)}/>;
                     })}
                 </Form.Group>
             </Modal.Body>
 
             <Modal.Footer>
-                <Button onClick={handleCloseFilterDialog} variant="outline">Filter entfernen</Button>
+                <Button onClick={handleDeleteFilter} variant="outline" disabled={filterOptions.filterAnimalType === null && filterOptions.filterServiceType === null}>Filter entfernen</Button>
                 <Button onClick={handleCloseFilterDialog}>Ergebnisse anzeigen</Button>
             </Modal.Footer>
         </Modal>

@@ -1,5 +1,6 @@
 import '@tanstack/react-router'
 import type {
+  AppointmentFilterType,
   AppointmentsType,
   VeterinaryPracticesType,
 } from '../../shared/schemas/ZodSchemas'
@@ -7,8 +8,9 @@ import type {
 // erweitert History State, damit Praxis auch als State uebergeben werden kann
 declare module '@tanstack/react-router' {
   interface HistoryState {
-    praxis?: VeterinaryPracticesType
+    practice?: VeterinaryPracticesType
     termin?: AppointmentsType //TODO changed to appointment
     appointment?: AppointmentsType
+    filterOptions?: AppointmentFilterType
   }
 }

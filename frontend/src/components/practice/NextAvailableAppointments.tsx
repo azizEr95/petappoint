@@ -3,25 +3,28 @@ import { useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
 import { getAvailableAppointmentsByPracticeId } from '../../api/AppointmentsAPI'
-import type { AppointmentsType } from '../../../../shared/schemas/ZodSchemas'
+import type { AppointmentFilterType, AppointmentsType } from '../../../../shared/schemas/ZodSchemas'
 import { compareDates, dateToDateString, dateToTimeString, getShortDate, getShortWeekday } from '../../utils/DateToStringFormat'
 
 type NextAvailableAppointmentsProps = {
   praxisID: string
+  filterOptions: AppointmentFilterType
 }
 
 export function NextAvailableAppointments({
   praxisID,
+  filterOptions
 }: NextAvailableAppointmentsProps) {
   // praxisID zum irgendwie bei Abfrage uebergeben werden
   const [dateAnsicht, setDateAnsicht] = useState(new Date())
   const [expandedDays, setExpandedDays] = useState<Set<number>>(new Set())
   const navigate = useNavigate()
 
+  // call here useQuery with filterOptions servicetype
   const { isPending, isError, isSuccess, data } = useQuery<
     Array<AppointmentsType>
   >({
-    queryKey: [`nextAvailableAppointments/${praxisID}`],
+    queryKey: ["nextAvailableAppointments", praxisID],
     queryFn: () => getAvailableAppointmentsByPracticeId(praxisID),
     retry: false,
   })

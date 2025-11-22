@@ -221,6 +221,13 @@ export type AppointmentsUpdateAsPersonType = z.infer<typeof BookAppointmentSchem
 export type AppointmentsCreateType = z.infer<typeof AppointmentsCreateSchema>;
 export type AppointmentsType = z.infer<typeof AppointmentsSchema>;
 
+export const AppointmentFilterSchema = z.object({
+    filterAnimalType: AnimalTypeSchema.nullable(),
+    filterServiceType: z.array(ServiceSchema).nullable(),
+});
+
+export type AppointmentFilterType = z.infer<typeof AppointmentFilterSchema>;
+
 
 export const AnimalUpdateSchema = AnimalsSchema;
 export type AnimalUpdateType = z.infer<typeof AnimalUpdateSchema>;

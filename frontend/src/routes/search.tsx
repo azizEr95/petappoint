@@ -1,8 +1,8 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { SearchField } from '../components/common/SearchField'
 import { VeterinaryPracticeList } from '../components/practice/VeterinaryPracticeList'
-import { VeterinarySearchQuerySchema, type AnimalTypeType, type ServiceType } from '../../../shared/schemas/ZodSchemas'
-import { SearchFilter } from '../components/common/SearchFilter'
+import { VeterinarySearchQuerySchema, type AnimalTypeType, type AppointmentFilterType, type ServiceType } from '../../../shared/schemas/ZodSchemas'
+import { SearchFilter} from '../components/common/SearchFilter'
 import { useState } from 'react'
 
 export const Route = createFileRoute('/search')({
@@ -15,13 +15,18 @@ function SearchComponent() {
   const [filterServiceType, setFilterServiceType] = useState<ServiceType[] | null>(null); // if null there is no filter
   const [filterAnimalType, setFilterAnimalType] = useState<AnimalTypeType| null>(null); // if null there is no filter
 
+  const filterOptions: AppointmentFilterType = {
+    filterServiceType: filterServiceType,
+    filterAnimalType: filterAnimalType
+  }
+
   return (
     <>
       {/* Sticky Search Bar */}
       <div className="search-header-sticky">
         <div className="container search-bar-container flex-column">
           <SearchField searchNameBeginn={name} searchOrtBeginn={address} />
-          <SearchFilter filterServiceType={filterServiceType} setFilterServiceType={setFilterServiceType} filterAnimalType={filterAnimalType} setFilterAnimalType={setFilterAnimalType} practicePage={null}/>
+          <SearchFilter filterOptions={filterOptions} setFilterServiceType={setFilterServiceType} setFilterAnimalType={setFilterAnimalType} practicePage={null}/>
         </div>
       </div>
 
@@ -41,7 +46,7 @@ function SearchComponent() {
         </div>
 
         {/* Results List */}
-        <VeterinaryPracticeList searchName={name} searchOrt={address} />
+        <VeterinaryPracticeList searchName={name} searchOrt={address} filterOptions={filterOptions}/>
       </div>
 
       <style>{`
