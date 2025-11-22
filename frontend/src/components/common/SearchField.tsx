@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { Button } from 'react-bootstrap'
 import { useNavigate } from '@tanstack/react-router'
 import type { ChangeEvent } from 'react'
 import '../../styles/routes/search.scss'
@@ -39,7 +38,7 @@ export function SearchField({
       to: '/search',
       search: {
         name: searchTermName,
-        ort: searchTermOrt,
+        address: searchTermOrt,
       },
     })
   }

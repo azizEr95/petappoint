@@ -1,28 +1,27 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { z } from 'zod'
-import { Container } from 'react-bootstrap'
 import { SearchField } from '../components/common/SearchField'
 import { VeterinaryPracticeList } from '../components/practice/VeterinaryPracticeList'
-
-const searchSchema = z.object({
-  name: z.string().default(''),
-  ort: z.string().default(''),
-})
+import { VeterinarySearchQuerySchema, type AnimalTypeType, type ServiceType } from '../../../shared/schemas/ZodSchemas'
+import { SearchFilter } from '../components/common/SearchFilter'
+import { useState } from 'react'
 
 export const Route = createFileRoute('/search')({
-  validateSearch: searchSchema,
+  validateSearch: VeterinarySearchQuerySchema,
   component: SearchComponent,
 })
 
 function SearchComponent() {
-  const { name, ort } = Route.useSearch()
+  const { name, address } = Route.useSearch();
+  const [filterServiceType, setFilterServiceType] = useState<ServiceType[] | null>(null); // if null there is no filter
+  const [filterAnimalType, setFilterAnimalType] = useState<AnimalTypeType| null>(null); // if null there is no filter
 
   return (
     <>
       {/* Sticky Search Bar */}
       <div className="search-header-sticky">
-        <div className="container search-bar-container">
-          <SearchField searchNameBeginn={name} searchOrtBeginn={ort} />
+        <div className="container search-bar-container flex-column">
+          <SearchField searchNameBeginn={name} searchOrtBeginn={address} />
+          <SearchFilter filterServiceType={filterServiceType} setFilterServiceType={setFilterServiceType} filterAnimalType={filterAnimalType} setFilterAnimalType={setFilterAnimalType} practicePage={null}/>
         </div>
       </div>
 
@@ -31,9 +30,9 @@ function SearchComponent() {
         <div className="search-summary">
           <h4>
             {name && <span>"{name}"</span>}
-            {name && ort && <span> in </span>}
-            {ort && <span>{ort}</span>}
-            {!name && !ort && <span>Alle Tierarztpraxen</span>}
+            {name && address && <span> in </span>}
+            {address && <span>{address}</span>}
+            {!name && !address && <span>Alle Tierarztpraxen</span>}
           </h4>
           <p className="results-count">
             <i className="bi bi-search"></i>
@@ -42,7 +41,7 @@ function SearchComponent() {
         </div>
 
         {/* Results List */}
-        <VeterinaryPracticeList searchName={name} searchOrt={ort} />
+        <VeterinaryPracticeList searchName={name} searchOrt={address} />
       </div>
 
       <style>{`
