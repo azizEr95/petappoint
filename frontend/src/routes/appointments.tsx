@@ -50,7 +50,7 @@ function Appointments() {
 
     useEffect(() => {
         // Only auto-select if no appointment was booked and none is currently selected
-        if (isSuccessFuture && sortedFuture.length > 0 && !selectedAppointment && !bookedAppointment) {
+        if (isSuccessFuture && sortedFuture.length > 0 && !selectedAppointment && !bookedAppointment && activeTab === "upcoming" ) {
             setSelectedAppointment(sortedFuture[0]);
         }
     }, [isSuccessFuture, sortedFuture, selectedAppointment, bookedAppointment]);

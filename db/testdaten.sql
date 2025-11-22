@@ -120,30 +120,30 @@ VALUES
   (2, 'daniel@arzt.de', 1),
   (1, NULL, NULL);
 
-INSERT INTO SERVICES (name, estimatedDurationInMinutes, fk_veterinaryPracticeId)
+INSERT INTO SERVICES (name)
 VALUES
-  ('Allgemeine Untersuchung', 30, 1),
-  ('Röntgen', 30, 1),
-  ('Impfung', 45, 1),
-  ('Entwurmung', 45, 1),
-  ('Blutuntersuchung', 45, 1),
-  ('Kastration', 45, 1),
-  ('Untersuchung', 45, 2),
-  ('Zahnextraktion', 45, 2),
-  ('Zahnkontrolle', 45, 2),
-  ('Physiotherapie', 45, 2),
-  ('Notfalltermin', 45, 2),
-  ('Wundversorgung', 45, 2),
-  ('Untersuchung', 45, 3),
-  ('Zahnextraktion', 45, 3),
-  ('Zahnkontrolle', 45, 3),
-  ('Physiotherapie', 45, 3),
-  ('Notfalltermin', 45, 3),
-  ('Untersuchung', 45, 4),
-  ('Zahnextraktion', 45, 4),
-  ('Zahnkontrolle', 45, 5),
-  ('Physiotherapie', 45, 5),
-  ('Notfalltermin', 45, 5);
+  ('Allgemeine Untersuchung'),
+  ('Röntgen'),
+  ('Impfung'),
+  ('Entwurmung'),
+  ('Blutuntersuchung'),
+  ('Kastration'),
+  ('Untersuchung'),
+  ('Zahnextraktion'),
+  ('Zahnkontrolle'),
+  ('Physiotherapie'),
+  ('Notfalltermin'),
+  ('Wundversorgung'),
+  ('Untersuchung'),
+  ('Zahnextraktion'),
+  ('Zahnkontrolle'),
+  ('Physiotherapie'),
+  ('Notfalltermin'),
+  ('Untersuchung'),
+  ('Zahnextraktion'),
+  ('Zahnkontrolle'),
+  ('Physiotherapie'),
+  ('Notfalltermin');
 
 -- Termine
 -- Praxis 1
@@ -229,6 +229,18 @@ VALUES
   (1, 3),
   (4, 3);
 
+  INSERT INTO veterinary_has_service(fk_veterinaryId, fk_serviceId)
+VALUES
+  (4, 1),
+  (4, 2),
+  (4, 3),
+  (2, 3),
+  (2, 1),
+  (2, 2),
+  (1, 3),
+  (1, 1),
+  (1, 2);
+
 
 
 -- ======================================================
@@ -262,14 +274,3 @@ VALUES
   ('2025-11-20 13:00', '2025-11-20 13:30', NULL, 1, 7),
   ('2025-11-20 14:00', '2025-11-20 14:30', NULL, 1, 7),
   ('2025-11-20 15:00', '2025-11-20 15:30', NULL, 1, 7);
-
-INSERT INTO SERVICES (name, estimatedDurationInMinutes, fk_veterinaryPracticeId)
-VALUES
-  ('Allgemeine Untersuchung', 30, 6),
-  ('Röntgen', 30, 6),
-  ('Impfung', 45, 6),
-  ('Entwurmung', 45, 6),
-  ('Blutuntersuchung', 45, 7),
-  ('Kastration', 45, 7),
-  ('Untersuchung', 45, 7),
-  ('Zahnextraktion', 45, 7);

@@ -2,7 +2,7 @@ import express from "express";
 import { veterinaryPracticeService } from "../service/veterinaryPracticeService"
 import { z } from 'zod';
 import { appointmentService } from "../service/appointmentService";
-import { AppointmentsType, VeterinaryPracticesType, VeterinaryPracticeCreateSchema, VeterinarySearchQuerySchema } from "vetlib-shared/schemas/ZodSchemas";
+import { AppointmentsType, VeterinaryPracticesType, VeterinaryPracticeCreateSchema, VeterinarySearchQuerySchema, ServiceType } from "vetlib-shared/schemas/ZodSchemas";
 
 export const veterinaryPracticeRouter = express.Router();
 
@@ -36,6 +36,17 @@ veterinaryPracticeRouter.get('/:id',
     }
 )
 
+veterinaryPracticeRouter.get('/:id/services',
+    async (req, res) => {
+        try {
+            const id: number = parseInt(req.params.id);
+            const services: ServiceType[] = await appointmentService.getServicesForPractice(id);
+            return res.send(services);
+        } catch (ex) {
+            return res.sendStatus(404);
+        }
+    }
+)
 
 veterinaryPracticeRouter.get('/:id/appointments',
     async (req, res) => {

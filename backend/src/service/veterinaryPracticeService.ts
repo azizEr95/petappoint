@@ -16,12 +16,6 @@ export const veterinaryPracticeService = {
         password: veterinaryPracticeRe.password,
         addresses: {
           create: veterinaryPracticeRe.addresses
-        },
-        services: {
-          create: {
-            name: "Allgemeine Untersuchung",
-            estimateddurationinminutes: 60,
-          }
         }
       }
     });
@@ -31,11 +25,6 @@ export const veterinaryPracticeService = {
     const foundPractice = await prisma.veterinarypractices.findUnique({
       include: {
         addresses: true,
-        services: {
-          omit: {
-            fk_veterinarypracticeid: true
-          }
-        }
       },
       omit: {
         fk_addressid: true
@@ -131,7 +120,7 @@ export const veterinaryPracticeService = {
         name: data.name,
         phone: data.phone,
         email: data.email,
-        password: data.password,
+        //password: data.password,
         infoemail: data.infoemail,
         info: data.info,
         website: data.website,

@@ -11,7 +11,6 @@ DROP TABLE IF EXISTS appointments;
 DROP TABLE IF EXISTS veterinary_has_specialization;
 DROP TABLE IF EXISTS veterinaries;
 DROP TABLE IF EXISTS veterinarypractices;
-DROP TABLE IF EXISTS specializations;
 DROP TABLE IF EXISTS person_has_animal;
 DROP TABLE IF EXISTS animal_has_races;
 DROP TABLE IF EXISTS animals;
@@ -89,17 +88,12 @@ CREATE TABLE IF NOT EXISTS person_has_animal(
   PRIMARY KEY (fk_personId, fk_animalId)
 );
 
-CREATE TABLE IF NOT EXISTS specializations(
-  id SERIAL PRIMARY KEY,
-  name VARCHAR(100) NOT NULL
-);
-
 CREATE TABLE IF NOT EXISTS veterinarypractices(
   id SERIAL PRIMARY KEY,
   name VARCHAR(200) NOT NULL,
   phone VARCHAR(20) NOT NULL,
   infoEmail VARCHAR(100) NOT NULL,
-  email VARCHAR(100) NOT NULL,
+  email VARCHAR(100) NOT NULL UNIQUE,
   password VARCHAR(255) NOT NULL,
   website VARCHAR(150),
   info TEXT,
@@ -112,18 +106,22 @@ CREATE TABLE IF NOT EXISTS veterinaries(
   fk_veterinarypractice INTEGER REFERENCES veterinarypractices(id)
 );
 
-CREATE TABLE IF NOT EXISTS veterinary_has_specialization(
-  fk_veterinaryId INTEGER NOT NULL REFERENCES veterinaries(id) ON DELETE CASCADE,
-  fk_specializationId INTEGER NOT NULL REFERENCES specializations(id),
-  PRIMARY KEY (fk_veterinaryId, fk_specializationId)
-);
-
 CREATE TABLE IF NOT EXISTS services(
   id SERIAL PRIMARY KEY,
-  name VARCHAR(100) NOT NULL,
-  estimatedDurationInMinutes INTEGER NOT NULL DEFAULT 0,
-  fk_veterinaryPracticeId INTEGER REFERENCES veterinarypractices(id),
-  notiz TEXT
+  name VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS veterinary_has_service(
+  fk_veterinaryId INTEGER NOT NULL REFERENCES veterinaries(id) ON DELETE CASCADE,
+  fk_serviceId INTEGER NOT NULL REFERENCES services(id),
+  notiz TEXT,
+  PRIMARY KEY (fk_veterinaryId, fk_serviceId)
+);
+
+CREATE TABLE IF NOT EXISTS veterinary_can_treat_animaltype(
+  fk_veterinaryId INTEGER NOT NULL REFERENCES veterinaries(id) ON DELETE CASCADE,
+  fk_animaltypeId INTEGER NOT NULL REFERENCES animaltypes(id),
+  PRIMARY KEY (fk_veterinaryId, fk_animaltypeId)
 );
 
 CREATE TABLE IF NOT EXISTS appointments(
@@ -135,6 +133,12 @@ CREATE TABLE IF NOT EXISTS appointments(
   fk_veterinaryPracticeId INTEGER NOT NULL REFERENCES veterinarypractices(id),
   fk_serviceId INTEGER REFERENCES services(id) DEFAULT NULL,
   notiz TEXT
+);
+
+CREATE TABLE IF NOT EXISTS appointment_has_service(
+  fk_appointmentId INTEGER NOT NULL REFERENCES appointments(id),
+  fk_serviceId INTEGER NOT NULL REFERENCES services(id),
+  PRIMARY KEY (fk_appointmentId, fk_serviceId)
 );
 
 CREATE TABLE IF NOT EXISTS reviews(

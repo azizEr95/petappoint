@@ -10,6 +10,9 @@ import {
   bookAppointment,
   getAppointmentsById,
 } from '../../../../api/AppointmentsAPI'
+import {
+  getServicesFromPractice
+} from '../../../../api/ServicesAPI'
 import type {
   AnimalsType,
   AppointmentsType,
@@ -61,6 +64,20 @@ function BookingComponent() {
   } = useQuery<AppointmentsType>({
     queryKey: ['appointment', terminId],
     queryFn: () => getAppointmentsById(terminId),
+    retry: false,
+  })
+
+  // load Services:
+  // these services are not needed in this component
+  let services: ServiceType[]
+  const {
+    isError: isErrorServices,
+    isSuccess: isSuccessServices,
+    isPending: isPendingServices,
+    data: dataServices,
+  } = useQuery<ServiceType[]>({
+    queryKey: ['service', praxisId],
+    queryFn: () => getServicesFromPractice(praxisId),
     retry: false,
   })
 
@@ -156,12 +173,16 @@ function BookingComponent() {
     setSelectedAnimal(animal)
   }
 
-  if (!isSuccessAppointment || !isSuccessPractice) {
+  if (!isSuccessAppointment || !isSuccessPractice || !isSuccessServices) {
     return <></>
   }
 
+  services = dataServices;
+  
   termin = dataAppointment
   praxis = dataPractice
+  console.log(termin.availableservices)
+  termin.availableservices = dataServices; // TODO: to be removed, every appointment has to be his own services!!
   let aktuelleAnzeige
   let submitButton
   let currentStep: 1 | 2 | 3 = 1
@@ -171,6 +192,7 @@ function BookingComponent() {
       aktuelleAnzeige = (
         <SelectAppointmentType
           praxis={praxis}
+          appointment={termin}
           handleSelectTerminArt={handleSelectTerminArt}
         />
       )
@@ -198,6 +220,7 @@ function BookingComponent() {
       aktuelleAnzeige = (
         <SelectAppointmentType
           praxis={praxis}
+          appointment={termin}
           handleSelectTerminArt={handleSelectTerminArt}
         />
       )

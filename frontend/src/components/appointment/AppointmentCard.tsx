@@ -10,7 +10,7 @@ type AppointmentCardProps = {
 }
 
 export function AppointmentCard({ appointment, handleShowDetailsAppointment, isActive, isPast }: AppointmentCardProps) {
-    const practiceID = appointment.fk_veterinarypracticeid;
+    const practiceID = appointment.veterinarypractice.id;
 
     const { isError, isSuccess, data } = useQuery<VeterinaryPracticesType>({
         queryKey: ['veterinaryPractice', practiceID],
@@ -34,8 +34,8 @@ export function AppointmentCard({ appointment, handleShowDetailsAppointment, isA
         const practice: VeterinaryPracticesType = data;
         let appointmentType: ServiceType | undefined;
 
-        if (practice.services !== null && practice.services !== undefined) {
-            appointmentType = practice.services.find((x) => x.id === appointment.fk_serviceid);
+        if (appointment.availableservices !== null && appointment.availableservices !== undefined) {
+            appointmentType = appointment.availableservices.find((x) => x.id === appointment.service?.id);
         }
 
         const formatDate = (date: Date) => {
@@ -73,7 +73,7 @@ export function AppointmentCard({ appointment, handleShowDetailsAppointment, isA
                     {appointmentType && <div className="service-type">{appointmentType.name}</div>}
                     <div className="animal-info">
                         <i className="bi bi-heart"></i>
-                        <span>{appointment.animals?.name || 'Nicht zugewiesen'}</span>
+                        <span>{appointment.animal?.name || 'Nicht zugewiesen'}</span>
                     </div>
                 </div>
             </div>

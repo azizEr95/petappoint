@@ -65,7 +65,7 @@ export function AnimalDialog({ hideDialogNewAnimal, animalEdit }: CreateAnimalDi
         if (animalEdit !== undefined) {
             if (isSuccessAnimalType) {
                 const typeEditAnimal = dataAnimalType.find((type) => {
-                    if (type.id === animalEdit.fk_animaltypeid) {
+                    if (type.id === animalEdit.animaltypeid) {
                         return type;
                     }
                 });
@@ -433,8 +433,8 @@ export function AnimalDialog({ hideDialogNewAnimal, animalEdit }: CreateAnimalDi
                 timeofdeath: null,
                 iscastrated: castrated === "castrated" ? true : false,
                 lifestyleisindoors: lifestyle === "lifestyleIsIndoor" ? true : false,
-                fk_animaltypeid: animalTypeAnimal !== undefined ? animalTypeAnimal.id : 1,
-                fk_animalgroupid: 1 // should be null, Backend Route has to be fixed
+                animaltypeid: animalTypeAnimal !== undefined ? animalTypeAnimal.id : 1,
+                animalgroupid: 1 // should be null, Backend Route has to be fixed
             }
 
             if (animalEdit === undefined) { // new animal
