@@ -43,8 +43,8 @@ export const AnimalsSchema = z.object({
     iscastrated: z.boolean(),
     lifestyleisindoors: z.boolean(),
     sex: sexes,
-    fk_animaltypeid: z.int(),
-    fk_animalgroupid: z.int().nullable()
+    animaltypeid: z.int(),
+    animalgroupid: z.int().nullable()
 });
 
 
@@ -60,7 +60,7 @@ export type AnimalsType = z.infer<typeof AnimalsSchema>;
 export const AnimalracesSchema = z.object({
     id: z.number().int(),
     name: z.string(),
-    fk_animaltypeid: z.number().int(),
+    animaltypeid: z.number().int(),
 });
 
 export const AnimalracesCreateSchema = AnimalracesSchema;
@@ -71,15 +71,19 @@ export type AnimalracesType = z.infer<typeof AnimalracesSchema>;
 
 //Animal has Races:
 export const Animal_has_RacesSchema = z.object({
-    fk_animalid: z.number().int(),
-    fk_animalraceid: z.number().int(),
+    animalid: z.number().int(),
+    animalrace: z.array(AnimalracesSchema),
 });
 
 export const Animal_has_RacesCreateSchema = Animal_has_RacesSchema;
-
 export type Animal_has_RacesCreateType = z.infer<typeof Animal_has_RacesCreateSchema>;
 export type Animal_has_RacesType = z.infer<typeof Animal_has_RacesSchema>;
 
+export const AddRacesToAnimalSchema = z.object({
+    animalid: z.number().int(),
+    animalraceids: z.array(z.number()).min(1)
+});
+export type AddRacesToAnimalType = z.infer<typeof AddRacesToAnimalSchema>;
 
 //Adressen: 
 export const AddressesSchema = z.object({
@@ -126,8 +130,8 @@ export type PersonsType = z.infer<typeof PersonsSchema>;
 
 //Person has Animal:
 export const Person_has_AnimalSchema = z.object({
-    fk_personid: z.number().int(),
-    fk_animalid: z.number().int(),
+    personid: z.number().int(),
+    animals: z.array(AnimalsSchema),
 });
 
 export const Person_has_AnimalCreateSchema = Person_has_AnimalSchema;
@@ -137,9 +141,7 @@ export type Person_has_AnimalType = z.infer<typeof Person_has_AnimalSchema>;
 
 export const ServiceSchema = z.object({
     id: z.number().int(),
-    name: z.string().min(1).max(100),
-    estimateddurationinminutes: z.number().int().min(0),
-    notiz: z.string().nullable().optional()
+    name: z.string().min(1).max(100)
 });
 
 export type ServiceType = z.infer<typeof ServiceSchema>;
@@ -150,20 +152,19 @@ export const VeterinaryPracticeSchema = z.object({
     id: z.number().int(),
     name: z.string().min(5).max(200),
     email: z.email().max(100),
-    password: z.string().min(6).max(255),
     phone: z.string().min(5).max(20),
     infoemail: z.email().max(100),
     website: z.url().max(150).nullable(),
     info: z.string().nullable(),
-    addresses: AddressesSchema,
-    services: z.array(ServiceSchema).optional()
+    addresses: AddressesSchema
 })
 
 export const VeterinaryPracticeCreateSchema = VeterinaryPracticeSchema.omit({
     id: true
 }).extend({
-    addresses: AddressesCreateSchema
-})
+    addresses: AddressesCreateSchema,
+    password: z.string().min(6).max(255)
+});
 
 export type VeterinaryPracticesCreateType = z.infer<typeof VeterinaryPracticeCreateSchema>;
 export type VeterinaryPracticesType = z.infer<typeof VeterinaryPracticeSchema>;
@@ -179,7 +180,7 @@ export type VeterinarySearchQueryType = z.infer<typeof VeterinarySearchQuerySche
 export const VeterinariansSchema = z.object({
     id: z.number().int(), //ist identisch zur Personen ID
     infoemail: z.email().nullable(),
-    fk_veterinarypractice: z.number().int().nullable(),
+    veterinarypractice: z.number().int().nullable(),
 });
 
 export const VeterinariansCreateSchema = VeterinariansSchema //id muss uebergeben werden, da Referenz zur Person wichtig ist
@@ -193,33 +194,30 @@ export const AppointmentsSchema = z.object({
     id: z.number().int(),
     starttime: z.date(),
     endtime: z.date(),
-    fk_animalid: z.number().int().nullable(),
-    fk_veterinaryid: z.number().int(),
-    fk_veterinarypracticeid: z.number().int(),
-    fk_serviceid: z.number().int().nullable(),
-    animals: AnimalsSchema.nullable(),
-    veterinaries: VeterinariansSchema,
-    veterinarypractices: VeterinaryPracticeSchema,
-    services: ServiceSchema.nullable(),
+    animal: AnimalsSchema.nullable(),
+    veterinary: VeterinariansSchema,
+    veterinarypractice: VeterinaryPracticeSchema,
+    service: ServiceSchema.nullable(),
+    availableservices: z.array(ServiceSchema),
     notiz: z.string().nullable().optional()
 });
 
 export const AppointmentsCreateSchema = z.object({
     starttime: z.date(),
     endtime: z.date(),
-    fk_animalid: z.number().int().nullable(),
-    fk_veterinaryid: z.number().int(),
-    fk_veterinarypracticeid: z.number().int(),
-    fk_serviceid: z.number().int().nullable(),
+    animalid: z.number().int().nullable(),
+    veterinaryid: z.number().int(),
+    veterinarypracticeid: z.number().int(),
+    serviceid: z.number().int().nullable(),
 })
 
-export const AppointmentsUpdateAsPersonSchema = z.object({
+export const BookAppointmentSchema = z.object({
     id: z.number().int(),
-    fk_animalid: z.number().int(),
-    fk_serviceid: z.number().int()
+    animalid: z.number().int(),
+    serviceid: z.number().int()
 })
 
-export type AppointmentsUpdateAsPersonType = z.infer<typeof AppointmentsUpdateAsPersonSchema>;
+export type AppointmentsUpdateAsPersonType = z.infer<typeof BookAppointmentSchema>;
 export type AppointmentsCreateType = z.infer<typeof AppointmentsCreateSchema>;
 export type AppointmentsType = z.infer<typeof AppointmentsSchema>;
 

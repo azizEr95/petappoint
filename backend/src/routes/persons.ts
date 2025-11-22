@@ -9,7 +9,7 @@ personsRouter.get('/all',
         const persons: PersonsType[] = await personService.getAll();
         res.send(persons);
     }
-)
+);
 
 personsRouter.get('/:id/animals',
     async (req, res) => {
@@ -21,7 +21,8 @@ personsRouter.get('/:id/animals',
             res.sendStatus(404);
         }
     }
-)
+);
+
 personsRouter.get("/:id/favorites",
     async (req, res) => {
         try {
@@ -32,7 +33,7 @@ personsRouter.get("/:id/favorites",
             res.sendStatus(404);
         }
     }
-)
+);
 
 personsRouter.post("/:id/favorites/:practiceId",
     async (req, res) => {
@@ -46,8 +47,7 @@ personsRouter.post("/:id/favorites/:practiceId",
             return;
         }
     }
-)
-
+);
 
 personsRouter.delete("/:id/favorites/:practiceId",
     async (req, res) => {
@@ -61,4 +61,4 @@ personsRouter.delete("/:id/favorites/:practiceId",
             return;
         }
     }
-)
+);

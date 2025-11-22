@@ -64,7 +64,7 @@ export function NextAvailableAppointments({
     navigate({
       to: '/praxen/$praxisId/booking/$terminId',
       params: {
-        praxisId: termin.fk_veterinarypracticeid.toString(),
+        praxisId: termin.veterinarypractice.id.toString(),
         terminId: termin.id.toString(),
       },
       state: {

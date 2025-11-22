@@ -1,6 +1,6 @@
 import express from "express";
 import { appointmentService } from "../service/appointmentService";
-import { AppointmentsType, AppointmentsUpdateAsPersonSchema } from "vetlib-shared/schemas/ZodSchemas";
+import { AppointmentsType, BookAppointmentSchema } from "vetlib-shared/schemas/ZodSchemas";
 
 export const appointmentRouter = express.Router();
 
@@ -62,12 +62,14 @@ appointmentRouter.get("/:id",
 appointmentRouter.put("/:id",
     async (req, res, next) => {
         try {
-            const appointmentData = AppointmentsUpdateAsPersonSchema.safeParse(req.body);
+            const appointmentData = BookAppointmentSchema.safeParse(req.body);
             if(!appointmentData.success) {
                 res.status(400).send(appointmentData.error);
                 return;
             }
-            res.status(201).send(await appointmentService.updateAppointmentAsPerson(appointmentData.data.id, appointmentData.data.fk_animalid, appointmentData.data.fk_serviceid));
+            const bookingDetails = appointmentData.data;
+            const bookedAppointment = await appointmentService.updateAppointmentAsPerson(bookingDetails.id, bookingDetails.animalid, bookingDetails.serviceid);
+            res.status(201).send(bookedAppointment);
             return;
         } catch (e) {
             if (String(e).includes("ID and AnimalID is required for update")) {

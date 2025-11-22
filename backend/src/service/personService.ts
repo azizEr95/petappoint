@@ -71,8 +71,8 @@ export const personService = {
 
     await addressService.update(dataRe.addresses);
 
-    const updatedPerson = await prisma.persons.update({ 
-      where: { id: dataRe.id }, 
+    const updatedPerson = await prisma.persons.update({
+      where: { id: dataRe.id },
       data: {
         firstname: dataRe.firstname,
         lastname: dataRe.lastname,
@@ -158,7 +158,20 @@ export const personService = {
       }
     });
 
-    return animals.map(x => x.animals);
+    return animals.map(x => ({
+      id: x.animals.id,
+      name: x.animals.name,
+      dateofbirth: x.animals.dateofbirth,
+      dateofbirthisexact: x.animals.dateofbirthisexact,
+      weightingram: x.animals.weightingram,
+      heightincm: x.animals.heightincm,
+      timeofdeath: x.animals.timeofdeath,
+      iscastrated: x.animals.iscastrated,
+      lifestyleisindoors: x.animals.lifestyleisindoors,
+      sex: x.animals.sex,
+      animaltypeid: x.animals.fk_animaltypeid,
+      animalgroupid: x.animals.fk_animaltypeid
+    }));
   },
 
   async delete(id: number): Promise<void> {

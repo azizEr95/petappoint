@@ -40,8 +40,8 @@ export const bookAppointment = async (appointmentID: number, animalID: number | 
 
   const requestBody = {
     id: appointmentID,
-    fk_animalid: animalID,
-    fk_serviceid: serviceID,
+    animalid: animalID,
+    serviceid: serviceID,
   }
 
   const requestOptions = {
@@ -94,17 +94,14 @@ const parseAppointmentArray = (unsafeAppointments: AppointmentsType[]): Appointm
             id: x.id,
             starttime: new Date(x.starttime),
             endtime: new Date(x.endtime),
-            fk_animalid: x.fk_animalid,
-            fk_veterinaryid: x.fk_veterinaryid,
-            fk_veterinarypracticeid: x.fk_veterinarypracticeid,
-            fk_serviceid: x.fk_serviceid,
-            animals: x.animals ? {
-                ...x.animals,
-                dateofbirth: x.animals.dateofbirth ? new Date(x.animals.dateofbirth) : x.animals.dateofbirth
-            } : x.animals,
-            veterinaries: x.veterinaries,
-            veterinarypractices: x.veterinarypractices,
-            services: x.services
+            animal: x.animal ? {
+                ...x.animal,
+                dateofbirth: x.animal.dateofbirth ? new Date(x.animal.dateofbirth) : x.animal.dateofbirth
+            } : x.animal,
+            veterinary: x.veterinary,
+            veterinarypractice: x.veterinarypractice,
+            service: x.service,
+            availableservices: x.availableservices
             /**
              * animals: AnimalsSchema.nullable(),
                  veterinaries: VeterinariansSchema,
@@ -157,8 +154,8 @@ export const updateAppointmentNotiz = async (id: number, notiz: string | null): 
 const parseAppointment = (unsafeAppointment: AppointmentsType): AppointmentsType => {
     unsafeAppointment.starttime = new Date(unsafeAppointment.starttime);
     unsafeAppointment.endtime = new Date(unsafeAppointment.endtime);
-    if (unsafeAppointment.animals?.dateofbirth) {
-        unsafeAppointment.animals.dateofbirth = new Date(unsafeAppointment.animals.dateofbirth);
+    if (unsafeAppointment.animal?.dateofbirth) {
+        unsafeAppointment.animal.dateofbirth = new Date(unsafeAppointment.animal.dateofbirth);
     }
     const parsed = AppointmentsSchema.safeParse(unsafeAppointment);
     if (parsed.error !== undefined) { //if Zod throws an Error print them

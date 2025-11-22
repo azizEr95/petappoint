@@ -1,21 +1,24 @@
 import '../../styles/components/booking/SelectAppointmentType.scss'
 import type {
+  AppointmentsType,
   ServiceType,
   VeterinaryPracticesType,
 } from '../../../../shared/schemas/ZodSchemas'
 
 type SelectAppointmentTypeProps = {
   praxis: VeterinaryPracticesType
+  appointment: AppointmentsType
   handleSelectTerminArt: (appointmenType: ServiceType) => void
 }
 
 export function SelectAppointmentType({
   praxis,
+  appointment,
   handleSelectTerminArt,
 }: SelectAppointmentTypeProps) {
   let appointmentServices: Array<ServiceType> = []
-  if (praxis.services !== undefined && praxis.services.length !== 0) {
-    appointmentServices = praxis.services
+  if (appointment.availableservices !== undefined && appointment.availableservices.length !== 0) {
+    appointmentServices = appointment.availableservices
   }
 
   return (

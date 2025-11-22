@@ -16,7 +16,7 @@ export function AppointmentDetails({ appointment, onAppointmentCancelled }: Appo
     const [notes, setNotes] = useState('');
     const queryClient = useQueryClient();
 
-    const practiceID = appointment.fk_veterinarypracticeid;
+    const practiceID = appointment.veterinarypractice.id;
     const { isSuccess, data } = useQuery<VeterinaryPracticesType>({
         queryKey: ['veterinaryPractice', practiceID],
         queryFn: () => getVeterinaryPracticesById(practiceID.toString()),
@@ -75,7 +75,7 @@ export function AppointmentDetails({ appointment, onAppointmentCancelled }: Appo
     const handleExport = () => {
         if (isSuccess && data) {
             const practice = data;
-            const appointmentType = practice.services?.find((x) => x.id === appointment.fk_serviceid);
+            const appointmentType = appointment.availableservices.find((x) => x.id === appointment.service?.id);
             const address = `${practice.addresses.street}, ${practice.addresses.citycode} ${practice.addresses.city}`;
 
             exportToCalendar(appointment, practice.name, address, appointmentType?.name);
@@ -109,8 +109,8 @@ export function AppointmentDetails({ appointment, onAppointmentCancelled }: Appo
     if (isSuccess) {
         const practice = data;
         let appointmentType: ServiceType | undefined;
-        if (practice.services !== null && practice.services !== undefined) {
-            appointmentType = practice.services.find((x) => x.id === appointment.fk_serviceid);
+        if (appointment.availableservices !== null && appointment.availableservices !== undefined) {
+            appointmentType = appointment.availableservices.find((x) => x.id === appointment.service?.id);
         }
 
         return (
@@ -173,7 +173,7 @@ export function AppointmentDetails({ appointment, onAppointmentCancelled }: Appo
                     <div className="info-item">
                         <i className="bi bi-heart"></i>
                         <div className="info-content">
-                            <div className="value">{appointment.animals?.name || 'Nicht zugewiesen'}</div>
+                            <div className="value">{appointment.animal?.name || 'Nicht zugewiesen'}</div>
                         </div>
                     </div>
                 </div>

@@ -1,5 +1,5 @@
-import express, {Request} from "express";
-import { AnimalracesType, AnimalsCreateSchema, AnimalUpdateSchema, Animal_has_RacesCreateSchema, Animal_has_RacesType} from "vetlib-shared/schemas/ZodSchemas";
+import express, { Request } from "express";
+import { AnimalracesType, AnimalsCreateSchema, AnimalUpdateSchema, Animal_has_RacesCreateSchema, Animal_has_RacesType, AddRacesToAnimalSchema } from "vetlib-shared/schemas/ZodSchemas";
 import { animalService } from "../service/animalService";
 import { personService } from "../service/personService";
 import { animalRaceService } from "../service/animalRaceService";
@@ -10,8 +10,14 @@ export const animalsRouter = express.Router();
 animalsRouter.post("/",
     async (req, res) => {
         // changing String Date props to Date
-        req.body = changeStringToDate(req);
-        const parseResult = AnimalsCreateSchema.safeParse(req.body);
+
+        let unsafeAnimal = req.body;
+        unsafeAnimal = {
+            ...unsafeAnimal,
+            dateofbirth: new Date(unsafeAnimal.dateofbirth),
+            timeofdeath: unsafeAnimal.timeofdeath !== null ? new Date(unsafeAnimal.timeofdeath) : null
+        }
+        const parseResult = AnimalsCreateSchema.safeParse(unsafeAnimal);
         if (!parseResult.success) {
             res.status(400).send(parseResult.error);
             return;
@@ -28,17 +34,23 @@ animalsRouter.post("/",
 
         // Connect animal to requestor
         await personService.connectAnimal(personId, animal.id);
-        
+
         res.send(animal);
     }
 );
 
 animalsRouter.put('/:animalId',
     async (req, res) => {
-        req.body = changeStringToDate(req);
+        let unsafeAnimal = req.body;
+        unsafeAnimal = {
+            ...unsafeAnimal,
+            dateofbirth: new Date(unsafeAnimal.dateofbirth),
+            timeofdeath: unsafeAnimal.timeofdeath !== null ? new Date(unsafeAnimal.timeofdeath) : null
+        }
+
         const animalId = parseInt(req.params.animalId);
 
-        const parseResult = AnimalUpdateSchema.safeParse(req.body);
+        const parseResult = AnimalUpdateSchema.safeParse(unsafeAnimal);
         if (!parseResult.success) {
             res.status(400).send(parseResult.error);
             return;
@@ -57,7 +69,7 @@ animalsRouter.put('/:animalId',
 animalsRouter.get('/:animalId/races',
     async (req, res) => {
         const animalId = parseInt(req.params.animalId);
-        const animalRaces: AnimalracesType[] = (await animalRaceService.getAnimalRaces(animalId)).map(x => x.animalraces);
+        const animalRaces: AnimalracesType[] = await animalRaceService.getAnimalRaces(animalId);
         return res.send(animalRaces);
     }
 )
@@ -65,17 +77,20 @@ animalsRouter.get('/:animalId/races',
 animalsRouter.post('/:animalId/races',
     async (req, res) => {
         const animalId = parseInt(req.params.animalId);
-        const animalRaceData = Animal_has_RacesCreateSchema.safeParse(req.body);
-        if(!animalRaceData.success) {
+        const animalRaceData = AddRacesToAnimalSchema.safeParse(req.body);
+        if (!animalRaceData.success) {
             res.status(400).send(animalRaceData.error);
             return;
         }
-        if(animalId !== animalRaceData.data.fk_animalid){
-            res.status(400).send(`Mismatch in param id '${animalId}' and provided body id '${animalRaceData.data.fk_animalid}'.`);
+        if (animalId !== animalRaceData.data.animalid) {
+            res.status(400).send(`Mismatch in param id '${animalId}' and provided body id '${animalRaceData.data.animalid}'.`);
             return;
         }
         try {
-            const animalRace = await animalHasRacesService.create(animalRaceData.data);
+            const animalRace = await animalHasRacesService.create({
+                animalid: animalRaceData.data.animalid,
+                animalraceids: animalRaceData.data.animalraceids
+            });
             res.status(201).send(animalRace);
         } catch (error) {
             res.sendStatus(500);
@@ -85,22 +100,15 @@ animalsRouter.post('/:animalId/races',
 
 animalsRouter.delete('/:animalId/races/:raceId',
     async (req, res) => {
-        const data: Animal_has_RacesType = {
-            fk_animalid: parseInt(req.params.animalId),
-            fk_animalraceid: parseInt(req.params.raceId)
-        }
         try {
-            await animalHasRacesService.delete(data);
-            res.sendStatus(204);   
+            await animalHasRacesService.delete({
+                fk_animalid: parseInt(req.params.animalId),
+                fk_animalraceid: parseInt(req.params.raceId)
+            });
+            res.sendStatus(204);
         } catch (error) {
             res.sendStatus(500);
         }
     }
 )
-// internal function to change request properties dateOfBirth and timeofdeath
-function changeStringToDate(req: Request): Request {
-    req.body.dateofBirth = new Date(req.body.dateofBirth);
-    req.body.timeofdeath = new Date(req.body.timeofdeath);
-    return req;
-}
 
