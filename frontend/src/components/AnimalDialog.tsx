@@ -14,17 +14,9 @@ type CreateAnimalDialogProps = {
     animalEdit: AnimalsType | undefined
 }
 
-enum StatusCreateAnimalDialog {
-    selectAnimalType = 'SELECT_ANIMAL_TYPE',
-    editInfos = 'EDIT_INFOS',
-    created = 'CREATED',
-}
-
 // visibility from this component has to be handled from the parent component
 export function AnimalDialog({ hideDialogNewAnimal, animalEdit }: CreateAnimalDialogProps) {
-    const [status, setStatus] = useState<StatusCreateAnimalDialog>(StatusCreateAnimalDialog.selectAnimalType);
-    const [showSelectAnimalType, setShowAnimalType] = useState(true);
-    const [animalTypeAnimal, setAnimalTypeAnimal] = useState<AnimalTypeType>();
+    const [animalTypeAnimal, setAnimalTypeAnimal] = useState<AnimalTypeType | undefined>(undefined);
     // variables for Modal Dialog NewAnimal
     const [name, setName] = useState("");
     const [dateOfBirth, setDateOfBirth] = useState("");
@@ -47,7 +39,8 @@ export function AnimalDialog({ hideDialogNewAnimal, animalEdit }: CreateAnimalDi
         height: string | undefined,
         castrated: string | undefined,
         lifestyle: string | undefined,
-        dateOfDeath: string | undefined
+        dateOfDeath: string | undefined,
+        animalType: string | undefined
     }>({
         name: undefined,
         dateOfBirth: undefined,
@@ -57,7 +50,8 @@ export function AnimalDialog({ hideDialogNewAnimal, animalEdit }: CreateAnimalDi
         height: undefined,
         castrated: undefined,
         lifestyle: undefined,
-        dateOfDeath: undefined
+        dateOfDeath: undefined,
+        animalType: undefined
     });
 
     // initialize if it is an edit dialog
@@ -71,7 +65,6 @@ export function AnimalDialog({ hideDialogNewAnimal, animalEdit }: CreateAnimalDi
                 });
                 setAnimalTypeAnimal(typeEditAnimal)
             }
-            setShowAnimalType(false);
             setName(animalEdit.name);
             if (animalEdit.dateofbirth !== null) {
                 if (animalEdit.dateofbirthisexact) {
@@ -153,7 +146,7 @@ export function AnimalDialog({ hideDialogNewAnimal, animalEdit }: CreateAnimalDi
 
     useEffect(() => {
         validate(false);
-    }, [name, dateOfBirth, dateOfBirthIsExact, ageInMonth, sex, weight, height, castrated, lifestyle]);
+    }, [name, dateOfBirth, dateOfBirthIsExact, ageInMonth, sex, weight, height, castrated, lifestyle, animalTypeAnimal]);
 
     // get all Animaltypes 
     const { isSuccess: isSuccessAnimalType, data: dataAnimalType } = useQuery<Array<AnimalTypeType>>({
@@ -223,23 +216,6 @@ export function AnimalDialog({ hideDialogNewAnimal, animalEdit }: CreateAnimalDi
         },
     })
 
-    const handleSelectAnimalType = (animaltype: AnimalTypeType) => {
-        setAnimalTypeAnimal(animaltype);
-        handleChangeStatus();
-    }
-
-    const handleChangeStatus = () => {
-        switch (status) {
-            case StatusCreateAnimalDialog.selectAnimalType:
-                setShowAnimalType(false);
-                setStatus(StatusCreateAnimalDialog.editInfos);
-                break;
-            case StatusCreateAnimalDialog.editInfos:
-                setStatus(StatusCreateAnimalDialog.created);
-                break;
-        }
-    }
-
     const handleDateOfBirthIsExactChange = (newValue: string) => {
         if (newValue === "Yes") {
             setDateOfBirthIsExact(newValue);
@@ -258,6 +234,10 @@ export function AnimalDialog({ hideDialogNewAnimal, animalEdit }: CreateAnimalDi
         switch (name) {
             case 'name':
                 setName(value);
+                break;
+            case 'animalType':
+                const selectedType = dataAnimalType?.find(type => type.id === parseInt(value));
+                setAnimalTypeAnimal(selectedType);
                 break;
             case 'dateOfBirth':
                 setDateOfBirth(value);
@@ -338,6 +318,14 @@ export function AnimalDialog({ hideDialogNewAnimal, animalEdit }: CreateAnimalDi
         let allUndefined: boolean = true;
         if (validateFromSubmit || clickedSaveSubmit) {
             setClickedSaveSubmit(true);
+
+            if (animalTypeAnimal === undefined) {
+                setValidationErrors((prevState) => ({ ...prevState, animalType: "Bitte eine Tierart auswählen." }));
+                allUndefined = false;
+            } else {
+                setValidationErrors((prevState) => ({ ...prevState, animalType: undefined }));
+            }
+
             if (name.trim().length < 2) {
                 setValidationErrors((prevState) => ({ ...prevState, name: "Der Name muss eine Länge von mind. 2 Zeichen haben." }));
                 allUndefined = false;
@@ -439,14 +427,12 @@ export function AnimalDialog({ hideDialogNewAnimal, animalEdit }: CreateAnimalDi
 
             if (animalEdit === undefined) { // new animal
                 mutateCreateAnimal(animal);
-                handleChangeStatus();
             } else { // edit animal
                 let animalUpdate: AnimalUpdateType = { // to be removed, should be also AnimalCreateType by edit
                     ...animal,
                     id: animalEdit.id
                 }
                 mutateEditAnimal({ animalID: animalEdit.id, animal: animalUpdate });
-                handleChangeStatus();
             }
         }
     }
@@ -491,32 +477,32 @@ export function AnimalDialog({ hideDialogNewAnimal, animalEdit }: CreateAnimalDi
         const animaltypes = dataAnimalType;
 
         // show is always true, visibility is changed from the parent component
-        return <Modal show={true} onHide={hideDialogNewAnimal}>
+        return <Modal show={true} onHide={hideDialogNewAnimal} className="animal-dialog">
             <Modal.Header closeButton>
-                {animalEdit === undefined && animalTypeAnimal !== undefined && <Modal.Title>Neues Tier anlegen ({animalTypeAnimal?.name})</Modal.Title>}
-                {animalEdit === undefined && animalTypeAnimal === undefined && <Modal.Title>Neues Tier anlegen</Modal.Title>}
+                {animalEdit === undefined && <Modal.Title>Neues Tier anlegen</Modal.Title>}
                 {animalEdit !== undefined && <Modal.Title>Tier bearbeiten</Modal.Title>}
             </Modal.Header>
 
             <Modal.Body>
-                {showSelectAnimalType && (
-                    <div className="animal-type-selection">
-                        <div className="selection-label">Tierart auswählen:</div>
-                        <div className="animal-type-buttons">
+                <Form className="animal-form">
+                    <Form.Group className="mb-3">
+                        <Form.Label className="text-CreateAnimal">Tierart*:</Form.Label>
+                        <Form.Control
+                            as="select"
+                            name="animalType"
+                            value={animalTypeAnimal?.id || ""}
+                            onChange={handleChange}
+                            isInvalid={validationErrors.animalType !== undefined}
+                        >
+                            <option value="">Bitte auswählen</option>
                             {animaltypes.map((animaltype) => (
-                                <Button
-                                    key={animaltype.id}
-                                    variant="success"
-                                    onClick={() => handleSelectAnimalType(animaltype)}
-                                    className="animal-type-button"
-                                >
+                                <option key={animaltype.id} value={animaltype.id}>
                                     {animaltype.name}
-                                </Button>
+                                </option>
                             ))}
-                        </div>
-                    </div>
-                )}
-                {!showSelectAnimalType && <Form className="animal-form">
+                        </Form.Control>
+                        <Form.Control.Feedback type="invalid">{validationErrors.animalType}</Form.Control.Feedback>
+                    </Form.Group>
                     <Form.Group className="mb-3">
                         <Form.Label className="text-CreateAnimal">Tiername*:</Form.Label>
                         <Form.Control id="AnimalName" type="text" placeholder="z.B. Nala" name="name" onChange={handleChange} value={name} isInvalid={validationErrors.name !== undefined} />
@@ -602,13 +588,12 @@ export function AnimalDialog({ hideDialogNewAnimal, animalEdit }: CreateAnimalDi
                     }
                     <div>* = Pflichtfeld</div>
                 </Form>
-                }
             </Modal.Body>
 
             <Modal.Footer>
                 <Button variant="secondary" onClick={hideDialogNewAnimal}>Abbrechen</Button>
-                {!showSelectAnimalType && animalEdit === undefined && <Button variant="primary" onClick={handleSubmitAnimalDialog}>Tier anlegen</Button>}
-                {!showSelectAnimalType && animalEdit !== undefined && <Button variant="primary" onClick={handleSubmitAnimalDialog}>Speichern</Button>}
+                {animalEdit === undefined && <Button variant="primary" onClick={handleSubmitAnimalDialog}>Tier anlegen</Button>}
+                {animalEdit !== undefined && <Button variant="primary" onClick={handleSubmitAnimalDialog}>Speichern</Button>}
             </Modal.Footer>
         </Modal>;
     }
