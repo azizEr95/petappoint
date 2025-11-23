@@ -25,73 +25,86 @@
   .modal-footer {
     border-top: 1px solid var(--color-border);
     padding: var(--spacing-lg) var(--spacing-xl);
-    gap: var(--spacing-sm);
+    display: flex;
+    gap: var(--spacing-md);
 
     .btn {
+      flex: 1;
       padding: var(--spacing-sm) var(--spacing-xl);
       font-weight: 600;
-    }
-  }
-
-  .animal-type-selection {
-    .selection-label {
-      font-size: $font-size-base;
-      font-weight: 700;
-      color: var(--color-text-dark);
-      margin-bottom: var(--spacing-lg);
-      text-align: center;
-    }
-
-    .animal-type-buttons {
-      display: flex;
-      gap: var(--spacing-md);
-      justify-content: center;
-
-      .animal-type-button {
-        padding: var(--spacing-md) var(--spacing-xl);
-        font-weight: 600;
-        border-radius: var(--radius-md);
-        transition: all 0.2s;
-
-        &:hover {
-          transform: translateY(-2px);
-          box-shadow: var(--shadow-md);
-        }
-      }
+      white-space: nowrap;
     }
   }
 
   .animal-form {
+    .mb-3 {
+      margin-bottom: var(--spacing-lg) !important;
+    }
+
     .form-label {
       font-weight: 600;
       color: var(--color-text-dark);
-      margin-bottom: var(--spacing-xs);
+      margin-bottom: var(--spacing-sm);
+      font-size: $font-size-base;
     }
 
     .form-control, .form-select {
       border: 2px solid var(--color-border);
       border-radius: var(--radius-md);
-      padding: var(--spacing-sm) var(--spacing-md);
-      transition: all 0.2s;
+      padding: 0.75rem var(--spacing-md);
+      font-size: $font-size-base;
+      transition: all 0.2s ease;
+      background: white;
 
       &:focus {
         border-color: var(--color-primary);
-        box-shadow: 0 0 0 0.2rem rgba(26, 93, 58, 0.15);
+        box-shadow: 0 0 0 3px rgba(26, 93, 58, 0.1);
+        outline: none;
+      }
+
+      &::placeholder {
+        color: var(--color-text-muted);
       }
     }
 
     .btn-group {
       width: 100%;
+      box-shadow: var(--shadow-sm);
+      border-radius: var(--radius-md);
+      overflow: hidden;
 
       .btn {
         flex: 1;
-        padding: var(--spacing-sm);
+        padding: 0.75rem var(--spacing-md);
+        font-weight: 600;
+        border: 2px solid var(--color-primary);
+        transition: all 0.2s ease;
+
+        &.btn-outline-primary {
+          color: var(--color-text-light);
+          background: white;
+          border-color: var(--color-border);
+
+          &:hover {
+            background: var(--color-primary-lightest);
+            border-color: var(--color-primary);
+            color: var(--color-primary-dark);
+          }
+
+          &.active {
+            background: var(--color-primary);
+            border-color: var(--color-primary);
+            color: white;
+            font-weight: 700;
+          }
+        }
       }
     }
 
     .text-muted {
       font-size: $font-size-sm;
-      font-style: italic;
+      color: var(--color-text-muted);
+      margin-bottom: var(--spacing-sm);
     }
   }
 }
