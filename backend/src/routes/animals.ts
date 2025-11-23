@@ -66,6 +66,18 @@ animalsRouter.put('/:animalId',
     }
 );
 
+animalsRouter.delete('/:animalId',
+    async (req, res) => {
+        const animalId = parseInt(req.params.animalId);
+        try {
+            await animalService.delete(animalId);
+            res.sendStatus(204);
+        } catch (error) {
+            res.sendStatus(500);
+        }
+    }
+)
+
 animalsRouter.get('/:animalId/races',
     async (req, res) => {
         const animalId = parseInt(req.params.animalId);
@@ -92,6 +104,18 @@ animalsRouter.post('/:animalId/races',
                 animalraceids: animalRaceData.data.animalraceids
             });
             res.status(201).send(animalRace);
+        } catch (error) {
+            res.sendStatus(500);
+        }
+    }
+)
+
+animalsRouter.delete('/:animalId/races',
+    async (req, res) => {
+        const animalId = parseInt(req.params.animalId);
+        try {
+            await animalHasRacesService.deleteAllRacesFromAnimal(animalId);
+            res.status(204);
         } catch (error) {
             res.sendStatus(500);
         }

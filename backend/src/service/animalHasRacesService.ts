@@ -56,6 +56,14 @@ export const animalHasRacesService = {
     });
   },
 
+  async deleteAllRacesFromAnimal(animalId: number): Promise<void> {
+    await prisma.animal_has_races.deleteMany({
+      where: {
+        fk_animalid: animalId
+      },
+    });
+  },
+
   async exists(data: animal_has_races): Promise<boolean> {
     const association = await prisma.animal_has_races.findUnique({
       where: {
