@@ -81,8 +81,6 @@ veterinaryPracticeRouter.get('/:id/appointments/available',
         }
 
         const parsedFilter = AppointmentFilterSchema.safeParse(req.query);
-        console.log(parsedFilter.data);
-        console.log(parsedFilter.error);
         const availableAppointments: AppointmentsType[] = await appointmentService.getAvailableAppointmentsForPractice(id, parsedFilter.data);
         return res.send(availableAppointments);
     }
