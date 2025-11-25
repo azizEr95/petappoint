@@ -1,6 +1,6 @@
 import { prisma } from "../singletonPC";
 import { appointments } from "../../generated/prisma";
-import { AppointmentsCreateType, AppointmentsType, ServiceType } from "vetlib-shared/schemas/ZodSchemas";
+import { AppointmentFilterType, AppointmentsCreateType, AppointmentsType, ServiceType } from "vetlib-shared/schemas/ZodSchemas";
 import { animalService } from "./animalService";
 
 export const appointmentService = {
@@ -134,7 +134,7 @@ export const appointmentService = {
     }
   },
 
-  async getAppointmentsByDateRange(startDate: Date, endDate: Date): Promise<AppointmentsType[]> {
+  async getAppointmentsByDateRange(startDate: Date, endDate: Date, filter?: AppointmentFilterType): Promise<AppointmentsType[]> {
     const found = await prisma.appointments.findMany({
       include: {
         animals: true,
@@ -154,6 +154,34 @@ export const appointmentService = {
           gte: startDate,
           lte: endDate,
         },
+        // FILTER
+        ... (filter && filter.animalTypeIds && {
+          veterinarypractices: {
+            veterinaries: {
+              some: {
+                veterinary_can_treat_animaltype: {
+                  some: {
+                    fk_animaltypeid: { in: filter.animalTypeIds }
+                  }
+                }
+              }
+            }
+          }
+        }),
+        ... (filter && filter.serviceTypeIds && {
+          veterinarypractices: {
+            veterinaries: {
+              some: {
+                veterinary_has_service: {
+                  some: {
+                    fk_serviceid: { in: filter.serviceTypeIds }
+                  }
+                }
+              }
+            }
+          }
+        }),
+        //
       },
     });
 
@@ -199,9 +227,39 @@ export const appointmentService = {
     }));
   },
 
-  async getAppointmentsByVeterinary(veterinaryId: number): Promise<AppointmentsType[]> {
+  async getAppointmentsByVeterinary(veterinaryId: number, filter?: AppointmentFilterType): Promise<AppointmentsType[]> {
     const found = await prisma.appointments.findMany({
-      where: { fk_veterinaryid: veterinaryId },
+      where: {
+        fk_veterinaryid: veterinaryId,
+        // FILTER
+        ... (filter && filter.animalTypeIds && {
+          veterinarypractices: {
+            veterinaries: {
+              some: {
+                veterinary_can_treat_animaltype: {
+                  some: {
+                    fk_animaltypeid: { in: filter.animalTypeIds }
+                  }
+                }
+              }
+            }
+          }
+        }),
+        ... (filter && filter.serviceTypeIds && {
+          veterinarypractices: {
+            veterinaries: {
+              some: {
+                veterinary_has_service: {
+                  some: {
+                    fk_serviceid: { in: filter.serviceTypeIds }
+                  }
+                }
+              }
+            }
+          }
+        }),
+        //
+      },
       include: {
         animals: true,
         services: true,
@@ -259,51 +317,52 @@ export const appointmentService = {
     }));
   },
 
-  async getServicesForPractice(veterinaryPracticeId: number): Promise<ServiceType[]> {
-    const services = await prisma.veterinaries.findMany({
-      select: {
-        veterinary_has_service: {
-          select: {
-            services: true
+  async getForPractice(veterinaryPracticeId: number, filter?: AppointmentFilterType): Promise<AppointmentsType[]> {
+    const found = await prisma.appointments.findMany({
+      include: {
+        animals: true,
+        services: true,
+        veterinaries: true,
+        veterinarypractices: {
+          include: {
+            addresses: true
+          },
+          omit: {
+            password: true
           }
         }
       },
       where: {
-        fk_veterinarypractice: veterinaryPracticeId
-      }
-    });
-
-    const flatServices = services.flatMap(x => x.veterinary_has_service).flatMap(x => x.services);
-
-    // check that every service ist only one time in the array
-    const uniqueServicesMap = new Map<number, ServiceType>();
-    const serviceArray: ServiceType[] = []
-
-    for (const service of flatServices) {
-        if (service && !uniqueServicesMap.has(service.id)) {
-            uniqueServicesMap.set(service.id, service as ServiceType);
-            serviceArray.push(service);
-        }
-    }
-    return serviceArray;
-  },
-
-  async getForPractice(veterinaryPracticeId: number): Promise<AppointmentsType[]> {
-    const found = await prisma.appointments.findMany({
-      include: {
-        animals: true,
-        services: true,
-        veterinaries: true,
-        veterinarypractices: {
-          include: {
-            addresses: true
-          },
-          omit: {
-            password: true
+        fk_veterinarypracticeid: veterinaryPracticeId,
+        // FILTER
+        ... (filter && filter.animalTypeIds && {
+          veterinarypractices: {
+            veterinaries: {
+              some: {
+                veterinary_can_treat_animaltype: {
+                  some: {
+                    fk_animaltypeid: { in: filter.animalTypeIds }
+                  }
+                }
+              }
+            }
           }
-        }
+        }),
+        ... (filter && filter.serviceTypeIds && {
+          veterinarypractices: {
+            veterinaries: {
+              some: {
+                veterinary_has_service: {
+                  some: {
+                    fk_serviceid: { in: filter.serviceTypeIds }
+                  }
+                }
+              }
+            }
+          }
+        }),
+        //
       },
-      where: { fk_veterinarypracticeid: veterinaryPracticeId },
     });
 
     return found.map(foundAppointment => ({
@@ -348,7 +407,7 @@ export const appointmentService = {
     }));
   },
 
-  async getAvailableAppointmentsForPractice(veterinaryPracticeId: number): Promise<AppointmentsType[]> {
+  async getAvailableAppointmentsForPractice(veterinaryPracticeId: number, filter?: AppointmentFilterType): Promise<AppointmentsType[]> {
     const found = await prisma.appointments.findMany({
       include: {
         animals: true,
@@ -363,7 +422,38 @@ export const appointmentService = {
           }
         }
       },
-      where: { fk_veterinarypracticeid: veterinaryPracticeId, fk_animalid: null },
+      where: {
+        fk_veterinarypracticeid: veterinaryPracticeId,
+        fk_animalid: null,
+        // FILTER
+        ... (filter && filter.animalTypeIds && {
+          veterinarypractices: {
+            veterinaries: {
+              some: {
+                veterinary_can_treat_animaltype: {
+                  some: {
+                    fk_animaltypeid: { in: filter.animalTypeIds }
+                  }
+                }
+              }
+            }
+          }
+        }),
+        ... (filter && filter.serviceTypeIds && {
+          veterinarypractices: {
+            veterinaries: {
+              some: {
+                veterinary_has_service: {
+                  some: {
+                    fk_serviceid: { in: filter.serviceTypeIds }
+                  }
+                }
+              }
+            }
+          }
+        }),
+        //
+      },
     });
 
     return found.map(foundAppointment => ({
@@ -408,7 +498,7 @@ export const appointmentService = {
     }));
   },
 
-  async getPastAppointmentsForPerson(personId: number): Promise<AppointmentsType[]> {
+  async getPastAppointmentsForPerson(personId: number, filter?: AppointmentFilterType): Promise<AppointmentsType[]> {
     const now = new Date();
     const animals = await animalService.getByPersonId(personId);
 
@@ -437,7 +527,35 @@ export const appointmentService = {
         },
         starttime: {
           lt: now // less than
-        }
+        },
+        // FILTER
+        ... (filter && filter.animalTypeIds && {
+          veterinarypractices: {
+            veterinaries: {
+              some: {
+                veterinary_can_treat_animaltype: {
+                  some: {
+                    fk_animaltypeid: { in: filter.animalTypeIds }
+                  }
+                }
+              }
+            }
+          }
+        }),
+        ... (filter && filter.serviceTypeIds && {
+          veterinarypractices: {
+            veterinaries: {
+              some: {
+                veterinary_has_service: {
+                  some: {
+                    fk_serviceid: { in: filter.serviceTypeIds }
+                  }
+                }
+              }
+            }
+          }
+        }),
+        //
       },
     });
 
@@ -483,7 +601,7 @@ export const appointmentService = {
     }));
   },
 
-  async getFutureAppointmentsForPerson(personId: number): Promise<AppointmentsType[]> {
+  async getFutureAppointmentsForPerson(personId: number, filter?: AppointmentFilterType): Promise<AppointmentsType[]> {
     const now = new Date();
     const animals = await animalService.getByPersonId(personId);
 
@@ -512,7 +630,35 @@ export const appointmentService = {
         },
         starttime: {
           gt: now // greater than
-        }
+        },
+        // FILTER
+        ... (filter && filter.animalTypeIds && {
+          veterinarypractices: {
+            veterinaries: {
+              some: {
+                veterinary_can_treat_animaltype: {
+                  some: {
+                    fk_animaltypeid: { in: filter.animalTypeIds }
+                  }
+                }
+              }
+            }
+          }
+        }),
+        ... (filter && filter.serviceTypeIds && {
+          veterinarypractices: {
+            veterinaries: {
+              some: {
+                veterinary_has_service: {
+                  some: {
+                    fk_serviceid: { in: filter.serviceTypeIds }
+                  }
+                }
+              }
+            }
+          }
+        }),
+        //
       },
     });
 

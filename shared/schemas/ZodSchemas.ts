@@ -1,5 +1,22 @@
 import { z } from "zod";
 
+const ArrayOfIDs = z.union([
+    z.string(),
+    z.array(z.string())
+]).optional()
+    .transform((val) => {
+        if (!val) {
+            return undefined;
+        }
+
+        const array = Array.isArray(val) ? val : val.split(',');
+        return array
+            .map(s => s.trim())
+            .filter(s => s.length > 0)
+            .map(Number)
+            .filter(n => !isNaN(n) && Number.isInteger(n));
+    });
+
 //Animalgroup:
 export const AnimalGroupSchema = z.object({
     id: z.number().int(),
@@ -115,7 +132,7 @@ export const PersonsSchema = z.object({
     phone: z.string().min(5).max(20),
     email: z.email().max(100),
     password: z.string().min(6).max(255),
-    
+
 });
 
 export const PersonsCreateSchema = PersonsSchema.omit({
@@ -169,13 +186,6 @@ export const VeterinaryPracticeCreateSchema = VeterinaryPracticeSchema.omit({
 export type VeterinaryPracticesCreateType = z.infer<typeof VeterinaryPracticeCreateSchema>;
 export type VeterinaryPracticesType = z.infer<typeof VeterinaryPracticeSchema>;
 
-export const VeterinarySearchQuerySchema = z.object({
-    name: z.string().default(''),
-    address: z.string().default(''),
-});
-
-export type VeterinarySearchQueryType = z.infer<typeof VeterinarySearchQuerySchema>;
-
 //Veterinarians:
 export const VeterinariansSchema = z.object({
     id: z.number().int(), //ist identisch zur Personen ID
@@ -222,12 +232,20 @@ export type AppointmentsCreateType = z.infer<typeof AppointmentsCreateSchema>;
 export type AppointmentsType = z.infer<typeof AppointmentsSchema>;
 
 export const AppointmentFilterSchema = z.object({
-    filterAnimalType: AnimalTypeSchema.nullable(),
-    filterServiceType: z.array(ServiceSchema).nullable(),
+    animalTypeIds: ArrayOfIDs.optional(),
+    serviceTypeIds: ArrayOfIDs.optional(),
 });
 
 export type AppointmentFilterType = z.infer<typeof AppointmentFilterSchema>;
 
-
 export const AnimalUpdateSchema = AnimalsSchema;
 export type AnimalUpdateType = z.infer<typeof AnimalUpdateSchema>;
+
+export const VeterinaryPracticeSearchQuerySchema = z.object({
+    name: z.string().default(''),
+    address: z.string().default(''),
+    animalTypeIds: ArrayOfIDs,
+    serviceTypeIds: ArrayOfIDs,
+});
+
+export type VeterinaryPracticeSearchQueryType = z.infer<typeof VeterinaryPracticeSearchQuerySchema>;

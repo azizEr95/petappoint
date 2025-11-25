@@ -85,3 +85,21 @@ export function compareDates(date1: Date, date2: Date): number {
         return 0 // gleicher Tag
     }
 }
+
+/**
+ * makes a string with all Date Infos (except time) from an Date Object
+ * 
+ * @param date date to be converted
+ * @returns string from this date
+ */
+export function getDateStringFromDate(date: Date): string {
+    const monthAsNumber = date.getMonth() + 1;
+    let monthAsString;
+    if (monthAsNumber <= 9) {
+        monthAsString = "0" + monthAsNumber;
+    } else {
+        monthAsString = monthAsNumber;
+    }
+    const dateAsString = date.getFullYear() + "-" + monthAsString + "-" + date.getDate();
+    return dateAsString;
+}

@@ -57,6 +57,23 @@ export const editAnimal = async (animalID: number, animal: AnimalsCreateType): P
   return parseAnimal(data);
 }
 
+export const deleteAnimal = async (animalID: number): Promise<void> => {
+  const requestOptions = {
+      method: 'DELETE',
+      headers: {
+          'Content-Type': 'application/json',
+      }
+  }
+
+  const res = await fetch(
+      import.meta.env.VITE_API_URL + '/animals/' + animalID, requestOptions
+  )
+  if (!res.ok) {
+      throw new Error('Failed to fetch deleteAnimal')
+  }
+  return;
+}
+
 /*
  * safeParse animals
  */

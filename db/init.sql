@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS persons(
   lastName VARCHAR(60) NOT NULL,
   sex sexes NOT NULL,
   dateOfBirth DATE NOT NULL,
-  fk_address INTEGER NOT NULL REFERENCES addresses(id),
+  fk_address INTEGER NOT NULL REFERENCES addresses(id) ON DELETE CASCADE,
   phone VARCHAR(20) NOT NULL,
   email VARCHAR(100) UNIQUE NOT NULL,
   password VARCHAR(255) NOT NULL
@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS animaltypes(
 CREATE TABLE IF NOT EXISTS animalraces(
   id SERIAL PRIMARY KEY,
   name VARCHAR(100) NOT NULL,
-  fk_animalTypeId INTEGER NOT NULL REFERENCES animaltypes(id)
+  fk_animalTypeId INTEGER NOT NULL REFERENCES animaltypes(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS animalgroup(
@@ -72,19 +72,19 @@ CREATE TABLE IF NOT EXISTS animals(
   isCastrated BOOLEAN NOT NULL,
   lifestyleIsIndoors BOOLEAN NOT NULL DEFAULT TRUE,
   sex sexes NOT NULL DEFAULT 'notknown',
-  fk_animalTypeId INTEGER NOT NULL REFERENCES animaltypes(id),
-  fk_animalGroupId INTEGER REFERENCES animalgroup(id)
+  fk_animalTypeId INTEGER NOT NULL REFERENCES animaltypes(id) ON DELETE CASCADE,
+  fk_animalGroupId INTEGER REFERENCES animalgroup(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS animal_has_races(
-  fk_animalId INTEGER NOT NULL REFERENCES animals(id),
-  fk_animalRaceId INTEGER NOT NULL REFERENCES animalraces(id),
+  fk_animalId INTEGER NOT NULL REFERENCES animals(id) ON DELETE CASCADE,
+  fk_animalRaceId INTEGER NOT NULL REFERENCES animalraces(id) ON DELETE CASCADE,
   PRIMARY KEY (fk_animalId, fk_animalRaceId)
 );
 
 CREATE TABLE IF NOT EXISTS person_has_animal(
   fk_personId INTEGER NOT NULL REFERENCES persons(id) ON DELETE CASCADE, /*wenn Person geloescht wird, wird die Zuweisung in dieser Tabelle auch geloescht (Tier wird nicht geloescht)*/
-  fk_animalId INTEGER NOT NULL REFERENCES animals(id),
+  fk_animalId INTEGER NOT NULL REFERENCES animals(id) ON DELETE CASCADE,
   PRIMARY KEY (fk_personId, fk_animalId)
 );
 
@@ -97,30 +97,30 @@ CREATE TABLE IF NOT EXISTS veterinarypractices(
   password VARCHAR(255) NOT NULL,
   website VARCHAR(150),
   info TEXT,
-  fk_addressId INTEGER NOT NULL REFERENCES addresses(id)
+  fk_addressId INTEGER NOT NULL REFERENCES addresses(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS veterinaries(
-  id INTEGER PRIMARY KEY REFERENCES persons(id),
+  id INTEGER PRIMARY KEY REFERENCES persons(id) ON DELETE CASCADE,
   infoEmail VARCHAR(100),
-  fk_veterinarypractice INTEGER REFERENCES veterinarypractices(id)
+  fk_veterinarypractice INTEGER REFERENCES veterinarypractices(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS services(
   id SERIAL PRIMARY KEY,
-  name VARCHAR(100) NOT NULL
+  name VARCHAR(100) NOT NULL UNIQUE
 );
 
 CREATE TABLE IF NOT EXISTS veterinary_has_service(
   fk_veterinaryId INTEGER NOT NULL REFERENCES veterinaries(id) ON DELETE CASCADE,
-  fk_serviceId INTEGER NOT NULL REFERENCES services(id),
+  fk_serviceId INTEGER NOT NULL REFERENCES services(id) ON DELETE CASCADE,
   notiz TEXT,
   PRIMARY KEY (fk_veterinaryId, fk_serviceId)
 );
 
 CREATE TABLE IF NOT EXISTS veterinary_can_treat_animaltype(
   fk_veterinaryId INTEGER NOT NULL REFERENCES veterinaries(id) ON DELETE CASCADE,
-  fk_animaltypeId INTEGER NOT NULL REFERENCES animaltypes(id),
+  fk_animaltypeId INTEGER NOT NULL REFERENCES animaltypes(id) ON DELETE CASCADE,
   PRIMARY KEY (fk_veterinaryId, fk_animaltypeId)
 );
 
@@ -128,16 +128,16 @@ CREATE TABLE IF NOT EXISTS appointments(
   id SERIAL PRIMARY KEY,
   startTime TIMESTAMP NOT NULL,
   endTime TIMESTAMP NOT NULL,
-  fk_animalId INTEGER REFERENCES animals(id),
-  fk_veterinaryId INTEGER NOT NULL REFERENCES veterinaries(id),
-  fk_veterinaryPracticeId INTEGER NOT NULL REFERENCES veterinarypractices(id),
-  fk_serviceId INTEGER REFERENCES services(id) DEFAULT NULL,
+  fk_animalId INTEGER REFERENCES animals(id) ON DELETE CASCADE,
+  fk_veterinaryId INTEGER NOT NULL REFERENCES veterinaries(id) ON DELETE CASCADE,
+  fk_veterinaryPracticeId INTEGER NOT NULL REFERENCES veterinarypractices(id) ON DELETE CASCADE,
+  fk_serviceId INTEGER REFERENCES services(id) ON DELETE CASCADE DEFAULT NULL,
   notiz TEXT
 );
 
 CREATE TABLE IF NOT EXISTS appointment_has_service(
-  fk_appointmentId INTEGER NOT NULL REFERENCES appointments(id),
-  fk_serviceId INTEGER NOT NULL REFERENCES services(id),
+  fk_appointmentId INTEGER NOT NULL REFERENCES appointments(id) ON DELETE CASCADE,
+  fk_serviceId INTEGER NOT NULL REFERENCES services(id) ON DELETE CASCADE,
   PRIMARY KEY (fk_appointmentId, fk_serviceId)
 );
 
@@ -152,8 +152,8 @@ CREATE TABLE IF NOT EXISTS reviews(
 );
 
 CREATE TABLE IF NOT EXISTS appointment_has_review(
-  fk_appointmentId INTEGER NOT NULL REFERENCES appointments(id),
-  fk_reviewId INTEGER NOT NULL REFERENCES reviews(id),
+  fk_appointmentId INTEGER NOT NULL REFERENCES appointments(id) ON DELETE CASCADE,
+  fk_reviewId INTEGER NOT NULL REFERENCES reviews(id) ON DELETE CASCADE,
   PRIMARY KEY (fk_appointmentId, fk_reviewId)
 );
 
@@ -167,8 +167,8 @@ CREATE TABLE IF NOT EXISTS vaccinations(
 CREATE TABLE IF NOT EXISTS animal_has_vaccination(
   id SERIAL PRIMARY KEY,
   dateOfVaccination DATE NOT NULL,
-  fk_animalId INTEGER NOT NULL REFERENCES animals(id),
-  fk_vaccinationId INTEGER NOT NULL REFERENCES vaccinations(id)
+  fk_animalId INTEGER NOT NULL REFERENCES animals(id) ON DELETE CASCADE,
+  fk_vaccinationId INTEGER NOT NULL REFERENCES vaccinations(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS medications(
@@ -179,22 +179,22 @@ CREATE TABLE IF NOT EXISTS medications(
 /* TODO: NICHT FERTIG */
 CREATE TABLE IF NOT EXISTS recipes(
   id SERIAL PRIMARY KEY,
-  fk_animalId INTEGER NOT NULL REFERENCES animals(id),
-  fk_medicationId INTEGER NOT NULL REFERENCES medications(id),
+  fk_animalId INTEGER NOT NULL REFERENCES animals(id) ON DELETE CASCADE,
+  fk_medicationId INTEGER NOT NULL REFERENCES medications(id) ON DELETE CASCADE,
   starting DATE NOT NULL,
   endDate DATE NOT NULL,
   instructions TEXT
 );
 
 CREATE TABLE IF NOT EXISTS veterinary_has_invitation(
-  fk_veterinaryId INTEGER NOT NULL REFERENCES veterinaries(id),
-  fk_veterinarypracticeId INTEGER NOT NULL REFERENCES veterinarypractices(id),
+  fk_veterinaryId INTEGER NOT NULL REFERENCES veterinaries(id) ON DELETE CASCADE,
+  fk_veterinarypracticeId INTEGER NOT NULL REFERENCES veterinarypractices(id) ON DELETE CASCADE,
   dateOfInvitation DATE NOT NULL,
   PRIMARY KEY (fk_veterinaryId, fk_veterinarypracticeId)
 );
 
 CREATE TABLE IF NOT EXISTS person_has_favorized_veterinarypractice(
-  fk_personId INTEGER NOT NULL REFERENCES persons(id),
-  fk_veterinaryPracticeId INTEGER NOT NULL REFERENCES veterinarypractices(id),
+  fk_personId INTEGER NOT NULL REFERENCES persons(id) ON DELETE CASCADE,
+  fk_veterinaryPracticeId INTEGER NOT NULL REFERENCES veterinarypractices(id) ON DELETE CASCADE,
   PRIMARY KEY (fk_personId, fk_veterinaryPracticeId)
 );

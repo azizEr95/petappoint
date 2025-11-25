@@ -132,17 +132,6 @@ VALUES
   ('Zahnextraktion'),
   ('Zahnkontrolle'),
   ('Physiotherapie'),
-  ('Notfalltermin'),
-  ('Wundversorgung'),
-  ('Untersuchung'),
-  ('Zahnextraktion'),
-  ('Zahnkontrolle'),
-  ('Physiotherapie'),
-  ('Notfalltermin'),
-  ('Untersuchung'),
-  ('Zahnextraktion'),
-  ('Zahnkontrolle'),
-  ('Physiotherapie'),
   ('Notfalltermin');
 
 -- Termine
