@@ -1,39 +1,28 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { SearchField } from '../components/common/SearchField'
 import { VeterinaryPracticeList } from '../components/practice/VeterinaryPracticeList'
-import { VeterinaryPracticeSearchQuerySchema, type AppointmentFilterType, type VeterinaryPracticeSearchQueryType } from '../../../shared/schemas/ZodSchemas'
+import { type AppointmentFilterType, type VeterinaryPracticeSearchQueryType } from '../../../shared/schemas/ZodSchemas'
 import { SearchFilter } from '../components/common/SearchFilter'
 import { useState } from 'react'
-import { object } from 'zod'
 
-export type VeterinaryPracticeSearch = {
-  name: string | undefined
-  address: string | undefined,
-  animalTypeIds: string | undefined,
-  serviceTypeIds: string | undefined
+export type VeterinaryPracticeSearch = { // search, everything has to be a string
+  name: string
+  address: string,
+  animalType: string,
+  serviceType: string
 }
 
 export const Route = createFileRoute('/search')({
   validateSearch: (search: VeterinaryPracticeSearch): VeterinaryPracticeSearch => {
-    console.log(typeof search.serviceTypeIds)
-    let betterString = String(search.serviceTypeIds ?? '')
-    const cleanAnimalIds = betterString.replace(/"/g, '');
-    return {
-      name: search.name,
-      address: search.address,
-      animalTypeIds: search.animalTypeIds,
-      serviceTypeIds: cleanAnimalIds
-    };
+    return search;
   },
   component: SearchComponent,
 })
 
 function SearchComponent() {
-  const { name, address, animalTypeIds, serviceTypeIds } = Route.useSearch();
- 
-  const [filterServiceType, setFilterServiceType] = useState<number[]>(serviceTypeIds === undefined ? [] : stringToArray(serviceTypeIds.toString()));
-  const [filterAnimalType, setFilterAnimalType] = useState<number[]>(animalTypeIds === undefined ? [] : stringToArray(animalTypeIds.toString()));
-  console.log(filterServiceType)
+  const { name, address, animalType, serviceType } = Route.useSearch();
+  const [filterServiceType, setFilterServiceType] = useState<number[]>(serviceType === undefined ? [] : stringToArray(serviceType.toString()));
+  const [filterAnimalType, setFilterAnimalType] = useState<number[]>(animalType === undefined ? [] : stringToArray(animalType.toString()));
 
   const filterOptions: AppointmentFilterType = {
     animalTypeIds: filterAnimalType,
@@ -41,12 +30,11 @@ function SearchComponent() {
   }
 
   const searchFilter: VeterinaryPracticeSearchQueryType = {
-    name: name ?? "",
-    address: address ?? "",
+    name: name,
+    address: address,
     animalTypeIds: filterAnimalType,
     serviceTypeIds: filterServiceType
   }
-  console.log(filterOptions)
 
   return (
     <>
@@ -132,6 +120,9 @@ function SearchComponent() {
 }
 
 function stringToArray(text: string): number[] {
+  if(text === undefined){
+    return [];
+  }
 
   const array = Array.isArray(text) ? text : text.split('-');
   return array

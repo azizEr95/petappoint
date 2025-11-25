@@ -1,22 +1,18 @@
 import { StrictMode } from 'react'
 import ReactDOM from 'react-dom/client'
 import { RouterProvider, createRouter } from '@tanstack/react-router'
-
-// Import the generated route tree
-import { routeTree } from './routeTree.gen'
-
+import { routeTree } from './routeTree.gen' // Import the generated route tree
 import './styles/main.scss'
 import reportWebVitals from './reportWebVitals.ts'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-
 
 const customStringifySearch = (search: Record<string, any>) => {
   const params = new URLSearchParams()
 
   for (const key in search) {
     const value = search[key]
-    console.log(value)
-    if (value === "" || value === undefined || value === null) {
+
+    if (value === undefined || value === null) {
         continue
     }
     
@@ -24,7 +20,6 @@ const customStringifySearch = (search: Record<string, any>) => {
         params.set(key, value)
     }
   }
-
   return "?" + params.toString()
 }
 
