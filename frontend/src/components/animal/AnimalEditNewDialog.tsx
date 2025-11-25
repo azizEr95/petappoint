@@ -1,35 +1,38 @@
 import { useEffect, useMemo, useState, type ChangeEvent } from "react";
 import { Button, Form, Modal, ToggleButton, ToggleButtonGroup } from "react-bootstrap";
-import { type AnimalracesType, type AnimalsCreateType, type AnimalsType, type AnimalTypeType, type AnimalUpdateType, type sexesType } from "../../../shared/schemas/ZodSchemas";
+import { type AddRacesToAnimalType, type AnimalracesType, type AnimalsCreateType, type AnimalsType, type AnimalTypeType, type AnimalUpdateType, type sexesType } from "../../../../shared/schemas/ZodSchemas";
 import Select, { type MultiValue } from 'react-select';
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { getAllAnimalTypes } from "../api/AnimalTypeAPI";
-import { createAnimal, editAnimal } from "../api/AnimalsAPI";
-import { getRacesByAnimalID, getRacesByAnimalTypeID } from "../api/AnimalRacesAPI";
-import { compareDates } from "../utils/DateToStringFormat";
-import '../styles/components/AnimalDialog.scss';
+import { getAllAnimalTypes } from "../../api/AnimalTypeAPI";
+import { createAnimal, editAnimal } from "../../api/AnimalsAPI";
+import { addRacesToAnimal, deleteAllRacesFromAnimal, getRacesByAnimalID, getRacesByAnimalTypeID } from "../../api/AnimalRacesAPI";
+import { compareDates, getDateStringFromDate } from "../../utils/DateToStringFormat";
+import '../../styles/components/AnimalDialog.scss';
 
-type CreateAnimalDialogProps = {
+type AnimalEditNewDialogProps = {
     hideDialogNewAnimal: () => void,
     animalEdit: AnimalsType | undefined
 }
 
 // visibility from this component has to be handled from the parent component
-export function AnimalDialog({ hideDialogNewAnimal, animalEdit }: CreateAnimalDialogProps) {
+export function AnimalEditNewDialog({ hideDialogNewAnimal, animalEdit }: AnimalEditNewDialogProps) {
     const [animalTypeAnimal, setAnimalTypeAnimal] = useState<AnimalTypeType | undefined>(undefined);
     // variables for Modal Dialog NewAnimal
     const [name, setName] = useState("");
     const [dateOfBirth, setDateOfBirth] = useState("");
     const [dateOfBirthIsExact, setDateOfBirthIsExact] = useState<"" | "Yes" | "No">("Yes");
     const [ageInMonth, setAgeInMonth] = useState(0); //is only used if dateOfBirthIsExact is No/false
+    const [dateOfBirthFromAgeInMonth, setDateOfBirthFromAgeInMonth] = useState("");
     const [sex, setSexes] = useState<sexesType | undefined>(undefined);
     const [weight, setWeight] = useState("");
     const [height, setHeight] = useState("");
     const [castrated, setCastrated] = useState<"" | "castrated" | "notCastrated">("");
     const [lifestyle, setLifestyle] = useState<"" | "lifestyleIsIndoor" | "lifestyleIsNotIndoor">("");
     const [selectedRaces, setSelectedRaces] = useState<MultiValue<{ value: AnimalracesType, label: string }>>([]);
+    const [racesIdNumbers] = useState<number[]>([]);
     const [dateOfDeath, setDateOfDeath] = useState("");
     const [clickedSaveSubmit, setClickedSaveSubmit] = useState(false);
+    const [errorText, setErrorText] = useState("");
     const [validationErrors, setValidationErrors] = useState<{
         name: string | undefined,
         dateOfBirth: string | undefined,
@@ -54,6 +57,22 @@ export function AnimalDialog({ hideDialogNewAnimal, animalEdit }: CreateAnimalDi
         animalType: undefined
     });
 
+    // get all Animaltypes 
+    const { isSuccess: isSuccessAnimalType, data: dataAnimalType } = useQuery<Array<AnimalTypeType>>({
+        queryKey: ['allAnimaltypes'],
+        queryFn: () => getAllAnimalTypes(),
+        retry: false
+    });
+
+    // get all Races from these Animal if it is an edit
+    const { isSuccess: isSuccessRacesEdit, data: dataRacesEdit } = useQuery<Array<AnimalracesType>>({
+        queryKey: ['Animalraces', animalEdit?.id],
+        queryFn: () => getRacesByAnimalID(animalEdit?.id),
+        retry: false,
+        enabled: animalEdit !== undefined,
+        staleTime: 0
+    });
+
     // initialize if it is an edit dialog
     useEffect(() => {
         if (animalEdit !== undefined) {
@@ -68,20 +87,12 @@ export function AnimalDialog({ hideDialogNewAnimal, animalEdit }: CreateAnimalDi
             setName(animalEdit.name);
             if (animalEdit.dateofbirth !== null) {
                 if (animalEdit.dateofbirthisexact) {
-                    setDateOfBirthIsExact("Yes");
-
-                    const monthAsNumber = animalEdit.dateofbirth.getMonth() + 1;
-                    let monthAsString;
-                    if (monthAsNumber <= 9) {
-                        monthAsString = "0" + monthAsNumber;
-                    } else {
-                        monthAsString = monthAsNumber;
-                    }
-                    const dateAsString = animalEdit.dateofbirth.getFullYear() + "-" + monthAsString + "-" + animalEdit.dateofbirth.getDate();
-                    setDateOfBirth(dateAsString);
+                    setDateOfBirthIsExact("Yes"),
+                        setDateOfBirth(getDateStringFromDate(animalEdit.dateofbirth));
                 } else {
                     const now = new Date();
                     setDateOfBirthIsExact("No");
+                    setDateOfBirthFromAgeInMonth(getDateStringFromDate(animalEdit.dateofbirth));
                     const yearDiff = now.getFullYear() - animalEdit.dateofbirth.getFullYear();
                     const monthDiff = now.getMonth() - animalEdit.dateofbirth.getMonth();
                     const ageMonth = 12 * yearDiff + monthDiff;
@@ -123,52 +134,37 @@ export function AnimalDialog({ hideDialogNewAnimal, animalEdit }: CreateAnimalDi
                 setLifestyle("lifestyleIsNotIndoor");
             }
             if (animalEdit.timeofdeath !== null) {
-                const monthAsNumber = animalEdit.timeofdeath.getMonth() + 1;
-                let monthAsString;
-                if (monthAsNumber <= 9) {
-                    monthAsString = "0" + monthAsNumber;
-                } else {
-                    monthAsString = monthAsNumber;
-                }
-                const dateAsString = animalEdit.timeofdeath.getFullYear() + "-" + monthAsString + "-" + animalEdit.timeofdeath.getDate();
-                setDateOfDeath(dateAsString);
-            }
-
-            if (isSuccessRacesEdit) {
-                const initialSelectedOptions = dataRacesEdit.map(race => ({
-                    value: race,
-                    label: race.name,
-                }));
-                setSelectedRaces(initialSelectedOptions);
+                setDateOfDeath(getDateStringFromDate(animalEdit.timeofdeath));
             }
         }
-    }, []);
+    }, [isSuccessAnimalType]);
+
+    useEffect(() => {
+        if (animalEdit !== undefined && isSuccessRacesEdit) {
+            const initialSelectedOptions = dataRacesEdit.map(race => ({
+                value: race,
+                label: race.name,
+            }));
+            setSelectedRaces(initialSelectedOptions);
+        }
+    }, [isSuccessRacesEdit, dataRacesEdit])
 
     useEffect(() => {
         validate(false);
     }, [name, dateOfBirth, dateOfBirthIsExact, ageInMonth, sex, weight, height, castrated, lifestyle, animalTypeAnimal]);
 
-    // get all Animaltypes 
-    const { isSuccess: isSuccessAnimalType, data: dataAnimalType } = useQuery<Array<AnimalTypeType>>({
-        queryKey: ['allAnimaltypes'],
-        queryFn: () => getAllAnimalTypes(),
-        retry: false
-    });
+    useEffect(() => {
+        const dateNotExact = new Date();
+        dateNotExact.setMonth(dateNotExact.getMonth() - ageInMonth)
+        setDateOfBirthFromAgeInMonth(getDateStringFromDate(dateNotExact));
+    }, [ageInMonth]);
 
     // get all Races from these Animaltype
     const { isSuccess: isSuccessRaces, data: dataRaces } = useQuery<Array<AnimalracesType>>({
-        queryKey: ['Animalraces', animalTypeAnimal],
+        queryKey: ['Animalraces', animalTypeAnimal?.id],
         queryFn: () => getRacesByAnimalTypeID(animalTypeAnimal?.id),
         retry: false,
         enabled: animalTypeAnimal !== undefined
-    });
-
-    // get all Races from these Animal if it is an edit
-    const { isSuccess: isSuccessRacesEdit, data: dataRacesEdit } = useQuery<Array<AnimalracesType>>({
-        queryKey: ['Animalraces', animalEdit],
-        queryFn: () => getRacesByAnimalID(animalTypeAnimal?.id),
-        retry: false,
-        enabled: animalEdit !== undefined
     });
 
     // save the raceOptions from selectedAnimalType
@@ -176,25 +172,55 @@ export function AnimalDialog({ hideDialogNewAnimal, animalEdit }: CreateAnimalDi
         if (!isSuccessRaces || dataRaces.length === 0) {
             return [];
         }
-        console.log(isSuccessRaces)
-        console.log(dataAnimalType)
-        console.log(dataRaces)
-        return dataRaces.map((x) => ({
+        let options = dataRaces;
+        options = options.filter((race) => {
+            let sameRace = selectedRaces.find((selRace) => {
+                if (selRace.value.id === race.id) {
+                    return true;
+                }
+            });
+            if (sameRace !== undefined) {
+                return false;
+            } else {
+                return true;
+            }
+        });
+        if (selectedRaces.length + options.length !== dataRaces.length) { // not all options are currently shown
+            dataRaces.map((race) => {
+                let findSelect = selectedRaces.find((selRace) => {
+                    if (selRace.value.id === race.id) {
+                        return true;
+                    }
+                });
+                let findOptions = selectedRaces.find((opRace) => {
+                    if (opRace.value.id === race.id) {
+                        return true;
+                    }
+                });
+                if (findSelect === undefined && findOptions === undefined) {
+                    options.push(race)
+                }
+            })
+        }
+        return options.map((x) => ({
             value: x,
             label: x.name,
         }));
-    }, [isSuccessRaces, dataRaces]);
+    }, [isSuccessRaces, dataRaces, selectedRaces]);
 
     const { mutate: mutateCreateAnimal } = useMutation({
         mutationFn: (animal: AnimalsCreateType) =>
             createAnimal(animal),
         onError: () => {
-            // error by creating the animal
-            console.log("error")
+            setErrorText("Fehler beim Erstellen des Tieres");
         },
-        onSuccess: () => {
-            // animal was successful created
-            hideDialogNewAnimal()
+        onSuccess: (data) => {// add races to the created animal
+            setErrorText("");
+            const addRaces: AddRacesToAnimalType = {
+                animalid: data.id,
+                animalraceids: racesIdNumbers
+            }
+            mutateAddRacesToAnimal(addRaces);
         },
     })
 
@@ -207,14 +233,44 @@ export function AnimalDialog({ hideDialogNewAnimal, animalEdit }: CreateAnimalDi
         mutationFn: ({ animalID, animal }: AnimalEditPayload) =>
             editAnimal(animalID, animal),
         onError: () => {
-            // error by editing the animal
-            console.log("error")
+            setErrorText("Fehler beim Bearbeiten des Tieres");
         },
+        onSuccess: (data) => {// animal was successful edited
+            setErrorText("");
+            mutateDeleteAllRaces(data.id);
+        },
+    });
+    const { mutate: mutateAddRacesToAnimal } = useMutation({
+        mutationFn: (animalID: AddRacesToAnimalType) =>
+            addRacesToAnimal(animalID),
+        onError: () => {
+            if (animalEdit === undefined) {
+                setErrorText("Fehler beim Erstellen des Tieres");
+            } else {
+                setErrorText("Fehler beim Bearbeiten des Tieres");
+            }
+        },
+        onSuccess: () => { // animalraces was successful edited
+            setErrorText("");
+            hideDialogNewAnimal();
+        },
+    });
+
+    const { mutate: mutateDeleteAllRaces } = useMutation({
+        mutationFn: (animalID: number) =>
+            deleteAllRacesFromAnimal(animalID),
+
         onSuccess: () => {
-            // animal was successful edited
-            hideDialogNewAnimal()
-        },
-    })
+            if (animalEdit !== undefined) { // is always not undefined because it is edit here
+                const addRaces: AddRacesToAnimalType = {
+                    animalid: animalEdit.id,
+                    animalraceids: racesIdNumbers
+                }
+                mutateAddRacesToAnimal(addRaces);
+            }
+        }
+    });
+
 
     const handleDateOfBirthIsExactChange = (newValue: string) => {
         if (newValue === "Yes") {
@@ -406,29 +462,31 @@ export function AnimalDialog({ hideDialogNewAnimal, animalEdit }: CreateAnimalDi
 
     const handleSubmitAnimalDialog = () => {
         const allUndefined = validate(true);
-
         if (allUndefined) { // all Inputs are valid and correct
             const weightInGram = Math.floor(parseFloat(weight.replace(",", ".")) * 1000);
             const heightInCm = Math.floor(parseFloat(height.replace(",", ".")) * 100);
 
+
             let animal: AnimalsCreateType = {
                 name: name,
                 sex: sex !== undefined ? sex : "notknown",
-                dateofbirth: null, //new Date(dateOfBirth), //if Backend Route is fixed new Date uebergeben
+                dateofbirth: dateOfBirthIsExact === "Yes" ? new Date(dateOfBirth) : new Date(dateOfBirthFromAgeInMonth),
                 dateofbirthisexact: dateOfBirthIsExact === "Yes" ? true : false,
                 weightingram: weightInGram,
                 heightincm: heightInCm,
-                timeofdeath: null,
+                timeofdeath: dateOfDeath !== "" ? new Date(dateOfDeath) : null,
                 iscastrated: castrated === "castrated" ? true : false,
                 lifestyleisindoors: lifestyle === "lifestyleIsIndoor" ? true : false,
                 animaltypeid: animalTypeAnimal !== undefined ? animalTypeAnimal.id : 1,
-                animalgroupid: 1 // should be null, Backend Route has to be fixed
+                animalgroupid: null // should be null, Backend Route has to be fixed
             }
-
+            selectedRaces.forEach((race) => { // save all ids from the selected races
+                racesIdNumbers.push(race.value.id);
+            });
             if (animalEdit === undefined) { // new animal
                 mutateCreateAnimal(animal);
             } else { // edit animal
-                let animalUpdate: AnimalUpdateType = { // to be removed, should be also AnimalCreateType by edit
+                let animalUpdate: AnimalUpdateType = {
                     ...animal,
                     id: animalEdit.id
                 }
@@ -461,7 +519,10 @@ export function AnimalDialog({ hideDialogNewAnimal, animalEdit }: CreateAnimalDi
         } else {
             try {
                 const date = new Date(dateOfDeath);
-                const birthDate = new Date(dateOfBirth);
+                let birthDate = new Date(dateOfBirth);
+                if (dateOfBirthIsExact === "No") {
+                    birthDate = new Date(dateOfBirthFromAgeInMonth);
+                }
                 if (date.getFullYear() >= birthDate.getFullYear() && compareDates(date, birthDate) >= 0 && compareDates(new Date(dateOfDeath), new Date()) <= 0) {
                     return false; // dateOfBirth is valid
                 } else {
@@ -473,9 +534,18 @@ export function AnimalDialog({ hideDialogNewAnimal, animalEdit }: CreateAnimalDi
         }
     }
 
+    let classNameYesButton = "";
+    let classNameNoButton = "";
+    if (dateOfBirthIsExact === "Yes") {
+        classNameNoButton = "";
+        classNameYesButton = "active"
+    } else if (dateOfBirthIsExact === "No") {
+        classNameNoButton = "active";
+        classNameYesButton = "";
+    }
+
     if (isSuccessAnimalType) {
         const animaltypes = dataAnimalType;
-
         // show is always true, visibility is changed from the parent component
         return <Modal show={true} onHide={hideDialogNewAnimal} className="animal-dialog">
             <Modal.Header closeButton>
@@ -486,35 +556,42 @@ export function AnimalDialog({ hideDialogNewAnimal, animalEdit }: CreateAnimalDi
             <Modal.Body>
                 <Form className="animal-form">
                     <Form.Group className="mb-3">
-                        <Form.Label className="text-CreateAnimal">Tierart*:</Form.Label>
-                        <Form.Control
-                            as="select"
-                            name="animalType"
-                            value={animalTypeAnimal?.id || ""}
-                            onChange={handleChange}
-                            isInvalid={validationErrors.animalType !== undefined}
-                        >
-                            <option value="">Bitte auswählen</option>
-                            {animaltypes.map((animaltype) => (
-                                <option key={animaltype.id} value={animaltype.id}>
-                                    {animaltype.name}
-                                </option>
-                            ))}
-                        </Form.Control>
-                        <Form.Control.Feedback type="invalid">{validationErrors.animalType}</Form.Control.Feedback>
+
+                        {animalEdit !== undefined && <Form.Label >Tierart: {animalTypeAnimal?.name}</Form.Label>}
+                        {animalEdit === undefined && <>
+                            <Form.Label >Tierart*:</Form.Label>
+                            <Form.Control
+                                as="select"
+                                name="animalType"
+                                value={animalTypeAnimal?.id || ""}
+                                onChange={handleChange}
+                                isInvalid={validationErrors.animalType !== undefined}
+                            >
+                                <option value="">Bitte auswählen</option>
+                                {animaltypes.map((animaltype) => (
+                                    <option key={animaltype.id} value={animaltype.id}>
+                                        {animaltype.name}
+                                    </option>
+                                ))}
+
+                            </Form.Control>
+                            <Form.Control.Feedback type="invalid">{validationErrors.animalType}</Form.Control.Feedback>
+                        </>}
                     </Form.Group>
                     <Form.Group className="mb-3">
-                        <Form.Label className="text-CreateAnimal">Tiername*:</Form.Label>
+                        <Form.Label >Tiername*:</Form.Label>
                         <Form.Control id="AnimalName" type="text" placeholder="z.B. Nala" name="name" onChange={handleChange} value={name} isInvalid={validationErrors.name !== undefined} />
                         <Form.Control.Feedback type="invalid">{validationErrors.name}</Form.Control.Feedback>
                     </Form.Group>
                     <Form.Group className="mb-3">
-                        <Form.Label className="text-CreateAnimal">Geburtsdatum*:</Form.Label>
-                        <div className="mb-2">Ich kenne das genaue Geburtsdatum:</div>
-                        <ToggleButtonGroup type="radio" value={dateOfBirthIsExact} name="dateOfBirthIsExact" onChange={handleDateOfBirthIsExactChange}>
-                            <ToggleButton id="dateOfBirthIsExactNo" value="No" variant="outline-primary">Nein</ToggleButton>
-                            <ToggleButton id="dateOfBirthIsExactYes" value="Yes" variant="outline-primary">Ja</ToggleButton>
-                        </ToggleButtonGroup>
+                        <Form.Label >Geburtsdatum*:</Form.Label>
+                        <div className="flex-row">
+                            <div className="mb-2">Ich kenne das genaue Geburtsdatum:</div>
+                            <ToggleButtonGroup type="radio" value={dateOfBirthIsExact} name="dateOfBirthIsExact" onChange={handleDateOfBirthIsExactChange}>
+                                <ToggleButton id="dateOfBirthIsExactNo" value="No" variant="outline-primary" className={classNameNoButton}>Nein</ToggleButton>
+                                <ToggleButton id="dateOfBirthIsExactYes" value="Yes" variant="outline-primary" className={classNameYesButton}>Ja</ToggleButton>
+                            </ToggleButtonGroup>
+                        </div>
                     </Form.Group>
                     {dateOfBirthIsExact === "Yes" &&
                         <Form.Group className="mb-3">
@@ -538,7 +615,7 @@ export function AnimalDialog({ hideDialogNewAnimal, animalEdit }: CreateAnimalDi
                             <Form.Control.Feedback type="invalid">{validationErrors.dateOfBirthIsExact}</Form.Control.Feedback>
                         </Form.Group>}
                     <Form.Group className="mb-3">
-                        <Form.Label className="text-CreateAnimal">Geschlecht*:</Form.Label>
+                        <Form.Label>Geschlecht*:</Form.Label>
                         <Form.Control as="select" name="sex" value={sex} onChange={handleChange} isInvalid={validationErrors.sex !== undefined}>
                             <option value="">Bitte auswählen</option>
                             <option value={"male"}>männlich</option>
@@ -548,7 +625,7 @@ export function AnimalDialog({ hideDialogNewAnimal, animalEdit }: CreateAnimalDi
                         <Form.Control.Feedback type="invalid">{validationErrors.sex}</Form.Control.Feedback>
                     </Form.Group>
                     <Form.Group className="mb-3">
-                        <Form.Label className="text-CreateAnimal">Kastriert*:</Form.Label>
+                        <Form.Label>Kastriert*:</Form.Label>
                         <Form.Control as="select" name="castrated" value={castrated} onChange={handleChange} isInvalid={validationErrors.castrated !== undefined}>
                             <option value="">Bitte auswählen</option>
                             <option value="castrated">kastriert</option>
@@ -557,7 +634,7 @@ export function AnimalDialog({ hideDialogNewAnimal, animalEdit }: CreateAnimalDi
                         <Form.Control.Feedback type="invalid">{validationErrors.castrated}</Form.Control.Feedback>
                     </Form.Group>
                     <Form.Group className="mb-3">
-                        <Form.Label className="text-CreateAnimal">Lifestyle*:</Form.Label>
+                        <Form.Label>Lifestyle*:</Form.Label>
                         <Form.Control as="select" name="lifestyle" value={lifestyle} onChange={handleChange} isInvalid={validationErrors.lifestyle !== undefined}>
                             <option value="">Bitte auswählen</option>
                             <option value="lifestyleIsIndoor">in der Wohnung</option>
@@ -566,27 +643,28 @@ export function AnimalDialog({ hideDialogNewAnimal, animalEdit }: CreateAnimalDi
                         <Form.Control.Feedback type="invalid">{validationErrors.lifestyle}</Form.Control.Feedback>
                     </Form.Group>
                     <Form.Group className="mb-3">
-                        <Form.Label className="text-CreateAnimal">Größe in m: (optional)</Form.Label>
+                        <Form.Label>Größe in m: (optional)</Form.Label>
                         <Form.Control id="AnimalHeight" type="text" placeholder="z.B. 0,89" name="height" onChange={handleChange} value={height} isInvalid={validationErrors.height !== undefined} />
                         <Form.Control.Feedback type="invalid">{validationErrors.height}</Form.Control.Feedback>
                     </Form.Group>
                     <Form.Group className="mb-3">
-                        <Form.Label className="text-CreateAnimal">Gewicht in kg: (optional)</Form.Label>
+                        <Form.Label>Gewicht in kg: (optional)</Form.Label>
                         <Form.Control id="AnimalWeight" type="text" placeholder="z.B. 1,5" name="weight" onChange={handleChange} value={weight} isInvalid={validationErrors.weight !== undefined} />
                         <Form.Control.Feedback type="invalid">{validationErrors.weight}</Form.Control.Feedback>
                     </Form.Group>
-                    {raceOptions.length > 0 && <>
-                        <div>Rasse auswählen: (optional, mehrere möglich)</div>
+                    {(raceOptions.length > 0 || selectedRaces.length > 0) && <Form.Group className="mb-3">
+                        <Form.Label >Rasse auswählen: (optional, mehrere möglich)</Form.Label>
                         <Select closeMenuOnSelect={false} isMulti={true} placeholder="Bitte Rassen auswählen" options={raceOptions} value={selectedRaces} onChange={handleSelectRaces} />
-                    </>}
+                    </Form.Group>}
                     {animalEdit !== undefined && <>
                         <Form.Group className="mb-3">
-                            <Form.Label className="text-CreateAnimal">Todesdatum: (optional)</Form.Label>
+                            <Form.Label>Todesdatum: (optional)</Form.Label>
                             <Form.Control id="TimeOfDeath" type="date" name="dateOfDeath" onChange={handleChange} value={dateOfDeath} isInvalid={validationErrors.dateOfDeath !== undefined} />
                             <Form.Control.Feedback type="invalid">{validationErrors.dateOfDeath}</Form.Control.Feedback>
                         </Form.Group></>
                     }
                     <div>* = Pflichtfeld</div>
+                    {errorText !== "" && <div>{errorText}</div>}
                 </Form>
             </Modal.Body>
 
