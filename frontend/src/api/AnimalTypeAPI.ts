@@ -13,6 +13,19 @@ export const getAllAnimalTypes = async (): Promise<AnimalTypeType[]> => {
     return parseAnimalTypeArray(data);
 }
 
+export const getAnimaltypesFromPractice = async (practiceId: string): Promise<Array<AnimalTypeType>> => {
+    const res = await fetch(
+        import.meta.env.VITE_API_URL +
+        '/veterinary-practice/' + practiceId + '/animaltypes'
+    )
+    if (!res.ok) {
+        throw new Error('Failed to fetch getAnimaltypesFromPractice')
+    }
+
+    const data = await res.json();
+    return parseAnimalTypeArray(data);
+}
+
 /*
 * safeParse an array of animaltypes
 */

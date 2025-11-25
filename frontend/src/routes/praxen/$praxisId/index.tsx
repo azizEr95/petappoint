@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { NextAvailableAppointments } from '../../../components/practice/NextAvailableAppointments'
 import '../../../styles/routes/praxisPage.scss'
 import { getVeterinaryPracticesById } from '../../../api/VeterinaryPracticeAPI'
-import type { AnimalTypeType, ServiceType, VeterinaryPracticesType } from '../../../../../shared/schemas/ZodSchemas'
+import type { VeterinaryPracticesType } from '../../../../../shared/schemas/ZodSchemas'
 import { SearchFilter } from '../../../components/common/SearchFilter'
 
 
@@ -18,12 +18,12 @@ function VeterinaryPractice() {
   const { praxisId } = Route.useParams()
   let practice = location.state?.practice
   let filterOptions = location.state?.filterOptions
-  const [filterServiceType, setFilterServiceType] = useState<ServiceType[] | null>(filterOptions?.filterServiceType !== undefined ? filterOptions.filterServiceType : null); // if null there is no filter
-  const [filterAnimalType, setFilterAnimalType] = useState<AnimalTypeType| null>(filterOptions?.filterAnimalType !== undefined ? filterOptions.filterAnimalType : null); // if null there is no filter
+  const [filterServiceType, setFilterServiceType] = useState<number[]>(filterOptions?.serviceTypeIds !== undefined ? filterOptions.serviceTypeIds : []); // if null there is no filter
+  const [filterAnimalType, setFilterAnimalType] = useState<number[]>(filterOptions?.animalTypeIds !== undefined ? filterOptions.animalTypeIds : []); // if null there is no filter
   
   filterOptions = {
-    filterAnimalType: filterAnimalType,
-    filterServiceType: filterServiceType
+    animalTypeIds: filterAnimalType,
+    serviceTypeIds: filterServiceType
   }
 
   // load VeterinaryPractices:
@@ -120,9 +120,11 @@ function VeterinaryPractice() {
         </div>
 
         <div className="praxis-appointments">
-          <div className="appointments-header-section">
+          <div className="appointments-header-section flex-row">
             <h2>Verfügbare Termine</h2>
-            <SearchFilter filterOptions={filterOptions} setFilterServiceType={setFilterServiceType} setFilterAnimalType={setFilterAnimalType} practicePage={practice}/>
+            <div id="FilterPracticePage">
+              <SearchFilter filterOptions={filterOptions} setFilterServiceType={setFilterServiceType} setFilterAnimalType={setFilterAnimalType} practicePage={practice} searchFilter={null}/>
+            </div>
           </div>
           <NextAvailableAppointments praxisID={practice.id.toString()}  filterOptions={filterOptions}/>
         </div>
