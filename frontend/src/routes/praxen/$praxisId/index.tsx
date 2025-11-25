@@ -4,8 +4,9 @@ import { useQuery } from '@tanstack/react-query'
 import { NextAvailableAppointments } from '../../../components/practice/NextAvailableAppointments'
 import '../../../styles/routes/praxisPage.scss'
 import { getVeterinaryPracticesById } from '../../../api/VeterinaryPracticeAPI'
-import type { VeterinaryPracticesType } from '../../../../../shared/schemas/ZodSchemas'
+import type { AnimalTypeType, VeterinaryPracticesType } from '../../../../../shared/schemas/ZodSchemas'
 import { SearchFilter } from '../../../components/common/SearchFilter'
+import { getAnimaltypesFromPractice } from '../../../api/AnimalTypeAPI'
 
 
 export const Route = createFileRoute('/praxen/$praxisId/')({
@@ -35,6 +36,13 @@ function VeterinaryPractice() {
       enabled: practice === undefined
     })
 
+    // get all AnimalTypes from practice
+    const { isSuccess: isSuccessAnimaltypesPractice, data: dataAnimaltypesPractice } = useQuery<Array<AnimalTypeType>>({
+      queryKey: ['AnimaltypesPractice', practice?.id],
+      queryFn: () => getAnimaltypesFromPractice(practice?.id.toString() ?? ""),
+      retry: false
+  });
+
   useEffect(() => {
     if (isPending) {
       return;
@@ -62,6 +70,19 @@ function VeterinaryPractice() {
     return;
   }
 
+  let animaltypesString: string = ""
+  if(isSuccessAnimaltypesPractice){
+    for(let i = 0; i < dataAnimaltypesPractice.length; i++){
+      if(animaltypesString !== ""){
+        animaltypesString = animaltypesString + ", "
+      }
+      animaltypesString = animaltypesString + dataAnimaltypesPractice[i].name
+    }
+    if(animaltypesString === ""){
+      animaltypesString = "keine"
+    }
+  }
+
   return (
     <div className="praxis-page">
       <div className="praxis-header">
@@ -77,6 +98,8 @@ function VeterinaryPractice() {
           {practice.info && (
             <div className="info-description">
               <p>{practice.info}</p>
+              <br />
+              <p>Tierarten: {animaltypesString}</p>
             </div>
           )}
 
