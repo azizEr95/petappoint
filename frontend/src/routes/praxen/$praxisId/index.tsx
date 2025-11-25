@@ -49,13 +49,16 @@ function VeterinaryPractice() {
     window.history.back()
   }
 
-  if (!isSuccess && practice !== undefined) {
+  if (!isSuccess && !isPending && practice !== undefined) {
     return;
   }
 
-  practice = data;
+  if (isSuccess) {
+    practice = data;
+  }
+
   //practice is here always defined, because of the state or useQuery is success
-  if(practice=== undefined){
+  if (practice === undefined) {
     return;
   }
 
@@ -123,10 +126,10 @@ function VeterinaryPractice() {
           <div className="appointments-header-section flex-row">
             <h2>Verfügbare Termine</h2>
             <div id="FilterPracticePage">
-              <SearchFilter filterOptions={filterOptions} setFilterServiceType={setFilterServiceType} setFilterAnimalType={setFilterAnimalType} practicePage={practice} searchFilter={null}/>
+              <SearchFilter filterOptions={filterOptions} setFilterServiceType={setFilterServiceType} setFilterAnimalType={setFilterAnimalType} practicePage={practice} searchFilter={null} />
             </div>
           </div>
-          <NextAvailableAppointments praxisID={practice.id.toString()}  filterOptions={filterOptions}/>
+          <NextAvailableAppointments praxisID={practice.id.toString()} filterOptions={filterOptions} />
         </div>
       </div>
     </div>

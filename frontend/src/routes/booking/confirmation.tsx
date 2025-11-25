@@ -41,7 +41,7 @@ function ConfirmationComponent() {
     } else {
       setStateLoaded(true)
     }
-  }, [state, navigate])
+  }, [])
 
   // Book appointment mutation
   const { mutate: mutateAppointment } = useMutation({
