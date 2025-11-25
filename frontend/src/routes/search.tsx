@@ -7,10 +7,10 @@ import { useState } from 'react'
 import { object } from 'zod'
 
 export type VeterinaryPracticeSearch = {
-  name: string
-  address: string,
-  animalTypeIds: string,
-  serviceTypeIds: string
+  name: string | undefined
+  address: string | undefined,
+  animalTypeIds: string | undefined,
+  serviceTypeIds: string | undefined
 }
 
 export const Route = createFileRoute('/search')({
@@ -31,8 +31,8 @@ export const Route = createFileRoute('/search')({
 function SearchComponent() {
   const { name, address, animalTypeIds, serviceTypeIds } = Route.useSearch();
  
-  const [filterServiceType, setFilterServiceType] = useState<number[]>(stringToArray(serviceTypeIds.toString()));
-  const [filterAnimalType, setFilterAnimalType] = useState<number[]>(stringToArray(animalTypeIds.toString()));
+  const [filterServiceType, setFilterServiceType] = useState<number[]>(serviceTypeIds === undefined ? [] : stringToArray(serviceTypeIds.toString()));
+  const [filterAnimalType, setFilterAnimalType] = useState<number[]>(animalTypeIds === undefined ? [] : stringToArray(animalTypeIds.toString()));
   console.log(filterServiceType)
 
   const filterOptions: AppointmentFilterType = {
@@ -41,8 +41,8 @@ function SearchComponent() {
   }
 
   const searchFilter: VeterinaryPracticeSearchQueryType = {
-    name: name,
-    address: address,
+    name: name ?? "",
+    address: address ?? "",
     animalTypeIds: filterAnimalType,
     serviceTypeIds: filterServiceType
   }
@@ -74,7 +74,7 @@ function SearchComponent() {
         </div>
 
         {/* Results List */}
-        <VeterinaryPracticeList searchName={name} searchOrt={address} filterOptions={filterOptions} />
+        <VeterinaryPracticeList searchName={name ?? ""} searchOrt={address ?? ""} filterOptions={filterOptions} />
       </div>
 
       <style>{`

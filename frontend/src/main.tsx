@@ -15,8 +15,8 @@ const customStringifySearch = (search: Record<string, any>) => {
 
   for (const key in search) {
     const value = search[key]
-    
-    if (value === undefined || value === null) {
+    console.log(value)
+    if (value === "" || value === undefined || value === null) {
         continue
     }
     

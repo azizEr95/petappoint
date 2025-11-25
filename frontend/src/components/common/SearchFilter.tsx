@@ -47,14 +47,14 @@ export function SearchFilter({ searchFilter, filterOptions, setFilterServiceType
     const handleCloseFilterDialog = () => {
         setFilterServiceType(filterServiceTypeLocal)
         setFilterAnimalType(filterAnimalTypeLocal)
-        console.log(filterAnimalTypeLocal.map(id => id.toString()))
+        console.log(filterServiceTypeLocal.length)
         navigate({
             to: '/search',
             search: {
-              name: searchFilter.name,
-              address: searchFilter.address,
-              animalTypeIds: filterAnimalTypeLocal.join("-"),
-              serviceTypeIds: filterServiceTypeLocal.join("-")
+              name: searchFilter.name === "" ? undefined : searchFilter.name,
+              address: searchFilter.address === "" ? undefined : searchFilter.address,
+              animalTypeIds: filterAnimalTypeLocal.length === 0 ? undefined : filterAnimalTypeLocal.join("-"),
+              serviceTypeIds: filterServiceTypeLocal.length === 0 ? undefined : filterServiceTypeLocal.join("-")
             },
           })
         setShowFilterDialog(false);

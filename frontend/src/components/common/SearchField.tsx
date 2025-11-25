@@ -36,10 +36,10 @@ export function SearchField({
     navigate({
       to: '/search',
       search: {
-        name: searchTermName,
-        address: searchTermOrt,
-        animalTypeIds: searchFilter.animalTypeIds?.join(",") ?? "",
-        serviceTypeIds: searchFilter.serviceTypeIds?.join(",") ?? ""
+        name: searchTermName === "" ? undefined : searchTermName,
+        address: searchTermOrt === "" ? undefined : searchTermOrt,
+        animalTypeIds: searchFilter.animalTypeIds?.length === 0 ? undefined : searchFilter.animalTypeIds?.join("-") ?? "",
+        serviceTypeIds: searchFilter.serviceTypeIds?.length === 0 ? undefined : searchFilter.serviceTypeIds?.join("-") ?? ""
       },
     })
   }
