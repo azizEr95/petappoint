@@ -2,7 +2,7 @@ import express from "express";
 import { veterinaryPracticeService } from "../service/veterinaryPracticeService"
 import { z } from 'zod';
 import { appointmentService } from "../service/appointmentService";
-import { AppointmentsType, VeterinaryPracticesType, VeterinaryPracticeCreateSchema, VeterinarySearchQuerySchema, ServiceType } from "vetlib-shared/schemas/ZodSchemas";
+import { AppointmentsType, VeterinaryPracticesType, VeterinaryPracticeCreateSchema, ServiceType, VeterinaryPracticeSearchQuerySchema, AnimalTypeType, AppointmentFilterSchema } from "vetlib-shared/schemas/ZodSchemas";
 
 export const veterinaryPracticeRouter = express.Router();
 
@@ -15,13 +15,13 @@ veterinaryPracticeRouter.get("/all",
 
 veterinaryPracticeRouter.get('/search',
     async (req, res) => {
-        const parsed = VeterinarySearchQuerySchema.safeParse(req.query);
+        const parsed = VeterinaryPracticeSearchQuerySchema.safeParse(req.query);
         if (!parsed.success) {
             return res.sendStatus(400);
         }
 
-        const allVeterinaries: VeterinaryPracticesType[] = await veterinaryPracticeService.getByNameOrAdress(parsed.data.name, parsed.data.address);
-        return res.send(allVeterinaries);
+        const found: VeterinaryPracticesType[] = await veterinaryPracticeService.search(parsed.data);
+        return res.send(found);
     }
 )
 
@@ -40,25 +40,38 @@ veterinaryPracticeRouter.get('/:id/services',
     async (req, res) => {
         try {
             const id: number = parseInt(req.params.id);
-            const services: ServiceType[] = await appointmentService.getServicesForPractice(id);
+            const services: ServiceType[] = await veterinaryPracticeService.getServicesForPractice(id);
             return res.send(services);
         } catch (ex) {
             return res.sendStatus(404);
         }
     }
-)
+);
+
+veterinaryPracticeRouter.get('/:id/animaltypes',
+    async (req, res) => {
+        try {
+            const id: number = parseInt(req.params.id);
+            const animalTypes: AnimalTypeType[] = await veterinaryPracticeService.getAllAnimalTypes(id);
+            return res.send(animalTypes);
+        } catch (ex) {
+            return res.sendStatus(404);
+        }
+    }
+);
 
 veterinaryPracticeRouter.get('/:id/appointments',
     async (req, res) => {
         try {
             const id: number = parseInt(req.params.id);
-            const veterinaryPracticeAppointments: AppointmentsType[] = await appointmentService.getForPractice(id);
+            const parsedFilter = AppointmentFilterSchema.safeParse(req.query);
+            const veterinaryPracticeAppointments: AppointmentsType[] = await appointmentService.getForPractice(id, parsedFilter.data);
             return res.send(veterinaryPracticeAppointments);
         } catch (ex) {
             return res.sendStatus(404);
         }
     }
-)
+);
 
 veterinaryPracticeRouter.get('/:id/appointments/available',
     async (req, res) => {
@@ -67,7 +80,10 @@ veterinaryPracticeRouter.get('/:id/appointments/available',
             return res.sendStatus(400);
         }
 
-        const availableAppointments: AppointmentsType[] = await appointmentService.getAvailableAppointmentsForPractice(id);
+        const parsedFilter = AppointmentFilterSchema.safeParse(req.query);
+        console.log(parsedFilter.data);
+        console.log(parsedFilter.error);
+        const availableAppointments: AppointmentsType[] = await appointmentService.getAvailableAppointmentsForPractice(id, parsedFilter.data);
         return res.send(availableAppointments);
     }
 )

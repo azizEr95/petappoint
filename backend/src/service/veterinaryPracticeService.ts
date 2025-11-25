@@ -1,5 +1,5 @@
 import { prisma } from "../singletonPC";
-import { VeterinaryPracticesCreateType, VeterinaryPracticesType } from "vetlib-shared/schemas/ZodSchemas";
+import { AnimalTypeType, ServiceType, VeterinaryPracticesCreateType, VeterinaryPracticeSearchQueryType, VeterinaryPracticesType } from "vetlib-shared/schemas/ZodSchemas";
 import { addressService } from "./addressService";
 
 export const veterinaryPracticeService = {
@@ -41,43 +41,65 @@ export const veterinaryPracticeService = {
     return foundPractice;
   },
 
-  async getByNameOrAdress(name: string, address: string): Promise<VeterinaryPracticesType[]> {
-    return await prisma.veterinarypractices.findMany({
+  async search(query: VeterinaryPracticeSearchQueryType): Promise<VeterinaryPracticesType[]> {
+    const searchResults = await prisma.veterinarypractices.findMany({
       include: {
         addresses: true
       },
       where: {
         AND: [
-          name.length <= 0 ? {} : {
+          (!query.animalTypeIds || query.animalTypeIds.length <= 0) ? {} : {
+            veterinaries: {
+              some: {
+                veterinary_can_treat_animaltype: {
+                  some: {
+                    fk_animaltypeid: { in: query.animalTypeIds }
+                  }
+                }
+              }
+            }
+          },
+          (!query.serviceTypeIds || query.serviceTypeIds.length <= 0) ? {} : {
+            veterinaries: {
+              some: {
+                veterinary_has_service: {
+                  some: {
+                    fk_serviceid: { in: query.serviceTypeIds }
+                  }
+                }
+              }
+            }
+          },
+          query.name.length <= 0 ? {} : {
             name: {
-              contains: name,
+              contains: query.name,
               mode: "insensitive"
             }
           },
-          address.length <= 0 ? {} : {
+          query.address.length <= 0 ? {} : {
             addresses: {
               OR: [
                 {
                   street: {
-                    contains: address,
+                    contains: query.address,
                     mode: "insensitive"
                   }
                 },
                 {
                   city: {
-                    contains: address,
+                    contains: query.address,
                     mode: "insensitive"
                   }
                 },
                 {
                   citycode: {
-                    contains: address,
+                    contains: query.address,
                     mode: "insensitive"
                   }
                 },
                 {
                   country: {
-                    contains: address,
+                    contains: query.address,
                     mode: "insensitive"
                   }
                 }
@@ -87,6 +109,8 @@ export const veterinaryPracticeService = {
         ]
       }
     });
+
+    return searchResults;
   },
 
   async getByEmail(email: string): Promise<VeterinaryPracticesType | null> {
@@ -137,4 +161,59 @@ export const veterinaryPracticeService = {
       where: { id }
     });
   },
+
+  async getServicesForPractice(veterinaryPracticeId: number): Promise<ServiceType[]> {
+    const services = await prisma.veterinaries.findMany({
+      select: {
+        veterinary_has_service: {
+          select: {
+            services: true
+          }
+        }
+      },
+      where: {
+        fk_veterinarypractice: veterinaryPracticeId
+      }
+    });
+
+    const flatServices = services.flatMap(x => x.veterinary_has_service).flatMap(x => x.services);
+
+    // check that every service ist only one time in the array
+    const uniqueServicesMap = new Map<number, ServiceType>();
+    const serviceArray: ServiceType[] = []
+
+    for (const service of flatServices) {
+      if (service && !uniqueServicesMap.has(service.id)) {
+        uniqueServicesMap.set(service.id, service as ServiceType);
+        serviceArray.push(service);
+      }
+    }
+    return serviceArray;
+  },
+
+  async getAllAnimalTypes(praxisId: number): Promise<AnimalTypeType[]> {
+    const found = await prisma.veterinarypractices.findMany({
+      select: {
+        veterinaries: {
+          select: {
+            veterinary_can_treat_animaltype: {
+              include: {
+                animaltypes: true
+              }
+            }
+          }
+        }
+      },
+      where: { id: praxisId }
+    });
+
+    const curableAnimalTypes = found.flatMap(x => x.veterinaries)
+      .flatMap(x => x.veterinary_can_treat_animaltype)
+      .flatMap(x => x.animaltypes);
+
+    const uniqueAnimalTypes = curableAnimalTypes
+      .filter((item, index, self) => index === self.findIndex(o => o.id === item.id));
+
+    return uniqueAnimalTypes;
+  }
 };

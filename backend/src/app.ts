@@ -5,6 +5,7 @@ import { appointmentRouter } from './routes/appointments';
 import { personsRouter } from './routes/persons';
 import { animalsRouter } from './routes/animals';
 import { animaltypeRouter } from './routes/animaltypes';
+import { serviceRouter } from './routes/services';
 
 export const app = express();
 
@@ -17,3 +18,4 @@ app.use("/api/appointments", appointmentRouter);
 app.use("/api/persons", personsRouter);
 app.use("/api/animals", animalsRouter);
 app.use("/api/animaltypes", animaltypeRouter);
+app.use("/api/services", serviceRouter);
