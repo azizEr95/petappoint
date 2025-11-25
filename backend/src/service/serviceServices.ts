@@ -1,5 +1,6 @@
 import { prisma } from "../singletonPC";
 import { services } from "../../generated/prisma";
+import { ServiceType } from "vetlib-shared/schemas/ZodSchemas";
 
 export const serviceService = {
   async create(data: services): Promise<services> {
@@ -14,8 +15,33 @@ export const serviceService = {
     return found;
   },
 
-  async getAll(): Promise<services[]> {
+  async getAll(): Promise<ServiceType[]> {
     return await prisma.services.findMany();
+  },
+
+  async getAllAvailable(): Promise<ServiceType[]> {
+    const found = await prisma.veterinarypractices.findMany({
+      select: {
+        veterinaries: {
+          select: {
+            veterinary_has_service: {
+              include: {
+                services: true,
+              }
+            }
+          }
+        }
+      }
+    });
+
+    const availableServices = found.flatMap(x => x.veterinaries)
+      .flatMap(x => x.veterinary_has_service)
+      .flatMap(x => x.services);
+
+    const uniqueServices = availableServices
+      .filter((item, index, self) => index === self.findIndex((o) => o.id === item.id));
+
+    return uniqueServices;
   },
 
   async update(data: services): Promise<services> {

@@ -195,7 +195,7 @@ model reviews {
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model services {
   id                      Int                       @id @default(autoincrement())
-  name                    String                    @db.VarChar(100)
+  name                    String                    @unique @db.VarChar(100)
   appointment_has_service appointment_has_service[]
   appointments            appointments[]
   veterinary_has_service  veterinary_has_service[]
