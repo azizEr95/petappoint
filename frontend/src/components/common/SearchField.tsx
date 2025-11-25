@@ -3,18 +3,17 @@ import { useNavigate } from '@tanstack/react-router'
 import type { ChangeEvent } from 'react'
 import '../../styles/routes/search.scss'
 import '../../styles/components/common/SearchField.scss'
+import type { VeterinaryPracticeSearchQueryType } from '../../../../shared/schemas/ZodSchemas'
 
 type SearchFieldProps = {
-  searchNameBeginn: string
-  searchOrtBeginn: string
+  searchFilter: VeterinaryPracticeSearchQueryType
 }
 
 export function SearchField({
-  searchNameBeginn,
-  searchOrtBeginn,
+  searchFilter
 }: SearchFieldProps) {
-  const [searchTermName, setSearchTermName] = useState(searchNameBeginn)
-  const [searchTermOrt, setSearchTermOrt] = useState(searchOrtBeginn)
+  const [searchTermName, setSearchTermName] = useState(searchFilter.name)
+  const [searchTermOrt, setSearchTermOrt] = useState(searchFilter.address)
   const navigate = useNavigate()
 
   // bei Suche ohne Ortangabe aktuellen Standort nehmen??: https://wiki.selfhtml.org/wiki/Geolocation

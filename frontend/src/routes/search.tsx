@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { SearchField } from '../components/common/SearchField'
 import { VeterinaryPracticeList } from '../components/practice/VeterinaryPracticeList'
-import { VeterinaryPracticeSearchQuerySchema, type AppointmentFilterType } from '../../../shared/schemas/ZodSchemas'
+import { VeterinaryPracticeSearchQuerySchema, type AppointmentFilterType, type VeterinaryPracticeSearchQueryType } from '../../../shared/schemas/ZodSchemas'
 import { SearchFilter} from '../components/common/SearchFilter'
 import { useState } from 'react'
 
@@ -12,12 +12,19 @@ export const Route = createFileRoute('/search')({
 
 function SearchComponent() {
   const { name, address } = Route.useSearch();
-  const [filterServiceType, setFilterServiceType] = useState<number[] | null>(null); // if null there is no filter
-  const [filterAnimalType, setFilterAnimalType] = useState<number[] | null>(null); // if null there is no filter
+  const [filterServiceType, setFilterServiceType] = useState<number[]>([]);
+  const [filterAnimalType, setFilterAnimalType] = useState<number[]>([]);
 
   const filterOptions: AppointmentFilterType = {
-    animalTypeIds: filterAnimalType !== null ? filterAnimalType : [],
-    serviceTypeIds: filterServiceType !== null ? filterServiceType : [],
+    animalTypeIds: filterAnimalType,
+    serviceTypeIds: filterServiceType,
+  }
+
+  const searchFilter: VeterinaryPracticeSearchQueryType = {
+    name: name,
+    address: address,
+    animalTypeIds: filterAnimalType,
+    serviceTypeIds: filterServiceType
   }
   console.log(filterOptions)
 
@@ -26,7 +33,7 @@ function SearchComponent() {
       {/* Sticky Search Bar */}
       <div className="search-header-sticky">
         <div className="container search-bar-container flex-column">
-          <SearchField searchNameBeginn={name} searchOrtBeginn={address} />
+          <SearchField searchFilter={searchFilter}/>
           <SearchFilter filterOptions={filterOptions} setFilterServiceType={setFilterServiceType} setFilterAnimalType={setFilterAnimalType} practicePage={null}/>
         </div>
       </div>

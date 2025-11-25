@@ -1,6 +1,14 @@
 import { SearchField } from '../common/SearchField'
 import heroBg from '../../assets/hero-bg.png'
 import '../../styles/components/landing/Hero.scss'
+import type { VeterinaryPracticeSearchQueryType } from '../../../../shared/schemas/ZodSchemas'
+
+const searchFilter: VeterinaryPracticeSearchQueryType = {
+  name: "",
+  address: "",
+  animalTypeIds: [],
+  serviceTypeIds: []
+}
 
 export default function Hero() {
   return (
@@ -15,7 +23,7 @@ export default function Hero() {
             Finden Sie den passenden Tierarzt in Ihrer Nähe und vereinbaren Sie
             direkt einen Termin
           </p>
-          <SearchField searchNameBeginn="" searchOrtBeginn="" />
+          <SearchField searchFilter={searchFilter} />
         </div>
       </div>
     </section>

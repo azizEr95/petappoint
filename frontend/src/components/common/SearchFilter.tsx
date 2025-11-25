@@ -4,16 +4,19 @@ import { getAllAnimalTypes } from "../../api/AnimalTypeAPI";
 import { useQuery } from "@tanstack/react-query";
 import type { AnimalTypeType, AppointmentFilterType, ServiceType, VeterinaryPracticesType } from "../../../../shared/schemas/ZodSchemas";
 import '../../styles/components/common/SearchFilter.scss'
+import { getAllAvailableServices } from "../../api/ServicesAPI";
 
 type SearchFilterProps = {
     filterOptions: AppointmentFilterType
-    setFilterServiceType: (newServices: number[] | null) => void
-    setFilterAnimalType: (newAnimalType: number[] | null) => void
+    setFilterServiceType: (newServices: number[]) => void
+    setFilterAnimalType: (newAnimalType: number[]) => void
     practicePage: VeterinaryPracticesType | null
 }
 
 export function SearchFilter({ filterOptions, setFilterServiceType, setFilterAnimalType, practicePage }: SearchFilterProps) {
     const [showFilterDialog, setShowFilterDialog] = useState<boolean>(false);
+    const [filterServiceTypeLocal, setFilterServiceTypeLocal] = useState<number[]>(filterOptions.serviceTypeIds !== undefined ? filterOptions.serviceTypeIds : []);
+    const [filterAnimalTypeLocal, setFilterAnimalTypeLocal] = useState<number[]>(filterOptions.animalTypeIds !== undefined ? filterOptions.animalTypeIds : []);
 
     // get all Animaltypes 
     const { isSuccess: isSuccessAnimalType, data: dataAnimalType } = useQuery<Array<AnimalTypeType>>({
@@ -22,8 +25,12 @@ export function SearchFilter({ filterOptions, setFilterServiceType, setFilterAni
         retry: false
     });
 
-    //get all ServiceType: enabled practicePage === nulll
-    
+    //get all ServiceType: enabled practicePage === nulll 
+    const { isSuccess: isSuccessAllAvailableServices, data: dataAllAvailableServices } = useQuery<Array<ServiceType>>({
+        queryKey: ['allAvailableServicetypes'],
+        queryFn: () => getAllAvailableServices(),
+        retry: false
+    });
 
 
     // get all ServiceType: enabled practicePage !== null
@@ -35,16 +42,18 @@ export function SearchFilter({ filterOptions, setFilterServiceType, setFilterAni
         setShowFilterDialog(true);
     }
     const handleCloseFilterDialog = () => {
+        setFilterServiceType(filterServiceTypeLocal)
+        setFilterAnimalType(filterAnimalTypeLocal)
         setShowFilterDialog(false);
     }
 
     const handleDeleteFilter = () => {
-        setFilterServiceType(null);
-        setFilterAnimalType(null);
+        setFilterServiceTypeLocal([]);
+        setFilterAnimalTypeLocal([]);
     }
 
     const checkSelectedAnimalType = (animaltype: AnimalTypeType): boolean =>  {
-        const findAnimalType = filterOptions.animalTypeIds?.find((animalId) => {
+        const findAnimalType = filterAnimalTypeLocal.find((animalId) => {
             return animalId === animaltype.id
         });
           if(findAnimalType !== undefined){
@@ -55,7 +64,7 @@ export function SearchFilter({ filterOptions, setFilterServiceType, setFilterAni
     }
 
     const checkSelectedServiceType = (service: ServiceType): boolean =>  {
-        const findServiceType = filterOptions.serviceTypeIds?.find((servID) => {
+        const findServiceType = filterServiceTypeLocal.find((servID) => {
             return service.id === servID; 
           });
           if(findServiceType !== undefined){
@@ -66,52 +75,52 @@ export function SearchFilter({ filterOptions, setFilterServiceType, setFilterAni
     }
 
     const handleChangeAnimalType = (animaltype: AnimalTypeType) => {
-        const findAnimalType = filterOptions.animalTypeIds?.find((animalId) => {
+        const findAnimalType = filterAnimalTypeLocal.find((animalId) => {
             return animalId === animaltype.id
         })
         if(findAnimalType !== undefined){
-            setFilterAnimalType(null);
+            setFilterAnimalTypeLocal([]);
         } else {
-            setFilterAnimalType([animaltype.id]);
+            setFilterAnimalTypeLocal([animaltype.id]);
         }
     }
 
     const handleChangeServiceType = (service: ServiceType) => {
-        const findServiceType = filterOptions.serviceTypeIds?.find((servId) => {
+        const findServiceType = filterServiceTypeLocal.find((servId) => {
             return service.id === servId; 
           });
         
         if(findServiceType !== undefined){
             // delete these service from array
-            let selectedServices = filterOptions.serviceTypeIds?.slice();
-            selectedServices?.filter((servId) => servId !== service.id);
+            let selectedServices = filterServiceTypeLocal.slice();
+            selectedServices = selectedServices?.filter((servId) => servId !== service.id);
             if(selectedServices !== undefined){ // it schould be always !== undefined
-                setFilterServiceType(selectedServices);
+                setFilterServiceTypeLocal(selectedServices);
             } else {
-                setFilterServiceType(null);
+                setFilterServiceTypeLocal([]);
             }
         } else {
             // add these service to array
-            let selectedServices = filterOptions.serviceTypeIds?.slice();
+            let selectedServices = filterServiceTypeLocal.slice();
             selectedServices?.push(service.id)
             if(selectedServices !== undefined){ // it schould be always !== undefined
-                setFilterServiceType(selectedServices);
+                setFilterServiceTypeLocal(selectedServices);
             } else {
-                setFilterServiceType(null);
+                setFilterServiceTypeLocal([]);
             }
         }
     }
 
     let animaltypes: AnimalTypeType[];
     if (isSuccessAnimalType) {
-        animaltypes = dataAnimalType
+        animaltypes = dataAnimalType;
     } else {
         animaltypes = [];
     }
 
-    let services: AnimalTypeType[];
-    if (isSuccessAnimalType) { // TODO edit this for ServiceTypes
-        services = dataAnimalType
+    let services: ServiceType[];
+    if (isSuccessAllAvailableServices) {
+        services = dataAllAvailableServices
     } else {
         services = [];
     }
@@ -128,19 +137,19 @@ export function SearchFilter({ filterOptions, setFilterServiceType, setFilterAni
                 <Form.Group className="mb-3">
                     <Form.Label>Tierart:</Form.Label>
                     {animaltypes.map((animaltype) => {
-                        return <Form.Check type="radio" id={animaltype.id.toString()} key={animaltype.id.toString()} label={animaltype.name} name="selectAnimaltype" value={animaltype.id} checked={checkSelectedAnimalType(animaltype)} onChange={() => {}} onClick={() => handleChangeAnimalType(animaltype)}/>;
+                        return <Form.Check type="radio" id={animaltype.id.toString() + animaltype.name} key={animaltype.id.toString() + animaltype.name} label={animaltype.name} name="selectAnimaltype" value={animaltype.id} checked={checkSelectedAnimalType(animaltype)} onChange={() => {}} onClick={() => handleChangeAnimalType(animaltype)}/>;
                     })}
                 </Form.Group>
                 <Form.Group className="mb-3">
                     <Form.Label>Terminart filtern:</Form.Label>
                     {services.map((service) => {
-                        return <Form.Check type="checkbox" id={service.id.toString()} key={service.id.toString()} label={service.name} name="selectServiceType" value={service.id} checked={checkSelectedServiceType(service)} onChange={() => handleChangeServiceType(service)}/>;
+                        return <Form.Check type="checkbox" id={service.id.toString() + service.name} key={service.id.toString() + service.name} label={service.name} name="selectServiceType" value={service.id} checked={checkSelectedServiceType(service)} onChange={() => handleChangeServiceType(service)}/>;
                     })}
                 </Form.Group>
             </Modal.Body>
 
             <Modal.Footer>
-                <Button onClick={handleDeleteFilter} variant="outline" disabled={filterOptions.animalTypeIds === null && filterOptions.serviceTypeIds === null}>Filter entfernen</Button>
+                <Button onClick={handleDeleteFilter} variant="outline" disabled={filterAnimalTypeLocal === null && filterServiceTypeLocal === null}>Filter entfernen</Button>
                 <Button onClick={handleCloseFilterDialog}>Ergebnisse anzeigen</Button>
             </Modal.Footer>
         </Modal>

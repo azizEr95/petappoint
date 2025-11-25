@@ -19,7 +19,7 @@ export function VeterinaryPracticeList({
   const { isSuccess, data } = useQuery<
     Array<VeterinaryPracticesType>
   >({
-    queryKey: ['tierarztpraxen', searchName, searchOrt],
+    queryKey: ['tierarztpraxen', searchName, searchOrt, filterOptions.animalTypeIds, filterOptions.serviceTypeIds],
     queryFn: () => getVeterinaryPracticesByNameAddress({name: searchName, address: searchOrt, animalTypeIds: filterOptions.animalTypeIds, serviceTypeIds: filterOptions.serviceTypeIds}),
   })
 
