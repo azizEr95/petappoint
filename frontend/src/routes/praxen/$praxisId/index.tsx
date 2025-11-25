@@ -21,7 +21,7 @@ function VeterinaryPractice() {
   let filterOptions = location.state?.filterOptions
   const [filterServiceType, setFilterServiceType] = useState<number[]>(filterOptions?.serviceTypeIds !== undefined ? filterOptions.serviceTypeIds : []); // if null there is no filter
   const [filterAnimalType, setFilterAnimalType] = useState<number[]>(filterOptions?.animalTypeIds !== undefined ? filterOptions.animalTypeIds : []); // if null there is no filter
-  
+
   filterOptions = {
     animalTypeIds: filterAnimalType,
     serviceTypeIds: filterServiceType
@@ -36,11 +36,12 @@ function VeterinaryPractice() {
       enabled: practice === undefined
     })
 
-    // get all AnimalTypes from practice
-    const { isSuccess: isSuccessAnimaltypesPractice, data: dataAnimaltypesPractice } = useQuery<Array<AnimalTypeType>>({
-      queryKey: ['AnimaltypesPractice', practice?.id],
-      queryFn: () => getAnimaltypesFromPractice(practice?.id.toString() ?? ""),
-      retry: false
+  // get all AnimalTypes from practice
+  const { isSuccess: isSuccessAnimaltypesPractice, data: dataAnimaltypesPractice } = useQuery<Array<AnimalTypeType>>({
+    queryKey: ['AnimaltypesPractice', practice?.id],
+    queryFn: () => getAnimaltypesFromPractice(practice?.id.toString() ?? ""),
+    retry: false,
+    enabled: practice?.id !== undefined
   });
 
   useEffect(() => {
@@ -71,14 +72,14 @@ function VeterinaryPractice() {
   }
 
   let animaltypesString: string = ""
-  if(isSuccessAnimaltypesPractice){
-    for(let i = 0; i < dataAnimaltypesPractice.length; i++){
-      if(animaltypesString !== ""){
+  if (isSuccessAnimaltypesPractice) {
+    for (let i = 0; i < dataAnimaltypesPractice.length; i++) {
+      if (animaltypesString !== "") {
         animaltypesString = animaltypesString + ", "
       }
       animaltypesString = animaltypesString + dataAnimaltypesPractice[i].name
     }
-    if(animaltypesString === ""){
+    if (animaltypesString === "") {
       animaltypesString = "keine"
     }
   }

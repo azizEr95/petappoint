@@ -3,6 +3,7 @@ import { useNavigate } from '@tanstack/react-router'
 import { NextAvailableAppointments } from './NextAvailableAppointments.tsx'
 import type { MouseEvent } from 'react'
 import type { AppointmentFilterType, VeterinaryPracticesType } from '../../../../shared/schemas/ZodSchemas'
+import { useQueryClient } from '@tanstack/react-query'
 
 type VeterinaryPracticeCardProps = {
   praxis: VeterinaryPracticesType
@@ -13,10 +14,13 @@ export function VeterinaryPracticeCard({
   praxis,
   filterOptions
 }: VeterinaryPracticeCardProps) {
+  const queryClient = useQueryClient();
   const navigate = useNavigate()
 
   const openPraxisPage = (e: MouseEvent<HTMLDivElement>) => {
-    e.preventDefault()
+    e.preventDefault();
+    queryClient.invalidateQueries({ queryKey: ['AnimaltypesPractice'] });
+    queryClient.invalidateQueries({ queryKey: ['allAnimaltypes'] });
     navigate({
       to: '/praxen/$praxisId',
       params: {

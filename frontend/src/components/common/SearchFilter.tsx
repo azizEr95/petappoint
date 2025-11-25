@@ -20,6 +20,7 @@ export function SearchFilter({ searchFilter, filterOptions, setFilterServiceType
     const [showFilterDialog, setShowFilterDialog] = useState<boolean>(false);
     const [filterServiceTypeLocal, setFilterServiceTypeLocal] = useState<number[]>(filterOptions.serviceTypeIds !== undefined ? filterOptions.serviceTypeIds : []);
     const [filterAnimalTypeLocal, setFilterAnimalTypeLocal] = useState<number[]>(filterOptions.animalTypeIds !== undefined ? filterOptions.animalTypeIds : []);
+    const [practice, setPractice] = useState<VeterinaryPracticesType | null>(practicePage);
 
     // get all Animaltypes 
     const { isSuccess: isSuccessAnimalType, data: dataAnimalType } = useQuery<Array<AnimalTypeType>>({
@@ -39,21 +40,19 @@ export function SearchFilter({ searchFilter, filterOptions, setFilterServiceType
 
     // get all ServiceType from practice
     const { isSuccess: isSuccessServicesPractice, data: dataServicesPractice } = useQuery<Array<ServiceType>>({
-        queryKey: ['ServicetypesPractice', practicePage?.id],
-        queryFn: () => getServicesFromPractice(practicePage?.id.toString() ?? ""), // id is always !== undefined because of enabled condition
+        queryKey: ['ServicetypesPractice', practice?.id],
+        queryFn: () => getServicesFromPractice(practice?.id.toString() ?? ""), // id is always !== undefined because of enabled condition
         retry: false,
         enabled: practicePage !== null
     });
 
     // get all AnimalTypes from practice
-    const { isSuccess: isSuccessAnimaltypesPractice, data: dataAnimaltypesPractice } = useQuery<Array<AnimalTypeType>>({
-        queryKey: ['AnimaltypesPractice', practicePage?.id],
-        queryFn: () => getAnimaltypesFromPractice(practicePage?.id.toString() ?? ""), // id is always !== undefined because of enabled condition
+    const { isSuccess: isSuccessAnimaltypesPractice, isPending: isPendingAnimaltypesPractice, data: dataAnimaltypesPractice } = useQuery<Array<AnimalTypeType>>({
+        queryKey: ['AnimaltypesPractice', practice?.id],
+        queryFn: () => getAnimaltypesFromPractice(practice?.id.toString() ?? ""), // id is always !== undefined because of enabled condition
         retry: false,
         enabled: practicePage !== null
     });
-
-
 
     const handleOpenFilterDialog = () => {
         setShowFilterDialog(true);
@@ -62,7 +61,7 @@ export function SearchFilter({ searchFilter, filterOptions, setFilterServiceType
     const handleCloseFilterDialog = () => {
         setFilterServiceType(filterServiceTypeLocal)
         setFilterAnimalType(filterAnimalTypeLocal)
-        if (practicePage === null && searchFilter !== null) { // searchFilter is null when it is an practicePage
+        if (practice === null && searchFilter !== null) { // searchFilter is null when it is an practicePage
             navigate({
                 to: '/search',
                 search: {
@@ -141,7 +140,7 @@ export function SearchFilter({ searchFilter, filterOptions, setFilterServiceType
     }
 
     let animaltypes: AnimalTypeType[];
-    if (isSuccessAnimalType) {
+    if (isSuccessAnimalType && !isPendingAnimaltypesPractice) {
         animaltypes = dataAnimalType;
     } else if (isSuccessAnimaltypesPractice) {
         animaltypes = dataAnimaltypesPractice;
