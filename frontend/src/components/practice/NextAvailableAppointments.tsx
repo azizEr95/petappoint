@@ -24,8 +24,8 @@ export function NextAvailableAppointments({
   const { isPending, isError, isSuccess, data } = useQuery<
     Array<AppointmentsType>
   >({
-    queryKey: ["nextAvailableAppointments", praxisID],
-    queryFn: () => getAvailableAppointmentsByPracticeId(praxisID),
+    queryKey: ["nextAvailableAppointments", praxisID, filterOptions.animalTypeIds, filterOptions.serviceTypeIds],
+    queryFn: () => getAvailableAppointmentsByPracticeId(praxisID, filterOptions),
     retry: false,
   })
 

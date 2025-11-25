@@ -2,18 +2,21 @@ import { useState } from "react";
 import { Button, Form, Modal } from "react-bootstrap";
 import { getAllAnimalTypes } from "../../api/AnimalTypeAPI";
 import { useQuery } from "@tanstack/react-query";
-import type { AnimalTypeType, AppointmentFilterType, ServiceType, VeterinaryPracticesType } from "../../../../shared/schemas/ZodSchemas";
+import type { AnimalTypeType, AppointmentFilterType, ServiceType, VeterinaryPracticeSearchQueryType, VeterinaryPracticesType } from "../../../../shared/schemas/ZodSchemas";
 import '../../styles/components/common/SearchFilter.scss'
 import { getAllAvailableServices } from "../../api/ServicesAPI";
+import { useNavigate } from "@tanstack/react-router";
 
 type SearchFilterProps = {
+    searchFilter: VeterinaryPracticeSearchQueryType,
     filterOptions: AppointmentFilterType
     setFilterServiceType: (newServices: number[]) => void
     setFilterAnimalType: (newAnimalType: number[]) => void
     practicePage: VeterinaryPracticesType | null
 }
 
-export function SearchFilter({ filterOptions, setFilterServiceType, setFilterAnimalType, practicePage }: SearchFilterProps) {
+export function SearchFilter({ searchFilter, filterOptions, setFilterServiceType, setFilterAnimalType, practicePage }: SearchFilterProps) {
+    const navigate = useNavigate();
     const [showFilterDialog, setShowFilterDialog] = useState<boolean>(false);
     const [filterServiceTypeLocal, setFilterServiceTypeLocal] = useState<number[]>(filterOptions.serviceTypeIds !== undefined ? filterOptions.serviceTypeIds : []);
     const [filterAnimalTypeLocal, setFilterAnimalTypeLocal] = useState<number[]>(filterOptions.animalTypeIds !== undefined ? filterOptions.animalTypeIds : []);
@@ -44,6 +47,16 @@ export function SearchFilter({ filterOptions, setFilterServiceType, setFilterAni
     const handleCloseFilterDialog = () => {
         setFilterServiceType(filterServiceTypeLocal)
         setFilterAnimalType(filterAnimalTypeLocal)
+        console.log(filterAnimalTypeLocal.map(id => id.toString()))
+        navigate({
+            to: '/search',
+            search: {
+              name: searchFilter.name,
+              address: searchFilter.address,
+              animalTypeIds: filterAnimalTypeLocal.join(","),
+              serviceTypeIds: filterServiceTypeLocal.join(",")
+            },
+          })
         setShowFilterDialog(false);
     }
 

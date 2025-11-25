@@ -117,8 +117,8 @@ VALUES
 INSERT INTO veterinaries (id, infoEmail, fk_veterinarypractice)
 VALUES
   (4, 'maria@arzt.de', 1),
-  (2, 'daniel@arzt.de', 1),
-  (1, NULL, NULL);
+  (2, 'daniel@arzt.de', 2),
+  (1, 'hi@gmx.de', 4);
 
 INSERT INTO SERVICES (name)
 VALUES
@@ -224,11 +224,19 @@ VALUES
   (4, 2),
   (4, 3),
   (2, 3),
-  (2, 1),
   (2, 2),
-  (1, 3),
   (1, 1),
   (1, 2);
+
+  INSERT INTO veterinary_can_treat_animaltype(fk_veterinaryId, fk_animalTypeId)
+VALUES
+  (4, 1),
+  (4, 2),
+  (4, 3),
+  (2, 3),
+  (2, 5),
+  (2, 6),
+  (1, 3);
 
 
 

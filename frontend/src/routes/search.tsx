@@ -2,18 +2,31 @@ import { createFileRoute } from '@tanstack/react-router'
 import { SearchField } from '../components/common/SearchField'
 import { VeterinaryPracticeList } from '../components/practice/VeterinaryPracticeList'
 import { VeterinaryPracticeSearchQuerySchema, type AppointmentFilterType, type VeterinaryPracticeSearchQueryType } from '../../../shared/schemas/ZodSchemas'
-import { SearchFilter} from '../components/common/SearchFilter'
+import { SearchFilter } from '../components/common/SearchFilter'
 import { useState } from 'react'
+import { object } from 'zod'
+
+export type VeterinaryPracticeSearch = {
+  name: string
+  address: string,
+  animalTypeIds: string,
+  serviceTypeIds: string
+}
 
 export const Route = createFileRoute('/search')({
-  validateSearch: VeterinaryPracticeSearchQuerySchema,
+  validateSearch: (search: VeterinaryPracticeSearch) => {
+    console.log(search.serviceTypeIds.toString())
+    return search;
+  },
   component: SearchComponent,
 })
 
 function SearchComponent() {
-  const { name, address } = Route.useSearch();
-  const [filterServiceType, setFilterServiceType] = useState<number[]>([]);
-  const [filterAnimalType, setFilterAnimalType] = useState<number[]>([]);
+  const { name, address, animalTypeIds, serviceTypeIds } = Route.useSearch();
+ 
+  const [filterServiceType, setFilterServiceType] = useState<number[]>(stringToArray(serviceTypeIds));
+  const [filterAnimalType, setFilterAnimalType] = useState<number[]>(stringToArray(animalTypeIds));
+  console.log(filterServiceType)
 
   const filterOptions: AppointmentFilterType = {
     animalTypeIds: filterAnimalType,
@@ -33,8 +46,8 @@ function SearchComponent() {
       {/* Sticky Search Bar */}
       <div className="search-header-sticky">
         <div className="container search-bar-container flex-column">
-          <SearchField searchFilter={searchFilter}/>
-          <SearchFilter filterOptions={filterOptions} setFilterServiceType={setFilterServiceType} setFilterAnimalType={setFilterAnimalType} practicePage={null}/>
+          <SearchField searchFilter={searchFilter} />
+          <SearchFilter searchFilter={searchFilter} filterOptions={filterOptions} setFilterServiceType={setFilterServiceType} setFilterAnimalType={setFilterAnimalType} practicePage={null} />
         </div>
       </div>
 
@@ -54,7 +67,7 @@ function SearchComponent() {
         </div>
 
         {/* Results List */}
-        <VeterinaryPracticeList searchName={name} searchOrt={address} filterOptions={filterOptions}/>
+        <VeterinaryPracticeList searchName={name} searchOrt={address} filterOptions={filterOptions} />
       </div>
 
       <style>{`
@@ -109,4 +122,14 @@ function SearchComponent() {
       `}</style>
     </>
   )
+}
+
+function stringToArray(text: string): number[] {
+
+  const array = Array.isArray(text) ? text : text.split(',');
+  return array
+    .map(s => s.trim())
+    .filter(s => s.length > 0)
+    .map(Number)
+    .filter(n => !isNaN(n) && Number.isInteger(n));
 }

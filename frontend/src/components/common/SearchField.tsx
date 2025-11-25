@@ -38,6 +38,8 @@ export function SearchField({
       search: {
         name: searchTermName,
         address: searchTermOrt,
+        animalTypeIds: searchFilter.animalTypeIds?.join(",") ?? "",
+        serviceTypeIds: searchFilter.serviceTypeIds?.join(",") ?? ""
       },
     })
   }
