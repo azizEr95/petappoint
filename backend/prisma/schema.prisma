@@ -36,8 +36,8 @@ model animals {
   fk_animalgroupid       Int?
   animal_has_races       animal_has_races[]
   animal_has_vaccination animal_has_vaccination[]
-  animalgroup            animalgroup?             @relation(fields: [fk_animalgroupid], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  animaltypes            animaltypes              @relation(fields: [fk_animaltypeid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  animalgroup            animalgroup?             @relation(fields: [fk_animalgroupid], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  animaltypes            animaltypes              @relation(fields: [fk_animaltypeid], references: [id], onDelete: Cascade, onUpdate: NoAction)
   appointments           appointments[]
   person_has_animal      person_has_animal[]
   recipes                recipes[]
@@ -62,16 +62,16 @@ model appointments {
   notiz                   String?
   appointment_has_review  appointment_has_review[]
   appointment_has_service appointment_has_service[]
-  animals                 animals?                  @relation(fields: [fk_animalid], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  services                services?                 @relation(fields: [fk_serviceid], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  veterinaries            veterinaries              @relation(fields: [fk_veterinaryid], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  veterinarypractices     veterinarypractices       @relation(fields: [fk_veterinarypracticeid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  animals                 animals?                  @relation(fields: [fk_animalid], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  services                services?                 @relation(fields: [fk_serviceid], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  veterinaries            veterinaries              @relation(fields: [fk_veterinaryid], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  veterinarypractices     veterinarypractices       @relation(fields: [fk_veterinarypracticeid], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }
 
 model person_has_animal {
   fk_personid Int
   fk_animalid Int
-  animals     animals @relation(fields: [fk_animalid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  animals     animals @relation(fields: [fk_animalid], references: [id], onDelete: Cascade, onUpdate: NoAction)
   persons     persons @relation(fields: [fk_personid], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@id([fk_personid, fk_animalid])
@@ -89,7 +89,7 @@ model persons {
   password                                String                                    @db.VarChar(255)
   person_has_animal                       person_has_animal[]
   person_has_favorized_veterinarypractice person_has_favorized_veterinarypractice[]
-  addresses                               addresses                                 @relation(fields: [fk_address], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  addresses                               addresses                                 @relation(fields: [fk_address], references: [id], onDelete: Cascade, onUpdate: NoAction)
   veterinaries                            veterinaries?
 }
 
@@ -98,8 +98,8 @@ model veterinaries {
   infoemail                       String?                           @db.VarChar(100)
   fk_veterinarypractice           Int?
   appointments                    appointments[]
-  veterinarypractices             veterinarypractices?              @relation(fields: [fk_veterinarypractice], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  persons                         persons                           @relation(fields: [id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  veterinarypractices             veterinarypractices?              @relation(fields: [fk_veterinarypractice], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  persons                         persons                           @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   veterinary_can_treat_animaltype veterinary_can_treat_animaltype[]
   veterinary_has_invitation       veterinary_has_invitation[]
   veterinary_has_service          veterinary_has_service[]
@@ -119,14 +119,14 @@ model veterinarypractices {
   person_has_favorized_veterinarypractice person_has_favorized_veterinarypractice[]
   veterinaries                            veterinaries[]
   veterinary_has_invitation               veterinary_has_invitation[]
-  addresses                               addresses                                 @relation(fields: [fk_addressid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  addresses                               addresses                                 @relation(fields: [fk_addressid], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }
 
 model animal_has_races {
   fk_animalid     Int
   fk_animalraceid Int
-  animals         animals     @relation(fields: [fk_animalid], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  animalraces     animalraces @relation(fields: [fk_animalraceid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  animals         animals     @relation(fields: [fk_animalid], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  animalraces     animalraces @relation(fields: [fk_animalraceid], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@id([fk_animalid, fk_animalraceid])
 }
@@ -136,8 +136,8 @@ model animal_has_vaccination {
   dateofvaccination DateTime     @db.Date
   fk_animalid       Int
   fk_vaccinationid  Int
-  animals           animals      @relation(fields: [fk_animalid], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  vaccinations      vaccinations @relation(fields: [fk_vaccinationid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  animals           animals      @relation(fields: [fk_animalid], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  vaccinations      vaccinations @relation(fields: [fk_vaccinationid], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }
 
 model animalgroup {
@@ -151,14 +151,14 @@ model animalraces {
   name             String             @db.VarChar(100)
   fk_animaltypeid  Int
   animal_has_races animal_has_races[]
-  animaltypes      animaltypes        @relation(fields: [fk_animaltypeid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  animaltypes      animaltypes        @relation(fields: [fk_animaltypeid], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }
 
 model appointment_has_review {
   fk_appointmentid Int
   fk_reviewid      Int
-  appointments     appointments @relation(fields: [fk_appointmentid], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  reviews          reviews      @relation(fields: [fk_reviewid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  appointments     appointments @relation(fields: [fk_appointmentid], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  reviews          reviews      @relation(fields: [fk_reviewid], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@id([fk_appointmentid, fk_reviewid])
 }
@@ -176,8 +176,8 @@ model recipes {
   starting        DateTime    @db.Date
   enddate         DateTime    @db.Date
   instructions    String?
-  animals         animals     @relation(fields: [fk_animalid], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  medications     medications @relation(fields: [fk_medicationid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  animals         animals     @relation(fields: [fk_animalid], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  medications     medications @relation(fields: [fk_medicationid], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
@@ -211,8 +211,8 @@ model veterinary_has_invitation {
   fk_veterinaryid         Int
   fk_veterinarypracticeid Int
   dateofinvitation        DateTime            @db.Date
-  veterinaries            veterinaries        @relation(fields: [fk_veterinaryid], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  veterinarypractices     veterinarypractices @relation(fields: [fk_veterinarypracticeid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  veterinaries            veterinaries        @relation(fields: [fk_veterinaryid], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  veterinarypractices     veterinarypractices @relation(fields: [fk_veterinarypracticeid], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@id([fk_veterinaryid, fk_veterinarypracticeid])
 }
@@ -220,8 +220,8 @@ model veterinary_has_invitation {
 model person_has_favorized_veterinarypractice {
   fk_personid             Int
   fk_veterinarypracticeid Int
-  veterinarypractices     veterinarypractices @relation(fields: [fk_veterinarypracticeid], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "person_has_favorized_veterinarypra_fk_veterinarypracticeid_fkey")
-  persons                 persons             @relation(fields: [fk_personid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  veterinarypractices     veterinarypractices @relation(fields: [fk_veterinarypracticeid], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "person_has_favorized_veterinarypra_fk_veterinarypracticeid_fkey")
+  persons                 persons             @relation(fields: [fk_personid], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@id([fk_personid, fk_veterinarypracticeid])
 }
@@ -229,8 +229,8 @@ model person_has_favorized_veterinarypractice {
 model appointment_has_service {
   fk_appointmentid Int
   fk_serviceid     Int
-  appointments     appointments @relation(fields: [fk_appointmentid], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  services         services     @relation(fields: [fk_serviceid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  appointments     appointments @relation(fields: [fk_appointmentid], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  services         services     @relation(fields: [fk_serviceid], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@id([fk_appointmentid, fk_serviceid])
 }
@@ -238,7 +238,7 @@ model appointment_has_service {
 model veterinary_can_treat_animaltype {
   fk_veterinaryid Int
   fk_animaltypeid Int
-  animaltypes     animaltypes  @relation(fields: [fk_animaltypeid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  animaltypes     animaltypes  @relation(fields: [fk_animaltypeid], references: [id], onDelete: Cascade, onUpdate: NoAction)
   veterinaries    veterinaries @relation(fields: [fk_veterinaryid], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@id([fk_veterinaryid, fk_animaltypeid])
@@ -248,7 +248,7 @@ model veterinary_has_service {
   fk_veterinaryid Int
   fk_serviceid    Int
   notiz           String?
-  services        services     @relation(fields: [fk_serviceid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  services        services     @relation(fields: [fk_serviceid], references: [id], onDelete: Cascade, onUpdate: NoAction)
   veterinaries    veterinaries @relation(fields: [fk_veterinaryid], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@id([fk_veterinaryid, fk_serviceid])
