@@ -23,16 +23,6 @@ export function VeterinaryPracticeList({
     queryFn: () => getVeterinaryPracticesByNameAddress({name: searchName, address: searchOrt, animalTypeIds: filterOptions.animalTypeIds, serviceTypeIds: filterOptions.serviceTypeIds}),
   })
 
-  // const {
-  //   isError: isErrorServices,
-  //   isSuccess: isSuccessServices,
-  //   data: dataServices,
-  // } = useQuery<ServiceType[]>({
-  //   queryKey: ['service'],
-  //   queryFn: ({practiceID}:string) => getServicesFromPractice(practiceID),
-  //   retry: false,
-  // })
-
   if (isSuccess) {
 
     if (data.length !== 0) {

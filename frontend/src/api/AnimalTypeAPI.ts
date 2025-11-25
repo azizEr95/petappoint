@@ -1,15 +1,15 @@
 import { AnimalTypeSchema, type AnimalTypeType } from "../../../shared/schemas/ZodSchemas"
 
-
 export const getAllAnimalTypes = async (id: string | undefined): Promise<AnimalTypeType[]> => {
     if(id !== undefined){
         return getAnimaltypesFromPractice(id);
     }
+
     const res = await fetch(
         import.meta.env.VITE_API_URL + '/animaltypes/all',
-    )
+    );
     if (!res.ok) {
-        throw new Error('Failed to fetch getAllAnimalTypes')
+        throw new Error('Failed to fetch getAllAnimalTypes');
     }
 
     const data = await res.json();
@@ -18,11 +18,10 @@ export const getAllAnimalTypes = async (id: string | undefined): Promise<AnimalT
 
 export const getAnimaltypesFromPractice = async (practiceId: string): Promise<Array<AnimalTypeType>> => {
     const res = await fetch(
-        import.meta.env.VITE_API_URL +
-        '/veterinary-practice/' + practiceId + '/animaltypes'
-    )
+        import.meta.env.VITE_API_URL + '/veterinary-practice/' + practiceId + '/animaltypes');
+
     if (!res.ok) {
-        throw new Error('Failed to fetch getAnimaltypesFromPractice')
+        throw new Error('Failed to fetch getAnimaltypesFromPractice');
     }
 
     const data = await res.json();

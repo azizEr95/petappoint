@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import type { ChangeEvent } from 'react'
 import '../../styles/routes/search.scss'
