@@ -7,8 +7,8 @@ import '../../styles/components/common/SearchFilter.scss'
 
 type SearchFilterProps = {
     filterOptions: AppointmentFilterType
-    setFilterServiceType: (newServices: ServiceType[] | null) => void
-    setFilterAnimalType: (newAnimalType: AnimalTypeType | null) => void
+    setFilterServiceType: (newServices: number[] | null) => void
+    setFilterAnimalType: (newAnimalType: number[] | null) => void
     practicePage: VeterinaryPracticesType | null
 }
 
@@ -23,6 +23,7 @@ export function SearchFilter({ filterOptions, setFilterServiceType, setFilterAni
     });
 
     //get all ServiceType: enabled practicePage === nulll
+    
 
 
     // get all ServiceType: enabled practicePage !== null
@@ -42,9 +43,20 @@ export function SearchFilter({ filterOptions, setFilterServiceType, setFilterAni
         setFilterAnimalType(null);
     }
 
+    const checkSelectedAnimalType = (animaltype: AnimalTypeType): boolean =>  {
+        const findAnimalType = filterOptions.animalTypeIds?.find((animalId) => {
+            return animalId === animaltype.id
+        });
+          if(findAnimalType !== undefined){
+            return true;
+          } else {
+            return false;
+          }
+    }
+
     const checkSelectedServiceType = (service: ServiceType): boolean =>  {
-        const findServiceType = filterOptions.filterServiceType?.find((serv) => {
-            return service.id === serv.id; 
+        const findServiceType = filterOptions.serviceTypeIds?.find((servID) => {
+            return service.id === servID; 
           });
           if(findServiceType !== undefined){
             return true;
@@ -54,22 +66,25 @@ export function SearchFilter({ filterOptions, setFilterServiceType, setFilterAni
     }
 
     const handleChangeAnimalType = (animaltype: AnimalTypeType) => {
-        if(filterOptions.filterAnimalType?.id === animaltype.id){
+        const findAnimalType = filterOptions.animalTypeIds?.find((animalId) => {
+            return animalId === animaltype.id
+        })
+        if(findAnimalType !== undefined){
             setFilterAnimalType(null);
         } else {
-            setFilterAnimalType(animaltype);
+            setFilterAnimalType([animaltype.id]);
         }
     }
 
     const handleChangeServiceType = (service: ServiceType) => {
-        const findServiceType = filterOptions.filterServiceType?.find((serv) => {
-            return service.id === serv.id; 
+        const findServiceType = filterOptions.serviceTypeIds?.find((servId) => {
+            return service.id === servId; 
           });
         
         if(findServiceType !== undefined){
             // delete these service from array
-            let selectedServices = filterOptions.filterServiceType?.slice();
-            selectedServices?.filter((serv) => serv.id !== service.id);
+            let selectedServices = filterOptions.serviceTypeIds?.slice();
+            selectedServices?.filter((servId) => servId !== service.id);
             if(selectedServices !== undefined){ // it schould be always !== undefined
                 setFilterServiceType(selectedServices);
             } else {
@@ -77,8 +92,8 @@ export function SearchFilter({ filterOptions, setFilterServiceType, setFilterAni
             }
         } else {
             // add these service to array
-            let selectedServices = filterOptions.filterServiceType?.slice();
-            selectedServices?.push(service)
+            let selectedServices = filterOptions.serviceTypeIds?.slice();
+            selectedServices?.push(service.id)
             if(selectedServices !== undefined){ // it schould be always !== undefined
                 setFilterServiceType(selectedServices);
             } else {
@@ -113,7 +128,7 @@ export function SearchFilter({ filterOptions, setFilterServiceType, setFilterAni
                 <Form.Group className="mb-3">
                     <Form.Label>Tierart:</Form.Label>
                     {animaltypes.map((animaltype) => {
-                        return <Form.Check type="radio" id={animaltype.id.toString()} key={animaltype.id.toString()} label={animaltype.name} name="selectAnimaltype" value={animaltype.id} checked={animaltype.id === filterOptions.filterAnimalType?.id} onChange={() => {}} onClick={() => handleChangeAnimalType(animaltype)}/>;
+                        return <Form.Check type="radio" id={animaltype.id.toString()} key={animaltype.id.toString()} label={animaltype.name} name="selectAnimaltype" value={animaltype.id} checked={checkSelectedAnimalType(animaltype)} onChange={() => {}} onClick={() => handleChangeAnimalType(animaltype)}/>;
                     })}
                 </Form.Group>
                 <Form.Group className="mb-3">
@@ -125,7 +140,7 @@ export function SearchFilter({ filterOptions, setFilterServiceType, setFilterAni
             </Modal.Body>
 
             <Modal.Footer>
-                <Button onClick={handleDeleteFilter} variant="outline" disabled={filterOptions.filterAnimalType === null && filterOptions.filterServiceType === null}>Filter entfernen</Button>
+                <Button onClick={handleDeleteFilter} variant="outline" disabled={filterOptions.animalTypeIds === null && filterOptions.serviceTypeIds === null}>Filter entfernen</Button>
                 <Button onClick={handleCloseFilterDialog}>Ergebnisse anzeigen</Button>
             </Modal.Footer>
         </Modal>

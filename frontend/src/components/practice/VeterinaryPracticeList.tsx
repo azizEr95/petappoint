@@ -20,10 +20,7 @@ export function VeterinaryPracticeList({
     Array<VeterinaryPracticesType>
   >({
     queryKey: ['tierarztpraxen', searchName, searchOrt],
-    queryFn: () => getVeterinaryPracticesByNameAddress({name: searchName, address: searchOrt, filter: {
-      animalTypeIds: [],
-      serviceTypeIds: []
-    }}),
+    queryFn: () => getVeterinaryPracticesByNameAddress({name: searchName, address: searchOrt, animalTypeIds: filterOptions.animalTypeIds, serviceTypeIds: filterOptions.serviceTypeIds}),
   })
 
   // const {

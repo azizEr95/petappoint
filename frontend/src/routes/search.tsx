@@ -1,24 +1,25 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { SearchField } from '../components/common/SearchField'
 import { VeterinaryPracticeList } from '../components/practice/VeterinaryPracticeList'
-import { VeterinarySearchQuerySchema, type AnimalTypeType, type AppointmentFilterType, type ServiceType } from '../../../shared/schemas/ZodSchemas'
+import { VeterinaryPracticeSearchQuerySchema, type AppointmentFilterType } from '../../../shared/schemas/ZodSchemas'
 import { SearchFilter} from '../components/common/SearchFilter'
 import { useState } from 'react'
 
 export const Route = createFileRoute('/search')({
-  validateSearch: VeterinarySearchQuerySchema,
+  validateSearch: VeterinaryPracticeSearchQuerySchema,
   component: SearchComponent,
 })
 
 function SearchComponent() {
   const { name, address } = Route.useSearch();
-  const [filterServiceType, setFilterServiceType] = useState<ServiceType[] | null>(null); // if null there is no filter
-  const [filterAnimalType, setFilterAnimalType] = useState<AnimalTypeType| null>(null); // if null there is no filter
+  const [filterServiceType, setFilterServiceType] = useState<number[] | null>(null); // if null there is no filter
+  const [filterAnimalType, setFilterAnimalType] = useState<number[] | null>(null); // if null there is no filter
 
   const filterOptions: AppointmentFilterType = {
-    filterServiceType: filterServiceType,
-    filterAnimalType: filterAnimalType
+    animalTypeIds: filterAnimalType !== null ? filterAnimalType : [],
+    serviceTypeIds: filterServiceType !== null ? filterServiceType : [],
   }
+  console.log(filterOptions)
 
   return (
     <>
