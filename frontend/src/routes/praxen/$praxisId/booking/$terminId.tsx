@@ -1,18 +1,13 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import '../../../../styles/routes/bookingPage.scss'
 import { useEffect, useState } from 'react'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { SelectAppointmentType } from '../../../../components/booking/SelectAppointmentType'
 import { SelectAnimal } from '../../../../components/booking/SelectAnimal'
 import BookingStepper from '../../../../components/booking/BookingStepper'
 import { getVeterinaryPracticesById } from '../../../../api/VeterinaryPracticeAPI'
-import {
-  bookAppointment,
-  getAppointmentsById,
-} from '../../../../api/AppointmentsAPI'
-import {
-  getServicesFromPractice
-} from '../../../../api/ServicesAPI'
+import { getAppointmentsById } from '../../../../api/AppointmentsAPI'
+import { getServicesFromPractice } from '../../../../api/ServicesAPI'
 import type {
   AnimalsType,
   AppointmentsType,
@@ -71,9 +66,7 @@ function BookingComponent() {
   // these services are not needed in this component
   let services: ServiceType[]
   const {
-    isError: isErrorServices,
     isSuccess: isSuccessServices,
-    isPending: isPendingServices,
     data: dataServices,
   } = useQuery<ServiceType[]>({
     queryKey: ['service', praxisId],
@@ -81,29 +74,8 @@ function BookingComponent() {
     retry: false,
   })
 
-  type AppoinmentBookingPayload = {
-    appointmentID: number
-    animalID: number
-    serviceID: number | null
-  }
-
-  // edit appoinment, set animalID and serviceID
-  const { mutate: mutateAppointment } = useMutation({
-    mutationFn: ({
-      appointmentID,
-      animalID,
-      serviceID,
-    }: AppoinmentBookingPayload) =>
-      bookAppointment(appointmentID, animalID, serviceID),
-    onError: () => {
-      // appoinment is not available anymore
-      navigate({ to: '/praxen/' + praxisId })
-    },
-    onSuccess: () => {
-      // appointment was successful booked
-      navigate({ to: '/appointments', state: { appointment: termin } })
-    },
-  })
+  // Note: API call moved to confirmation page
+  // This mutation is no longer used here
 
   useEffect(() => {
     if (isPendingPractice || isPendingAppointment) {
@@ -159,12 +131,15 @@ function BookingComponent() {
       // no animal or appointmentType was selected, booking is not possible
       navigate({ to: '/praxen/' + praxisId + '/booking/' + terminId })
     } else {
-      const serviceID = selectedAppointmentType.id
-
-      mutateAppointment({
-        appointmentID: termin.id,
-        animalID: selectedAnimal?.id,
-        serviceID: serviceID,
+      // Navigate to confirmation page with all booking data
+      navigate({
+        to: '/booking/confirmation',
+        state: {
+          appointment: termin,
+          selectedAnimal: selectedAnimal,
+          selectedService: selectedAppointmentType,
+          practice: praxis
+        },
       })
     }
   }
@@ -209,8 +184,8 @@ function BookingComponent() {
             onClick={handleBookAppoinment}
             disabled={!selectedAnimal}
           >
-            <i className="bi bi-check-circle"></i>
-            Terminbuchung bestätigen
+            <i className="bi bi-arrow-right-circle"></i>
+            Weiter zur Zusammenfassung
           </button>
         </div>
       )

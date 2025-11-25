@@ -15,6 +15,7 @@ import { Route as AppointmentsRouteImport } from './routes/appointments'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as RegistrationVeterinaryRouteImport } from './routes/registration/veterinary'
 import { Route as RegistrationPersonRouteImport } from './routes/registration/person'
+import { Route as BookingConfirmationRouteImport } from './routes/booking/confirmation'
 import { Route as PraxenPraxisIdIndexRouteImport } from './routes/praxen/$praxisId/index'
 import { Route as PraxenPraxisIdBookingTerminIdRouteImport } from './routes/praxen/$praxisId/booking/$terminId'
 
@@ -48,6 +49,11 @@ const RegistrationPersonRoute = RegistrationPersonRouteImport.update({
   path: '/registration/person',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BookingConfirmationRoute = BookingConfirmationRouteImport.update({
+  id: '/booking/confirmation',
+  path: '/booking/confirmation',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PraxenPraxisIdIndexRoute = PraxenPraxisIdIndexRouteImport.update({
   id: '/praxen/$praxisId/',
   path: '/praxen/$praxisId/',
@@ -65,6 +71,7 @@ export interface FileRoutesByFullPath {
   '/appointments': typeof AppointmentsRoute
   '/login': typeof LoginRoute
   '/search': typeof SearchRoute
+  '/booking/confirmation': typeof BookingConfirmationRoute
   '/registration/person': typeof RegistrationPersonRoute
   '/registration/veterinary': typeof RegistrationVeterinaryRoute
   '/praxen/$praxisId': typeof PraxenPraxisIdIndexRoute
@@ -75,6 +82,7 @@ export interface FileRoutesByTo {
   '/appointments': typeof AppointmentsRoute
   '/login': typeof LoginRoute
   '/search': typeof SearchRoute
+  '/booking/confirmation': typeof BookingConfirmationRoute
   '/registration/person': typeof RegistrationPersonRoute
   '/registration/veterinary': typeof RegistrationVeterinaryRoute
   '/praxen/$praxisId': typeof PraxenPraxisIdIndexRoute
@@ -86,6 +94,7 @@ export interface FileRoutesById {
   '/appointments': typeof AppointmentsRoute
   '/login': typeof LoginRoute
   '/search': typeof SearchRoute
+  '/booking/confirmation': typeof BookingConfirmationRoute
   '/registration/person': typeof RegistrationPersonRoute
   '/registration/veterinary': typeof RegistrationVeterinaryRoute
   '/praxen/$praxisId/': typeof PraxenPraxisIdIndexRoute
@@ -98,6 +107,7 @@ export interface FileRouteTypes {
     | '/appointments'
     | '/login'
     | '/search'
+    | '/booking/confirmation'
     | '/registration/person'
     | '/registration/veterinary'
     | '/praxen/$praxisId'
@@ -108,6 +118,7 @@ export interface FileRouteTypes {
     | '/appointments'
     | '/login'
     | '/search'
+    | '/booking/confirmation'
     | '/registration/person'
     | '/registration/veterinary'
     | '/praxen/$praxisId'
@@ -118,6 +129,7 @@ export interface FileRouteTypes {
     | '/appointments'
     | '/login'
     | '/search'
+    | '/booking/confirmation'
     | '/registration/person'
     | '/registration/veterinary'
     | '/praxen/$praxisId/'
@@ -129,6 +141,7 @@ export interface RootRouteChildren {
   AppointmentsRoute: typeof AppointmentsRoute
   LoginRoute: typeof LoginRoute
   SearchRoute: typeof SearchRoute
+  BookingConfirmationRoute: typeof BookingConfirmationRoute
   RegistrationPersonRoute: typeof RegistrationPersonRoute
   RegistrationVeterinaryRoute: typeof RegistrationVeterinaryRoute
   PraxenPraxisIdIndexRoute: typeof PraxenPraxisIdIndexRoute
@@ -179,6 +192,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RegistrationPersonRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/booking/confirmation': {
+      id: '/booking/confirmation'
+      path: '/booking/confirmation'
+      fullPath: '/booking/confirmation'
+      preLoaderRoute: typeof BookingConfirmationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/praxen/$praxisId/': {
       id: '/praxen/$praxisId/'
       path: '/praxen/$praxisId'
@@ -201,6 +221,7 @@ const rootRouteChildren: RootRouteChildren = {
   AppointmentsRoute: AppointmentsRoute,
   LoginRoute: LoginRoute,
   SearchRoute: SearchRoute,
+  BookingConfirmationRoute: BookingConfirmationRoute,
   RegistrationPersonRoute: RegistrationPersonRoute,
   RegistrationVeterinaryRoute: RegistrationVeterinaryRoute,
   PraxenPraxisIdIndexRoute: PraxenPraxisIdIndexRoute,
