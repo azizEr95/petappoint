@@ -169,17 +169,17 @@ export const appointmentService = {
           }
         }),
         ... (filter && filter.serviceTypeIds && {
-          veterinarypractices: {
-            veterinaries: {
-              some: {
-                veterinary_has_service: {
-                  some: {
-                    fk_serviceid: { in: filter.serviceTypeIds }
-                  }
+          OR: [
+            { fk_serviceid: { in: filter.serviceTypeIds } },
+            {
+              fk_serviceid: null,
+              services: {
+                id: {
+                  in: filter.serviceTypeIds
                 }
               }
             }
-          }
+          ]
         }),
         //
       },
@@ -246,17 +246,17 @@ export const appointmentService = {
           }
         }),
         ... (filter && filter.serviceTypeIds && {
-          veterinarypractices: {
-            veterinaries: {
-              some: {
-                veterinary_has_service: {
-                  some: {
-                    fk_serviceid: { in: filter.serviceTypeIds }
-                  }
+          OR: [
+            { fk_serviceid: { in: filter.serviceTypeIds } },
+            {
+              fk_serviceid: null,
+              services: {
+                id: {
+                  in: filter.serviceTypeIds
                 }
               }
             }
-          }
+          ]
         }),
         //
       },
@@ -349,17 +349,17 @@ export const appointmentService = {
           }
         }),
         ... (filter && filter.serviceTypeIds && {
-          veterinarypractices: {
-            veterinaries: {
-              some: {
-                veterinary_has_service: {
-                  some: {
-                    fk_serviceid: { in: filter.serviceTypeIds }
-                  }
+          OR: [
+            { fk_serviceid: { in: filter.serviceTypeIds } },
+            {
+              fk_serviceid: null,
+              services: {
+                id: {
+                  in: filter.serviceTypeIds
                 }
               }
             }
-          }
+          ]
         }),
         //
       },
@@ -440,17 +440,38 @@ export const appointmentService = {
           }
         }),
         ... (filter && filter.serviceTypeIds && {
-          veterinarypractices: {
-            veterinaries: {
-              some: {
-                veterinary_has_service: {
-                  some: {
-                    fk_serviceid: { in: filter.serviceTypeIds }
-                  }
+          OR: [
+            {
+              fk_serviceid: null,
+              services: {
+                id: {
+                  in: filter.serviceTypeIds
                 }
               }
+            },
+            {
+              AND: [
+                {
+                  services: {
+                    appointment_has_service: {
+                      none: {}
+                    }
+                  },
+                },
+                {
+                  veterinaries: {
+                    veterinary_has_service: {
+                      some: {
+                        services: {
+                          id: { in: filter.serviceTypeIds }
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
             }
-          }
+          ]
         }),
         //
       },
@@ -543,17 +564,7 @@ export const appointmentService = {
           }
         }),
         ... (filter && filter.serviceTypeIds && {
-          veterinarypractices: {
-            veterinaries: {
-              some: {
-                veterinary_has_service: {
-                  some: {
-                    fk_serviceid: { in: filter.serviceTypeIds }
-                  }
-                }
-              }
-            }
-          }
+          fk_serviceid: { in: filter.serviceTypeIds },
         }),
         //
       },
@@ -646,17 +657,7 @@ export const appointmentService = {
           }
         }),
         ... (filter && filter.serviceTypeIds && {
-          veterinarypractices: {
-            veterinaries: {
-              some: {
-                veterinary_has_service: {
-                  some: {
-                    fk_serviceid: { in: filter.serviceTypeIds }
-                  }
-                }
-              }
-            }
-          }
+          fk_serviceid: { in: filter.serviceTypeIds },
         }),
         //
       },
