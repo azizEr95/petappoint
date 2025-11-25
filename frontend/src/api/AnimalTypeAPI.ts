@@ -1,7 +1,10 @@
 import { AnimalTypeSchema, type AnimalTypeType } from "../../../shared/schemas/ZodSchemas"
 
 
-export const getAllAnimalTypes = async (): Promise<AnimalTypeType[]> => {
+export const getAllAnimalTypes = async (id: string | undefined): Promise<AnimalTypeType[]> => {
+    if(id !== undefined){
+        return getAnimaltypesFromPractice(id);
+    }
     const res = await fetch(
         import.meta.env.VITE_API_URL + '/animaltypes/all',
     )

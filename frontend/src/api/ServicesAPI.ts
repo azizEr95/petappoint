@@ -15,7 +15,10 @@ export const getServicesFromPractice = async (practiceId: string): Promise<Array
     return parseServiceArray(data);
 }
 
-export const getAllAvailableServices = async (): Promise<Array<ServiceType>> => {
+export const getAllAvailableServices = async (id: string | undefined): Promise<Array<ServiceType>> => {
+    if(id !== undefined){
+        return getServicesFromPractice(id);
+    }
     const res = await fetch(
         import.meta.env.VITE_API_URL +
         '/services/all/available/'

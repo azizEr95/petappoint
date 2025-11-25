@@ -19,8 +19,8 @@ function VeterinaryPractice() {
   const { praxisId } = Route.useParams()
   let practice = location.state?.practice
   let filterOptions = location.state?.filterOptions
-  const [filterServiceType, setFilterServiceType] = useState<number[]>(filterOptions?.serviceTypeIds !== undefined ? filterOptions.serviceTypeIds : []); // if null there is no filter
-  const [filterAnimalType, setFilterAnimalType] = useState<number[]>(filterOptions?.animalTypeIds !== undefined ? filterOptions.animalTypeIds : []); // if null there is no filter
+  const [filterServiceType, setFilterServiceType] = useState<number[]>(filterOptions?.serviceTypeIds !== undefined ? filterOptions.serviceTypeIds : []);
+  const [filterAnimalType, setFilterAnimalType] = useState<number[]>(filterOptions?.animalTypeIds !== undefined ? filterOptions.animalTypeIds : []);
 
   filterOptions = {
     animalTypeIds: filterAnimalType,
@@ -150,7 +150,7 @@ function VeterinaryPractice() {
           <div className="appointments-header-section flex-row">
             <h2>Verfügbare Termine</h2>
             <div id="FilterPracticePage">
-              <SearchFilter filterOptions={filterOptions} setFilterServiceType={setFilterServiceType} setFilterAnimalType={setFilterAnimalType} practicePage={practice} searchFilter={null} />
+              <SearchFilter filterOptions={filterOptions} setFilterServiceType={setFilterServiceType} setFilterAnimalType={setFilterAnimalType} practicePage={practice} searchFilter={null} landingPage={false}/>
             </div>
           </div>
           <NextAvailableAppointments praxisID={practice.id.toString()} filterOptions={filterOptions} />

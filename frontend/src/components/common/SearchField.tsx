@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import type { ChangeEvent } from 'react'
 import '../../styles/routes/search.scss'
@@ -7,10 +7,12 @@ import type { VeterinaryPracticeSearchQueryType } from '../../../../shared/schem
 
 type SearchFieldProps = {
   searchFilter: VeterinaryPracticeSearchQueryType
+  handleChangeNameAddress?: (name: string | undefined, address: string | undefined) => void // if this is not undefined, then is this the SearchField on the LandingPage
 }
 
 export function SearchField({
-  searchFilter
+  searchFilter,
+  handleChangeNameAddress
 }: SearchFieldProps) {
   const [searchTermName, setSearchTermName] = useState(searchFilter.name)
   const [searchTermOrt, setSearchTermOrt] = useState(searchFilter.address)
@@ -25,9 +27,15 @@ export function SearchField({
     switch (typ) {
       case 'Name':
         setSearchTermName(wert)
+        if (handleChangeNameAddress !== undefined) {
+          handleChangeNameAddress(wert, undefined);
+        }
         break
       case 'Ort':
         setSearchTermOrt(wert)
+        if (handleChangeNameAddress !== undefined) {
+          handleChangeNameAddress(undefined, wert);
+        }
         break
     }
   }
@@ -37,7 +45,7 @@ export function SearchField({
       to: '/search',
       search: {
         name: searchTermName,
-        address:  searchTermOrt,
+        address: searchTermOrt,
         animalType: searchFilter.animalTypeIds?.join("-") ?? "",
         serviceType: searchFilter.serviceTypeIds?.join("-") ?? ""
       },

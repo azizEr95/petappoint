@@ -61,7 +61,7 @@ export function AnimalEditNewDialog({ hideDialogNewAnimal, animalEdit }: AnimalE
     // get all Animaltypes 
     const { isSuccess: isSuccessAnimalType, data: dataAnimalType } = useQuery<Array<AnimalTypeType>>({
         queryKey: ['allAnimaltypes'],
-        queryFn: () => getAllAnimalTypes(),
+        queryFn: () => getAllAnimalTypes(undefined),
         retry: false
     });
 

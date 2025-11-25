@@ -42,7 +42,7 @@ function SearchComponent() {
       <div className="search-header-sticky">
         <div className="container search-bar-container flex-column">
           <SearchField searchFilter={searchFilter} />
-          <SearchFilter searchFilter={searchFilter} filterOptions={filterOptions} setFilterServiceType={setFilterServiceType} setFilterAnimalType={setFilterAnimalType} practicePage={null} />
+          <SearchFilter searchFilter={searchFilter} filterOptions={filterOptions} setFilterServiceType={setFilterServiceType} setFilterAnimalType={setFilterAnimalType} practicePage={null} landingPage={false}/>
         </div>
       </div>
 

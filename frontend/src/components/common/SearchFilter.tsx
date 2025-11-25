@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { Button, Form, Modal } from "react-bootstrap";
-import { getAllAnimalTypes, getAnimaltypesFromPractice } from "../../api/AnimalTypeAPI";
+import { getAllAnimalTypes } from "../../api/AnimalTypeAPI";
 import { useQuery } from "@tanstack/react-query";
 import type { AnimalTypeType, AppointmentFilterType, ServiceType, VeterinaryPracticeSearchQueryType, VeterinaryPracticesType } from "../../../../shared/schemas/ZodSchemas";
 import '../../styles/components/common/SearchFilter.scss'
-import { getAllAvailableServices, getServicesFromPractice } from "../../api/ServicesAPI";
+import { getAllAvailableServices } from "../../api/ServicesAPI";
 import { useNavigate } from "@tanstack/react-router";
 
 type SearchFilterProps = {
@@ -13,45 +13,27 @@ type SearchFilterProps = {
     setFilterServiceType: (newServices: number[]) => void
     setFilterAnimalType: (newAnimalType: number[]) => void
     practicePage: VeterinaryPracticesType | null
+    landingPage: boolean
 }
 
-export function SearchFilter({ searchFilter, filterOptions, setFilterServiceType, setFilterAnimalType, practicePage }: SearchFilterProps) {
+export function SearchFilter({ searchFilter, filterOptions, setFilterServiceType, setFilterAnimalType, practicePage, landingPage }: SearchFilterProps) {
     const navigate = useNavigate();
     const [showFilterDialog, setShowFilterDialog] = useState<boolean>(false);
     const [filterServiceTypeLocal, setFilterServiceTypeLocal] = useState<number[]>(filterOptions.serviceTypeIds !== undefined ? filterOptions.serviceTypeIds : []);
     const [filterAnimalTypeLocal, setFilterAnimalTypeLocal] = useState<number[]>(filterOptions.animalTypeIds !== undefined ? filterOptions.animalTypeIds : []);
-    const [practice, setPractice] = useState<VeterinaryPracticesType | null>(practicePage);
 
-    // get all Animaltypes 
+    // get Animaltypes 
     const { isSuccess: isSuccessAnimalType, data: dataAnimalType } = useQuery<Array<AnimalTypeType>>({
-        queryKey: ['allAnimaltypes'],
-        queryFn: () => getAllAnimalTypes(),
-        retry: false,
-        enabled: practicePage === null
+        queryKey: ['allAnimaltypes', practicePage?.id],
+        queryFn: () => getAllAnimalTypes(practicePage?.id?.toString()), // if id is not undefined API calls animaltypes for practice, otherwise all animaltypes
+        retry: false
     });
 
-    //get all ServiceType
+    //get ServiceType
     const { isSuccess: isSuccessAllAvailableServices, data: dataAllAvailableServices } = useQuery<Array<ServiceType>>({
-        queryKey: ['allAvailableServicetypes'],
-        queryFn: () => getAllAvailableServices(),
-        retry: false,
-        enabled: practicePage === null
-    });
-
-    // get all ServiceType from practice
-    const { isSuccess: isSuccessServicesPractice, data: dataServicesPractice } = useQuery<Array<ServiceType>>({
-        queryKey: ['ServicetypesPractice', practice?.id],
-        queryFn: () => getServicesFromPractice(practice?.id.toString() ?? ""), // id is always !== undefined because of enabled condition
-        retry: false,
-        enabled: practicePage !== null
-    });
-
-    // get all AnimalTypes from practice
-    const { isSuccess: isSuccessAnimaltypesPractice, isPending: isPendingAnimaltypesPractice, data: dataAnimaltypesPractice } = useQuery<Array<AnimalTypeType>>({
-        queryKey: ['AnimaltypesPractice', practice?.id],
-        queryFn: () => getAnimaltypesFromPractice(practice?.id.toString() ?? ""), // id is always !== undefined because of enabled condition
-        retry: false,
-        enabled: practicePage !== null
+        queryKey: ['allAvailableServicetypes', practicePage?.id],
+        queryFn: () => getAllAvailableServices(practicePage?.id.toString()), // if id is not undefined API calls servicetypes for practice, otherwise all servicetypes
+        retry: false
     });
 
     const handleOpenFilterDialog = () => {
@@ -59,9 +41,17 @@ export function SearchFilter({ searchFilter, filterOptions, setFilterServiceType
     }
 
     const handleCloseFilterDialog = () => {
+        if(!landingPage){
+            handleSubmitFilterDialog();
+        } else {
+            setShowFilterDialog(false);
+        }
+    }
+
+    const handleSubmitFilterDialog = () => {
         setFilterServiceType(filterServiceTypeLocal)
         setFilterAnimalType(filterAnimalTypeLocal)
-        if (practice === null && searchFilter !== null) { // searchFilter is null when it is an practicePage
+        if (practicePage === null && searchFilter !== null) { // searchFilter is null when it is an practicePage
             navigate({
                 to: '/search',
                 search: {
@@ -139,22 +129,14 @@ export function SearchFilter({ searchFilter, filterOptions, setFilterServiceType
         }
     }
 
-    let animaltypes: AnimalTypeType[];
-    if (isSuccessAnimalType && !isPendingAnimaltypesPractice) {
+    let animaltypes: AnimalTypeType[] = [];
+    if (isSuccessAnimalType ){//&& !isPendingAnimaltypesPractice) {
         animaltypes = dataAnimalType;
-    } else if (isSuccessAnimaltypesPractice) {
-        animaltypes = dataAnimaltypesPractice;
-    } else {
-        animaltypes = [];
     }
 
-    let services: ServiceType[];
+    let services: ServiceType[] = [];
     if (isSuccessAllAvailableServices) {
         services = dataAllAvailableServices
-    } else if (isSuccessServicesPractice) {
-        services = dataServicesPractice;
-    } else {
-        services = [];
     }
 
     let activeFilter = 0;
@@ -192,7 +174,7 @@ export function SearchFilter({ searchFilter, filterOptions, setFilterServiceType
 
             <Modal.Footer>
                 <Button onClick={handleDeleteFilter} variant="outline" disabled={filterAnimalTypeLocal === null && filterServiceTypeLocal === null}>Filter entfernen</Button>
-                <Button onClick={handleCloseFilterDialog}>Ergebnisse anzeigen</Button>
+                <Button onClick={handleSubmitFilterDialog}>Ergebnisse anzeigen</Button>
             </Modal.Footer>
         </Modal>
     </>;
