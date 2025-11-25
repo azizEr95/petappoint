@@ -4,7 +4,8 @@ import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { getAnimalsFromUser } from '../../api/AnimalsAPI'
 import type { AnimalsType } from '../../../../shared/schemas/ZodSchemas'
-import { AnimalDialog } from '../AnimalDialog'
+import { AnimalEditNewDialog } from '../animal/AnimalEditNewDialog'
+import { AnimalDeleteDialog } from '../animal/AnimalDeleteDialog'
 
 type SelectAnimalProps = {
     handleChangeAnimal: (animal: AnimalsType | null) => void
@@ -14,6 +15,8 @@ export function SelectAnimal({ handleChangeAnimal }: SelectAnimalProps) {
     const [selectedAnimal, setSelectedAnimal] = useState(-1);
     const [showDialogNewAnimal, setShowDialogNewAnimal] = useState(false);
     const [showDialogEditAnimal, setShowDialogEditAnimal] = useState<AnimalsType | null>(null);
+    const [showDialogDeleteAnimal, setShowDialogDeleteAnimal] = useState<AnimalsType | null>(null);
+
 
     const userId = 6; // for user with ID 6, to be changed...
     const { isSuccess, data } = useQuery<Array<AnimalsType>>({ // for this query is no error handling implemented, if the query fails
@@ -40,9 +43,18 @@ export function SelectAnimal({ handleChangeAnimal }: SelectAnimalProps) {
         setShowDialogEditAnimal(null);
     }
 
+    const hideDialogDeleteAnimal = () => {
+        setShowDialogDeleteAnimal(null);
+    }
+
     const handleAnimalEdit = (editAnimal: AnimalsType, e: React.MouseEvent<HTMLButtonElement>) => {
         e.stopPropagation();
         setShowDialogEditAnimal(editAnimal);
+    }
+
+    const handleAnimalDelete = (deleteAnimal: AnimalsType, e: React.MouseEvent<HTMLButtonElement>) => {
+        e.stopPropagation();
+        setShowDialogDeleteAnimal(deleteAnimal);
     }
 
     if (!isSuccess) {
@@ -69,6 +81,12 @@ export function SelectAnimal({ handleChangeAnimal }: SelectAnimalProps) {
                             >
                                 <i className="bi bi-pencil-fill"></i>
                             </button>
+                            <button
+                                className="delete-button"
+                                onClick={(e) => handleAnimalDelete(animal, e)}
+                            >
+                                <i className="bi bi-trash3"></i>
+                            </button>
                         </div>
                     ))}
                 </div>
@@ -82,8 +100,9 @@ export function SelectAnimal({ handleChangeAnimal }: SelectAnimalProps) {
                     Neues Tier anlegen
                 </Button>
             </div>
-            {showDialogNewAnimal && <AnimalDialog hideDialogNewAnimal={hideDialogNewAnimal} animalEdit={undefined}/>}
-            {showDialogEditAnimal !== null && <AnimalDialog hideDialogNewAnimal={hideDialogEditAnimal} animalEdit={showDialogEditAnimal}/>}
+            {showDialogNewAnimal && <AnimalEditNewDialog hideDialogNewAnimal={hideDialogNewAnimal} animalEdit={undefined}/>}
+            {showDialogEditAnimal !== null && <AnimalEditNewDialog hideDialogNewAnimal={hideDialogEditAnimal} animalEdit={showDialogEditAnimal}/>}
+            {showDialogDeleteAnimal !== null && <AnimalDeleteDialog hideDialogDeleteAnimal={hideDialogDeleteAnimal} animalDelete={showDialogDeleteAnimal} />}
         </>
     )
 }

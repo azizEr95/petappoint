@@ -115,7 +115,7 @@ animalsRouter.delete('/:animalId/races',
         const animalId = parseInt(req.params.animalId);
         try {
             await animalHasRacesService.deleteAllRacesFromAnimal(animalId);
-            res.status(204);
+            res.sendStatus(204);
         } catch (error) {
             res.sendStatus(500);
         }
