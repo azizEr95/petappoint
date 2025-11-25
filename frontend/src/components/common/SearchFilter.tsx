@@ -53,8 +53,8 @@ export function SearchFilter({ searchFilter, filterOptions, setFilterServiceType
             search: {
               name: searchFilter.name,
               address: searchFilter.address,
-              animalTypeIds: filterAnimalTypeLocal.join(","),
-              serviceTypeIds: filterServiceTypeLocal.join(",")
+              animalTypeIds: filterAnimalTypeLocal.join("-"),
+              serviceTypeIds: filterServiceTypeLocal.join("-")
             },
           })
         setShowFilterDialog(false);

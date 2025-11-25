@@ -14,9 +14,16 @@ export type VeterinaryPracticeSearch = {
 }
 
 export const Route = createFileRoute('/search')({
-  validateSearch: (search: VeterinaryPracticeSearch) => {
-    console.log(search.serviceTypeIds.toString())
-    return search;
+  validateSearch: (search: VeterinaryPracticeSearch): VeterinaryPracticeSearch => {
+    console.log(typeof search.serviceTypeIds)
+    let betterString = String(search.serviceTypeIds ?? '')
+    const cleanAnimalIds = betterString.replace(/"/g, '');
+    return {
+      name: search.name,
+      address: search.address,
+      animalTypeIds: search.animalTypeIds,
+      serviceTypeIds: cleanAnimalIds
+    };
   },
   component: SearchComponent,
 })
@@ -24,8 +31,8 @@ export const Route = createFileRoute('/search')({
 function SearchComponent() {
   const { name, address, animalTypeIds, serviceTypeIds } = Route.useSearch();
  
-  const [filterServiceType, setFilterServiceType] = useState<number[]>(stringToArray(serviceTypeIds));
-  const [filterAnimalType, setFilterAnimalType] = useState<number[]>(stringToArray(animalTypeIds));
+  const [filterServiceType, setFilterServiceType] = useState<number[]>(stringToArray(serviceTypeIds.toString()));
+  const [filterAnimalType, setFilterAnimalType] = useState<number[]>(stringToArray(animalTypeIds.toString()));
   console.log(filterServiceType)
 
   const filterOptions: AppointmentFilterType = {
@@ -126,7 +133,7 @@ function SearchComponent() {
 
 function stringToArray(text: string): number[] {
 
-  const array = Array.isArray(text) ? text : text.split(',');
+  const array = Array.isArray(text) ? text : text.split('-');
   return array
     .map(s => s.trim())
     .filter(s => s.length > 0)
