@@ -17,10 +17,9 @@ export function SelectAnimal({ handleChangeAnimal }: SelectAnimalProps) {
     const [showDialogEditAnimal, setShowDialogEditAnimal] = useState<AnimalsType | null>(null);
     const [showDialogDeleteAnimal, setShowDialogDeleteAnimal] = useState<AnimalsType | null>(null);
 
-
     const userId = 6; // for user with ID 6, to be changed...
-    const { isSuccess, data } = useQuery<Array<AnimalsType>>({ // for this query is no error handling implemented, if the query fails
-        queryKey: ['animals', userId, showDialogNewAnimal, showDialogEditAnimal],
+    const { isSuccess, isPending, data } = useQuery<Array<AnimalsType>>({ // for this query is no error handling implemented, if the query fails
+        queryKey: ['animals', userId],
         queryFn: () => getAnimalsFromUser(userId),
         retry: false
     });
@@ -61,7 +60,15 @@ export function SelectAnimal({ handleChangeAnimal }: SelectAnimalProps) {
         return null
     }
 
-    const animals = data
+    let animals = data;
+
+    // if selected animal was deleted, change the current selected animal
+    let selAnimal = animals.find((animal)=> {
+        return animal.id === selectedAnimal
+    })
+    if(selAnimal === undefined && selectedAnimal !== -1){
+        handleChangeAnimal(null);
+    }
 
     return (
         <>

@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState, type ChangeEvent } from "react";
 import { Button, Form, Modal, ToggleButton, ToggleButtonGroup } from "react-bootstrap";
 import { type AddRacesToAnimalType, type AnimalracesType, type AnimalsCreateType, type AnimalsType, type AnimalTypeType, type AnimalUpdateType, type sexesType } from "../../../../shared/schemas/ZodSchemas";
 import Select, { type MultiValue } from 'react-select';
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getAllAnimalTypes } from "../../api/AnimalTypeAPI";
 import { createAnimal, editAnimal } from "../../api/AnimalsAPI";
 import { addRacesToAnimal, deleteAllRacesFromAnimal, getRacesByAnimalID, getRacesByAnimalTypeID } from "../../api/AnimalRacesAPI";
@@ -16,6 +16,7 @@ type AnimalEditNewDialogProps = {
 
 // visibility from this component has to be handled from the parent component
 export function AnimalEditNewDialog({ hideDialogNewAnimal, animalEdit }: AnimalEditNewDialogProps) {
+    const queryClient = useQueryClient();
     const [animalTypeAnimal, setAnimalTypeAnimal] = useState<AnimalTypeType | undefined>(undefined);
     // variables for Modal Dialog NewAnimal
     const [name, setName] = useState("");
@@ -253,13 +254,13 @@ export function AnimalEditNewDialog({ hideDialogNewAnimal, animalEdit }: AnimalE
         onSuccess: () => { // animalraces was successful edited
             setErrorText("");
             hideDialogNewAnimal();
+            queryClient.invalidateQueries({ queryKey: ['animals'] });
         },
     });
 
     const { mutate: mutateDeleteAllRaces } = useMutation({
         mutationFn: (animalID: number) =>
             deleteAllRacesFromAnimal(animalID),
-
         onSuccess: () => {
             if (animalEdit !== undefined) { // is always not undefined because it is edit here
                 const addRaces: AddRacesToAnimalType = {
