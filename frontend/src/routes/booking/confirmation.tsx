@@ -41,7 +41,7 @@ function ConfirmationComponent() {
     } else {
       setStateLoaded(true)
     }
-  }, [state, navigate])
+  }, [])
 
   // Book appointment mutation
   const { mutate: mutateAppointment } = useMutation({
@@ -93,6 +93,10 @@ function ConfirmationComponent() {
   }
 
   const { appointment, selectedAnimal, selectedService, practice } = state
+  
+  if(practice === undefined){
+    return;
+  }
 
   // Show success message
   if (bookingStatus === 'success') {

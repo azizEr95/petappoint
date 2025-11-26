@@ -1,14 +1,14 @@
 import { AppointmentsSchema } from '../../../shared/schemas/ZodSchemas'
-import type { AppointmentsType } from '../../../shared/schemas/ZodSchemas'
+import type { AppointmentFilterType, AppointmentsType } from '../../../shared/schemas/ZodSchemas'
 
 // get one appointment by id
 export const getAppointmentsById = async (
     id: string,
 ): Promise<AppointmentsType> => {
-  const res = await fetch(import.meta.env.VITE_API_URL + '/appointments/' + id)
-  if (!res.ok) {
-    throw new Error('Failed to fetch getAppointmentsById')
-  }
+    const res = await fetch(import.meta.env.VITE_API_URL + '/appointments/' + id)
+    if (!res.ok) {
+        throw new Error('Failed to fetch getAppointmentsById')
+    }
 
     const data = await res.json();
     return parseAppointment(data);
@@ -17,16 +17,20 @@ export const getAppointmentsById = async (
 // get all available appointents from one practice
 export const getAvailableAppointmentsByPracticeId = async (
     practiceId: string,
+    filterOptions: AppointmentFilterType
 ): Promise<Array<AppointmentsType>> => {
-  const url =
-    import.meta.env.VITE_API_URL +
-    '/veterinary-practice/' +
-    practiceId +
-    '/appointments/available'
-  const res = await fetch(url)
-  if (!res.ok) {
-    throw new Error('Failed to fetch getAvailableAppointmentsByPracticeId')
-  }
+    const url = import.meta.env.VITE_API_URL + '/veterinary-practice/' + practiceId + '/appointments/available?';
+    let query = '';
+    if (filterOptions.animalTypeIds) {
+        query += `${query.length > 0 ? '&' : ''}animalTypeIds=${filterOptions.animalTypeIds.join(',')}`
+    }
+    if (filterOptions.serviceTypeIds) {
+        query += `${query.length > 0 ? '&' : ''}serviceTypeIds=${filterOptions.serviceTypeIds.join(',')}`
+    }
+    const res = await fetch(url + query)
+    if (!res.ok) {
+        throw new Error('Failed to fetch getAvailableAppointmentsByPracticeId')
+    }
 
     const data = await res.json() as AppointmentsType[];
     return parseAppointmentArray(data);
@@ -38,24 +42,24 @@ export const bookAppointment = async (appointmentID: number, animalID: number | 
         throw new Error('Failed to fetch bookAppointment: animalID null/undefined');
     }
 
-  const requestBody = {
-    id: appointmentID,
-    animalid: animalID,
-    serviceid: serviceID,
-  }
+    const requestBody = {
+        id: appointmentID,
+        animalid: animalID,
+        serviceid: serviceID,
+    }
 
-  const requestOptions = {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(requestBody),
-  }
-  const url = import.meta.env.VITE_API_URL + '/appointments/' + appointmentID
-  const res = await fetch(url, requestOptions)
-  if (!res.ok) {
-    throw new Error('Failed to fetch bookAppointment')
-  }
+    const requestOptions = {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody),
+    }
+    const url = import.meta.env.VITE_API_URL + '/appointments/' + appointmentID
+    const res = await fetch(url, requestOptions)
+    if (!res.ok) {
+        throw new Error('Failed to fetch bookAppointment')
+    }
 
     const data = await res.json();
     return parseAppointment(data);

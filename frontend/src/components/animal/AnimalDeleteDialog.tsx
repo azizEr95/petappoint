@@ -1,7 +1,7 @@
 import { Button, Modal } from "react-bootstrap";
 import type { AnimalsType } from "../../../../shared/schemas/ZodSchemas"
 import { deleteAnimal } from "../../api/AnimalsAPI";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 
 type AnimalDeleteDialogProps = {
@@ -11,20 +11,19 @@ type AnimalDeleteDialogProps = {
 
 // visibility from this component has to be handled from the parent component
 export function AnimalDeleteDialog({ hideDialogDeleteAnimal, animalDelete }: AnimalDeleteDialogProps) {
+    const queryClient = useQueryClient();
 
     const { mutate: mutateDeleteAnimal } = useMutation({
         mutationFn: (animalId: number) =>
             deleteAnimal(animalId),
-        onError: () => {
-            // setErrorText("Fehler beim Erstellen des Tieres");
-        },
         onSuccess: () => {
-            
+            queryClient.invalidateQueries({ queryKey: ['animals'] });
         },
     })
 
     const handleSubmitDeleteAnimal = () => {
         mutateDeleteAnimal(animalDelete.id);
+        hideDialogDeleteAnimal();
     }
 
     return <Modal show={true} onHide={hideDialogDeleteAnimal} className="animal-dialog">

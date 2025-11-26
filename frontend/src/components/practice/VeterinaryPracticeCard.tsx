@@ -2,26 +2,33 @@ import '../../styles/components/practice/VeterinaryPracticeCard.scss'
 import { useNavigate } from '@tanstack/react-router'
 import { NextAvailableAppointments } from './NextAvailableAppointments.tsx'
 import type { MouseEvent } from 'react'
-import type { VeterinaryPracticesType } from '../../../../shared/schemas/ZodSchemas'
+import type { AppointmentFilterType, VeterinaryPracticesType } from '../../../../shared/schemas/ZodSchemas'
+import { useQueryClient } from '@tanstack/react-query'
 
 type VeterinaryPracticeCardProps = {
   praxis: VeterinaryPracticesType
+  filterOptions: AppointmentFilterType
 }
 
 export function VeterinaryPracticeCard({
   praxis,
+  filterOptions
 }: VeterinaryPracticeCardProps) {
+  const queryClient = useQueryClient();
   const navigate = useNavigate()
 
   const openPraxisPage = (e: MouseEvent<HTMLDivElement>) => {
-    e.preventDefault()
+    e.preventDefault();
+    queryClient.invalidateQueries({ queryKey: ['AnimaltypesPractice'] });
+    queryClient.invalidateQueries({ queryKey: ['allAvailableServicetypes'] });
     navigate({
       to: '/praxen/$praxisId',
       params: {
         praxisId: praxis.id.toString(),
       },
       state: {
-        praxis: praxis,
+        practice: praxis,
+        filterOptions: filterOptions
       },
     })
   }
@@ -77,7 +84,7 @@ export function VeterinaryPracticeCard({
             Verfügbare Termine
           </h4>
           <div className="calendar-wrapper">
-            <NextAvailableAppointments praxisID={praxis.id.toString()} />
+            <NextAvailableAppointments praxisID={praxis.id.toString()} filterOptions={filterOptions}/>
           </div>
         </div>
       </div>

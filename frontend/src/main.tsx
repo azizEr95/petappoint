@@ -1,13 +1,27 @@
 import { StrictMode } from 'react'
 import ReactDOM from 'react-dom/client'
 import { RouterProvider, createRouter } from '@tanstack/react-router'
-
-// Import the generated route tree
-import { routeTree } from './routeTree.gen'
-
+import { routeTree } from './routeTree.gen' // Import the generated route tree
 import './styles/main.scss'
 import reportWebVitals from './reportWebVitals.ts'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+
+const customStringifySearch = (search: Record<string, any>) => {
+  const params = new URLSearchParams()
+
+  for (const key in search) {
+    const value = search[key]
+
+    if (value === undefined || value === null) {
+        continue
+    }
+    
+    if (typeof value === 'string') {
+        params.set(key, value)
+    }
+  }
+  return "?" + params.toString()
+}
 
 // Create a new router instance
 const router = createRouter({
@@ -17,7 +31,9 @@ const router = createRouter({
   scrollRestoration: true,
   defaultStructuralSharing: true,
   defaultPreloadStaleTime: 0,
+  stringifySearch: customStringifySearch
 })
+
 
 // Register the router instance for type safety
 declare module '@tanstack/react-router' {

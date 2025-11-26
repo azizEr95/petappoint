@@ -1,21 +1,21 @@
 import { useState } from 'react'
-import { Button } from 'react-bootstrap'
 import { useNavigate } from '@tanstack/react-router'
 import type { ChangeEvent } from 'react'
 import '../../styles/routes/search.scss'
 import '../../styles/components/common/SearchField.scss'
+import type { VeterinaryPracticeSearchQueryType } from '../../../../shared/schemas/ZodSchemas'
 
 type SearchFieldProps = {
-  searchNameBeginn: string
-  searchOrtBeginn: string
+  searchFilter: VeterinaryPracticeSearchQueryType
+  handleChangeNameAddress?: (name: string | undefined, address: string | undefined) => void // if this is not undefined, then is this the SearchField on the LandingPage
 }
 
 export function SearchField({
-  searchNameBeginn,
-  searchOrtBeginn,
+  searchFilter,
+  handleChangeNameAddress
 }: SearchFieldProps) {
-  const [searchTermName, setSearchTermName] = useState(searchNameBeginn)
-  const [searchTermOrt, setSearchTermOrt] = useState(searchOrtBeginn)
+  const [searchTermName, setSearchTermName] = useState(searchFilter.name)
+  const [searchTermOrt, setSearchTermOrt] = useState(searchFilter.address)
   const navigate = useNavigate()
 
   // bei Suche ohne Ortangabe aktuellen Standort nehmen??: https://wiki.selfhtml.org/wiki/Geolocation
@@ -27,9 +27,15 @@ export function SearchField({
     switch (typ) {
       case 'Name':
         setSearchTermName(wert)
+        if (handleChangeNameAddress !== undefined) {
+          handleChangeNameAddress(wert, undefined);
+        }
         break
       case 'Ort':
         setSearchTermOrt(wert)
+        if (handleChangeNameAddress !== undefined) {
+          handleChangeNameAddress(undefined, wert);
+        }
         break
     }
   }
@@ -39,7 +45,9 @@ export function SearchField({
       to: '/search',
       search: {
         name: searchTermName,
-        ort: searchTermOrt,
+        address: searchTermOrt,
+        animalType: searchFilter.animalTypeIds?.join("-") ?? "",
+        serviceType: searchFilter.serviceTypeIds?.join("-") ?? ""
       },
     })
   }
@@ -52,7 +60,7 @@ export function SearchField({
       <input
         type="text"
         className="search-input-clean"
-        placeholder="Tierarzt, Behandlung oder Klinik"
+        placeholder="Tierarzt oder Klinik"
         name="Name"
         value={searchTermName}
         onChange={handleChange}
