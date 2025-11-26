@@ -1,3 +1,102 @@
 #FilterButton {
-    margin-top: 1.5em;
+  background: white;
+  color: var(--color-primary);
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: var(--radius-full);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  white-space: nowrap;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  &:hover {
+    background: var(--color-primary-pale);
+    transform: scale(1.05);
+  }
+
+  i {
+    font-size: 1.1rem;
+  }
+
+  span {
+    background: var(--color-primary);
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+  }
+
+  @media (max-width: 768px) {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+// Landing page: button below search bar
+.hero-content #FilterButton {
+  margin-top: 1.5rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.animal-dialog {
+  .filter-group {
+    background: var(--color-primary-pale);
+    padding: var(--spacing-md);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--spacing-md);
+
+    .form-label {
+      font-weight: 600;
+      color: var(--color-primary-dark);
+      margin-bottom: var(--spacing-sm);
+      font-size: 1rem;
+    }
+
+    .form-check {
+      padding: 0.5rem 0;
+      margin-left: 1.5rem;
+
+      .form-check-input {
+        cursor: pointer;
+
+        &:checked {
+          background-color: var(--color-primary);
+          border-color: var(--color-primary);
+        }
+
+        &:focus {
+          box-shadow: 0 0 0 3px rgba(26, 93, 58, 0.1);
+        }
+      }
+
+      .form-check-label {
+        cursor: pointer;
+        margin-left: 0.5rem;
+      }
+    }
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  .modal-footer {
+    .btn {
+      flex: 1;
+
+      &.btn-primary {
+        color: white !important;
+      }
+    }
+  }
 }

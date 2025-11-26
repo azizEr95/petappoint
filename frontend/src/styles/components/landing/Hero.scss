@@ -49,6 +49,13 @@
   line-height: 1.6;
 }
 
+.search-wrapper {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: center;
+}
+
 @media (max-width: 768px) {
   .hero-clean {
     min-height: 500px;
@@ -69,5 +76,11 @@
 
   .hero-subtitle-clean {
     font-size: 1rem;
+  }
+
+  .search-wrapper {
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
   }
 }

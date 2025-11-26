@@ -40,7 +40,7 @@ function SearchComponent() {
     <>
       {/* Sticky Search Bar */}
       <div className="search-header-sticky">
-        <div className="container search-bar-container flex-column">
+        <div className="container search-bar-container">
           <SearchField searchFilter={searchFilter} />
           <SearchFilter searchFilter={searchFilter} filterOptions={filterOptions} setFilterServiceType={setFilterServiceType} setFilterAnimalType={setFilterAnimalType} practicePage={null} landingPage={false}/>
         </div>
@@ -78,8 +78,10 @@ function SearchComponent() {
 
         .search-bar-container {
           display: flex;
+          flex-direction: row;
           justify-content: center;
           align-items: center;
+          gap: 1rem;
         }
 
         .search-results-container {
@@ -112,6 +114,10 @@ function SearchComponent() {
           .search-header-sticky {
             position: relative;
             top: 0;
+          }
+
+          .search-bar-container {
+            flex-direction: column;
           }
         }
       `}</style>

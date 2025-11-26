@@ -147,34 +147,39 @@ export function SearchFilter({ searchFilter, filterOptions, setFilterServiceType
         activeFilter++;
     }
     return <>
-        <Button id="FilterButton" onClick={handleOpenFilterDialog}>
+        <Button id="FilterButton" variant="white" onClick={handleOpenFilterDialog}>
             <i className="bi bi-sliders"></i> Filter {activeFilter > 0 && <span>({activeFilter})</span>}
             </Button>
-        <Modal show={showFilterDialog} onHide={handleCloseFilterDialog}>
+        <Modal show={showFilterDialog} onHide={handleCloseFilterDialog} className="animal-dialog">
             <Modal.Header closeButton>
                 <Modal.Title>Filter</Modal.Title>
             </Modal.Header>
 
             <Modal.Body>
-                <Form.Group className="mb-3">
-                    <Form.Label>Tierart:</Form.Label>
-                    {animaltypes.map((animaltype) => {
-                        return <Form.Check type="radio" id={animaltype.id.toString() + animaltype.name} key={animaltype.id.toString() + animaltype.name} label={animaltype.name} name="selectAnimaltype" value={animaltype.id} checked={checkSelectedAnimalType(animaltype)} onChange={() => { }} onClick={() => handleChangeAnimalType(animaltype)} />;
-                    })}
-                    {animaltypes.length === 0 && <div>Diese Praxis hat keine Tierarten.</div>}
-                </Form.Group>
-                <Form.Group className="mb-3">
-                    <Form.Label>Terminart filtern:</Form.Label>
-                    {services.map((service) => {
-                        return <Form.Check type="checkbox" id={service.id.toString() + service.name} key={service.id.toString() + service.name} label={service.name} name="selectServiceType" value={service.id} checked={checkSelectedServiceType(service)} onChange={() => handleChangeServiceType(service)} />;
-                    })}
-                    {services.length === 0 && <div>Diese Praxis hat keine Terminarten.</div>}
-                </Form.Group>
+                <div className="filter-group">
+                    <Form.Group className="mb-3">
+                        <Form.Label>Tierart:</Form.Label>
+                        {animaltypes.map((animaltype) => {
+                            return <Form.Check type="radio" id={animaltype.id.toString() + animaltype.name} key={animaltype.id.toString() + animaltype.name} label={animaltype.name} name="selectAnimaltype" value={animaltype.id} checked={checkSelectedAnimalType(animaltype)} onChange={() => { }} onClick={() => handleChangeAnimalType(animaltype)} />;
+                        })}
+                        {animaltypes.length === 0 && <div>Diese Praxis hat keine Tierarten.</div>}
+                    </Form.Group>
+                </div>
+
+                <div className="filter-group">
+                    <Form.Group className="mb-3">
+                        <Form.Label>Terminart filtern:</Form.Label>
+                        {services.map((service) => {
+                            return <Form.Check type="checkbox" id={service.id.toString() + service.name} key={service.id.toString() + service.name} label={service.name} name="selectServiceType" value={service.id} checked={checkSelectedServiceType(service)} onChange={() => handleChangeServiceType(service)} />;
+                        })}
+                        {services.length === 0 && <div>Diese Praxis hat keine Terminarten.</div>}
+                    </Form.Group>
+                </div>
             </Modal.Body>
 
             <Modal.Footer>
-                <Button onClick={handleDeleteFilter} variant="outline" disabled={filterAnimalTypeLocal === null && filterServiceTypeLocal === null}>Filter entfernen</Button>
-                <Button onClick={handleSubmitFilterDialog}>Ergebnisse anzeigen</Button>
+                <Button onClick={handleDeleteFilter} variant="secondary" disabled={filterAnimalTypeLocal.length === 0 && filterServiceTypeLocal.length === 0}>Filter entfernen</Button>
+                <Button onClick={handleSubmitFilterDialog} variant="primary">Ergebnisse anzeigen</Button>
             </Modal.Footer>
         </Modal>
     </>;
