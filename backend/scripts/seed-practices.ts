@@ -71,7 +71,15 @@ function generateRandomStreet(): string {
 function generateRandomEmail(prefix: string): string {
   const timestamp = Date.now();
   const random = Math.floor(Math.random() * 10000);
-  return `${prefix.toLowerCase().replace(/\s/g, '')}-${timestamp}-${random}@example.de`;
+  const sanitized = prefix
+    .toLowerCase()
+    .replace(/\s/g, '')
+    .replace(/ä/g, 'ae')
+    .replace(/ö/g, 'oe')
+    .replace(/ü/g, 'ue')
+    .replace(/ß/g, 'ss')
+    .replace(/[^a-z0-9.-]/g, ''); // remove all non-ASCII chars
+  return `${sanitized}-${timestamp}-${random}@example.de`;
 }
 
 function generateRandomPhone(): string {
