@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState, type ChangeEvent } from "react";
-import { Button, Form, Modal, ToggleButton, ToggleButtonGroup } from "react-bootstrap";
+import { Button, Col, Container, Form, Modal, Row, ToggleButton, ToggleButtonGroup, Image } from "react-bootstrap";
 import { type AddRacesToAnimalType, type AnimalracesType, type AnimalsCreateType, type AnimalsType, type AnimalTypeType, type AnimalUpdateType, type sexesType } from "../../../../shared/schemas/ZodSchemas";
 import Select, { type MultiValue } from 'react-select';
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getAllAnimalTypes } from "../../api/AnimalTypeAPI";
-import { createAnimal, editAnimal } from "../../api/AnimalsAPI";
+import { createAnimal, editAnimal, getPictureURLForAnimalId, uploadPictureForAnimalId } from "../../api/AnimalsAPI";
 import { addRacesToAnimal, deleteAllRacesFromAnimal, getRacesByAnimalID, getRacesByAnimalTypeID } from "../../api/AnimalRacesAPI";
 import { compareDates, getDateStringFromDate } from "../../utils/DateToStringFormat";
 import '../../styles/components/AnimalDialog.scss';
@@ -57,6 +57,44 @@ export function AnimalEditNewDialog({ hideDialogNewAnimal, animalEdit }: AnimalE
         dateOfDeath: undefined,
         animalType: undefined
     });
+
+    // BEGIN IMAGE FORM
+    const [animalPictureURL, setAnimalPictureURL] = useState<string>(getPictureURLForAnimalId(animalEdit?.id ?? 0));
+    const [selectedPictureFile, setSelectedPictureFile] = useState<File>();
+    const handleFileSelect = (e) => {
+        console.log(e);
+        const file: File | undefined = e.target.files[0];
+        if (file) {
+            if (!file.type.startsWith('image/')) {
+                console.error("Does not start with image.")
+                return;
+            }
+
+            // 2MB max
+            if (file.size > (2 * 1024 * 1024)) {
+                console.error("File bigger than 2MB.")
+                return;
+            }
+
+            setSelectedPictureFile(file);
+
+
+        }
+    }
+    const onSubmitPicture = () => {
+        if (!selectedPictureFile) {
+            return;
+        }
+
+        console.log("Uploading image 333.")
+        if (animalEdit) {
+            console.log("Uploading image.")
+            uploadPictureForAnimalId(animalEdit.id, selectedPictureFile);
+            setAnimalPictureURL(getPictureURLForAnimalId(animalEdit.id));
+        }
+    };
+
+    // END IMAGE FORM
 
     // get all Animaltypes 
     const { isSuccess: isSuccessAnimalType, data: dataAnimalType } = useQuery<Array<AnimalTypeType>>({
@@ -555,6 +593,25 @@ export function AnimalEditNewDialog({ hideDialogNewAnimal, animalEdit }: AnimalE
             </Modal.Header>
 
             <Modal.Body>
+                {
+                    // TODO: ALIGN IMAGE CENTER HORIZONTAL
+                }
+                <Container>
+                    <Image src={animalPictureURL} width={200} height={200} roundedCircle onClick={handleFileSelect} />
+                    <Form>
+                        <Form.Group>
+                            <Form.Label>Bild auswählen</Form.Label>
+                            <Form.Control
+                                type="file"
+                                accept="image/*"
+                                onChange={handleFileSelect}
+                            />
+                        </Form.Group>
+                        <Button onClick={onSubmitPicture}>
+                            Upload
+                        </Button>
+                    </Form>
+                </Container>
                 <Form className="animal-form">
                     <Form.Group className="mb-3">
 

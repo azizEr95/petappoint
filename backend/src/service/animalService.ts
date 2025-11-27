@@ -1,6 +1,8 @@
 import { prisma } from "../singletonPC";
 import { animals, Prisma } from "../../generated/prisma";
 import { AnimalsCreateType, AnimalsType, AnimalUpdateType } from "vetlib-shared/schemas/ZodSchemas";
+import fs from "node:fs/promises";
+import path from "node:path";
 
 export const animalService = {
   async create(data: AnimalsCreateType): Promise<AnimalsType> {
@@ -15,7 +17,7 @@ export const animalService = {
         iscastrated: data.iscastrated,
         sex: data.sex,
         lifestyleisindoors: data.lifestyleisindoors,
-        animalgroup: data.animalgroupid ? {connect: {id: data.animalgroupid}}: undefined,
+        animalgroup: data.animalgroupid ? { connect: { id: data.animalgroupid } } : undefined,
         animaltypes: {
           connect: {
             id: data.animaltypeid,
@@ -92,4 +94,50 @@ export const animalService = {
   async delete(id: number): Promise<void> {
     await prisma.animals.delete({ where: { id } });
   },
+
+  async getPicturePath(animalId: number): Promise<string> {
+    const found = await prisma.animals.findFirst({
+      where: {
+        id: animalId
+      },
+      select: {
+        picturepath: true
+      }
+    });
+
+    const filepath = found?.picturepath ?? 'public/placeholders/animal.png';
+    return path.join(appRootDir, filepath);
+  },
+  async savePicture(animalId: number, fileOnDiskPath: string | null): Promise<void> {
+    const old = await prisma.animals.findFirst({
+      where: {
+        id: animalId
+      },
+      select: {
+        picturepath: true
+      }
+    });
+    if (!old) {
+      throw new Error(`Animal with ID(${animalId}) does not exist.`);
+    }
+
+    if (old.picturepath) {
+      if (old.picturepath) {
+        const oldImagePath = path.join(appRootDir, old.picturepath);
+        fs.rm(oldImagePath);
+      }
+    };
+
+    await prisma.animals.update({
+      where: {
+        id: animalId
+      },
+      data: {
+        picturepath: fileOnDiskPath
+      },
+      select: {
+        picturepath: true
+      },
+    });
+  }
 };
