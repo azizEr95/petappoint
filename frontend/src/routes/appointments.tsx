@@ -14,12 +14,22 @@ export const Route = createFileRoute('/appointments')({
 function Appointments() {
     const location = useLocation();
     const navigate = useNavigate();
-    const bookedAppointment = location.state?.appointment;
-    const justBooked = location.state?.justBooked;
+
+    // Capture state once on mount to survive navigation state clearing
+    const [initialState] = useState(() => {
+        const state = location.state as any;
+        return {
+            bookedAppointment: state?.appointment,
+            justBooked: state?.justBooked === true,
+            wasRescheduled: state?.wasRescheduled === true,
+        };
+    });
+
     const [activeTab, setActiveTab] = useState<'upcoming' | 'past'>('upcoming');
-    const [selectedAppointment, setSelectedAppointment] = useState<AppointmentsType | undefined>(bookedAppointment);
-    const [showSuccessNotification, setShowSuccessNotification] = useState(false);
-    const [hasJustBooked, setHasJustBooked] = useState(justBooked === true);
+    const [selectedAppointment, setSelectedAppointment] = useState<AppointmentsType | undefined>(initialState.bookedAppointment);
+    const [showSuccessNotification, setShowSuccessNotification] = useState(initialState.justBooked);
+    const [hasJustBooked, setHasJustBooked] = useState(initialState.justBooked);
+    const [showCancelSuccess, setShowCancelSuccess] = useState(false);
 
     const userID = 6; // TODO: get from auth context
 
@@ -36,7 +46,7 @@ function Appointments() {
     useEffect(() => {
         let timer: NodeJS.Timeout | undefined;
 
-        if (justBooked) {
+        if (initialState.justBooked) {
             setActiveTab('upcoming');
             setShowSuccessNotification(true);
             // Auto-dismiss after 5 seconds
@@ -46,7 +56,7 @@ function Appointments() {
         }
 
         // Clear state to prevent re-triggering on navigation
-        navigate({ state: {} }, { replace: true });
+        navigate({ to: '/appointments', replace: true });
 
         return () => {
             if (timer) clearTimeout(timer);
@@ -64,8 +74,16 @@ function Appointments() {
     );
 
     useEffect(() => {
-        // Only auto-select if no appointment is currently selected AND user hasn't just booked
-        if (isSuccessFuture && sortedFuture.length > 0 && !selectedAppointment && !hasJustBooked && activeTab === "upcoming" ) {
+        // If user just booked/rescheduled, find and select that appointment
+        if (isSuccessFuture && hasJustBooked && initialState.bookedAppointment && activeTab === "upcoming") {
+            const bookedAppt = sortedFuture.find(apt => apt.id === initialState.bookedAppointment.id);
+            if (bookedAppt) {
+                setSelectedAppointment(bookedAppt);
+                setHasJustBooked(false); // Clear flag after selecting
+            }
+        }
+        // Otherwise auto-select first appointment if none selected
+        else if (isSuccessFuture && sortedFuture.length > 0 && !selectedAppointment && !hasJustBooked && activeTab === "upcoming" ) {
             setSelectedAppointment(sortedFuture[0]);
         }
     }, [isSuccessFuture, sortedFuture, selectedAppointment, hasJustBooked, activeTab]);
@@ -90,6 +108,14 @@ function Appointments() {
 
     const handleAppointmentCancelled = () => {
         // useEffect will handle selecting next appointment after query invalidation
+    };
+
+    const handleShowCancelSuccess = () => {
+        setShowCancelSuccess(true);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        setTimeout(() => {
+            setShowCancelSuccess(false);
+        }, 5000);
     };
 
     const currentData = activeTab === 'upcoming' ? sortedFuture : sortedPast;
@@ -144,8 +170,12 @@ function Appointments() {
                                 <i className="bi bi-check-circle-fill"></i>
                             </div>
                             <div className="notification-content">
-                                <h3>Termin erfolgreich gebucht!</h3>
-                                <p>Ihr Termin wurde bestätigt und erscheint nun in Ihrer Übersicht.</p>
+                                <h3>{initialState.wasRescheduled ? 'Termin erfolgreich verschoben!' : 'Termin erfolgreich gebucht!'}</h3>
+                                <p>
+                                    {initialState.wasRescheduled
+                                        ? 'Ihr Termin wurde verschoben und der alte Termin wurde abgesagt.'
+                                        : 'Ihr Termin wurde bestätigt und erscheint nun in Ihrer Übersicht.'}
+                                </p>
                             </div>
                             <button
                                 className="notification-close"
@@ -155,10 +185,28 @@ function Appointments() {
                             </button>
                         </div>
                     )}
+                    {showCancelSuccess && (
+                        <div className="booking-success-notification">
+                            <div className="notification-icon">
+                                <i className="bi bi-check-circle-fill"></i>
+                            </div>
+                            <div className="notification-content">
+                                <h3>Termin erfolgreich abgesagt</h3>
+                                <p>Der Termin wurde aus Ihrer Übersicht entfernt.</p>
+                            </div>
+                            <button
+                                className="notification-close"
+                                onClick={() => setShowCancelSuccess(false)}
+                            >
+                                <i className="bi bi-x"></i>
+                            </button>
+                        </div>
+                    )}
                     {selectedAppointment && (
                         <AppointmentDetails
                             appointment={selectedAppointment}
                             onAppointmentCancelled={handleAppointmentCancelled}
+                            onShowCancelSuccess={handleShowCancelSuccess}
                         />
                     )}
                 </div>

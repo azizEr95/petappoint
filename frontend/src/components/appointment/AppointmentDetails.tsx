@@ -1,31 +1,57 @@
 import { Button } from "react-bootstrap";
-import type { AppointmentsType, ServiceType, VeterinaryPracticesType } from "../../../../shared/schemas/ZodSchemas"
+import type { AppointmentsType, ServiceType, VeterinaryPracticesType, AnimalsType } from "../../../../shared/schemas/ZodSchemas"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getVeterinaryPracticesById } from "../../api/VeterinaryPracticeAPI";
-import { cancelAppointment, updateAppointmentNotiz } from "../../api/AppointmentsAPI";
+import { cancelAppointment, updateAppointmentNotiz, bookAppointment } from "../../api/AppointmentsAPI";
+import { getAnimalsFromUser } from "../../api/AnimalsAPI";
+import { getServicesFromPractice } from "../../api/ServicesAPI";
 import { useEffect, useState } from "react";
 import { exportToCalendar } from "../../utils/calendarExport";
+import { useNavigate } from "@tanstack/react-router";
 
 type AppointmentDetailsProps = {
     appointment: AppointmentsType,
-    onAppointmentCancelled?: () => void
+    onAppointmentCancelled?: () => void,
+    onShowCancelSuccess?: () => void
 }
 
-export function AppointmentDetails({ appointment, onAppointmentCancelled }: AppointmentDetailsProps) {
+export function AppointmentDetails({ appointment, onAppointmentCancelled, onShowCancelSuccess }: AppointmentDetailsProps) {
     const [futureAppointment, setFutureAppointment] = useState(true);
     const [notes, setNotes] = useState('');
+    const [editingAnimal, setEditingAnimal] = useState(false);
+    const [editingService, setEditingService] = useState(false);
+    const [selectedAnimalId, setSelectedAnimalId] = useState<number | undefined>(undefined);
+    const [selectedServiceId, setSelectedServiceId] = useState<number | null | undefined>(undefined);
     const queryClient = useQueryClient();
+    const navigate = useNavigate();
 
     const practiceID = appointment.veterinarypractice.id;
+    const userID = 6; // TODO: get from auth context
+
     const { isSuccess, data } = useQuery<VeterinaryPracticesType>({
         queryKey: ['veterinaryPractice', practiceID],
         queryFn: () => getVeterinaryPracticesById(practiceID.toString()),
         retry: false,
     });
 
+    const { data: userAnimals } = useQuery<Array<AnimalsType>>({
+        queryKey: ['animals', userID],
+        queryFn: () => getAnimalsFromUser(userID),
+        enabled: futureAppointment,
+    });
+
+    const { data: practiceServices } = useQuery<Array<ServiceType>>({
+        queryKey: ['services', practiceID],
+        queryFn: () => getServicesFromPractice(practiceID.toString()),
+        enabled: futureAppointment,
+    });
+
     const cancelMutation = useMutation({
         mutationFn: (id: number) => cancelAppointment(id),
         onSuccess: () => {
+            if (onShowCancelSuccess) {
+                onShowCancelSuccess();
+            }
             queryClient.invalidateQueries({ queryKey: ['appointmentsFuture'] });
             queryClient.invalidateQueries({ queryKey: ['appointmentsPast'] });
             queryClient.invalidateQueries({ predicate: (query) =>
@@ -45,6 +71,19 @@ export function AppointmentDetails({ appointment, onAppointmentCancelled }: Appo
         }
     });
 
+    const updateAppointmentMutation = useMutation({
+        mutationFn: ({ animalId, serviceId }: { animalId?: number; serviceId?: number | null }) =>
+            bookAppointment(
+                appointment.id,
+                animalId ?? appointment.animal?.id,
+                serviceId !== undefined ? serviceId : appointment.service?.id ?? null
+            ),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['appointmentsFuture'] });
+            queryClient.invalidateQueries({ queryKey: ['appointmentsPast'] });
+        }
+    });
+
     useEffect(() => {
         if (appointment.endtime < new Date()) {
             setFutureAppointment(false);
@@ -53,6 +92,8 @@ export function AppointmentDetails({ appointment, onAppointmentCancelled }: Appo
         }
 
         setNotes(appointment.notiz || '');
+        setSelectedAnimalId(appointment.animal?.id);
+        setSelectedServiceId(appointment.service?.id ?? null);
     }, [appointment]);
 
     const handleNotesChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -90,6 +131,62 @@ export function AppointmentDetails({ appointment, onAppointmentCancelled }: Appo
         }
     };
 
+    const handleReschedule = () => {
+        navigate({
+            to: '/appointments/$appointmentId/reschedule',
+            params: { appointmentId: appointment.id.toString() }
+        });
+    };
+
+    const handleAnimalChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const newAnimalId = parseInt(e.target.value);
+        setSelectedAnimalId(newAnimalId);
+    };
+
+    const handleServiceChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const value = e.target.value;
+        const newServiceId = value === '' ? null : parseInt(value);
+        setSelectedServiceId(newServiceId);
+    };
+
+    const confirmAnimalChange = () => {
+        if (selectedAnimalId) {
+            setEditingAnimal(false);
+            updateAppointmentMutation.mutate({ animalId: selectedAnimalId });
+        }
+    };
+
+    const confirmServiceChange = () => {
+        setEditingService(false);
+        updateAppointmentMutation.mutate({ serviceId: selectedServiceId ?? null });
+    };
+
+    const handleAnimalKeyDown = (e: React.KeyboardEvent<HTMLSelectElement>) => {
+        if (e.key === 'Enter') {
+            confirmAnimalChange();
+        } else if (e.key === 'Escape') {
+            cancelAnimalEdit();
+        }
+    };
+
+    const handleServiceKeyDown = (e: React.KeyboardEvent<HTMLSelectElement>) => {
+        if (e.key === 'Enter') {
+            confirmServiceChange();
+        } else if (e.key === 'Escape') {
+            cancelServiceEdit();
+        }
+    };
+
+    const cancelAnimalEdit = () => {
+        setSelectedAnimalId(appointment.animal?.id);
+        setEditingAnimal(false);
+    };
+
+    const cancelServiceEdit = () => {
+        setSelectedServiceId(appointment.service?.id ?? null);
+        setEditingService(false);
+    };
+
     const formatDate = (date: Date) => {
         return date.toLocaleDateString('de-DE', {
             weekday: 'long',
@@ -108,10 +205,6 @@ export function AppointmentDetails({ appointment, onAppointmentCancelled }: Appo
 
     if (isSuccess) {
         const practice = data;
-        let appointmentType: ServiceType | undefined;
-        if (appointment.availableservices !== null && appointment.availableservices !== undefined) {
-            appointmentType = appointment.availableservices.find((x) => x.id === appointment.service?.id);
-        }
 
         return (
             <div className="appointment-details">
@@ -133,15 +226,48 @@ export function AppointmentDetails({ appointment, onAppointmentCancelled }: Appo
                             <div className="label">{practice.name}</div>
                         </div>
                     </div>
-                    {appointmentType && (
-                        <div className="info-item">
-                            <i className="bi bi-clipboard-pulse"></i>
-                            <div className="info-content">
-                                <div className="label">Service</div>
-                                <div className="value">{appointmentType.name}</div>
-                            </div>
+                    <div className="info-item">
+                        <i className="bi bi-clipboard-pulse"></i>
+                        <div className="info-content">
+                            <div className="label">Service</div>
+                            {editingService && practiceServices ? (
+                                <select
+                                    className="edit-select"
+                                    value={selectedServiceId || ''}
+                                    onChange={handleServiceChange}
+                                    onKeyDown={handleServiceKeyDown}
+                                    disabled={updateAppointmentMutation.isPending}
+                                >
+                                    {practiceServices.map(service => (
+                                        <option key={service.id} value={service.id}>
+                                            {service.name}
+                                        </option>
+                                    ))}
+                                </select>
+                            ) : (
+                                <div className="value">{practiceServices?.find(s => s.id === selectedServiceId)?.name || '-'}</div>
+                            )}
                         </div>
-                    )}
+                        {futureAppointment && !editingService && (
+                            <button className="edit-icon-button" onClick={() => setEditingService(true)}>
+                                <i className="bi bi-pencil"></i>
+                            </button>
+                        )}
+                        {editingService && (
+                            <>
+                                <button
+                                    className="edit-icon-button"
+                                    onClick={confirmServiceChange}
+                                    disabled={updateAppointmentMutation.isPending}
+                                >
+                                    <i className="bi bi-check"></i>
+                                </button>
+                                <button className="edit-icon-button" onClick={cancelServiceEdit}>
+                                    <i className="bi bi-x"></i>
+                                </button>
+                            </>
+                        )}
+                    </div>
                     <div className="info-item">
                         <i className="bi bi-geo-alt"></i>
                         <div className="info-content">
@@ -173,26 +299,70 @@ export function AppointmentDetails({ appointment, onAppointmentCancelled }: Appo
                     <div className="info-item">
                         <i className="bi bi-heart"></i>
                         <div className="info-content">
-                            <div className="value">{appointment.animal?.name || 'Nicht zugewiesen'}</div>
+                            {editingAnimal && userAnimals ? (
+                                <select
+                                    className="edit-select"
+                                    value={selectedAnimalId || ''}
+                                    onChange={handleAnimalChange}
+                                    onKeyDown={handleAnimalKeyDown}
+                                    disabled={updateAppointmentMutation.isPending}
+                                >
+                                    {userAnimals.map(animal => (
+                                        <option key={animal.id} value={animal.id}>
+                                            {animal.name}
+                                        </option>
+                                    ))}
+                                </select>
+                            ) : (
+                                <div className="value">{userAnimals?.find(a => a.id === selectedAnimalId)?.name || appointment.animal?.name || 'Nicht zugewiesen'}</div>
+                            )}
                         </div>
+                        {futureAppointment && !editingAnimal && (
+                            <button className="edit-icon-button" onClick={() => setEditingAnimal(true)}>
+                                <i className="bi bi-pencil"></i>
+                            </button>
+                        )}
+                        {editingAnimal && (
+                            <>
+                                <button
+                                    className="edit-icon-button"
+                                    onClick={confirmAnimalChange}
+                                    disabled={updateAppointmentMutation.isPending}
+                                >
+                                    <i className="bi bi-check"></i>
+                                </button>
+                                <button className="edit-icon-button" onClick={cancelAnimalEdit}>
+                                    <i className="bi bi-x"></i>
+                                </button>
+                            </>
+                        )}
                     </div>
                 </div>
 
                 {futureAppointment && (
                     <div className="actions-section">
+                        <div className="secondary-actions">
+                            <button
+                                className="btn-secondary"
+                                onClick={handleExport}
+                            >
+                                <i className="bi bi-calendar-plus"></i>
+                                Kalender
+                            </button>
+                            <button
+                                className="btn-secondary"
+                                onClick={handleMapsLink}
+                            >
+                                <i className="bi bi-geo-alt"></i>
+                                Navigation
+                            </button>
+                        </div>
                         <Button
-                            className="btn-export"
-                            onClick={handleExport}
+                            className="btn-reschedule"
+                            onClick={handleReschedule}
                         >
-                            <i className="bi bi-calendar-plus"></i>
-                            In Kalender exportieren
-                        </Button>
-                        <Button
-                            className="btn-maps"
-                            onClick={handleMapsLink}
-                        >
-                            <i className="bi bi-geo-alt"></i>
-                            Navigation starten
+                            <i className="bi bi-calendar-event"></i>
+                            Termin verschieben
                         </Button>
                         <Button
                             className="btn-cancel"
