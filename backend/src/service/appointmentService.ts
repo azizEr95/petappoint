@@ -9,6 +9,11 @@ export const appointmentService = {
       include: {
         animals: true,
         services: true,
+        appointment_has_service: {
+          include: {
+            services: true
+          }
+        },
         veterinaries: true,
         veterinarypractices: {
           include: {
@@ -28,6 +33,7 @@ export const appointmentService = {
       },
     });
 
+    const availableServices = created.appointment_has_service.flatMap(x => x.services);
     return {
       id: created.id,
       starttime: created.starttime,
@@ -65,7 +71,7 @@ export const appointmentService = {
         id: created.services.id,
         name: created.services.name
       } : null,
-      availableservices: created.services ? [] : [],
+      availableservices: created.services ? availableServices : [],
       notiz: created.notiz
     }
   },
@@ -76,6 +82,11 @@ export const appointmentService = {
       include: {
         animals: true,
         services: true,
+        appointment_has_service: {
+          include: {
+            services: true
+          }
+        },
         veterinaries: true,
         veterinarypractices: {
           include: {
@@ -92,6 +103,7 @@ export const appointmentService = {
       throw new Error(`Appointment not found with id: ${id}`);
     }
 
+    const availableServices = foundAppointment.appointment_has_service.flatMap(x => x.services);
     return {
       id: foundAppointment.id,
       starttime: foundAppointment.starttime,
@@ -129,7 +141,7 @@ export const appointmentService = {
         id: foundAppointment.services.id,
         name: foundAppointment.services.name
       } : null,
-      availableservices: foundAppointment.services ? [] : [],
+      availableservices: foundAppointment.services ? availableServices : [],
       notiz: foundAppointment.notiz
     }
   },
@@ -139,6 +151,11 @@ export const appointmentService = {
       include: {
         animals: true,
         services: true,
+        appointment_has_service: {
+          include: {
+            services: true
+          }
+        },
         veterinaries: true,
         veterinarypractices: {
           include: {
@@ -222,7 +239,7 @@ export const appointmentService = {
         id: foundAppointment.services.id,
         name: foundAppointment.services.name
       } : null,
-      availableservices: foundAppointment.services ? [] : [],
+      availableservices: foundAppointment.services ? foundAppointment.appointment_has_service.flatMap(x => x.services) : [],
       notiz: foundAppointment.notiz
     }));
   },
@@ -263,6 +280,11 @@ export const appointmentService = {
       include: {
         animals: true,
         services: true,
+        appointment_has_service: {
+          include: {
+            services: true
+          }
+        },
         veterinaries: true,
         veterinarypractices: {
           include: {
@@ -312,7 +334,7 @@ export const appointmentService = {
         id: foundAppointment.services.id,
         name: foundAppointment.services.name
       } : null,
-      availableservices: foundAppointment.services ? [] : [],
+      availableservices: foundAppointment.services ? foundAppointment.appointment_has_service.flatMap(x => x.services) : [],
       notiz: foundAppointment.notiz
     }));
   },
@@ -322,6 +344,11 @@ export const appointmentService = {
       include: {
         animals: true,
         services: true,
+        appointment_has_service: {
+          include: {
+            services: true
+          }
+        },
         veterinaries: true,
         veterinarypractices: {
           include: {
@@ -402,7 +429,7 @@ export const appointmentService = {
         id: foundAppointment.services.id,
         name: foundAppointment.services.name
       } : null,
-      availableservices: foundAppointment.services ? [] : [],
+      availableservices: foundAppointment.services ? foundAppointment.appointment_has_service.flatMap(x => x.services) : [],
       notiz: foundAppointment.notiz
     }));
   },
@@ -412,6 +439,11 @@ export const appointmentService = {
       include: {
         animals: true,
         services: true,
+        appointment_has_service: {
+          include: {
+            services: true
+          }
+        },
         veterinaries: true,
         veterinarypractices: {
           include: {
@@ -514,7 +546,7 @@ export const appointmentService = {
         id: foundAppointment.services.id,
         name: foundAppointment.services.name
       } : null,
-      availableservices: foundAppointment.services ? [] : [],
+      availableservices: foundAppointment.services ? foundAppointment.appointment_has_service.flatMap(x => x.services) : [],
       notiz: foundAppointment.notiz
     }));
   },
@@ -533,6 +565,11 @@ export const appointmentService = {
         animals: true,
         veterinaries: true,
         services: true,
+        appointment_has_service: {
+          include: {
+            services: true
+          }
+        },
         veterinarypractices: {
           include: {
             addresses: true
@@ -607,7 +644,7 @@ export const appointmentService = {
         id: foundAppointment.services.id,
         name: foundAppointment.services.name
       } : null,
-      availableservices: foundAppointment.services ? [] : [],
+      availableservices: foundAppointment.services ? foundAppointment.appointment_has_service.flatMap(x => x.services) : [],
       notiz: foundAppointment.notiz
     }));
   },
@@ -625,6 +662,11 @@ export const appointmentService = {
       include: {
         animals: true,
         services: true,
+        appointment_has_service: {
+          include: {
+            services: true
+          }
+        },
         veterinaries: true,
         veterinarypractices: {
           include: {
@@ -700,7 +742,7 @@ export const appointmentService = {
         id: foundAppointment.services.id,
         name: foundAppointment.services.name
       } : null,
-      availableservices: foundAppointment.services ? [] : [],
+      availableservices: foundAppointment.services ? foundAppointment.appointment_has_service.flatMap(x => x.services) : [],
       notiz: foundAppointment.notiz
     }));
   },
@@ -710,6 +752,11 @@ export const appointmentService = {
       include: {
         animals: true,
         services: true,
+        appointment_has_service: {
+          include: {
+            services: true
+          }
+        },
         veterinaries: true,
         veterinarypractices: {
           include: {
@@ -759,7 +806,7 @@ export const appointmentService = {
         id: foundAppointment.services.id,
         name: foundAppointment.services.name
       } : null,
-      availableservices: foundAppointment.services ? [] : [],
+      availableservices: foundAppointment.services ? foundAppointment.appointment_has_service.flatMap(x => x.services) : [],
       notiz: foundAppointment.notiz
     }));
   },
@@ -773,6 +820,11 @@ export const appointmentService = {
       include: {
         animals: true,
         services: true,
+        appointment_has_service: {
+          include: {
+            services: true
+          }
+        },
         veterinaries: true,
         veterinarypractices: {
           include: {
@@ -824,7 +876,7 @@ export const appointmentService = {
         id: updated.services.id,
         name: updated.services.name
       } : null,
-      availableservices: updated.services ? [] : [],
+      availableservices: updated.services ? updated.appointment_has_service.flatMap(x => x.services) : [],
       notiz: updated.notiz
     };
   },
@@ -846,6 +898,11 @@ export const appointmentService = {
       include: {
         animals: true,
         services: true,
+        appointment_has_service: {
+          include: {
+            services: true
+          }
+        },
         veterinaries: true,
         veterinarypractices: {
           include: {
@@ -902,7 +959,7 @@ export const appointmentService = {
         id: updated.services.id,
         name: updated.services.name
       } : null,
-      availableservices: updated.services ? [] : [],
+      availableservices: updated.services ? updated.appointment_has_service.flatMap(x => x.services) : [],
       notiz: updated.notiz
     };
   },
@@ -916,6 +973,11 @@ export const appointmentService = {
       include: {
         animals: true,
         services: true,
+        appointment_has_service: {
+          include: {
+            services: true
+          }
+        },
         veterinaries: true,
         veterinarypractices: {
           include: {
@@ -970,7 +1032,7 @@ export const appointmentService = {
         id: updated.services.id,
         name: updated.services.name
       } : null,
-      availableservices: updated.services ? [] : [],
+      availableservices: updated.services ? updated.appointment_has_service.flatMap(x => x.services) : [],
       notiz: updated.notiz
     };
   },
@@ -980,6 +1042,11 @@ export const appointmentService = {
       include: {
         animals: true,
         services: true,
+        appointment_has_service: {
+          include: {
+            services: true
+          }
+        },
         veterinaries: true,
         veterinarypractices: {
           include: {
@@ -1031,7 +1098,7 @@ export const appointmentService = {
         id: updated.services.id,
         name: updated.services.name
       } : null,
-      availableservices: updated.services ? [] : [],
+      availableservices: updated.services ? updated.appointment_has_service.flatMap(x => x.services) : [],
       notiz: updated.notiz
     };
   },
