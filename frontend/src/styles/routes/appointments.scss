@@ -175,6 +175,94 @@
   }
 }
 
+// Details Column (wraps notification + details)
+.appointments-details-column {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+// Success Notification
+.booking-success-notification {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  display: flex;
+  align-items: start;
+  gap: var(--spacing-md);
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+  animation: slideInFromTop 0.4s ease-out;
+  position: relative;
+
+  .notification-icon {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    i {
+      font-size: 1.5rem;
+      color: white;
+    }
+  }
+
+  .notification-content {
+    flex: 1;
+    color: white;
+
+    h3 {
+      font-size: $font-size-lg;
+      font-weight: 700;
+      margin: 0 0 0.5rem 0;
+    }
+
+    p {
+      font-size: $font-size-sm;
+      margin: 0;
+      opacity: 0.95;
+      line-height: 1.4;
+    }
+  }
+
+  .notification-close {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+
+    i {
+      font-size: 1.2rem;
+    }
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+  }
+}
+
+@keyframes slideInFromTop {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 // Appointment Details Sidebar
 .appointment-details {
   position: sticky;

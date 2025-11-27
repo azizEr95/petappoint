@@ -55,9 +55,17 @@ function ConfirmationComponent() {
       setBookingStatus('error')
       setErrorMessage(error?.message || 'Die Terminbuchung ist fehlgeschlagen. Bitte versuchen Sie es erneut.')
     },
-    onSuccess: () => {
+    onSuccess: (bookedAppointment) => {
       setIsSubmitting(false)
-      setBookingStatus('success')
+      // Immediate redirect to appointments with booked appointment from API response
+      navigate({
+        to: '/appointments',
+        state: {
+          appointment: bookedAppointment,
+          justBooked: true
+        },
+        replace: true
+      })
     },
   })
 
@@ -67,15 +75,18 @@ function ConfirmationComponent() {
   }
 
   const handleBack = () => {
-    if (bookingStatus === 'error' && state) {
-      // Go back to booking page if error
+    if (state) {
+      // Go back to booking page (previous step in flow)
       navigate({ to: '/praxen/' + state.practice.id + '/booking/' + state.appointment.id })
-    } else if (state) {
-      // Go back to practice page before booking
-      navigate({ to: '/praxen/' + state.practice.id })
     }
   }
 
+  const handleSelectDifferentAppointment = () => {
+    if (state) {
+      // Go back to practice page to select different timeslot
+      navigate({ to: '/praxen/' + state.practice.id })
+    }
+  }
 
   const handleGoToAppointments = () => {
     if (state) {
@@ -291,6 +302,14 @@ function ConfirmationComponent() {
                   Termin jetzt buchen
                 </>
               )}
+            </button>
+            <button
+              className="booking-confirm-button booking-button-secondary"
+              onClick={handleSelectDifferentAppointment}
+              disabled={isSubmitting}
+            >
+              <i className="bi bi-calendar-x"></i>
+              Anderen Termin wählen
             </button>
           </div>
         </div>

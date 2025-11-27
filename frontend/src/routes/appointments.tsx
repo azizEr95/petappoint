@@ -15,8 +15,11 @@ function Appointments() {
     const location = useLocation();
     const navigate = useNavigate();
     const bookedAppointment = location.state?.appointment;
+    const justBooked = location.state?.justBooked;
     const [activeTab, setActiveTab] = useState<'upcoming' | 'past'>('upcoming');
-    const [selectedAppointment, setSelectedAppointment] = useState<AppointmentsType | undefined>();
+    const [selectedAppointment, setSelectedAppointment] = useState<AppointmentsType | undefined>(bookedAppointment);
+    const [showSuccessNotification, setShowSuccessNotification] = useState(false);
+    const [hasJustBooked, setHasJustBooked] = useState(justBooked === true);
 
     const userID = 6; // TODO: get from auth context
 
@@ -31,11 +34,23 @@ function Appointments() {
     })
 
     useEffect(() => {
-        if (bookedAppointment !== undefined) {
-            setSelectedAppointment(bookedAppointment);
+        let timer: NodeJS.Timeout | undefined;
+
+        if (justBooked) {
             setActiveTab('upcoming');
+            setShowSuccessNotification(true);
+            // Auto-dismiss after 5 seconds
+            timer = setTimeout(() => {
+                setShowSuccessNotification(false);
+            }, 5000);
         }
-        navigate({ state: { appointment: undefined } });
+
+        // Clear state to prevent re-triggering on navigation
+        navigate({ state: {} }, { replace: true });
+
+        return () => {
+            if (timer) clearTimeout(timer);
+        };
     }, []);
 
     // Create sorted copies (don't mutate original arrays)
@@ -49,11 +64,11 @@ function Appointments() {
     );
 
     useEffect(() => {
-        // Only auto-select if no appointment was booked and none is currently selected
-        if (isSuccessFuture && sortedFuture.length > 0 && !selectedAppointment && !bookedAppointment && activeTab === "upcoming" ) {
+        // Only auto-select if no appointment is currently selected AND user hasn't just booked
+        if (isSuccessFuture && sortedFuture.length > 0 && !selectedAppointment && !hasJustBooked && activeTab === "upcoming" ) {
             setSelectedAppointment(sortedFuture[0]);
         }
-    }, [isSuccessFuture, sortedFuture, selectedAppointment, bookedAppointment]);
+    }, [isSuccessFuture, sortedFuture, selectedAppointment, hasJustBooked, activeTab]);
 
     useEffect(() => {
         // If selected appointment no longer exists in current list, select next one
@@ -122,12 +137,31 @@ function Appointments() {
                     )}
                 </div>
 
-                {selectedAppointment && (
-                    <AppointmentDetails
-                        appointment={selectedAppointment}
-                        onAppointmentCancelled={handleAppointmentCancelled}
-                    />
-                )}
+                <div className="appointments-details-column">
+                    {showSuccessNotification && (
+                        <div className="booking-success-notification">
+                            <div className="notification-icon">
+                                <i className="bi bi-check-circle-fill"></i>
+                            </div>
+                            <div className="notification-content">
+                                <h3>Termin erfolgreich gebucht!</h3>
+                                <p>Ihr Termin wurde bestätigt und erscheint nun in Ihrer Übersicht.</p>
+                            </div>
+                            <button
+                                className="notification-close"
+                                onClick={() => setShowSuccessNotification(false)}
+                            >
+                                <i className="bi bi-x"></i>
+                            </button>
+                        </div>
+                    )}
+                    {selectedAppointment && (
+                        <AppointmentDetails
+                            appointment={selectedAppointment}
+                            onAppointmentCancelled={handleAppointmentCancelled}
+                        />
+                    )}
+                </div>
             </div>
         </div>
     )
