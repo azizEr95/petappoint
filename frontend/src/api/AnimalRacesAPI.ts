@@ -1,4 +1,4 @@
-import { AnimalracesSchema, type AnimalracesType } from "../../../shared/schemas/ZodSchemas";
+import { AddRacesToAnimalSchema, AnimalracesSchema, type AddRacesToAnimalType, type AnimalracesType } from "../../../shared/schemas/ZodSchemas";
 
 
 export const getRacesByAnimalTypeID = async (animalTypeID: number | undefined): Promise<AnimalracesType[]> => {
@@ -29,6 +29,61 @@ export const getRacesByAnimalID = async (animalID: number | undefined): Promise<
     return parseAnimalRacesArray(data);
 }
 
+export const addRacesToAnimal = async (addRacesToAnimal: AddRacesToAnimalType): Promise<AddRacesToAnimalType> => {
+    if(addRacesToAnimal.animalraceids.length === 0){
+        return addRacesToAnimal;
+    }
+    const requestOptions = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(addRacesToAnimal),
+    }
+
+    const res = await fetch(
+        import.meta.env.VITE_API_URL + '/animals/' + addRacesToAnimal.animalid + '/races', requestOptions
+    )
+    if (!res.ok) {
+        throw new Error('Failed to fetch addRacesToAnimal')
+    }
+    const data = await res.json();
+    return parseAddRacesToAnimalTypeArray(data);
+}
+
+export const deleteRaceFromAnimal = async (animalID: number, racesId: number): Promise<void> => {
+    const requestOptions = {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    }
+
+    const res = await fetch(
+        import.meta.env.VITE_API_URL + '/animals/' + animalID + '/races/' + racesId, requestOptions
+    )
+    if (!res.ok) {
+        throw new Error('Failed to fetch deleteRaceFromAnimal')
+    }
+    return;
+}
+
+export const deleteAllRacesFromAnimal = async (animalID: number): Promise<void> => {
+    const requestOptions = {
+        method: 'DELETE'
+    }
+    console.log("here")
+    const res = await fetch(
+        import.meta.env.VITE_API_URL + '/animals/' + animalID + '/races', requestOptions
+    )
+    console.log("heree33")
+    if (!res.ok) {
+        throw new Error('Failed to fetch deleteAllRacesFromAnimal')
+    }
+    console.log("res deletealraces ok")
+    return;
+}
+
 /*
 * safeParse an array of animalraces
 */
@@ -43,4 +98,13 @@ const parseAnimalRacesArray = (unsafeRaces: AnimalracesType[]): AnimalracesType[
         }
         return null;
     }).filter(x => x !== null);
+}
+
+const parseAddRacesToAnimalTypeArray = (unsafeRacesToAnimalID: AddRacesToAnimalType): AddRacesToAnimalType => {
+    const parsed = AddRacesToAnimalSchema.safeParse(unsafeRacesToAnimalID);
+    if (!parsed.success) {
+        console.log(parsed.error);
+        throw new Error(parsed.error.toString());
+    }
+    return parsed.data;
 }

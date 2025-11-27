@@ -60,6 +60,16 @@
   padding: var(--spacing-xl);
 }
 
+// Centered main content (for confirmation pages without sidebar)
+.booking-main-centered {
+  max-width: 800px;
+  margin: 0 auto;
+  background: white;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: var(--spacing-xl);
+}
+
 // Sidebar with Booking Summary
 .booking-sidebar {
   position: sticky;
@@ -154,6 +164,196 @@
 
     i {
       font-size: 1.1rem;
+    }
+  }
+}
+
+// Confirmation Page Styles
+.booking-confirmation-card {
+  text-align: center;
+}
+
+.confirmation-icon-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: var(--spacing-lg);
+
+  .confirmation-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+    animation: scaleIn 0.3s ease-out;
+
+    i {
+      font-size: 2.5rem;
+      color: white;
+    }
+
+    &.confirmation-icon-success {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+    }
+
+    &.confirmation-icon-error {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      box-shadow: 0 10px 25px rgba(239, 68, 68, 0.3);
+    }
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.confirmation-title {
+  font-size: $h3-font-size;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin: 0 0 var(--spacing-sm) 0;
+
+  &.confirmation-title-error {
+    color: #dc2626;
+  }
+}
+
+.confirmation-subtitle {
+  font-size: $font-size-base;
+  color: var(--color-text-muted);
+  margin: 0 0 var(--spacing-xl) 0;
+}
+
+.confirmation-details-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
+  text-align: left;
+
+  .info-item {
+    background: var(--color-primary-pale);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-md);
+    border: 2px solid var(--color-border);
+    transition: all 0.2s;
+
+    &:hover {
+      border-color: var(--color-primary-light);
+      box-shadow: var(--shadow-sm);
+    }
+
+    i {
+      color: var(--color-primary);
+      font-size: 1.3rem;
+    }
+
+    .info-content {
+      .info-label {
+        font-size: $font-size-sm;
+        font-weight: 600;
+        color: var(--color-text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.4rem;
+      }
+
+      .info-value {
+        font-size: $font-size-base;
+        font-weight: 600;
+        color: var(--color-text-dark);
+        margin-bottom: 0.25rem;
+      }
+
+      .info-detail {
+        font-size: $font-size-sm;
+        color: var(--color-text-muted);
+        line-height: 1.4;
+      }
+    }
+  }
+}
+
+.confirmation-actions {
+  margin-top: var(--spacing-xl);
+  padding-top: var(--spacing-lg);
+  border-top: 2px solid var(--color-border);
+
+  .booking-confirm-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 1.25rem 2rem;
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+    border: none;
+    border-radius: var(--radius-md);
+    color: white;
+    font-size: $font-size-base;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+
+    &:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    &:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    &:disabled {
+      background: $gray-200;
+      color: $gray-600;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    i {
+      font-size: 1.2rem;
+    }
+
+    &.booking-button-secondary {
+      background: $gray-200;
+      color: var(--color-text-dark);
+
+      &:hover:not(:disabled) {
+        background: $gray-600;
+        color: white;
+      }
+    }
+  }
+}
+
+// Responsive for confirmation
+@media (max-width: 768px) {
+  .confirmation-details-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .confirmation-icon-wrapper {
+    .confirmation-icon {
+      width: 60px;
+      height: 60px;
+
+      i {
+        font-size: 2rem;
+      }
     }
   }
 }

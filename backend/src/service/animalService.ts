@@ -1,10 +1,10 @@
 import { prisma } from "../singletonPC";
 import { animals, Prisma } from "../../generated/prisma";
-import { AnimalsCreateType, AnimalUpdateType } from "vetlib-shared/schemas/ZodSchemas";
+import { AnimalsCreateType, AnimalsType, AnimalUpdateType } from "vetlib-shared/schemas/ZodSchemas";
 
 export const animalService = {
-  async create(data: AnimalsCreateType): Promise<animals> {
-    return await prisma.animals.create({
+  async create(data: AnimalsCreateType): Promise<AnimalsType> {
+    const created = await prisma.animals.create({
       data: {
         name: data.name,
         dateofbirth: data.dateofbirth,
@@ -13,23 +13,26 @@ export const animalService = {
         heightincm: data.heightincm,
         timeofdeath: data.timeofdeath,
         iscastrated: data.iscastrated,
+        sex: data.sex,
         lifestyleisindoors: data.lifestyleisindoors,
-        animalgroup: {
-          connect: {
-            id: data.fk_animalgroupid ?? undefined
-          }
-        },
+        animalgroup: data.animalgroupid ? {connect: {id: data.animalgroupid}}: undefined,
         animaltypes: {
           connect: {
-            id: data.fk_animaltypeid,
+            id: data.animaltypeid,
           }
         },
       },
     });
+
+    return ({
+      ...created,
+      animalgroupid: created.fk_animalgroupid,
+      animaltypeid: created.fk_animaltypeid
+    })
   },
 
-  async update(data: AnimalUpdateType): Promise<animals> {
-    return await prisma.animals.update({
+  async update(data: AnimalUpdateType): Promise<AnimalsType> {
+    const updated = await prisma.animals.update({
       where: {
         id: data.id
       },
@@ -41,9 +44,16 @@ export const animalService = {
         heightincm: data.heightincm,
         timeofdeath: data.timeofdeath,
         iscastrated: data.iscastrated,
+        sex: data.sex,
         lifestyleisindoors: data.lifestyleisindoors,
       },
     });
+
+    return ({
+      ...updated,
+      animalgroupid: updated.fk_animalgroupid,
+      animaltypeid: updated.fk_animaltypeid
+    })
   },
 
   async getById(id: number): Promise<animals> {

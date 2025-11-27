@@ -57,10 +57,34 @@ export const editAnimal = async (animalID: number, animal: AnimalsCreateType): P
   return parseAnimal(data);
 }
 
+export const deleteAnimal = async (animalID: number): Promise<void> => {
+  const requestOptions = {
+      method: 'DELETE',
+      headers: {
+          'Content-Type': 'application/json',
+      }
+  }
+
+  const res = await fetch(
+      import.meta.env.VITE_API_URL + '/animals/' + animalID, requestOptions
+  )
+  if (!res.ok) {
+      throw new Error('Failed to fetch deleteAnimal')
+  }
+  return;
+}
+
 /*
  * safeParse animals
  */
 const parseAnimal = (unsafeAnimal: AnimalsType): AnimalsType => {
+  if (unsafeAnimal.dateofbirth !== null) {
+    unsafeAnimal.dateofbirth = new Date(unsafeAnimal.dateofbirth) // change Date to Date Object
+  }
+  if (unsafeAnimal.timeofdeath !== null) {
+    unsafeAnimal.timeofdeath = new Date(unsafeAnimal.timeofdeath) // change Date to Date Object
+  }
+  console.log(unsafeAnimal)
   const parsed = AnimalsSchema.safeParse(unsafeAnimal);
   if (parsed.error !== undefined) { //if Zod throws an Error print them
       console.log(parsed.error);
@@ -78,6 +102,9 @@ const parseAnimalArray = (unsafeAnimal: AnimalsType[]): AnimalsType[] => {
   return unsafeAnimal.map((unsafeData) => {
       if (unsafeData.dateofbirth !== null) {
         unsafeData.dateofbirth = new Date(unsafeData.dateofbirth) // change Date to Date Object
+      }
+      if (unsafeData.timeofdeath !== null) {
+        unsafeData.timeofdeath = new Date(unsafeData.timeofdeath) // change Date to Date Object
       }
 
       const parsed = AnimalsSchema.safeParse(unsafeData)

@@ -1,10 +1,12 @@
-import { useEffect } from 'react'
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { useEffect, useState } from 'react'
+import { createFileRoute, useLocation, useNavigate } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
 import { NextAvailableAppointments } from '../../../components/practice/NextAvailableAppointments'
 import '../../../styles/routes/praxisPage.scss'
 import { getVeterinaryPracticesById } from '../../../api/VeterinaryPracticeAPI'
-import type { VeterinaryPracticesType } from '../../../../../shared/schemas/ZodSchemas'
+import type { AnimalTypeType, VeterinaryPracticesType } from '../../../../../shared/schemas/ZodSchemas'
+import { SearchFilter } from '../../../components/common/SearchFilter'
+import { getAnimaltypesFromPractice } from '../../../api/AnimalTypeAPI'
 
 
 export const Route = createFileRoute('/praxen/$praxisId/')({
@@ -13,7 +15,17 @@ export const Route = createFileRoute('/praxen/$praxisId/')({
 
 function VeterinaryPractice() {
   const navigate = useNavigate()
+  const location = useLocation();
   const { praxisId } = Route.useParams()
+  let practice = location.state?.practice
+  let filterOptions = location.state?.filterOptions
+  const [filterServiceType, setFilterServiceType] = useState<number[]>(filterOptions?.serviceTypeIds !== undefined ? filterOptions.serviceTypeIds : []);
+  const [filterAnimalType, setFilterAnimalType] = useState<number[]>(filterOptions?.animalTypeIds !== undefined ? filterOptions.animalTypeIds : []);
+
+  filterOptions = {
+    animalTypeIds: filterAnimalType,
+    serviceTypeIds: filterServiceType
+  }
 
   // load VeterinaryPractices:
   const { isError, isSuccess, isPending, data } =
@@ -21,7 +33,16 @@ function VeterinaryPractice() {
       queryKey: ['tierarztpraxen', praxisId],
       queryFn: () => getVeterinaryPracticesById(praxisId),
       retry: false,
+      enabled: practice === undefined
     })
+
+  // get all AnimalTypes from practice
+  const { isSuccess: isSuccessAnimaltypesPractice, data: dataAnimaltypesPractice } = useQuery<Array<AnimalTypeType>>({
+    queryKey: ['AnimaltypesPractice', practice?.id],
+    queryFn: () => getAnimaltypesFromPractice(practice?.id.toString() ?? ""),
+    retry: false,
+    enabled: practice?.id !== undefined
+  });
 
   useEffect(() => {
     if (isPending) {
@@ -37,11 +58,31 @@ function VeterinaryPractice() {
     window.history.back()
   }
 
-  if (!isSuccess) {
-    return
+  if (!isSuccess && !isPending && practice !== undefined) {
+    return;
   }
 
-  const praxis: VeterinaryPracticesType = data
+  if (isSuccess) {
+    practice = data;
+  }
+
+  //practice is here always defined, because of the state or useQuery is success
+  if (practice === undefined) {
+    return;
+  }
+
+  let animaltypesString: string = ""
+  if (isSuccessAnimaltypesPractice) {
+    for (let i = 0; i < dataAnimaltypesPractice.length; i++) {
+      if (animaltypesString !== "") {
+        animaltypesString = animaltypesString + ", "
+      }
+      animaltypesString = animaltypesString + dataAnimaltypesPractice[i].name
+    }
+    if (animaltypesString === "") {
+      animaltypesString = "keine"
+    }
+  }
 
   return (
     <div className="praxis-page">
@@ -50,14 +91,16 @@ function VeterinaryPractice() {
           <i className="bi bi-arrow-left"></i>
           Zurück
         </button>
-        <h1>{praxis.name}</h1>
+        <h1>{practice.name}</h1>
       </div>
 
       <div className="praxis-layout">
         <div className="praxis-info-sidebar">
-          {praxis.info && (
+          {practice.info && (
             <div className="info-description">
-              <p>{praxis.info}</p>
+              <p>{practice.info}</p>
+              <br />
+              <p>Tierarten: {animaltypesString}</p>
             </div>
           )}
 
@@ -67,11 +110,11 @@ function VeterinaryPractice() {
               Adresse
             </div>
             <div className="info-content">
-              <p>{praxis.addresses.street}</p>
+              <p>{practice.addresses.street}</p>
               <p>
-                {praxis.addresses.citycode} {praxis.addresses.city}
+                {practice.addresses.citycode} {practice.addresses.city}
               </p>
-              <p>{praxis.addresses.country}</p>
+              <p>{practice.addresses.country}</p>
             </div>
           </div>
 
@@ -82,15 +125,15 @@ function VeterinaryPractice() {
             </div>
             <div className="info-content">
               <p>
-                <a href={`tel:${praxis.phone}`}>{praxis.phone}</a>
+                <a href={`tel:${practice.phone}`}>{practice.phone}</a>
               </p>
               <p>
-                <a href={`mailto:${praxis.infoemail}`}>{praxis.infoemail}</a>
+                <a href={`mailto:${practice.infoemail}`}>{practice.infoemail}</a>
               </p>
-              {praxis.website && (
+              {practice?.website && (
                 <p>
                   <a
-                    href={praxis.website}
+                    href={practice.website}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -104,10 +147,13 @@ function VeterinaryPractice() {
         </div>
 
         <div className="praxis-appointments">
-          <div className="appointments-header-section">
+          <div className="appointments-header-section flex-row">
             <h2>Verfügbare Termine</h2>
+            <div id="FilterPracticePage">
+              <SearchFilter filterOptions={filterOptions} setFilterServiceType={setFilterServiceType} setFilterAnimalType={setFilterAnimalType} practicePage={practice} searchFilter={null} landingPage={false}/>
+            </div>
           </div>
-          <NextAvailableAppointments praxisID={praxis.id.toString()} />
+          <NextAvailableAppointments praxisID={practice.id.toString()} filterOptions={filterOptions} />
         </div>
       </div>
     </div>

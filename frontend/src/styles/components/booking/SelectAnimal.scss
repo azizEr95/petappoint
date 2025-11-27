@@ -67,6 +67,29 @@
           font-size: 0.85rem;
         }
       }
+
+      .delete-button {
+        background: rgba(245, 5, 5);
+        border: none;
+        border-radius: 50%;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: rgb(0, 0, 0);
+        cursor: pointer;
+        transition: all 0.2s;
+        margin-left: 10px;
+
+        &:hover {
+          background: rgba(245, 5, 5, 0.5);
+        }
+
+        i {
+          font-size: 0.85rem;
+        }
+      }
     }
   }
 

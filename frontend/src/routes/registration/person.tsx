@@ -1,14 +1,14 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { useState, type ChangeEvent } from 'react'
-import type { MouseEvent } from 'react'
+import { useState, type ChangeEvent, type FormEvent } from 'react'
 import { PersonsCreateSchema } from '../../../../shared/schemas/ZodSchemas'
-import { Button, Form } from 'react-bootstrap'
+import '../../styles/routes/personRegistration.scss'
+import { Form, FormGroup } from 'react-bootstrap'
 
 export const Route = createFileRoute('/registration/person')({
-  component: personRegistration,
+  component: PersonRegistration,
 })
 
-function personRegistration() {
+function PersonRegistration() {
 
   const [firstName, setFirstName]=useState('')
   const [lastName, setLastName]=useState('')
@@ -144,7 +144,7 @@ function personRegistration() {
     return error
   }
 
-  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const name = e.target.name
     const value = e.target.value
     
@@ -256,7 +256,7 @@ function personRegistration() {
     return Object.keys(newErrors).length === 0
   }
 
-  const handleChange= (e: ChangeEvent<HTMLInputElement>)=>{
+  const handleChange= (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>)=>{
     const t= e.target
     const name = t.name
     const value = t.value
@@ -274,7 +274,7 @@ function personRegistration() {
       case 'lastName':
         setLastName(value)
         break
-       case 'strasse':
+      case 'strasse':
         setStrasse(value)
         break
       case 'hausnr':
@@ -305,14 +305,11 @@ function personRegistration() {
         setSex(value)
         break
       default:
-        console.log(
-          'Error: Fehler beim Aendern von personRegistration State in handleChange ',
-        )
-      
+        console.log('Error: Fehler beim Aendern von personRegistration State in handleChange')
     }
   }
 
-  const handleSubmit = (e:  MouseEvent<HTMLButtonElement>)=>{
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
     if (!validateForm()) {
@@ -343,222 +340,245 @@ function personRegistration() {
     }
 
   } 
-  
- return (
-    <div className="personRegistrationSite">
-      <div className="text-center">Regristrierung von Tierbesitzer</div>
+  return (
+    <div className="auth-page">
+      <div className="auth-container">
+        <div className="auth-card">
+          <h1 className="auth-title">Registrierung</h1>
 
-      <Form className="personRegistrationFormular">
-        <div className="text-CreatePerson">Vorname:</div>
-        <Form.Group className="mb-3">
-          <Form.Control
-            id="CreatePersonFirstName"
-            type="text"
-            placeholder="Vorname"
-            name="firstName"
-            onChange={handleChange}
-            onBlur={handleBlur}
-            value={firstName}
-            isInvalid={!!errors.firstName}
-          />
-          <Form.Control.Feedback type="invalid">  
-            {errors.firstName}
-          </Form.Control.Feedback>
-        </Form.Group>
-        
-        <div className="text-CreatePerson">Nachname:</div>
-        <Form.Group className="mb-3">
-          <Form.Control
-            id="CreatePersonLastName"
-            type="text"
-            placeholder="Nachname"
-            name="lastName"
-            onChange={handleChange}
-            onBlur={handleBlur}
-            value={lastName}
-            isInvalid={!!errors.lastName}
-          />
-          <Form.Control.Feedback type="invalid">
-            {errors.lastName}
-          </Form.Control.Feedback>
-        </Form.Group>
-        
-        <div className="text-CreatePerson">Straße:</div>
-        <Form.Group className="mb-3">
-          <Form.Control
-            id="CreatePersonStrasse"
-            type="text"
-            placeholder="Musterstraße"
-            name="strasse"
-            onChange={handleChange}
-            onBlur={handleBlur}
-            value={strasse}
-            isInvalid={!!errors.strasse}
-          />
-          <Form.Control.Feedback type="invalid">
-            {errors.strasse}
-          </Form.Control.Feedback>
-        </Form.Group>
-        
-        <div className="text-CreatePerson">Hausnr.:</div>
-        <Form.Group className="mb-3">
-          <Form.Control
-            id="CreatePersonHausnr"
-            type="text"
-            placeholder="1"
-            name="hausnr"
-            onChange={handleChange}
-            onBlur={handleBlur}
-            value={hausnr}
-            isInvalid={!!errors.hausnr}
-          />
-          <Form.Control.Feedback type="invalid">
-            {errors.hausnr}
-          </Form.Control.Feedback>
-        </Form.Group>
-        
-        <div className="text-CreatePerson">Postleizahl:</div>
-        <Form.Group className="mb-3">
-          <Form.Control
-            id="CreatePersonPlz"
-            type="text"
-            placeholder="12345"
-            name="plz"
-            onChange={handleChange}
-            onBlur={handleBlur}
-            value={plz}
-            isInvalid={!!errors.plz}
-          />
-          <Form.Control.Feedback type="invalid">
-            {errors.plz}
-          </Form.Control.Feedback>
-        </Form.Group>
-        
-        <div className="text-CreatePerson">Stadt:</div>
-        <Form.Group className="mb-3">
-          <Form.Control
-            id="CreatePersonStadt"
-            type="text"
-            placeholder="Musterstadt"
-            name="stadt"
-            onChange={handleChange}
-            onBlur={handleBlur}
-            value={stadt}
-            isInvalid={!!errors.stadt}
-          />
-          <Form.Control.Feedback type="invalid">
-            {errors.stadt}
-          </Form.Control.Feedback>
-        </Form.Group>
-        
-        <div className="text-CreatePerson">Land:</div>
-        <Form.Group className="mb-3">
-          <Form.Control
-            id="CreatePersonLand"
-            type="text"
-            placeholder="Deutschland"
-            name="land"
-            onChange={handleChange}
-            onBlur={handleBlur}
-            value={land}
-            isInvalid={!!errors.land}
-          />
-          <Form.Control.Feedback type="invalid">
-            {errors.land}
-          </Form.Control.Feedback>
-        </Form.Group>
-        
-        <div className="text-CreatePerson">E-Mail:</div>
-        <Form.Group className="mb-3">
-          <Form.Control
-            id="CreatePersonEmail"
-            type="email"
-            placeholder="mustertier@tier.de"
-            name="email"
-            onChange={handleChange}
-            onBlur={handleBlur}
-            value={email}
-            isInvalid={!!errors.email}
-          />
-          <Form.Control.Feedback type="invalid">
-            {errors.email}
-          </Form.Control.Feedback>
-        </Form.Group>
-        
-        <div className="text-CreatePerson">Password:</div>
-        <Form.Group className="mb-3">
-          <Form.Control
-            id="CreatePersonPassword"
-            type="password"
-            placeholder="*******"
-            name="password"
-            onChange={handleChange}
-            onBlur={handleBlur}
-            value={password}
-            isInvalid={!!errors.password}
-          />
-          <Form.Control.Feedback type="invalid">
-            {errors.password}
-          </Form.Control.Feedback>
-        </Form.Group>
-        
-        <div className="text-CreatePerson">Telefon:</div>
-        <Form.Group className="mb-3">
-          <Form.Control
-            id="CreatePersonPhone"
-            type="tel"
-            placeholder="+49 123456789999"
-            name="phone"
-            onChange={handleChange}
-            onBlur={handleBlur}
-            value={phone}
-            isInvalid={!!errors.phone}
-          />
-          <Form.Control.Feedback type="invalid">
-            {errors.phone}
-          </Form.Control.Feedback>
-        </Form.Group>
-        
-        <div className="text-CreatePerson">Geburtsdatum:</div>
-        <Form.Group className="mb-3">
-          <Form.Control
-            id="CreatePersonDateOfBirth"
-            type="date"
-            name="dateOfBirth"
-            onChange={handleChange}
-            value={dateOfBirth}
-          />
-        </Form.Group>
-        
-        <div className="text-CreatePerson">Geschlecht:</div>
-        <Form.Group className="mb-3">
-          <Form.Check
-            type="radio"
-            label="Männlich"
-            name="sex"
-            value="male"
-            onChange={handleChange}
-            checked={sex === 'male'}
-          />
-          <Form.Check
-            type="radio"
-            label="Weiblich"
-            name="sex"
-            value="female"
-            onChange={handleChange}
-            checked={sex === 'female'}
-          />
-        </Form.Group>
-        
-        <Button
-          id="PerformPersonRegistration"
-          variant="primary"
-          type="submit"
-          onClick={handleSubmit}
-        >
-          Registrieren
-        </Button>
-      </Form>
+          <Form className="auth-form" onSubmit={handleSubmit}>
+            <div className="form-section">
+              <h2 className="form-section-title">Persönliche Daten</h2>
+
+              <div className="form-row equal-col">
+                <FormGroup className="form-group">
+                  <Form.Label htmlFor="firstName" className="form-label">Vorname *</Form.Label>
+                  <Form.Control
+                    id="CreatePersonFirstName"
+                    type="text"
+                    placeholder="Vorname"
+                    name="firstName"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={firstName}
+                    isInvalid={!!errors.firstName}
+                  />
+                  <Form.Control.Feedback type="invalid">  
+                    {errors.firstName}
+                  </Form.Control.Feedback>
+                </FormGroup>
+
+                <FormGroup className="form-group">
+                  <Form.Label htmlFor="lastName" className="form-label">Nachname *</Form.Label>
+                  <Form.Control
+                    id="CreatePersonLastName"
+                    type="text"
+                    placeholder="Nachname"
+                    name="lastName"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={lastName}
+                    isInvalid={!!errors.lastName}
+                  />
+                  <Form.Control.Feedback type="invalid">
+                    {errors.lastName}
+                  </Form.Control.Feedback>
+                </FormGroup>
+              </div>
+
+              <div className="form-row equal-col">
+                <FormGroup className="form-group">
+                  <Form.Label htmlFor="dateOfBirth" className="form-label">Geburtsdatum *</Form.Label>
+                  <Form.Control
+                    id="CreatePersonDateOfBirth"
+                    type="date"
+                    name="dateOfBirth"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={dateOfBirth}
+                    isInvalid={!!errors.dateOfBirth}
+                  />
+                  <Form.Control.Feedback type="invalid">
+                    {errors.dateOfBirth}
+                  </Form.Control.Feedback>
+                </FormGroup>
+
+                <FormGroup className="form-group">
+                  <Form.Label htmlFor="sex" className="form-label">Geschlecht *</Form.Label>
+                  <Form.Select
+                    id="CreatePersonSex"
+                    name="sex"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={sex}
+                    isInvalid={!!errors.sex}
+                  >
+                    <option value="">Bitte wählen</option>
+                    <option value="Male">Männlich</option>
+                    <option value="Female">Weiblich</option>
+                    <option value="Diverse">Divers</option>
+                  </Form.Select>
+                  <Form.Control.Feedback type="invalid">
+                    {errors.sex}
+                  </Form.Control.Feedback>
+                </FormGroup>
+              </div>
+            </div>
+
+            <div className="form-section">
+              <h2 className="form-section-title">Kontaktdaten</h2>
+
+              <FormGroup className="form-group">
+                <Form.Label htmlFor="email" className="form-label">E-Mail *</Form.Label>
+                <Form.Control
+                  id="CreatePersonEmail"
+                  type="email"
+                  placeholder="ihre@email.de"
+                  name="email"
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  value={email}
+                  isInvalid={!!errors.email}
+                />
+                <Form.Control.Feedback type="invalid">
+                  {errors.email}
+                </Form.Control.Feedback>
+              </FormGroup>
+
+              <FormGroup className="form-group">
+                <Form.Label htmlFor="phone" className="form-label">Telefon *</Form.Label>
+                <Form.Control
+                  id="CreatePersonPhone"
+                  type="tel"
+                  placeholder="+49 123 456789"
+                  name="phone"
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  value={phone}
+                  isInvalid={!!errors.phone}
+                />
+                <Form.Control.Feedback type="invalid">
+                  {errors.phone}
+                </Form.Control.Feedback>
+              </FormGroup>
+
+              <FormGroup className="form-group">
+                <Form.Label htmlFor="password" className="form-label">Passwort *</Form.Label>
+                <Form.Control
+                  id="CreatePersonPassword"
+                  type="password"
+                  placeholder="••••••••"
+                  name="password"
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  value={password}
+                  isInvalid={!!errors.password}
+                />
+                <Form.Control.Feedback type="invalid">
+                  {errors.password}
+                </Form.Control.Feedback>
+              </FormGroup>
+            </div>
+
+            <div className="form-section">
+              <h2 className="form-section-title">Adresse</h2>
+
+              <div className="form-row two-col">
+                <FormGroup className="form-group">
+                  <Form.Label htmlFor="strasse" className="form-label">Straße *</Form.Label>
+                  <Form.Control
+                    id="CreatePersonStrasse"
+                    type="text"
+                    placeholder="Musterstraße"
+                    name="strasse"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={strasse}
+                    isInvalid={!!errors.strasse}
+                  />
+                  <Form.Control.Feedback type="invalid">
+                    {errors.strasse}
+                  </Form.Control.Feedback>
+                </FormGroup>
+
+                <FormGroup className="form-group">
+                  <Form.Label htmlFor="hausnr" className="form-label">Nr. *</Form.Label>
+                  <Form.Control
+                    id="CreatePersonHausnr"
+                    type="text"
+                    placeholder="1"
+                    name="hausnr"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={hausnr}
+                    isInvalid={!!errors.hausnr}
+                  />
+                  <Form.Control.Feedback type="invalid">
+                    {errors.hausnr}
+                  </Form.Control.Feedback>
+                </FormGroup>
+              </div>
+
+              <div className="form-row equal-col">
+                <FormGroup className="form-group">
+                  <Form.Label htmlFor="plz" className="form-label">PLZ *</Form.Label>
+                  <Form.Control
+                    id="CreatePersonPlz"
+                    type="text"
+                    placeholder="12345"
+                    name="plz"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={plz}
+                    isInvalid={!!errors.plz}
+                  />
+                  <Form.Control.Feedback type="invalid">
+                    {errors.plz}
+                  </Form.Control.Feedback>
+                </FormGroup>
+
+                <FormGroup className="form-group">
+                  <Form.Label htmlFor="stadt" className="form-label">Stadt *</Form.Label>
+                  <Form.Control
+                    id="CreatePersonStadt"
+                    type="text"
+                    placeholder="Musterstadt"
+                    name="stadt"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={stadt}
+                    isInvalid={!!errors.stadt}
+                  />
+                  <Form.Control.Feedback type="invalid">
+                    {errors.stadt}
+                  </Form.Control.Feedback>
+                </FormGroup>
+              </div>
+
+              <FormGroup className="form-group">
+                <Form.Label htmlFor="land" className="form-label">Land *</Form.Label>
+                <Form.Control
+                  id="CreatePersonLand"
+                  type="text"
+                  placeholder="Deutschland"
+                  name="land"
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  value={land}
+                  isInvalid={!!errors.land}
+                />
+                <Form.Control.Feedback type="invalid">
+                  {errors.land}
+                </Form.Control.Feedback>
+              </FormGroup>
+            </div>
+
+            <button type="submit" className="auth-button">
+              Registrieren
+            </button>
+          </Form>
+        </div>
+      </div>
     </div>
   )
 }

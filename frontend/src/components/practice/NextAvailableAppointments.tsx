@@ -3,26 +3,29 @@ import { useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
 import { getAvailableAppointmentsByPracticeId } from '../../api/AppointmentsAPI'
-import type { AppointmentsType } from '../../../../shared/schemas/ZodSchemas'
+import type { AppointmentFilterType, AppointmentsType } from '../../../../shared/schemas/ZodSchemas'
 import { compareDates, dateToDateString, dateToTimeString, getShortDate, getShortWeekday } from '../../utils/DateToStringFormat'
 
 type NextAvailableAppointmentsProps = {
   praxisID: string
+  filterOptions: AppointmentFilterType
 }
 
 export function NextAvailableAppointments({
   praxisID,
+  filterOptions
 }: NextAvailableAppointmentsProps) {
   // praxisID zum irgendwie bei Abfrage uebergeben werden
   const [dateAnsicht, setDateAnsicht] = useState(new Date())
   const [expandedDays, setExpandedDays] = useState<Set<number>>(new Set())
   const navigate = useNavigate()
 
+  // call here useQuery with filterOptions servicetype
   const { isPending, isError, isSuccess, data } = useQuery<
     Array<AppointmentsType>
   >({
-    queryKey: [`nextAvailableAppointments/${praxisID}`],
-    queryFn: () => getAvailableAppointmentsByPracticeId(praxisID),
+    queryKey: ["nextAvailableAppointments", praxisID, filterOptions.animalTypeIds, filterOptions.serviceTypeIds],
+    queryFn: () => getAvailableAppointmentsByPracticeId(praxisID, filterOptions),
     retry: false,
   })
 
@@ -64,7 +67,7 @@ export function NextAvailableAppointments({
     navigate({
       to: '/praxen/$praxisId/booking/$terminId',
       params: {
-        praxisId: termin.fk_veterinarypracticeid.toString(),
+        praxisId: termin.veterinarypractice.id.toString(),
         terminId: termin.id.toString(),
       },
       state: {
@@ -96,7 +99,6 @@ export function NextAvailableAppointments({
       // sortiert die Termine nach Anfangszeit
       return zeitA.starttime.getTime() - zeitB.starttime.getTime()
     })
-    console.log(data)
 
     // speichert alle benoetigten Termine in Array, fuer die naechsten fuenf Tage
     // an Pos 0 sind Termine von Tag dateAnsicht, an Pos 1 von nächsten Tag, ...

@@ -1,28 +1,49 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { z } from 'zod'
-import { Container } from 'react-bootstrap'
 import { SearchField } from '../components/common/SearchField'
 import { VeterinaryPracticeList } from '../components/practice/VeterinaryPracticeList'
+import { type AppointmentFilterType, type VeterinaryPracticeSearchQueryType } from '../../../shared/schemas/ZodSchemas'
+import { SearchFilter } from '../components/common/SearchFilter'
+import { useState } from 'react'
 
-const searchSchema = z.object({
-  name: z.string().default(''),
-  ort: z.string().default(''),
-})
+export type VeterinaryPracticeSearch = { // search, everything has to be a string
+  name: string
+  address: string,
+  animalType: string,
+  serviceType: string
+}
 
 export const Route = createFileRoute('/search')({
-  validateSearch: searchSchema,
+  validateSearch: (search: VeterinaryPracticeSearch): VeterinaryPracticeSearch => {
+    return search;
+  },
   component: SearchComponent,
 })
 
 function SearchComponent() {
-  const { name, ort } = Route.useSearch()
+  const { name, address, animalType, serviceType } = Route.useSearch();
+  const [filterServiceType, setFilterServiceType] = useState<number[]>(serviceType === undefined ? [] : stringToArray(serviceType.toString()));
+  const [filterAnimalType, setFilterAnimalType] = useState<number[]>(animalType === undefined ? [] : stringToArray(animalType.toString()));
+  const [totalResults, setTotalResults] = useState<number>(0);
+
+  const filterOptions: AppointmentFilterType = {
+    animalTypeIds: filterAnimalType,
+    serviceTypeIds: filterServiceType,
+  }
+
+  const searchFilter: VeterinaryPracticeSearchQueryType = {
+    name: name,
+    address: address,
+    animalTypeIds: filterAnimalType,
+    serviceTypeIds: filterServiceType
+  }
 
   return (
     <>
       {/* Sticky Search Bar */}
       <div className="search-header-sticky">
         <div className="container search-bar-container">
-          <SearchField searchNameBeginn={name} searchOrtBeginn={ort} />
+          <SearchField searchFilter={searchFilter} />
+          <SearchFilter searchFilter={searchFilter} filterOptions={filterOptions} setFilterServiceType={setFilterServiceType} setFilterAnimalType={setFilterAnimalType} practicePage={null} landingPage={false}/>
         </div>
       </div>
 
@@ -31,18 +52,18 @@ function SearchComponent() {
         <div className="search-summary">
           <h4>
             {name && <span>"{name}"</span>}
-            {name && ort && <span> in </span>}
-            {ort && <span>{ort}</span>}
-            {!name && !ort && <span>Alle Tierarztpraxen</span>}
+            {name && address && <span> in </span>}
+            {address && <span>{address}</span>}
+            {!name && !address && <span>Alle Tierarztpraxen</span>}
           </h4>
           <p className="results-count">
             <i className="bi bi-search"></i>
-            Gefundene Ergebnisse
+            {totalResults} {totalResults === 1 ? 'Ergebnis' : 'Ergebnisse'} gefunden
           </p>
         </div>
 
         {/* Results List */}
-        <VeterinaryPracticeList searchName={name} searchOrt={ort} />
+        <VeterinaryPracticeList searchName={name ?? ""} searchOrt={address ?? ""} filterOptions={filterOptions} onTotalChange={setTotalResults} />
       </div>
 
       <style>{`
@@ -58,8 +79,10 @@ function SearchComponent() {
 
         .search-bar-container {
           display: flex;
+          flex-direction: row;
           justify-content: center;
           align-items: center;
+          gap: 1rem;
         }
 
         .search-results-container {
@@ -93,8 +116,25 @@ function SearchComponent() {
             position: relative;
             top: 0;
           }
+
+          .search-bar-container {
+            flex-direction: column;
+          }
         }
       `}</style>
     </>
   )
+}
+
+function stringToArray(text: string): number[] {
+  if(text === undefined){
+    return [];
+  }
+
+  const array = Array.isArray(text) ? text : text.split('-');
+  return array
+    .map(s => s.trim())
+    .filter(s => s.length > 0)
+    .map(Number)
+    .filter(n => !isNaN(n) && Number.isInteger(n));
 }

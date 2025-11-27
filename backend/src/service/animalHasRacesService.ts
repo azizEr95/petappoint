@@ -1,9 +1,18 @@
+import { AddRacesToAnimalType, Animal_has_RacesType, AnimalracesType } from "vetlib-shared/schemas/ZodSchemas";
 import { animal_has_races } from "../../generated/prisma";
 import { prisma } from "../singletonPC";
 
 export const animalHasRacesService = {
-  async create(data: animal_has_races): Promise<animal_has_races> {
-    return await prisma.animal_has_races.create({ data: data });
+  async create(data: AddRacesToAnimalType): Promise<AddRacesToAnimalType> {
+    const created = await prisma.animal_has_races.createMany({
+      data: data.animalraceids.map(x => ({
+        fk_animalid: data.animalid,
+        fk_animalraceid: x
+      })),
+      skipDuplicates: true
+    });
+
+    return data;
   },
 
   async getAnimalByRacesId(racesId: number) {
@@ -43,6 +52,14 @@ export const animalHasRacesService = {
           fk_animalid: data.fk_animalid,
           fk_animalraceid: data.fk_animalraceid,
         },
+      },
+    });
+  },
+
+  async deleteAllRacesFromAnimal(animalId: number): Promise<void> {
+    await prisma.animal_has_races.deleteMany({
+      where: {
+        fk_animalid: animalId
       },
     });
   },
