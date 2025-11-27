@@ -288,6 +288,10 @@
   margin-top: var(--spacing-xl);
   padding-top: var(--spacing-lg);
   border-top: 2px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-md);
 
   .booking-confirm-button {
     display: flex;
@@ -295,22 +299,21 @@
     justify-content: center;
     gap: 0.5rem;
     width: 100%;
-    max-width: 400px;
-    margin: 0 auto;
-    padding: 1.25rem 2rem;
-    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+    max-width: 500px;
+    padding: 1rem 2rem;
+    background: var(--color-primary);
     border: none;
     border-radius: var(--radius-md);
     color: white;
     font-size: $font-size-base;
-    font-weight: 700;
+    font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s;
 
     &:hover:not(:disabled) {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+      background: var(--color-primary-dark);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
     }
 
     &:active:not(:disabled) {
@@ -321,20 +324,26 @@
       background: $gray-200;
       color: $gray-600;
       cursor: not-allowed;
-      box-shadow: none;
     }
 
     i {
-      font-size: 1.2rem;
+      font-size: 1.1rem;
     }
 
     &.booking-button-secondary {
-      background: $gray-200;
-      color: var(--color-text-dark);
+      background: transparent;
+      color: var(--color-text-muted);
+      border: 2px solid var(--color-border);
+      padding: 0.75rem 1.5rem;
+      font-weight: 500;
+      font-size: 0.95rem;
 
       &:hover:not(:disabled) {
-        background: $gray-600;
-        color: white;
+        background: var(--color-primary-pale);
+        border-color: var(--color-primary);
+        color: var(--color-primary);
+        transform: none;
+        box-shadow: none;
       }
     }
   }
