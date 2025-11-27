@@ -1,8 +1,7 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
-import type { ChangeEvent, MouseEvent } from 'react'
+import type { ChangeEvent, FormEvent } from 'react'
 import '../styles/routes/login.scss'
-import { Button, Form } from 'react-bootstrap'
 import { useAuthStore } from '../stores/authStore'
 
 export const Route = createFileRoute('/login')({
@@ -16,9 +15,7 @@ function Login() {
   const { setLogin } = useAuthStore()
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const t = e.target
-    const name = t.name
-    const value = t.value
+    const { name, value } = e.target
     switch (name) {
       case 'email':
         setEmail(value)
@@ -27,86 +24,78 @@ function Login() {
         setPassword(value)
         break
       default:
-        console.log(
-          'Error: Fehler beim Aendern von Login State in handleChange',
-        )
+        console.log('Error: Fehler beim Aendern von Login State in handleChange')
     }
   }
 
-  const handleSubmit = async (e: MouseEvent<HTMLButtonElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setLogin(true)
     navigate({ to: '/appointments' })
   }
 
-  const handleClickRegistrationVeterinaryPractice = (
-    e: MouseEvent<HTMLButtonElement>,
-  ) => {
-    e.preventDefault()
-    navigate({ to: '/registration/veterinary' })
-  }
-
-  const handleClickRegistrationUser = (e: MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault()
-    navigate({ to: '/registration/person' })
-  }
-
   return (
-    <div className="loginSite">
-      <div className="text-center">Login</div>
-      <Form className="loginFormular">
-        <Form.Group className="mb-3">
-          <Form.Control
-            id="LoginDialogUserIDText"
-            type="text"
-            placeholder="E-Mail"
-            name="email"
-            onChange={handleChange}
-            value={email}
-          />
-        </Form.Group>
-        <Form.Group className="mb-3">
-          <Form.Control
-            id="LoginDialogUserIDPassword"
-            type="password"
-            placeholder="Password"
-            name="password"
-            onChange={handleChange}
-            value={password}
-          />
-        </Form.Group>
-        <Button
-          id="PerformLoginButton"
-          variant="primary"
-          type="submit"
-          onClick={handleSubmit}
-        >
-          Login
-        </Button>
-      </Form>
+    <div className="auth-page">
+      <div className="auth-container">
+        <div className="auth-card">
+          <h1 className="auth-title">Login</h1>
 
-      <div className="card card-body loginOption">
-        <div className="card-text text-center">Neu bei vetlib?</div>
-        <Button
-          id="PerformRegistrationButton"
-          className="button"
-          variant="primary"
-          type="submit"
-          onClick={handleClickRegistrationUser}
-        >
-          Registrieren
-        </Button>
-      </div>
-      <div className="card card-body loginOption">
-        <div className="card-text text-center">Sie sind Tierarzt?</div>
-        <Button
-          className="button"
-          variant="primary"
-          type="submit"
-          onClick={handleClickRegistrationVeterinaryPractice}
-        >
-          Als Praxis regristrieren
-        </Button>
+          <form className="auth-form" onSubmit={handleSubmit}>
+            <div className="form-group">
+              <label htmlFor="email" className="form-label">E-Mail *</label>
+              <input
+                id="email"
+                type="email"
+                className="form-input"
+                placeholder="ihre@email.de"
+                name="email"
+                onChange={handleChange}
+                value={email}
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="password" className="form-label">Passwort *</label>
+              <input
+                id="password"
+                type="password"
+                className="form-input"
+                placeholder="••••••••"
+                name="password"
+                onChange={handleChange}
+                value={password}
+                required
+              />
+            </div>
+
+            <button type="submit" className="auth-button">
+              Einloggen
+            </button>
+          </form>
+        </div>
+
+        <div className="auth-option-card">
+          <p className="option-text">Neu bei vetlib?</p>
+          <button
+            type="button"
+            className="option-button"
+            onClick={() => navigate({ to: '/registration/person' })}
+          >
+            Jetzt registrieren
+          </button>
+        </div>
+
+        <div className="auth-option-card">
+          <p className="option-text">Sie sind Tierarzt?</p>
+          <button
+            type="button"
+            className="option-button"
+            onClick={() => navigate({ to: '/registration/veterinary' })}
+          >
+            Als Praxis registrieren
+          </button>
+        </div>
       </div>
     </div>
   )

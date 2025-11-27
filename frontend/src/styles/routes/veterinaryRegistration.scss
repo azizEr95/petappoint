@@ -1,28 +1,6 @@
-.veterinaryRegistrationSite {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: 20px;
-  padding-right: 20px;
-}
+@import './auth-shared';
 
-div.loginOption {
-  width: 70%;
-  min-width: 200px;
-  max-width: 300px;
-  margin-top: 2em;
-}
-
-.veterinaryRegistrationFormular {
-  width: 85%;
-  min-width: 200px;
-  max-width: 400px;
-  margin-top: 1em;
-}
-
-.text-CreatePractice {
-  margin-left: 5px;
+// Specific styles for veterinary registration
+.auth-container {
+  max-width: 700px;
 }
