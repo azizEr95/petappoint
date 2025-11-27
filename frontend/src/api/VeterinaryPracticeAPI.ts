@@ -1,10 +1,9 @@
-import z from 'zod'
-import { VeterinaryPracticeSchema } from '../../../shared/schemas/ZodSchemas'
-import type { VeterinaryPracticeSearchQueryType, VeterinaryPracticesCreateType, VeterinaryPracticesType } from '../../../shared/schemas/ZodSchemas'
+import { VeterinaryPracticeSchema, VeterinaryPracticeSearchResultSchema } from '../../../shared/schemas/ZodSchemas'
+import type { VeterinaryPracticeSearchQueryType, VeterinaryPracticesCreateType, VeterinaryPracticesType, VeterinaryPracticeSearchResultType } from '../../../shared/schemas/ZodSchemas'
 
 export const getVeterinaryPracticesByNameAddress = async (
   searchParams: VeterinaryPracticeSearchQueryType
-): Promise<Array<VeterinaryPracticesType>> => {
+): Promise<VeterinaryPracticeSearchResultType> => {
   const targetURL = import.meta.env.VITE_API_URL + '/veterinary-practice/search?';
   let query = '';
   if (searchParams.name) {
@@ -19,13 +18,19 @@ export const getVeterinaryPracticesByNameAddress = async (
   if (searchParams.serviceTypeIds) {
     query += `${query.length > 0 ? '&' : ''}serviceTypeIds=${searchParams.serviceTypeIds.join(',')}`
   }
+  if (searchParams.page) {
+    query += `${query.length > 0 ? '&' : ''}page=${searchParams.page}`
+  }
+  if (searchParams.pageSize) {
+    query += `${query.length > 0 ? '&' : ''}pageSize=${searchParams.pageSize}`
+  }
   const res = await fetch(targetURL + query);
   if (!res.ok) {
     throw new Error('Failed to fetch getVeterinaryPracticesByNameAddress')
   }
 
   const data = await res.json();
-  const parsed = z.array(VeterinaryPracticeSchema).safeParse(data);
+  const parsed = VeterinaryPracticeSearchResultSchema.safeParse(data);
   if (parsed.error !== undefined) { // if Zod throws an Error print them
     console.log(parsed.error);
   }

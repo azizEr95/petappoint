@@ -246,6 +246,17 @@ export const VeterinaryPracticeSearchQuerySchema = z.object({
     address: z.string().default(''),
     animalTypeIds: ArrayOfIDs,
     serviceTypeIds: ArrayOfIDs,
+    page: z.string().optional().transform(val => val ? parseInt(val) : 1),
+    pageSize: z.string().optional().transform(val => val ? parseInt(val) : 10),
 });
 
 export type VeterinaryPracticeSearchQueryType = z.infer<typeof VeterinaryPracticeSearchQuerySchema>;
+
+export const VeterinaryPracticeSearchResultSchema = z.object({
+    data: z.array(VeterinaryPracticeSchema),
+    total: z.number().int(),
+    page: z.number().int(),
+    pageSize: z.number().int(),
+});
+
+export type VeterinaryPracticeSearchResultType = z.infer<typeof VeterinaryPracticeSearchResultSchema>;

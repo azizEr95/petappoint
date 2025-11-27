@@ -16,9 +16,56 @@ export function SearchField({
 }: SearchFieldProps) {
   const [searchTermName, setSearchTermName] = useState(searchFilter.name)
   const [searchTermOrt, setSearchTermOrt] = useState(searchFilter.address)
+  const [isLoadingLocation, setIsLoadingLocation] = useState(false)
   const navigate = useNavigate()
 
-  // bei Suche ohne Ortangabe aktuellen Standort nehmen??: https://wiki.selfhtml.org/wiki/Geolocation
+  const handleGetCurrentLocation = async () => {
+    if (!navigator.geolocation) {
+      alert('Geolocation wird von Ihrem Browser nicht unterstützt')
+      return
+    }
+
+    setIsLoadingLocation(true)
+
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords
+
+        try {
+          // Reverse geocoding mit Nominatim (OpenStreetMap)
+          const response = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`,
+            {
+              headers: {
+                'Accept-Language': 'de'
+              }
+            }
+          )
+
+          const data = await response.json()
+
+          // Nur Stadt extrahieren
+          const city = data.address?.city || data.address?.town || data.address?.village || ''
+
+          setSearchTermOrt(city)
+          if (handleChangeNameAddress !== undefined) {
+            handleChangeNameAddress(undefined, city)
+          }
+        } catch (error) {
+          console.error('Fehler beim Abrufen der Adresse:', error)
+          alert('Standort konnte nicht ermittelt werden')
+        } finally {
+          setIsLoadingLocation(false)
+        }
+      },
+      (error) => {
+        setIsLoadingLocation(false)
+        console.error('Geolocation Fehler:', error)
+        alert('Zugriff auf Standort wurde verweigert')
+      }
+    )
+  }
+
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const t = e.target
     const typ = t.name
@@ -67,8 +114,13 @@ export function SearchField({
         onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
       />
       <div className="search-divider"></div>
-      <div className="search-icon-container">
-        <i className="bi bi-geo-alt"></i>
+      <div
+        className="search-icon-container location-btn"
+        onClick={handleGetCurrentLocation}
+        style={{ cursor: isLoadingLocation ? 'wait' : 'pointer' }}
+        title="Aktuellen Standort verwenden"
+      >
+        <i className={isLoadingLocation ? "bi bi-arrow-clockwise spin" : "bi bi-geo-alt"}></i>
       </div>
       <input
         type="text"

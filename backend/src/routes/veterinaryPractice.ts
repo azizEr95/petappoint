@@ -2,7 +2,7 @@ import express from "express";
 import { veterinaryPracticeService } from "../service/veterinaryPracticeService"
 import { z } from 'zod';
 import { appointmentService } from "../service/appointmentService";
-import { AppointmentsType, VeterinaryPracticesType, VeterinaryPracticeCreateSchema, ServiceType, VeterinaryPracticeSearchQuerySchema, AnimalTypeType, AppointmentFilterSchema } from "vetlib-shared/schemas/ZodSchemas";
+import { AppointmentsType, VeterinaryPracticesType, VeterinaryPracticeCreateSchema, ServiceType, VeterinaryPracticeSearchQuerySchema, AnimalTypeType, AppointmentFilterSchema, VeterinaryPracticeSearchResultType } from "vetlib-shared/schemas/ZodSchemas";
 
 export const veterinaryPracticeRouter = express.Router();
 
@@ -20,7 +20,7 @@ veterinaryPracticeRouter.get('/search',
             return res.sendStatus(400);
         }
 
-        const found: VeterinaryPracticesType[] = await veterinaryPracticeService.search(parsed.data);
+        const found: VeterinaryPracticeSearchResultType = await veterinaryPracticeService.search(parsed.data);
         return res.send(found);
     }
 )
