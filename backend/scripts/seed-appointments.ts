@@ -13,15 +13,12 @@ async function seedAppointments() {
     const deleted = await prisma.appointments.deleteMany({});
     console.log(`🗑️  Deleted ${deleted.count} old appointments`);
 
-    // Get all practices, vets, animals, services
+    // Get all practices, vets, services
     const practices = await prisma.veterinarypractices.findMany({
       select: { id: true },
     });
     const vets = await prisma.veterinaries.findMany({
       select: { id: true, fk_veterinarypractice: true },
-    });
-    const animals = await prisma.animals.findMany({
-      select: { id: true },
     });
     const services = await prisma.services.findMany({
       select: { id: true},
@@ -74,9 +71,6 @@ async function seedAppointments() {
           endtime.setMinutes(endtime.getMinutes() + 30 + Math.floor(Math.random() * 3) * 15);
 
           const vet = availableVets[Math.floor(Math.random() * availableVets.length)];
-          const animal = Math.random() > 0.5 && animals.length > 0
-            ? animals[Math.floor(Math.random() * animals.length)]
-            : null;
           const service = Math.random() > 0.4 && practiceServices.length > 0
             ? practiceServices[Math.floor(Math.random() * practiceServices.length)]
             : null;
@@ -84,7 +78,7 @@ async function seedAppointments() {
           appointments.push({
             starttime,
             endtime,
-            fk_animalid: animal?.id || null,
+            fk_animalid: null,
             fk_veterinaryid: vet.id,
             fk_veterinarypracticeid: practice.id,
             fk_serviceid: service?.id || null,

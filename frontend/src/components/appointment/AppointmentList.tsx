@@ -1,5 +1,6 @@
 import type { AppointmentsType } from "../../../../shared/schemas/ZodSchemas"
 import { AppointmentCard } from "./AppointmentCard"
+import { useNavigate } from "@tanstack/react-router"
 
 type AppointmentListProps = {
     dataAppointments: AppointmentsType[],
@@ -9,6 +10,7 @@ type AppointmentListProps = {
 }
 
 export function AppointmentList({ dataAppointments, handleShowDetailsAppointment, selectedAppointment, isPast }: AppointmentListProps) {
+    const navigate = useNavigate();
 
     if (dataAppointments.length !== 0) {
         return (
@@ -31,6 +33,18 @@ export function AppointmentList({ dataAppointments, handleShowDetailsAppointment
             <div className="empty-state">
                 <i className="bi bi-calendar-x"></i>
                 <p>{isPast ? 'Keine vergangenen Termine' : 'Keine anstehenden Termine'}</p>
+                <p className="empty-state-hint">
+                    {isPast
+                        ? 'Buchen Sie Ihren ersten Termin bei einer Tierarztpraxis.'
+                        : 'Buchen Sie jetzt einen Termin bei einer Tierarztpraxis in Ihrer Nähe.'}
+                </p>
+                <button
+                    className="btn btn-secondary"
+                    onClick={() => navigate({ to: '/search' })}
+                >
+                    <i className="bi bi-calendar-plus"></i>
+                    Termin buchen
+                </button>
             </div>
         )
     }

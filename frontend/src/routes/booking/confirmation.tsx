@@ -2,7 +2,7 @@ import { createFileRoute, useLocation, useNavigate } from '@tanstack/react-route
 import '../../styles/routes/bookingPage.scss'
 import { useEffect, useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
-import { bookAppointment } from '../../api/AppointmentsAPI'
+import { bookAppointment, cancelAppointment } from '../../api/AppointmentsAPI'
 import type {
   AnimalsType,
   AppointmentsType,
@@ -20,6 +20,8 @@ type LocationState = {
   selectedAnimal: AnimalsType
   selectedService: ServiceType
   practice: VeterinaryPracticesType
+  isReschedule?: boolean
+  oldAppointmentId?: number
 }
 
 function ConfirmationComponent() {
@@ -45,15 +47,49 @@ function ConfirmationComponent() {
 
   // Book appointment mutation
   const { mutate: mutateAppointment } = useMutation({
-    mutationFn: () => {
+    mutationFn: async () => {
       if (!state) throw new Error('Invalid state')
-      return bookAppointment(state.appointment.id, state.selectedAnimal.id, state.selectedService.id)
+
+      if (state.isReschedule && state.oldAppointmentId) {
+        // RESCHEDULE: Book new appointment first
+        const newAppointment = await bookAppointment(
+          state.appointment.id,
+          state.selectedAnimal.id,
+          state.selectedService.id
+        )
+
+        // Then cancel old appointment (don't throw if this fails)
+        try {
+          await cancelAppointment(state.oldAppointmentId)
+        } catch (err) {
+          console.error('Cancel old appointment failed:', err)
+          // User has new appointment, can manually cancel old one
+        }
+
+        return newAppointment
+      } else {
+        // Normal booking
+        return bookAppointment(
+          state.appointment.id,
+          state.selectedAnimal.id,
+          state.selectedService.id
+        )
+      }
     },
     onError: (error: any) => {
       console.error('Booking failed:', error)
       setIsSubmitting(false)
       setBookingStatus('error')
-      setErrorMessage(error?.message || 'Die Terminbuchung ist fehlgeschlagen. Bitte versuchen Sie es erneut.')
+
+      if (state?.isReschedule) {
+        if (error?.message?.includes('already taken')) {
+          setErrorMessage('Dieser Termin wurde bereits gebucht. Bitte wählen Sie einen anderen.')
+        } else {
+          setErrorMessage('Terminverschiebung fehlgeschlagen. Ihr alter Termin bleibt bestehen.')
+        }
+      } else {
+        setErrorMessage(error?.message || 'Die Terminbuchung ist fehlgeschlagen. Bitte versuchen Sie es erneut.')
+      }
     },
     onSuccess: (bookedAppointment) => {
       setIsSubmitting(false)
@@ -62,8 +98,9 @@ function ConfirmationComponent() {
         to: '/appointments',
         state: {
           appointment: bookedAppointment,
-          justBooked: true
-        },
+          justBooked: true,
+          wasRescheduled: state?.isReschedule
+        } as any,
         replace: true
       })
     },
@@ -76,8 +113,16 @@ function ConfirmationComponent() {
 
   const handleBack = () => {
     if (state) {
-      // Go back to booking page (previous step in flow)
-      navigate({ to: '/praxen/' + state.practice.id + '/booking/' + state.appointment.id })
+      if (state.isReschedule && state.oldAppointmentId) {
+        // Go back to reschedule page
+        navigate({
+          to: '/appointments/$appointmentId/reschedule',
+          params: { appointmentId: state.oldAppointmentId.toString() }
+        })
+      } else {
+        // Go back to booking page (previous step in flow)
+        navigate({ to: '/praxen/' + state.practice.id + '/booking/' + state.appointment.id })
+      }
     }
   }
 
@@ -232,7 +277,7 @@ function ConfirmationComponent() {
           <i className="bi bi-arrow-left"></i>
           Zurück
         </button>
-        <h1>Buchung bestätigen</h1>
+        <h1>{state?.isReschedule ? 'Terminverschiebung bestätigen' : 'Buchung bestätigen'}</h1>
       </div>
 
       <div className="booking-main-centered">
@@ -299,7 +344,7 @@ function ConfirmationComponent() {
               ) : (
                 <>
                   <i className="bi bi-check-circle"></i>
-                  Termin jetzt buchen
+                  {state?.isReschedule ? 'Termin jetzt verschieben' : 'Termin jetzt buchen'}
                 </>
               )}
             </button>

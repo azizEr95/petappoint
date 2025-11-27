@@ -9,11 +9,13 @@ import { compareDates, dateToDateString, dateToTimeString, getShortDate, getShor
 type NextAvailableAppointmentsProps = {
   praxisID: string
   filterOptions: AppointmentFilterType
+  onSlotClick?: (termin: AppointmentsType) => void
 }
 
 export function NextAvailableAppointments({
   praxisID,
-  filterOptions
+  filterOptions,
+  onSlotClick
 }: NextAvailableAppointmentsProps) {
   // praxisID zum irgendwie bei Abfrage uebergeben werden
   const [dateAnsicht, setDateAnsicht] = useState(new Date())
@@ -63,17 +65,22 @@ export function NextAvailableAppointments({
   }
 
   const handleBookAppiontment = (termin: AppointmentsType) => {
-    // navigiert zur Buchungsseite fuer den Termin
-    navigate({
-      to: '/praxen/$praxisId/booking/$terminId',
-      params: {
-        praxisId: termin.veterinarypractice.id.toString(),
-        terminId: termin.id.toString(),
-      },
-      state: {
-        termin: termin,
-      },
-    })
+    // Use custom onSlotClick if provided, otherwise default navigation
+    if (onSlotClick) {
+      onSlotClick(termin)
+    } else {
+      // navigiert zur Buchungsseite fuer den Termin
+      navigate({
+        to: '/praxen/$praxisId/booking/$terminId',
+        params: {
+          praxisId: termin.veterinarypractice.id.toString(),
+          terminId: termin.id.toString(),
+        },
+        state: {
+          termin: termin,
+        },
+      })
+    }
   }
 
   if (isPending) {
