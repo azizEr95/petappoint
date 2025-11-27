@@ -3,6 +3,8 @@ import { useState } from 'react'
 import type { ChangeEvent, FormEvent } from 'react'
 import '../styles/routes/login.scss'
 import { useAuthStore } from '../stores/authStore'
+import { useMutation } from '@tanstack/react-query'
+import { login } from '../api/LoginAPI'
 
 export const Route = createFileRoute('/login')({
   component: Login,
@@ -11,8 +13,21 @@ export const Route = createFileRoute('/login')({
 function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [errorLogin, setErrorLogin] = useState('')
   const navigate = useNavigate()
   const { setLogin } = useAuthStore()
+
+  const { mutate: mutateLogin } = useMutation({
+    mutationFn: () =>
+      login(email, password),
+    onError: () => {
+      setErrorLogin("Email oder Password falsch");
+    },
+    onSuccess: () => {
+      setLogin(true);
+      navigate({ to: '/appointments' });
+    },
+  })
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -30,8 +45,7 @@ function Login() {
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    setLogin(true)
-    navigate({ to: '/appointments' })
+    mutateLogin();
   }
 
   return (
@@ -68,7 +82,7 @@ function Login() {
                 required
               />
             </div>
-
+            {errorLogin !== "" && <div>{errorLogin}</div>}
             <button type="submit" className="auth-button">
               Einloggen
             </button>
