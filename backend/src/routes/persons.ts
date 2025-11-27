@@ -1,7 +1,7 @@
 import express from "express";
 import { personService } from "../service/personService";
 import { AnimalsType, PersonsCreateSchema, PersonsType } from "vetlib-shared/schemas/ZodSchemas";
-import { verifyPasswordAndCreateJWT } from "src/service/jwtService";
+import { verifyPasswordAndCreateJWT } from "../service/jwtService";
 
 export const personsRouter = express.Router();
 
