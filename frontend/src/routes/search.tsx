@@ -34,7 +34,9 @@ function SearchComponent() {
     name: name,
     address: address,
     animalTypeIds: filterAnimalType,
-    serviceTypeIds: filterServiceType
+    serviceTypeIds: filterServiceType,
+    page: 1, // these page params are default
+    pageSize: 10
   }
 
   return (

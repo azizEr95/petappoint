@@ -60,6 +60,63 @@ export const getVeterinaryPracticesById = async (
   }
   return parsed.data
 }
+
+export const getFavoritesVeterinaryPractices = async (
+  userId: string,
+): Promise<number[]> => {
+  const res = await fetch(
+    import.meta.env.VITE_API_URL + '/persons/' + userId + '/favorites',
+  )
+  if (!res.ok) {
+    throw new Error('Failed to fetch getFavoritesVeterinaryPractices')
+  }
+
+  const data = await res.json();
+  return data;
+}
+
+export const addFavoritesVeterinaryPractices = async (
+  userId: string,
+  practiceId: string,
+): Promise<void> => {
+  const requestOptions = {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+    },
+}
+
+  const res = await fetch(
+    import.meta.env.VITE_API_URL + '/persons/' + userId + '/favorites/' + practiceId, requestOptions
+  )
+  if (!res.ok) {
+    throw new Error('Failed to fetch addFavoritesVeterinaryPractices')
+  }
+
+  return;
+}
+
+export const deleteFavoritesVeterinaryPractices = async (
+  userId: string,
+  practiceId: string,
+): Promise<void> => {
+  const requestOptions = {
+    method: 'DELETE',
+    headers: {
+        'Content-Type': 'application/json',
+    },
+}
+
+  const res = await fetch(
+    import.meta.env.VITE_API_URL + '/persons/' + userId + '/favorites/' + practiceId, requestOptions
+  )
+  if (!res.ok) {
+    throw new Error('Failed to fetch deleteFavoritesVeterinaryPractices')
+  }
+  
+  return;
+}
+
 export const creatVeterinaryPractice = async (practice: VeterinaryPracticesCreateType): Promise<VeterinaryPracticesType> => {
 
   const requestOptions = {
@@ -75,12 +132,10 @@ export const creatVeterinaryPractice = async (practice: VeterinaryPracticesCreat
   if (!res.ok) {
     throw new Error('Failed to fetch getVeterinaryPracticesById')
   }
-  console.log("fetch eerfolgreich")
-  console.log(res)
   const data = await res.json();
-  console.log("data parsed")
   return parsedVeterinaryPractice(data);
 }
+
 /*
  * change the date from the Appointment to Date Object and safeParse the object
  */
