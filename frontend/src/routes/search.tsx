@@ -23,6 +23,7 @@ function SearchComponent() {
   const { name, address, animalType, serviceType } = Route.useSearch();
   const [filterServiceType, setFilterServiceType] = useState<number[]>(serviceType === undefined ? [] : stringToArray(serviceType.toString()));
   const [filterAnimalType, setFilterAnimalType] = useState<number[]>(animalType === undefined ? [] : stringToArray(animalType.toString()));
+  const [totalResults, setTotalResults] = useState<number>(0);
 
   const filterOptions: AppointmentFilterType = {
     animalTypeIds: filterAnimalType,
@@ -57,12 +58,12 @@ function SearchComponent() {
           </h4>
           <p className="results-count">
             <i className="bi bi-search"></i>
-            Gefundene Ergebnisse
+            {totalResults} {totalResults === 1 ? 'Ergebnis' : 'Ergebnisse'} gefunden
           </p>
         </div>
 
         {/* Results List */}
-        <VeterinaryPracticeList searchName={name ?? ""} searchOrt={address ?? ""} filterOptions={filterOptions} />
+        <VeterinaryPracticeList searchName={name ?? ""} searchOrt={address ?? ""} filterOptions={filterOptions} onTotalChange={setTotalResults} />
       </div>
 
       <style>{`

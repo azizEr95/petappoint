@@ -1,5 +1,5 @@
 import { prisma } from "../singletonPC";
-import { AnimalTypeType, ServiceType, VeterinaryPracticesCreateType, VeterinaryPracticeSearchQueryType, VeterinaryPracticesType } from "vetlib-shared/schemas/ZodSchemas";
+import { AnimalTypeType, ServiceType, VeterinaryPracticesCreateType, VeterinaryPracticeSearchQueryType, VeterinaryPracticesType, VeterinaryPracticeSearchResultType } from "vetlib-shared/schemas/ZodSchemas";
 import { addressService } from "./addressService";
 
 export const veterinaryPracticeService = {
@@ -41,76 +41,94 @@ export const veterinaryPracticeService = {
     return foundPractice;
   },
 
-  async search(query: VeterinaryPracticeSearchQueryType): Promise<VeterinaryPracticesType[]> {
-    const searchResults = await prisma.veterinarypractices.findMany({
-      include: {
-        addresses: true
-      },
-      where: {
-        AND: [
-          (!query.animalTypeIds || query.animalTypeIds.length <= 0) ? {} : {
-            veterinaries: {
-              some: {
-                veterinary_can_treat_animaltype: {
-                  some: {
-                    fk_animaltypeid: { in: query.animalTypeIds }
-                  }
+  async search(query: VeterinaryPracticeSearchQueryType): Promise<VeterinaryPracticeSearchResultType> {
+    const page = query.page ?? 1;
+    const pageSize = query.pageSize ?? 10;
+    const skip = (page - 1) * pageSize;
+
+    const whereCondition = {
+      AND: [
+        (!query.animalTypeIds || query.animalTypeIds.length <= 0) ? {} : {
+          veterinaries: {
+            some: {
+              veterinary_can_treat_animaltype: {
+                some: {
+                  fk_animaltypeid: { in: query.animalTypeIds }
                 }
               }
-            }
-          },
-          (!query.serviceTypeIds || query.serviceTypeIds.length <= 0) ? {} : {
-            veterinaries: {
-              some: {
-                veterinary_has_service: {
-                  some: {
-                    fk_serviceid: { in: query.serviceTypeIds }
-                  }
-                }
-              }
-            }
-          },
-          query.name.length <= 0 ? {} : {
-            name: {
-              contains: query.name,
-              mode: "insensitive"
-            }
-          },
-          query.address.length <= 0 ? {} : {
-            addresses: {
-              OR: [
-                {
-                  street: {
-                    contains: query.address,
-                    mode: "insensitive"
-                  }
-                },
-                {
-                  city: {
-                    contains: query.address,
-                    mode: "insensitive"
-                  }
-                },
-                {
-                  citycode: {
-                    contains: query.address,
-                    mode: "insensitive"
-                  }
-                },
-                {
-                  country: {
-                    contains: query.address,
-                    mode: "insensitive"
-                  }
-                }
-              ]
             }
           }
-        ]
-      }
-    });
+        },
+        (!query.serviceTypeIds || query.serviceTypeIds.length <= 0) ? {} : {
+          veterinaries: {
+            some: {
+              veterinary_has_service: {
+                some: {
+                  fk_serviceid: { in: query.serviceTypeIds }
+                }
+              }
+            }
+          }
+        },
+        query.name.length <= 0 ? {} : {
+          name: {
+            contains: query.name,
+            mode: "insensitive" as const
+          }
+        },
+        query.address.length <= 0 ? {} : {
+          addresses: {
+            OR: [
+              {
+                street: {
+                  contains: query.address,
+                  mode: "insensitive" as const
+                }
+              },
+              {
+                city: {
+                  contains: query.address,
+                  mode: "insensitive" as const
+                }
+              },
+              {
+                citycode: {
+                  contains: query.address,
+                  mode: "insensitive" as const
+                }
+              },
+              {
+                country: {
+                  contains: query.address,
+                  mode: "insensitive" as const
+                }
+              }
+            ]
+          }
+        }
+      ]
+    } as const;
 
-    return searchResults;
+    const [searchResults, total] = await Promise.all([
+      prisma.veterinarypractices.findMany({
+        include: {
+          addresses: true
+        },
+        where: whereCondition as any,
+        skip,
+        take: pageSize,
+      }),
+      prisma.veterinarypractices.count({
+        where: whereCondition as any
+      })
+    ]);
+
+    return {
+      data: searchResults,
+      total,
+      page,
+      pageSize,
+    };
   },
 
   async getByEmail(email: string): Promise<VeterinaryPracticesType | null> {
