@@ -1,15 +1,17 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useState, type ChangeEvent, type FormEvent } from 'react'
-import { PersonsCreateSchema } from '../../../../shared/schemas/ZodSchemas'
+import { PersonsCreateSchema, type PersonsCreateType } from '../../../../shared/schemas/ZodSchemas'
 import '../../styles/routes/personRegistration.scss'
 import { Form, FormGroup } from 'react-bootstrap'
+import { useMutation } from '@tanstack/react-query'
+import { personRegistration } from '../../api/LoginAPI'
 
 export const Route = createFileRoute('/registration/person')({
   component: PersonRegistration,
 })
 
 function PersonRegistration() {
-
+  const navigate = useNavigate();
   const [firstName, setFirstName]=useState('')
   const [lastName, setLastName]=useState('')
   const [strasse, setStrasse]=useState('')
@@ -23,6 +25,17 @@ function PersonRegistration() {
   const [dateOfBirth, setDateOfBirth]= useState('')
   const [sex, setSex]= useState('')
   const [errors, setErrors] = useState<{[key: string]: string}>({})
+
+  const { mutate: mutateRegistration } = useMutation({
+    mutationFn: (person: PersonsCreateType) =>
+      personRegistration(person),
+    onError: () => {
+      console.log("Email oder Password falsch");
+    },
+    onSuccess: () => {
+      navigate({ to: '/appointments' });
+    },
+})
 
   const validateField = (name: string, value: string) => {
     let error = ''
@@ -318,23 +331,26 @@ function PersonRegistration() {
     }
 
     const person={
-      firstName: firstName,
-      lastName: lastName,
+      firstname: firstName,
+      lastname: lastName,
       email: email,
       password: password,
       phone: phone,
-      dateOfBirth: dateOfBirth,
-      sex:sex,
+      dateofbirth: new Date(dateOfBirth),
+      sex: sex, // to be changed
       addresses: {
         street: strasse + hausnr,
         citycode: plz,
         city: stadt,
+        country: land,
+        latitude: 0,
+        longitude: 0
       },
     }
     
     try{
-      console.log(person)
-      PersonsCreateSchema.parse(person)
+      PersonsCreateSchema.parse(person);
+      mutateRegistration(person);
     }catch(e){
       console.log('Zod Error: personRegistration'+ e)
     }

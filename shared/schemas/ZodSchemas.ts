@@ -144,6 +144,30 @@ export const PersonsCreateSchema = PersonsSchema.omit({
 export type PersonsCreateType = z.infer<typeof PersonsCreateSchema>;
 export type PersonsType = z.infer<typeof PersonsSchema>;
 
+//person with authentication type
+const roles = z.enum(['person']);
+export const PersonsAuthenticatedSchema = z.object({
+    roles: roles,
+    id: z.number().int(),
+});
+
+export type PersonsAuthenticatedType = z.infer<typeof PersonsAuthenticatedSchema>;
+
+export const loginValidator = z.object({
+  email: z.email(),
+  password: z.string().max(100).min(8)
+});
+
+export type LoginValidatorType = z.infer<typeof loginValidator>;
+
+//Login Type
+export const LoginSchema = z.object({
+    id: z.string(),
+    roles: roles,
+    exp: z.number(),
+})
+
+export type LoginType = z.infer<typeof LoginSchema>;
 
 //Person has Animal:
 export const Person_has_AnimalSchema = z.object({

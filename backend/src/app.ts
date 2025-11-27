@@ -1,18 +1,21 @@
-import express, {urlencoded} from 'express';
+import express from 'express';
 import { configureCORS } from './configCors';
+import cookieParser from 'cookie-parser';
 import { veterinaryPracticeRouter } from './routes/veterinaryPractice';
 import { appointmentRouter } from './routes/appointments';
 import { personsRouter } from './routes/persons';
 import { animalsRouter } from './routes/animals';
 import { animaltypeRouter } from './routes/animaltypes';
 import { serviceRouter } from './routes/services';
+import { loginRouter } from './routes/login';
 
 export const app = express();
 
 configureCORS(app);
-// app.use(cookieParser()); // TODO
+app.use(cookieParser());
 
 app.use(express.json());
+app.use("/api/login", loginRouter);
 app.use("/api/veterinary-practice", veterinaryPracticeRouter);
 app.use("/api/appointments", appointmentRouter);
 app.use("/api/persons", personsRouter);

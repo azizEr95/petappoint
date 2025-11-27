@@ -13,15 +13,16 @@ VALUES
   ('Kaiserstraße 8', '60311', 'Frankfurt am Main', 'Deutschland', 8.6821, 50.1109);
 
 -- Personen
+-- Passwort: HabboHotel123
 INSERT INTO persons (firstName, lastName, sex, dateOfBirth, fk_address, phone, email, password)
 VALUES
   /* id */
-  /* 01 */ ('Joe', 'Doe', 'male', DATE '2000-01-01', 1, '+493000000000', 'joe@doe.de', '#123456'),
-  /* 02 */ ('Daniel', 'Müller', 'male', DATE '1920-05-10', 1, '+493000000001', 'daniel@daniel.de', '#123456'),
-  /* 03 */ ('James', 'Jayjay', 'male', DATE '1999-02-15', 2, '+493000000002', 'james@jay.de', '#123456'),
-  /* 04 */ ('Maria', 'May', 'female', DATE '1999-02-15', 4, '+493000000003', 'm@m.de', '#123456'),
-  /* 05 */ ('Denis', 'Deniz', 'notknown', DATE '2050-01-01', 5, '+493000000004', 'joey@doey.de', '#123456'),
-  /* 06 */ ('Aziz', 'Erol', 'male', DATE '1900-11-20', 5, '+493000000005', 'aziz@erol.de', '#123456');
+  /* 01 */ ('Joe', 'Doe', 'male', DATE '2000-01-01', 1, '+493000000000', 'joe@doe.de', '$2b$10$3aziu8mKSUNiJ7dGCGcKd.FZeiOSW2Nw5Ml0w7DhGWZtE3nR2Z6b2'),
+  /* 02 */ ('Daniel', 'Müller', 'male', DATE '1920-05-10', 1, '+493000000001', 'daniel@daniel.de', '$2b$10$3aziu8mKSUNiJ7dGCGcKd.FZeiOSW2Nw5Ml0w7DhGWZtE3nR2Z6b2'),
+  /* 03 */ ('James', 'Jayjay', 'male', DATE '1999-02-15', 2, '+493000000002', 'james@jay.de', '$2b$10$3aziu8mKSUNiJ7dGCGcKd.FZeiOSW2Nw5Ml0w7DhGWZtE3nR2Z6b2'),
+  /* 04 */ ('Maria', 'May', 'female', DATE '1999-02-15', 4, '+493000000003', 'm@m.de', '$2b$10$3aziu8mKSUNiJ7dGCGcKd.FZeiOSW2Nw5Ml0w7DhGWZtE3nR2Z6b2'),
+  /* 05 */ ('Denis', 'Deniz', 'notknown', DATE '2050-01-01', 5, '+493000000004', 'joey@doey.de', '$2b$10$3aziu8mKSUNiJ7dGCGcKd.FZeiOSW2Nw5Ml0w7DhGWZtE3nR2Z6b2'),
+  /* 06 */ ('Aziz', 'Erol', 'male', DATE '1900-11-20', 5, '+493000000005', 'aziz@erol.de', '$2b$10$3aziu8mKSUNiJ7dGCGcKd.FZeiOSW2Nw5Ml0w7DhGWZtE3nR2Z6b2');
 
 -- animaltypes
 INSERT INTO animaltypes (name)
@@ -105,13 +106,14 @@ VALUES
   (3, 6);
 
 -- Testdaten für Tierarztpraxen (veterinarypractices)
+-- Passwort: HabboHotel123
 INSERT INTO veterinarypractices (name, phone, infoemail, email, password, website, info, fk_addressid)
 VALUES
-  ('Tierarztpraxis Berlin Mitte', '+49 30 123456', 'info@berlinvet.de', 'kontakt@berlinvet.de', 'hashedpw123', 'https://www.berlinvet.de', 'Kompetente Kleintierpraxis im Herzen Berlins.', 1),
-  ('Alstertal Tierklinik Hamburg', '+49 40 987654', 'info@alstertier.de', 'kontakt@alstertier.de', 'hashedpw456', 'https://www.alstertier.de', 'Moderne Tierklinik mit 24h-Notdienst.', 2),
-  ('Tiergesundheit München', '+49 89 111222', 'info@muenchentiere.de', 'praxis@muenchentiere.de', 'hashedpw789', NULL, 'Praxis für Haustiere aller Art.', 3),
-  ('VetKöln - Tiermedizin am Rhein', '+49 221 333444', 'info@vetkoeln.de', 'praxis@vetkoeln.de', 'hashedpw321', 'https://www.vetkoeln.de', 'Spezialisiert auf Kleintiere und Exoten.', 4),
-  ('FrankfurtVet - Zentrum für Tiermedizin', '+49 69 555666', 'info@frankfurtvet.de', 'kontakt@frankfurtvet.de', 'hashedpw654', 'https://www.frankfurtvet.de', 'Tierärztliches Zentrum mit Chirurgie und Diagnostik.', 5);
+  ('Tierarztpraxis Berlin Mitte', '+49 30 123456', 'info@berlinvet.de', 'kontakt@berlinvet.de', '$2b$10$3aziu8mKSUNiJ7dGCGcKd.FZeiOSW2Nw5Ml0w7DhGWZtE3nR2Z6b2', 'https://www.berlinvet.de', 'Kompetente Kleintierpraxis im Herzen Berlins.', 1),
+  ('Alstertal Tierklinik Hamburg', '+49 40 987654', 'info@alstertier.de', 'kontakt@alstertier.de', '$2b$10$3aziu8mKSUNiJ7dGCGcKd.FZeiOSW2Nw5Ml0w7DhGWZtE3nR2Z6b2', 'https://www.alstertier.de', 'Moderne Tierklinik mit 24h-Notdienst.', 2),
+  ('Tiergesundheit München', '+49 89 111222', 'info@muenchentiere.de', 'praxis@muenchentiere.de', '$2b$10$3aziu8mKSUNiJ7dGCGcKd.FZeiOSW2Nw5Ml0w7DhGWZtE3nR2Z6b2', NULL, 'Praxis für Haustiere aller Art.', 3),
+  ('VetKöln - Tiermedizin am Rhein', '+49 221 333444', 'info@vetkoeln.de', 'praxis@vetkoeln.de', '$2b$10$3aziu8mKSUNiJ7dGCGcKd.FZeiOSW2Nw5Ml0w7DhGWZtE3nR2Z6b2', 'https://www.vetkoeln.de', 'Spezialisiert auf Kleintiere und Exoten.', 4),
+  ('FrankfurtVet - Zentrum für Tiermedizin', '+49 69 555666', 'info@frankfurtvet.de', 'kontakt@frankfurtvet.de', '$2b$10$3aziu8mKSUNiJ7dGCGcKd.FZeiOSW2Nw5Ml0w7DhGWZtE3nR2Z6b2', 'https://www.frankfurtvet.de', 'Tierärztliches Zentrum mit Chirurgie und Diagnostik.', 5);
 
 -- Tierarzt
 INSERT INTO veterinaries (id, infoEmail, fk_veterinarypractice)
