@@ -1,6 +1,7 @@
 import express from "express";
 import { personService } from "../service/personService";
-import { AnimalsType, PersonsType } from "vetlib-shared/schemas/ZodSchemas";
+import { AnimalsType, PersonsCreateSchema, PersonsType } from "vetlib-shared/schemas/ZodSchemas";
+import { verifyPasswordAndCreateJWT } from "src/service/jwtService";
 
 export const personsRouter = express.Router();
 
@@ -35,6 +36,29 @@ personsRouter.get("/:id/favorites",
     }
 );
 
+
+personsRouter.post("/",
+    async (req, res) => {
+        try {
+            const personData = PersonsCreateSchema.safeParse(req.body);
+            if(!personData.success){
+                res.status(400).send(personData.error);
+                return;
+            }
+            await personService.create(personData.data);
+            const jwt = await verifyPasswordAndCreateJWT(personData.data.email, personData.data.password);
+            res.status(201).send(jwt);
+        } catch (ex) {
+            if(String(ex).includes("JSON Web Token ist ungültig")) {
+                res.status(400).send("JSON Web Token ist ungültig")
+            }
+            res.sendStatus(400);
+            return;
+        }
+    }
+);
+
+
 personsRouter.post("/:id/favorites/:practiceId",
     async (req, res) => {
         try {
@@ -48,6 +72,8 @@ personsRouter.post("/:id/favorites/:practiceId",
         }
     }
 );
+
+
 
 personsRouter.delete("/:id/favorites/:practiceId",
     async (req, res) => {
