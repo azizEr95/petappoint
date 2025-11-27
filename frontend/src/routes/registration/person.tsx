@@ -1,14 +1,13 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { useState, type ChangeEvent } from 'react'
-import type { MouseEvent } from 'react'
+import { useState, type ChangeEvent, type FormEvent } from 'react'
 import { PersonsCreateSchema } from '../../../../shared/schemas/ZodSchemas'
-import { Button, Form } from 'react-bootstrap'
+import '../../styles/routes/personRegistration.scss'
 
 export const Route = createFileRoute('/registration/person')({
-  component: personRegistration,
+  component: PersonRegistration,
 })
 
-function personRegistration() {
+function PersonRegistration() {
 
   const [firstName, setFirstName]=useState('')
   const [lastName, setLastName]=useState('')
@@ -23,18 +22,16 @@ function personRegistration() {
   const [dateOfBirth, setDateOfBirth]= useState('')
   const [sex, setSex]= useState('')
 
-  const handleChange= (e: ChangeEvent<HTMLInputElement>)=>{
-    const t= e.target
-    const name = t.name
-    const value = t.value
-    switch(name){
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target
+    switch(name) {
       case 'firstName':
         setFirstName(value)
         break
       case 'lastName':
         setLastName(value)
         break
-       case 'strasse':
+      case 'strasse':
         setStrasse(value)
         break
       case 'hausnr':
@@ -65,14 +62,11 @@ function personRegistration() {
         setSex(value)
         break
       default:
-        console.log(
-          'Error: Fehler beim Aendern von personRegistration State in handleChange ',
-        )
-      
+        console.log('Error: Fehler beim Aendern von personRegistration State in handleChange')
     }
   }
 
-  const handleSubmit = (e:  MouseEvent<HTMLButtonElement>)=>{
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
     const person={
@@ -99,153 +93,209 @@ function personRegistration() {
     }
 
   } 
- return (
-    <div className="personRegistrationSite">
-      <div className="text-center">Regristrierung von Tierbesitzer</div>
+  return (
+    <div className="auth-page">
+      <div className="auth-container">
+        <div className="auth-card">
+          <h1 className="auth-title">Registrierung</h1>
 
-      <Form className="personRegistrationFormular">
-        <div className="text-CreatePerson">Vorname:</div>
-        <Form.Group className="mb-3">
-          <Form.Control
-            id="CreatePersonFirstName"
-            type="text"
-            placeholder="Vorname"
-            name="firstName"
-            onChange={handleChange}
-            value={firstName}
-          />
-        </Form.Group>
-            <div className="text-CreatePerson">Nachname:</div>
-        <Form.Group className="mb-3">
-          <Form.Control
-            id="CreatePersonLastName"
-            type="text"
-            placeholder="Nachname"
-            name="lasttName"
-            onChange={handleChange}
-            value={lastName}
-          />
-        </Form.Group>
-        <div className="text-CreatePerson">Straße:</div>
-        <Form.Group className="mb-3">
-          <Form.Control
-            id="CreatePersonStrasse"
-            type="text"
-            placeholder="Musterstraße"
-            name="strasse"
-            onChange={handleChange}
-            value={strasse}
-          />
-        </Form.Group>
-        <div className="text-CreatePerson">Hausnr.:</div>
-        <Form.Group className="mb-3">
-          <Form.Control
-            id="CreatePersonHausnr"
-            type="text"
-            placeholder="1"
-            name="hausnr"
-            onChange={handleChange}
-            value={hausnr}
-          />
-        </Form.Group>
-        <div className="text-CreatePerson">Postleizahl:</div>
-        <Form.Group className="mb-3">
-          <Form.Control
-            id="CreatePersonPlz"
-            type="text"
-            placeholder="12345"
-            name="plz"
-            onChange={handleChange}
-            value={plz}
-          />
-        </Form.Group>
-        <div className="text-CreatePerson">Stadt:</div>
-        <Form.Group className="mb-3">
-          <Form.Control
-            id="CreatePersonStadt"
-            type="text"
-            placeholder="Musterstadt"
-            name="stadt"
-            onChange={handleChange}
-            value={stadt}
-          />
-        </Form.Group>
-        <div className="text-CreatePerson">Land:</div>
-        <Form.Group className="mb-3">
-          <Form.Control
-            id="CreatePersonLand"
-            type="text"
-            placeholder="Deutschland"
-            name="land"
-            onChange={handleChange}
-            value={land}
-          />
-        </Form.Group>
-        <div className="text-CreatePerson">E-Mail:</div>
-        <Form.Group className="mb-3">
-          <Form.Control
-            id="CreatePersonEmail"
-            type="text"
-            placeholder="mustertier@tier.de"
-            name="email"
-            onChange={handleChange}
-            value={email}
-          />
-        </Form.Group>
-        <div className="text-CreatePerson">Password:</div>
-        <Form.Group className="mb-3">
-          <Form.Control
-            id="CreatePersonPassword"
-            type="password"
-            placeholder="*******"
-            name="password"
-            onChange={handleChange}
-            value={password}
-          />
-        </Form.Group>
-        <div className="text-CreatePerson">Telefon:</div>
-        <Form.Group className="mb-3">
-          <Form.Control
-            id="CreatePersonPhone"
-            type="text"
-            placeholder="+49 123456789999"
-            name="phone"
-            onChange={handleChange}
-            value={phone}
-          />
-        </Form.Group>
-        <div className="text-CreatePerson">Geburtsdatum:</div>
-        <Form.Group className="mb-3">
-          <Form.Control
-            id="CreatePersonDateOfBirth"
-            type="text"
-            placeholder="xx.xx.xxxx"
-            name="DateOfBirth"
-            onChange={handleChange}
-            value={dateOfBirth}
-          />
-        </Form.Group>
-        <div className="text-CreatePerson">Sex:</div>
-        <Form.Group className="mb-3">
-          <Form.Control
-            id="CreatePersonSex"
-            type="text"
-            placeholder="Male/Female"
-            name="sex"
-            onChange={handleChange}
-            value={sex}
-          />
-        </Form.Group>
-        
-        <Button
-          id="PerformPersonRegistration"
-          variant="primary"
-          type="submit"
-          onClick={handleSubmit}
-        >
-          Registrieren
-        </Button>
-      </Form>
+          <form className="auth-form" onSubmit={handleSubmit}>
+            <div className="form-section">
+              <h2 className="form-section-title">Persönliche Daten</h2>
+
+              <div className="form-row equal-col">
+                <div className="form-group">
+                  <label htmlFor="firstName" className="form-label">Vorname *</label>
+                  <input
+                    id="firstName"
+                    type="text"
+                    className="form-input"
+                    placeholder="Max"
+                    name="firstName"
+                    onChange={handleChange}
+                    value={firstName}
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="lastName" className="form-label">Nachname *</label>
+                  <input
+                    id="lastName"
+                    type="text"
+                    className="form-input"
+                    placeholder="Mustermann"
+                    name="lastName"
+                    onChange={handleChange}
+                    value={lastName}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="form-row equal-col">
+                <div className="form-group">
+                  <label htmlFor="dateOfBirth" className="form-label">Geburtsdatum *</label>
+                  <input
+                    id="dateOfBirth"
+                    type="date"
+                    className="form-input"
+                    name="dateOfBirth"
+                    onChange={handleChange}
+                    value={dateOfBirth}
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="sex" className="form-label">Geschlecht *</label>
+                  <select
+                    id="sex"
+                    className="form-input"
+                    name="sex"
+                    onChange={handleChange}
+                    value={sex}
+                    required
+                  >
+                    <option value="">Bitte wählen</option>
+                    <option value="Male">Männlich</option>
+                    <option value="Female">Weiblich</option>
+                    <option value="Diverse">Divers</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div className="form-section">
+              <h2 className="form-section-title">Kontaktdaten</h2>
+
+              <div className="form-group">
+                <label htmlFor="email" className="form-label">E-Mail *</label>
+                <input
+                  id="email"
+                  type="email"
+                  className="form-input"
+                  placeholder="ihre@email.de"
+                  name="email"
+                  onChange={handleChange}
+                  value={email}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="phone" className="form-label">Telefon *</label>
+                <input
+                  id="phone"
+                  type="tel"
+                  className="form-input"
+                  placeholder="+49 123 456789"
+                  name="phone"
+                  onChange={handleChange}
+                  value={phone}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="password" className="form-label">Passwort *</label>
+                <input
+                  id="password"
+                  type="password"
+                  className="form-input"
+                  placeholder="••••••••"
+                  name="password"
+                  onChange={handleChange}
+                  value={password}
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="form-section">
+              <h2 className="form-section-title">Adresse</h2>
+
+              <div className="form-row two-col">
+                <div className="form-group">
+                  <label htmlFor="strasse" className="form-label">Straße *</label>
+                  <input
+                    id="strasse"
+                    type="text"
+                    className="form-input"
+                    placeholder="Musterstraße"
+                    name="strasse"
+                    onChange={handleChange}
+                    value={strasse}
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="hausnr" className="form-label">Nr. *</label>
+                  <input
+                    id="hausnr"
+                    type="text"
+                    className="form-input"
+                    placeholder="1"
+                    name="hausnr"
+                    onChange={handleChange}
+                    value={hausnr}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="form-row equal-col">
+                <div className="form-group">
+                  <label htmlFor="plz" className="form-label">PLZ *</label>
+                  <input
+                    id="plz"
+                    type="text"
+                    className="form-input"
+                    placeholder="12345"
+                    name="plz"
+                    onChange={handleChange}
+                    value={plz}
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="stadt" className="form-label">Stadt *</label>
+                  <input
+                    id="stadt"
+                    type="text"
+                    className="form-input"
+                    placeholder="Musterstadt"
+                    name="stadt"
+                    onChange={handleChange}
+                    value={stadt}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="land" className="form-label">Land *</label>
+                <input
+                  id="land"
+                  type="text"
+                  className="form-input"
+                  placeholder="Deutschland"
+                  name="land"
+                  onChange={handleChange}
+                  value={land}
+                  required
+                />
+              </div>
+            </div>
+
+            <button type="submit" className="auth-button">
+              Registrieren
+            </button>
+          </form>
+        </div>
+      </div>
     </div>
   )
 }
