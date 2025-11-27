@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { getVeterinaryPracticesByNameAddress } from '../../api/VeterinaryPracticeAPI'
 import { VeterinaryPracticeCard } from './VeterinaryPracticeCard'
 import type { AppointmentFilterType, VeterinaryPracticeSearchResultType } from '../../../../shared/schemas/ZodSchemas'
@@ -32,10 +32,12 @@ export function VeterinaryPracticeList({
     }),
   })
 
-  // Notify parent of total count changes
-  if (isSuccess && data && onTotalChange) {
-    onTotalChange(data.total)
-  }
+  useEffect(() => {
+    // Notify parent of total count changes
+    if (isSuccess && data && onTotalChange) {
+      onTotalChange(data.total)
+    }
+  }, [isSuccess, data])
 
   if (isSuccess && data) {
     const totalPages = Math.ceil(data.total / data.pageSize)
@@ -46,7 +48,7 @@ export function VeterinaryPracticeList({
           {/* Results */}
           <div>
             {data.data.map((praxis) => {
-              return <VeterinaryPracticeCard key={praxis.id} praxis={praxis} filterOptions={filterOptions} />
+              return <VeterinaryPracticeCard key={praxis.id} practice={praxis} filterOptions={filterOptions} />
             })}
           </div>
 

@@ -7,6 +7,7 @@ import { getVeterinaryPracticesById } from '../../../api/VeterinaryPracticeAPI'
 import type { AnimalTypeType, VeterinaryPracticesType } from '../../../../../shared/schemas/ZodSchemas'
 import { SearchFilter } from '../../../components/common/SearchFilter'
 import { getAnimaltypesFromPractice } from '../../../api/AnimalTypeAPI'
+import { FavoritePractice } from '../../../components/practice/FavoritePractice'
 
 
 export const Route = createFileRoute('/praxen/$praxisId/')({
@@ -91,7 +92,10 @@ function VeterinaryPractice() {
           <i className="bi bi-arrow-left"></i>
           Zurück
         </button>
-        <h1>{practice.name}</h1>
+        <h1 className='headerPracticePage'>
+          {practice.name}
+          <FavoritePractice practice={practice}/>
+        </h1>
       </div>
 
       <div className="praxis-layout">
@@ -150,7 +154,7 @@ function VeterinaryPractice() {
           <div className="appointments-header-section flex-row">
             <h2>Verfügbare Termine</h2>
             <div id="FilterPracticePage">
-              <SearchFilter filterOptions={filterOptions} setFilterServiceType={setFilterServiceType} setFilterAnimalType={setFilterAnimalType} practicePage={practice} searchFilter={null} landingPage={false}/>
+              <SearchFilter filterOptions={filterOptions} setFilterServiceType={setFilterServiceType} setFilterAnimalType={setFilterAnimalType} practicePage={practice} searchFilter={null} landingPage={false} />
             </div>
           </div>
           <NextAvailableAppointments praxisID={practice.id.toString()} filterOptions={filterOptions} />
