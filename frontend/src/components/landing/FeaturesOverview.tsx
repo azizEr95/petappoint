@@ -1,4 +1,5 @@
 import '../../styles/components/landing/FeaturesOverview.scss'
+import { Link } from '@tanstack/react-router'
 
 export default function FeaturesOverview() {
   const steps = [
@@ -7,21 +8,24 @@ export default function FeaturesOverview() {
       title: 'Registrieren',
       description:
         'Erstellen Sie Ihr kostenloses Konto und fügen Sie Ihre Tiere hinzu',
-      icon: '📝',
+      icon: 'bi-person-plus-fill',
+      link: '/registration/person',
     },
     {
       number: 2,
       title: 'Praxis finden',
       description:
         'Suchen Sie nach Tierarzt, Behandlung oder Klinik in Ihrer Nähe',
-      icon: '🔍',
+      icon: 'bi-search',
+      link: '#hero',
     },
     {
       number: 3,
       title: 'Termin buchen',
       description:
         'Wählen Sie einen passenden Termin und buchen Sie direkt online',
-      icon: '📅',
+      icon: 'bi-calendar-check-fill',
+      link: '/search',
     },
   ]
 
@@ -34,14 +38,29 @@ export default function FeaturesOverview() {
         </p>
 
         <div className="steps-grid">
-          {steps.map((step) => (
-            <div key={step.number} className="step-card">
-              <div className="step-number-badge">{step.number}</div>
-              <div className="step-icon">{step.icon}</div>
-              <h3 className="step-title">{step.title}</h3>
-              <p className="step-description">{step.description}</p>
-            </div>
-          ))}
+          {steps.map((step) => {
+            const isAnchor = step.link.startsWith('#')
+            const CardContent = (
+              <div className="step-card">
+                <div className="step-icon-wrapper">
+                  <i className={`${step.icon} step-icon`}></i>
+                  <div className="step-number-badge">{step.number}</div>
+                </div>
+                <h3 className="step-title">{step.title}</h3>
+                <p className="step-description">{step.description}</p>
+              </div>
+            )
+
+            return isAnchor ? (
+              <a key={step.number} href={step.link} className="step-card-link">
+                {CardContent}
+              </a>
+            ) : (
+              <Link key={step.number} to={step.link} className="step-card-link">
+                {CardContent}
+              </Link>
+            )
+          })}
         </div>
       </div>
     </section>

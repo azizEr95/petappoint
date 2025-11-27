@@ -1,67 +1,60 @@
-import { Card, Col, Container, Row } from 'react-bootstrap'
 import '../../styles/components/landing/BenefitsOwners.scss'
 
 export default function BenefitsOwners() {
   const benefits = [
     {
-      icon: '⏰',
+      icon: 'bi-clock-fill',
       title: '24/7 Online-Buchung',
       description: 'Buchen Sie Termine jederzeit bequem von zu Hause aus',
     },
     {
-      icon: '📍',
+      icon: 'bi-geo-alt-fill',
       title: 'Tierärzte in Ihrer Nähe',
       description:
         'Finden Sie schnell qualifizierte Tierärzte in Ihrer Umgebung',
     },
     {
-      icon: '💬',
+      icon: 'bi-chat-dots-fill',
       title: 'Echte Bewertungen',
       description: 'Profitieren Sie von Erfahrungen anderer Tierhalter',
     },
     {
-      icon: '🔔',
+      icon: 'bi-bell-fill',
       title: 'Erinnerungen',
       description: 'Automatische Terminerinnerungen per E-Mail oder SMS',
     },
     {
-      icon: '📋',
+      icon: 'bi-clipboard-check-fill',
       title: 'Zentrale Übersicht',
       description: 'Alle Termine und Behandlungen an einem Ort',
     },
     {
-      icon: '💰',
+      icon: 'bi-cash-stack',
       title: 'Transparent',
       description: 'Klare Preisinformationen ohne versteckte Kosten',
     },
   ]
 
   return (
-    <section className="section-padding">
-      <Container>
-        <div className="text-center">
-          <h2 className="section-title">Vorteile für Tierhalter</h2>
-          <p className="section-subtitle">
-            Warum über 10.000 Tierhalter uns bereits vertrauen
-          </p>
-        </div>
+    <section id="benefits-owners" className="section">
+      <div className="container">
+        <h2 className="section-title">Vorteile für Tierhalter</h2>
+        <p className="section-subtitle">
+          Warum über 10.000 Tierhalter uns bereits vertrauen
+        </p>
 
-        <Row className="g-4">
+        <div className="benefits-grid">
           {benefits.map((benefit, index) => (
-            <Col key={index} md={6} lg={4}>
-              <Card className="benefit-card h-100 border-0 shadow-sm">
-                <Card.Body className="text-center p-4">
-                  <div className="benefit-icon mb-3">{benefit.icon}</div>
-                  <Card.Title className="h5 mb-2">{benefit.title}</Card.Title>
-                  <Card.Text className="text-muted">
-                    {benefit.description}
-                  </Card.Text>
-                </Card.Body>
-              </Card>
-            </Col>
+            <div key={index} className="benefit-card">
+              <div className="benefit-icon-wrapper">
+                <i className={`${benefit.icon} benefit-icon`}></i>
+              </div>
+              <h3 className="benefit-title">{benefit.title}</h3>
+              <p className="benefit-description">{benefit.description}</p>
+            </div>
           ))}
-        </Row>
-      </Container>
+        </div>
+      </div>
     </section>
   )
 }
