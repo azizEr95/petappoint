@@ -15,15 +15,8 @@ export default function CTABanner() {
         </p>
         <div className="d-flex flex-wrap justify-content-center gap-3">
           <Link
-            to="/"
+            to="/search"
             className="btn btn-light btn-lg px-5 py-3 fw-bold"
-            onClick={() => {
-              setTimeout(() => {
-                document
-                  .querySelector('.hero-section')
-                  ?.scrollIntoView({ behavior: 'smooth' })
-              }, 100)
-            }}
           >
             <i className="bi bi-search me-2"></i>
             Jetzt Termin finden
