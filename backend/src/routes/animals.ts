@@ -4,8 +4,29 @@ import { animalService } from "../service/animalService";
 import { personService } from "../service/personService";
 import { animalRaceService } from "../service/animalRaceService";
 import { animalHasRacesService } from "../service/animalHasRacesService";
-
+import multer from "multer";
 export const animalsRouter = express.Router();
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'public/uploads/animals'); // make sure this folder exists
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, file.fieldname + '-' + uniqueSuffix + '.' + file.originalname.split('.').pop());
+  }
+});
+
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 2 * 1024 * 1024 }, // 2MB limit
+  fileFilter: (req, file, cb) => {
+    if (!file.mimetype.startsWith('image/')) {
+      return cb(new Error('Only images are allowed'));
+    }
+    cb(null, true);
+  }
+});
 
 animalsRouter.post("/",
     async (req, res) => {
@@ -65,6 +86,22 @@ animalsRouter.put('/:animalId',
         return res.send(animal);
     }
 );
+
+animalsRouter.get('/:animalId/picture',
+    async (req, res) => {
+        const animalId = parseInt(req.params.animalId);
+        const filepath = await animalService.getPicturePath(animalId);
+        res.sendFile(filepath);
+    }
+)
+
+animalsRouter.post('/:animalId/picture',
+    upload.single('picture'),
+    async (req, res) => {
+        const animalId = parseInt(req.params.animalId);
+        await animalService.savePicture(animalId, req.file?.path ?? null);
+    }
+)
 
 animalsRouter.delete('/:animalId',
     async (req, res) => {
