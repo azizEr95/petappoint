@@ -36,7 +36,7 @@ function PersonRegistration() {
     },
     onSuccess: () => {
       setLogin(true);
-      navigate({ to: '/appointments' });
+      navigate({ to: '/dashboard' });
     },
   })
 
