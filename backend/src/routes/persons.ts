@@ -42,7 +42,7 @@ personsRouter.get("/:id/favorites",
 
 
 personsRouter.post("/",
-    requiresAuthentication,
+    optionalAuthentication,
     async (req, res) => {
         try {
             const personData = PersonsCreateSchema.safeParse(req.body);
