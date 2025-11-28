@@ -5,7 +5,7 @@ import { ServiceSchema, type ServiceType } from "../../../shared/schemas/ZodSche
 export const getServicesFromPractice = async (practiceId: string): Promise<Array<ServiceType>> => {
     const res = await fetch(
         import.meta.env.VITE_API_URL +
-        '/veterinary-practice/' + practiceId + '/services'
+        '/veterinary-practice/' + practiceId + '/services', {credentials: 'include'}
     )
     if (!res.ok) {
         throw new Error('Failed to fetch getServicesFromPractice')
@@ -21,7 +21,7 @@ export const getAllAvailableServices = async (id: string | undefined): Promise<A
     }
     const res = await fetch(
         import.meta.env.VITE_API_URL +
-        '/services/all/available/'
+        '/services/all/available/',{credentials: 'include'}
     )
     if (!res.ok) {
         throw new Error('Failed to fetch getAllServices')

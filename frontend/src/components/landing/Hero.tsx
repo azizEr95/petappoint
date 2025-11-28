@@ -18,7 +18,9 @@ export default function Hero() {
     name: "",
     address: "",
     animalTypeIds: filterAnimalType,
-    serviceTypeIds: filterServiceType
+    serviceTypeIds: filterServiceType,
+    page: 1,
+    pageSize: 10
   }
 
   const handleChangeNameAddress = (newName: string | undefined, newAddress: string | undefined) => {

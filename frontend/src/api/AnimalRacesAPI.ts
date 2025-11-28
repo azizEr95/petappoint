@@ -6,7 +6,7 @@ export const getRacesByAnimalTypeID = async (animalTypeID: number | undefined): 
         throw new Error('Error getRacesByAnimalTypeID: animalTypeID is undefined')
     }
     const res = await fetch(
-        import.meta.env.VITE_API_URL + '/animaltypes/races/' + animalTypeID,
+        import.meta.env.VITE_API_URL + '/animaltypes/races/' + animalTypeID, { credentials: 'include'}
     )
     if (!res.ok) {
         throw new Error('Failed to fetch getRacesByAnimalTypeID')
@@ -20,7 +20,7 @@ export const getRacesByAnimalID = async (animalID: number | undefined): Promise<
         throw new Error('Error getRacesByAnimalID: animalID is undefined')
     }
     const res = await fetch(
-        import.meta.env.VITE_API_URL + '/animals/' + animalID + '/races',
+        import.meta.env.VITE_API_URL + '/animals/' + animalID + '/races', { credentials: 'include'}
     )
     if (!res.ok) {
         throw new Error('Failed to fetch getRacesByAnimalID')
@@ -39,6 +39,7 @@ export const addRacesToAnimal = async (addRacesToAnimal: AddRacesToAnimalType): 
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(addRacesToAnimal),
+        credentials: 'include' as RequestCredentials
     }
 
     const res = await fetch(
@@ -56,7 +57,8 @@ export const deleteRaceFromAnimal = async (animalID: number, racesId: number): P
         method: 'DELETE',
         headers: {
             'Content-Type': 'application/json',
-        }
+        },
+        credentials: 'include'  as RequestCredentials
     }
 
     const res = await fetch(
@@ -70,7 +72,8 @@ export const deleteRaceFromAnimal = async (animalID: number, racesId: number): P
 
 export const deleteAllRacesFromAnimal = async (animalID: number): Promise<void> => {
     const requestOptions = {
-        method: 'DELETE'
+        method: 'DELETE',
+        credentials: 'include'  as RequestCredentials
     }
     console.log("here")
     const res = await fetch(

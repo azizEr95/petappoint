@@ -5,7 +5,7 @@ export const getAnimalsFromUser = async (
   userId: number,
 ): Promise<Array<AnimalsType>> => {
   const res = await fetch(
-    import.meta.env.VITE_API_URL + '/persons/' + userId + '/animals',
+    import.meta.env.VITE_API_URL + '/persons/' + userId + '/animals', {credentials: 'include'}
   )
   if (!res.ok) {
     throw new Error('Failed to fetch getAnimalsFromUser')
@@ -25,8 +25,9 @@ export const uploadPictureForAnimalId = async (animalId: number, file: File): Pr
   const targetURL = import.meta.env.VITE_API_URL + '/animals/' + animalId + '/picture';
   const response = await fetch(targetURL,
     {
-      method: 'post',
-      body: formData
+      method: 'POST',
+      body: formData,
+      credentials: 'include'
     }
   )
 
@@ -43,6 +44,7 @@ export const createAnimal = async (animal: AnimalsCreateType): Promise<AnimalsTy
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(animal),
+    credentials: 'include'  as RequestCredentials
   }
 
   const res = await fetch(
@@ -64,6 +66,7 @@ export const editAnimal = async (animalID: number, animal: AnimalsCreateType): P
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(animal),
+    credentials: 'include'  as RequestCredentials
   }
 
   const res = await fetch(
@@ -82,7 +85,8 @@ export const deleteAnimal = async (animalID: number): Promise<void> => {
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json',
-    }
+    },
+    credentials: 'include'  as RequestCredentials
   }
 
   const res = await fetch(

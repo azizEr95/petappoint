@@ -1,9 +1,9 @@
 import { Link } from '@tanstack/react-router'
-import { useAuthStore } from '../../stores/authStore'
 import '../../styles/components/common/Header.scss'
+import { useLoginContext } from '../../LoginContext';
 
 export default function Header() {
-  const { login, setLogin } = useAuthStore()
+  const { login, setLogin } = useLoginContext();
 
   return (
     <header className="header-clean">

@@ -6,7 +6,7 @@ export const getAllAnimalTypes = async (id: string | undefined): Promise<AnimalT
     }
 
     const res = await fetch(
-        import.meta.env.VITE_API_URL + '/animaltypes/all',
+        import.meta.env.VITE_API_URL + '/animaltypes/all', {credentials: 'include'}
     );
     if (!res.ok) {
         throw new Error('Failed to fetch getAllAnimalTypes');
@@ -18,7 +18,7 @@ export const getAllAnimalTypes = async (id: string | undefined): Promise<AnimalT
 
 export const getAnimaltypesFromPractice = async (practiceId: string): Promise<Array<AnimalTypeType>> => {
     const res = await fetch(
-        import.meta.env.VITE_API_URL + '/veterinary-practice/' + practiceId + '/animaltypes');
+        import.meta.env.VITE_API_URL + '/veterinary-practice/' + practiceId + '/animaltypes', {credentials: 'include'});
 
     if (!res.ok) {
         throw new Error('Failed to fetch getAnimaltypesFromPractice');

@@ -24,7 +24,7 @@ export const getVeterinaryPracticesByNameAddress = async (
   if (searchParams.pageSize) {
     query += `${query.length > 0 ? '&' : ''}pageSize=${searchParams.pageSize}`
   }
-  const res = await fetch(targetURL + query);
+  const res = await fetch(targetURL + query, {credentials: 'include'});
   if (!res.ok) {
     throw new Error('Failed to fetch getVeterinaryPracticesByNameAddress')
   }
@@ -44,7 +44,7 @@ export const getVeterinaryPracticesById = async (
   id: string,
 ): Promise<VeterinaryPracticesType> => {
   const res = await fetch(
-    import.meta.env.VITE_API_URL + '/veterinary-practice/' + id,
+    import.meta.env.VITE_API_URL + '/veterinary-practice/' + id, {credentials: 'include'}
   )
   if (!res.ok) {
     throw new Error('Failed to fetch getVeterinaryPracticesById')
@@ -65,7 +65,7 @@ export const getFavoritesVeterinaryPractices = async (
   userId: string,
 ): Promise<number[]> => {
   const res = await fetch(
-    import.meta.env.VITE_API_URL + '/persons/' + userId + '/favorites',
+    import.meta.env.VITE_API_URL + '/persons/' + userId + '/favorites', {credentials: 'include'}
   )
   if (!res.ok) {
     throw new Error('Failed to fetch getFavoritesVeterinaryPractices')
@@ -84,6 +84,7 @@ export const addFavoritesVeterinaryPractices = async (
     headers: {
         'Content-Type': 'application/json',
     },
+    credentials: 'include'  as RequestCredentials
 }
 
   const res = await fetch(
@@ -125,6 +126,7 @@ export const creatVeterinaryPractice = async (practice: VeterinaryPracticesCreat
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(practice),
+    credentials: 'include'  as RequestCredentials
   }
   const res = await fetch(
     import.meta.env.VITE_API_URL + '/veterinary-practice/', requestOptions
