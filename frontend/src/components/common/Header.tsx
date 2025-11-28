@@ -18,6 +18,16 @@ export default function Header() {
             <Link to="/" className="nav-link-clean">
               Start
             </Link>
+            {login && (
+              <>
+                <Link to="/dashboard" className="nav-link-clean">
+                  Dashboard
+                </Link>
+                <Link to="/appointments" className="nav-link-clean">
+                  Termine
+                </Link>
+              </>
+            )}
             <a href="#how-it-works" className="nav-link-clean">
               So funktioniert's
             </a>

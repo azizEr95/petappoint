@@ -1,0 +1,79 @@
+@import '../../variables';
+
+.dashboard-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-md, 1.5rem);
+
+  @media (max-width: 992px) {
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 768px) and (max-width: 992px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.stat-card {
+  background: linear-gradient(135deg, var(--color-primary-pale, $primary-pale), white);
+  border: 2px solid var(--color-primary-lightest, $primary-lightest);
+  border-radius: var(--radius-md, 12px);
+  padding: var(--spacing-lg, 2rem);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md, 1.5rem);
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md, 0 4px 15px rgba(0, 0, 0, 0.1));
+    border-color: var(--color-primary-light, $primary-light);
+  }
+}
+
+.stat-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 1.5rem;
+  color: white;
+
+  &.stat-icon-pets {
+    background: linear-gradient(135deg, #ef4444, #f87171);
+  }
+
+  &.stat-icon-upcoming {
+    background: linear-gradient(135deg, var(--color-primary, $primary), var(--color-primary-light, $primary-light));
+  }
+
+  &.stat-icon-year {
+    background: linear-gradient(135deg, #3b82f6, #60a5fa);
+  }
+}
+
+.stat-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-primary, $primary);
+  line-height: 1;
+  margin-bottom: var(--spacing-xs, 0.5rem);
+
+  @media (max-width: 768px) {
+    font-size: 1.75rem;
+  }
+}
+
+.stat-label {
+  font-size: $font-size-sm;
+  color: var(--text-light, $text-light);
+  font-weight: 500;
+}
