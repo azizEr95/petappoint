@@ -40,8 +40,14 @@ personsRouter.get("/:id/favorites",
 personsRouter.post("/",
     async (req, res) => {
         try {
-            const personData = PersonsCreateSchema.safeParse(req.body);
-            if(!personData.success){
+            let unsafePerson = req.body;
+            unsafePerson = {
+                ...unsafePerson,
+                dateofbirth: new Date(unsafePerson.dateofbirth)
+            }
+
+            const personData = PersonsCreateSchema.safeParse(unsafePerson);
+            if (!personData.success) {
                 res.status(400).send(personData.error);
                 return;
             }
@@ -49,9 +55,10 @@ personsRouter.post("/",
             const jwt = await verifyPasswordAndCreateJWT(personData.data.email, personData.data.password);
             res.status(201).send(jwt);
         } catch (ex) {
-            if(String(ex).includes("JSON Web Token ist ungültig")) {
+            if (String(ex).includes("JSON Web Token ist ungültig")) {
                 res.status(400).send("JSON Web Token ist ungültig")
             }
+            console.log(ex)
             res.sendStatus(400);
             return;
         }
