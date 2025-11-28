@@ -29,7 +29,7 @@ export const personService = {
       lastname: created.lastname,
       sex: created.sex,
       dateofbirth: created.dateofbirth,
-      addresses: created.address,
+      addresses: created.addresses,
       phone: created.phone,
       email: created.email,
     }
