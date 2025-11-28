@@ -18,7 +18,7 @@ export default function Header() {
             <Link to="/" className="nav-link-clean">
               Start
             </Link>
-            {login && (
+            {login ? (
               <>
                 <Link to="/dashboard" className="nav-link-clean">
                   Dashboard
@@ -26,17 +26,23 @@ export default function Header() {
                 <Link to="/appointments" className="nav-link-clean">
                   Termine
                 </Link>
+                <Link to="/animals" className="nav-link-clean">
+                  Tiere
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link to="/" hash="how-it-works" className="nav-link-clean">
+                  So funktioniert's
+                </Link>
+                <Link to="/" hash="for-vets" className="nav-link-clean">
+                  Für Tierärzte
+                </Link>
+                <Link to="/" hash="contact" className="nav-link-clean">
+                  Kontakt
+                </Link>
               </>
             )}
-            <a href="#how-it-works" className="nav-link-clean">
-              So funktioniert's
-            </a>
-            <a href="#for-vets" className="nav-link-clean">
-              Für Tierärzte
-            </a>
-            <a href="#contact" className="nav-link-clean">
-              Kontakt
-            </a>
           </div>
 
           <div className="nav-actions">

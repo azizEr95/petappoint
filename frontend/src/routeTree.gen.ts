@@ -13,6 +13,7 @@ import { Route as SearchRouteImport } from './routes/search'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as AppointmentsRouteImport } from './routes/appointments'
+import { Route as AnimalsRouteImport } from './routes/animals'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as RegistrationVeterinaryRouteImport } from './routes/registration/veterinary'
 import { Route as RegistrationPersonRouteImport } from './routes/registration/person'
@@ -39,6 +40,11 @@ const DashboardRoute = DashboardRouteImport.update({
 const AppointmentsRoute = AppointmentsRouteImport.update({
   id: '/appointments',
   path: '/appointments',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AnimalsRoute = AnimalsRouteImport.update({
+  id: '/animals',
+  path: '/animals',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -81,6 +87,7 @@ const PraxenPraxisIdBookingTerminIdRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/animals': typeof AnimalsRoute
   '/appointments': typeof AppointmentsRoute
   '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
@@ -94,6 +101,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/animals': typeof AnimalsRoute
   '/appointments': typeof AppointmentsRoute
   '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
@@ -108,6 +116,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/animals': typeof AnimalsRoute
   '/appointments': typeof AppointmentsRoute
   '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
@@ -123,6 +132,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/animals'
     | '/appointments'
     | '/dashboard'
     | '/login'
@@ -136,6 +146,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/animals'
     | '/appointments'
     | '/dashboard'
     | '/login'
@@ -149,6 +160,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/animals'
     | '/appointments'
     | '/dashboard'
     | '/login'
@@ -163,6 +175,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AnimalsRoute: typeof AnimalsRoute
   AppointmentsRoute: typeof AppointmentsRoute
   DashboardRoute: typeof DashboardRoute
   LoginRoute: typeof LoginRoute
@@ -203,6 +216,13 @@ declare module '@tanstack/react-router' {
       path: '/appointments'
       fullPath: '/appointments'
       preLoaderRoute: typeof AppointmentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/animals': {
+      id: '/animals'
+      path: '/animals'
+      fullPath: '/animals'
+      preLoaderRoute: typeof AnimalsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -259,6 +279,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AnimalsRoute: AnimalsRoute,
   AppointmentsRoute: AppointmentsRoute,
   DashboardRoute: DashboardRoute,
   LoginRoute: LoginRoute,
