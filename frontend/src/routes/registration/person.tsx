@@ -12,7 +12,7 @@ export const Route = createFileRoute('/registration/person')({
 })
 
 function PersonRegistration() {
-  const {setLogin}= useAuthStore();
+  const { setLogin } = useAuthStore();
   const navigate = useNavigate();
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
@@ -361,9 +361,9 @@ function PersonRegistration() {
     }
 
     try {
-      PersonsCreateSchema.parse(person);
-    } catch (e) {
-      console.log('Zod Error: personRegistration' + e)
+      PersonsCreateSchema.parse({ ...person, dateOfBirth: person.dateofbirth.toISOString() });
+    } catch (err) {
+      console.log('Zod Error: personRegistration' + err)
     }
     mutateRegistration(person);
   }
