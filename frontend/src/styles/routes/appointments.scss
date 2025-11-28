@@ -9,12 +9,41 @@
 
 .appointments-header {
   margin-bottom: var(--spacing-xl);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 
   h1 {
     color: var(--color-primary);
     font-size: $h2-font-size;
     font-weight: 700;
-    margin-bottom: var(--spacing-md);
+    margin-bottom: 0;
+  }
+
+  .book-appointment-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: var(--color-primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius-full);
+    font-size: $font-size-base;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+
+    i {
+      font-size: 1.1rem;
+    }
+
+    &:hover {
+      background: var(--color-primary-dark);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
   }
 }
 
@@ -603,8 +632,19 @@
     padding: var(--spacing-md) var(--container-padding-mobile);
   }
 
-  .appointments-header h1 {
-    font-size: $h3-font-size;
+  .appointments-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-md);
+
+    h1 {
+      font-size: $h3-font-size;
+    }
+
+    .book-appointment-btn {
+      width: 100%;
+      justify-content: center;
+    }
   }
 
   .appointments-tabs {
