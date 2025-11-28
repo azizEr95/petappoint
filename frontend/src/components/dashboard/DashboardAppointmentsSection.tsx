@@ -61,7 +61,10 @@ export function DashboardAppointmentsSection({ userId }: DashboardAppointmentsSe
             <div className="appointments-empty">
               <i className="bi bi-calendar-x"></i>
               <p>Keine anstehenden Termine</p>
-              <Link to="/search" search={{ name: '', address: '', animalType: '', serviceType: '' }} className="btn btn-primary btn-sm">
+              <p className="empty-state-hint">
+                Buchen Sie jetzt einen Termin bei einer Tierarztpraxis in Ihrer Nähe.
+              </p>
+              <Link to="/search" search={{ name: '', address: '', animalType: '', serviceType: '' }} className="btn btn-primary">
                 <i className="bi bi-calendar-plus"></i> Termin buchen
               </Link>
             </div>
@@ -90,6 +93,12 @@ export function DashboardAppointmentsSection({ userId }: DashboardAppointmentsSe
             <div className="appointments-empty">
               <i className="bi bi-calendar-x"></i>
               <p>Keine vergangenen Termine</p>
+              <p className="empty-state-hint">
+                Buchen Sie Ihren ersten Termin bei einer Tierarztpraxis.
+              </p>
+              <Link to="/search" search={{ name: '', address: '', animalType: '', serviceType: '' }} className="btn btn-primary">
+                <i className="bi bi-calendar-plus"></i> Termin buchen
+              </Link>
             </div>
           ) : (
             <>

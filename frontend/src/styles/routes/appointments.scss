@@ -123,6 +123,18 @@
       font-weight: 500;
       border-radius: 50px;
 
+      &.btn-primary {
+        color: white;
+
+        i {
+          color: white;
+        }
+
+        &:hover {
+          color: white;
+        }
+      }
+
       i {
         margin-right: 0.5rem;
       }
@@ -176,6 +188,18 @@
       font-size: $font-size-base;
       font-weight: 500;
       border-radius: 50px;
+
+      &.btn-primary {
+        color: white;
+
+        i {
+          color: white;
+        }
+
+        &:hover {
+          color: white;
+        }
+      }
 
       i {
         margin-right: 0.5rem;

@@ -39,7 +39,7 @@ export function AppointmentList({ dataAppointments, handleShowDetailsAppointment
                         : 'Buchen Sie jetzt einen Termin bei einer Tierarztpraxis in Ihrer Nähe.'}
                 </p>
                 <button
-                    className="btn btn-secondary"
+                    className="btn btn-primary"
                     onClick={() => navigate({ to: '/search', search: { name: '', address: '', animalType: '', serviceType: '' } })}
                 >
                     <i className="bi bi-calendar-plus"></i>
