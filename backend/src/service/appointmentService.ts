@@ -457,6 +457,7 @@ export const appointmentService = {
       where: {
         fk_veterinarypracticeid: veterinaryPracticeId,
         fk_animalid: null,
+        fk_serviceid: null,
         // FILTER
         ... (filter && filter.animalTypeIds && {
           veterinarypractices: {
@@ -474,7 +475,6 @@ export const appointmentService = {
         ... (filter && filter.serviceTypeIds && {
           OR: [
             {
-              fk_serviceid: null,
               services: {
                 id: {
                   in: filter.serviceTypeIds
