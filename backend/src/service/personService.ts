@@ -1,26 +1,38 @@
 import { prisma } from "../singletonPC";
-import { AnimalsType, PersonsCreateType, PersonsType } from "vetlib-shared/schemas/ZodSchemas";
+import { AnimalsType, PersonsCreateType, PersonsType, PersonsUpdateSchema, PersonsUpdateType } from "vetlib-shared/schemas/ZodSchemas";
 import { addressService } from "./addressService";
+import z from 'zod';
 
 export const personService = {
   async create(dataRe: PersonsCreateType): Promise<PersonsType> {
-    return await prisma.persons.create({
-      include: {
-        addresses: true
-      },
+    const createdAddress = await addressService.create(dataRe.addresses);
+    const created = await prisma.persons.create({
       data: {
         firstname: dataRe.firstname,
         lastname: dataRe.lastname,
         sex: dataRe.sex,
         dateofbirth: dataRe.dateofbirth,
         addresses: {
-          create: dataRe.addresses
+          connect: {
+            id: createdAddress.id
+          }
         },
         phone: dataRe.phone,
         email: dataRe.email,
         password: dataRe.password
       }
     });
+
+    return {
+      id: created.id,
+      firstname: created.firstname,
+      lastname: created.lastname,
+      sex: created.sex,
+      dateofbirth: created.dateofbirth,
+      addresses: createdAddress,
+      phone: created.phone,
+      email: created.email,
+    }
   },
 
   async connectAnimal(personId: number, animalId: number): Promise<void> {
@@ -42,31 +54,60 @@ export const personService = {
 
     if (!foundPerson) throw new Error(`Person not found with id: ${id}`);
 
-    return foundPerson;
+    return {
+      id: foundPerson.id,
+      firstname: foundPerson.firstname,
+      lastname: foundPerson.lastname,
+      sex: foundPerson.sex,
+      dateofbirth: foundPerson.dateofbirth,
+      addresses: foundPerson.addresses,
+      phone: foundPerson.phone,
+      email: foundPerson.email,
+    };
   },
 
   async getByEmail(email: string): Promise<PersonsType> {
-    const person = await prisma.persons.findUnique({
+    const foundPerson = await prisma.persons.findUnique({
       include: {
         addresses: true
       },
       where: { email }
     });
 
-    if (!person) throw new Error(`Person not found with the email ${email}`);
+    if (!foundPerson) throw new Error(`Person not found with the email ${email}`);
 
-    return person;
+    return {
+      id: foundPerson.id,
+      firstname: foundPerson.firstname,
+      lastname: foundPerson.lastname,
+      sex: foundPerson.sex,
+      dateofbirth: foundPerson.dateofbirth,
+      addresses: foundPerson.addresses,
+      phone: foundPerson.phone,
+      email: foundPerson.email,
+    };
   },
 
   async getAll(): Promise<PersonsType[]> {
-    return await prisma.persons.findMany({
+    const found = await prisma.persons.findMany({
       include: {
         addresses: true
       }
     });
+
+    return found.map(foundPerson => ({
+      id: foundPerson.id,
+      firstname: foundPerson.firstname,
+      lastname: foundPerson.lastname,
+      sex: foundPerson.sex,
+      dateofbirth: foundPerson.dateofbirth,
+      addresses: foundPerson.addresses,
+      phone: foundPerson.phone,
+      email: foundPerson.email,
+    }));
   },
 
-  async update(dataRe: PersonsType): Promise<PersonsType> {
+  async update(dataRe: PersonsUpdateType): Promise<PersonsType> {
     if (!dataRe.id) throw new Error("ID is required for update");
 
     await addressService.update(dataRe.addresses);
@@ -87,7 +128,16 @@ export const personService = {
       }
     });
 
-    return updatedPerson;
+    return {
+      id: updatedPerson.id,
+      firstname: updatedPerson.firstname,
+      lastname: updatedPerson.lastname,
+      sex: updatedPerson.sex,
+      dateofbirth: updatedPerson.dateofbirth,
+      addresses: updatedPerson.addresses,
+      phone: updatedPerson.phone,
+      email: updatedPerson.email,
+    };
   },
 
   async favorizeVeterinaryPracticesByIds(personId: number, practiceIds: number[]): Promise<void> {

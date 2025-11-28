@@ -47,6 +47,7 @@ personsRouter.post("/",
             }
 
             await personService.create(personData.data);
+
             const jwt = await verifyPasswordAndCreateJWT(personData.data.email, personData.data.password);
             res.status(201).send(jwt);
         } catch (ex) {
@@ -54,7 +55,8 @@ personsRouter.post("/",
                 res.status(400).send("JSON Web Token ist ungültig");
                 return;
             }
-            res.sendStatus(400);
+
+            res.status(400).send(ex);
             return;
         }
     }

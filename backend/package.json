@@ -9,9 +9,10 @@
     "prisma": "npx prisma db pull && npx prisma generate",
     "test": "jest --runInBand",
     "test:ci": "jest --config ./jest.config.js --collectCoverage --coverageDirectory=\"./coverage\" --ci --reporters=default --reporters=jest-junit --watchAll=false",
-    "seed": "tsx scripts/seed-appointments.ts",
+    "seed": "npm run seed:all",
     "seed:practices": "tsx scripts/seed-practices.ts",
-    "seed:all": "npm run seed:practices && npm run seed"
+    "seed:appointments": "tsx scripts/seed-appointments.ts",
+    "seed:all": "npm run seed:practices && npm run seed:appointments"
   },
   "keywords": [],
   "author": "",

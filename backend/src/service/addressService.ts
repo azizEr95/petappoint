@@ -1,9 +1,21 @@
 import { prisma } from "../singletonPC";
 import { addresses } from "../../generated/prisma";
+import { AddressesCreateType, AddressesType } from "vetlib-shared/schemas/ZodSchemas";
 
 export const addressService = {
-  async create(data: addresses): Promise<addresses> {
-    return await prisma.addresses.create({ data: data });
+  async create(data: AddressesCreateType): Promise<AddressesType> {
+    console.log(data);
+    const createdAddress = await prisma.addresses.create({ data: {
+      city: data.city,
+      citycode: data.citycode,
+      country: data.country,
+      latitude: data.latitude,
+      longitude: data.longitude,
+      street: data.street
+    } });
+    console.log("Created shit address");
+    console.log(createdAddress);
+    return createdAddress;
   },
 
   async getById(id: number): Promise<addresses> {
