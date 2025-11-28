@@ -128,7 +128,7 @@ function Appointments() {
                 <h1>Meine Termine</h1>
                 <button
                     className="btn btn-primary book-appointment-btn"
-                    onClick={() => navigate({ to: '/search' })}
+                    onClick={() => navigate({ to: '/search', search: { name: '', address: '', animalType: '', serviceType: '' } })}
                 >
                     <i className="bi bi-calendar-plus"></i>
                     Termin buchen

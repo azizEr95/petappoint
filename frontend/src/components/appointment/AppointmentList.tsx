@@ -40,7 +40,7 @@ export function AppointmentList({ dataAppointments, handleShowDetailsAppointment
                 </p>
                 <button
                     className="btn btn-secondary"
-                    onClick={() => navigate({ to: '/search' })}
+                    onClick={() => navigate({ to: '/search', search: { name: '', address: '', animalType: '', serviceType: '' } })}
                 >
                     <i className="bi bi-calendar-plus"></i>
                     Termin buchen
