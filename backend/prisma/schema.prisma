@@ -31,6 +31,7 @@ model animals {
   timeofdeath            DateTime?                @db.Date
   iscastrated            Boolean
   lifestyleisindoors     Boolean                  @default(true)
+  picturepath            String?                  @db.VarChar(256)
   sex                    sexes                    @default(notknown)
   fk_animaltypeid        Int
   fk_animalgroupid       Int?

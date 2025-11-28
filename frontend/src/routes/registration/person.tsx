@@ -1,30 +1,32 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useState, type ChangeEvent, type FormEvent } from 'react'
-import { PersonsCreateSchema, type PersonsCreateType } from '../../../../shared/schemas/ZodSchemas'
+import { PersonsCreateSchema, type PersonsCreateType, type sexesType } from '../../../../shared/schemas/ZodSchemas'
 import '../../styles/routes/personRegistration.scss'
 import { Form, FormGroup } from 'react-bootstrap'
 import { useMutation } from '@tanstack/react-query'
 import { personRegistration } from '../../api/LoginAPI'
+import { useAuthStore } from '../../stores/authStore'
 
 export const Route = createFileRoute('/registration/person')({
   component: PersonRegistration,
 })
 
 function PersonRegistration() {
+  const {setLogin}= useAuthStore();
   const navigate = useNavigate();
-  const [firstName, setFirstName]=useState('')
-  const [lastName, setLastName]=useState('')
-  const [strasse, setStrasse]=useState('')
-  const [hausnr, setHausnr]= useState('')
-  const [plz, setPlz]= useState('')
-  const [stadt, setStadt]= useState('')
-  const [land, setLand]= useState('')
-  const [email, setEmail]= useState('')
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
+  const [strasse, setStrasse] = useState('')
+  const [hausnr, setHausnr] = useState('')
+  const [plz, setPlz] = useState('')
+  const [stadt, setStadt] = useState('')
+  const [land, setLand] = useState('')
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [phone, setPhone]= useState('')
-  const [dateOfBirth, setDateOfBirth]= useState('')
-  const [sex, setSex]= useState('')
-  const [errors, setErrors] = useState<{[key: string]: string}>({})
+  const [phone, setPhone] = useState('')
+  const [dateOfBirth, setDateOfBirth] = useState('')
+  const [sex, setSex] = useState<sexesType | undefined>(undefined)
+  const [errors, setErrors] = useState<{ [key: string]: string }>({})
 
   const { mutate: mutateRegistration } = useMutation({
     mutationFn: (person: PersonsCreateType) =>
@@ -33,13 +35,14 @@ function PersonRegistration() {
       console.log("Email oder Password falsch");
     },
     onSuccess: () => {
+      setLogin(true);
       navigate({ to: '/appointments' });
     },
-})
+  })
 
   const validateField = (name: string, value: string) => {
     let error = ''
-    
+
     if (name === 'firstName') {
       if (!value.trim()) {
         error = 'Vorname ist erforderlich'
@@ -49,7 +52,7 @@ function PersonRegistration() {
         error = 'Vorname muss mindestens aus 3 Zeichen bestehen'
       }
     }
-    
+
     if (name === 'lastName') {
       if (!value.trim()) {
         error = 'Nachname ist erforderlich'
@@ -59,7 +62,7 @@ function PersonRegistration() {
         error = 'Nachname muss mindestens aus 3 Zeichen bestehen'
       }
     }
-    
+
     if (name === 'strasse') {
       if (!value.trim()) {
         error = 'Straße ist erforderlich'
@@ -69,7 +72,7 @@ function PersonRegistration() {
         error = 'Straße muss mindestens aus 3 Zeichen bestehen'
       }
     }
-    
+
     if (name === 'hausnr') {
       if (!value.trim()) {
         error = 'Hausnummer ist erforderlich'
@@ -77,7 +80,7 @@ function PersonRegistration() {
         error = 'Hausnummer muss mindestens eine Zahl enthalten'
       }
     }
-    
+
     if (name === 'plz') {
       if (!value.trim()) {
         error = 'Postleitzahl ist erforderlich'
@@ -85,7 +88,7 @@ function PersonRegistration() {
         error = 'Postleitzahl muss mindestens eine Zahl enthalten'
       }
     }
-    
+
     if (name === 'stadt') {
       if (!value.trim()) {
         error = 'Stadt ist erforderlich'
@@ -95,7 +98,7 @@ function PersonRegistration() {
         error = 'Stadt muss mindestens aus 3 Zeichen bestehen'
       }
     }
-    
+
     if (name === 'land') {
       if (!value.trim()) {
         error = 'Land ist erforderlich'
@@ -105,7 +108,7 @@ function PersonRegistration() {
         error = 'Land muss mindestens aus 3 Zeichen bestehen'
       }
     }
-    
+
     if (name === 'email') {
       if (!value.trim()) {
         error = 'E-Mail ist erforderlich'
@@ -153,28 +156,28 @@ function PersonRegistration() {
     if (name === 'sex') {
       if (!value) error = 'Geschlecht ist erforderlich'
     }
-    
+
     return error
   }
 
   const handleBlur = (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const name = e.target.name
     const value = e.target.value
-    
+
     const error = validateField(name, value)
-    
+
     if (error) {
-      setErrors({...errors, [name]: error})
+      setErrors({ ...errors, [name]: error })
     } else {
-      const newErrors = {...errors}
+      const newErrors = { ...errors }
       delete newErrors[name]
       setErrors(newErrors)
     }
   }
 
   const validateForm = () => {
-    const newErrors: {[key: string]: string} = {}
-    
+    const newErrors: { [key: string]: string } = {}
+
     if (!firstName.trim()) {
       newErrors.firstName = 'Vorname ist erforderlich'
     } else if (!/^[a-zA-ZäöüÄÖÜß '`-]+$/.test(firstName)) {
@@ -182,7 +185,7 @@ function PersonRegistration() {
     } else if (firstName.length < 3) {
       newErrors.firstName = 'Vorname muss mindestens aus 3 Zeichen bestehen'
     }
-    
+
     if (!lastName.trim()) {
       newErrors.lastName = 'Nachname ist erforderlich'
     } else if (!/^[a-zA-ZäöüÄÖÜß '`-]+$/.test(lastName)) {
@@ -190,7 +193,7 @@ function PersonRegistration() {
     } else if (lastName.length < 3) {
       newErrors.lastName = 'Nachname muss mindestens aus 3 Zeichen bestehen'
     }
-    
+
     if (!strasse.trim()) {
       newErrors.strasse = 'Straße ist erforderlich'
     } else if (!/^(?=.*[a-zA-ZäöüÄÖÜß0-9])[a-zA-ZäöüÄÖÜß0-9 '`.-]+$/.test(strasse)) {
@@ -198,19 +201,19 @@ function PersonRegistration() {
     } else if (strasse.length < 3) {
       newErrors.strasse = 'Straße muss mindestens aus 3 Zeichen bestehen'
     }
-    
+
     if (!hausnr.trim()) {
       newErrors.hausnr = 'Hausnummer ist erforderlich'
     } else if (!/^(?=.*[0-9])[a-zA-Z0-9]+$/.test(hausnr)) {
       newErrors.hausnr = 'Hausnummer muss mindestens eine Zahl enthalten'
     }
-    
+
     if (!plz.trim()) {
       newErrors.plz = 'Postleitzahl ist erforderlich'
     } else if (!/^(?=.*[0-9])[a-zA-Z0-9]+$/.test(plz)) {
       newErrors.plz = 'Postleitzahl muss mindestens eine Zahl enthalten'
     }
-    
+
     if (!stadt.trim()) {
       newErrors.stadt = 'Stadt ist erforderlich'
     } else if (!/^[a-zA-ZäöüÄÖÜß '`-]+$/.test(stadt)) {
@@ -218,7 +221,7 @@ function PersonRegistration() {
     } else if (stadt.length < 3) {
       newErrors.stadt = 'Stadt muss mindestens aus 3 Zeichen bestehen'
     }
-    
+
     if (!land.trim()) {
       newErrors.land = 'Land ist erforderlich'
     } else if (!/^[a-zA-ZäöüÄÖÜß '`-]+$/.test(land)) {
@@ -226,7 +229,7 @@ function PersonRegistration() {
     } else if (land.length < 3) {
       newErrors.land = 'Land muss mindestens aus 3 Zeichen bestehen'
     }
-    
+
     if (!email.trim()) {
       newErrors.email = 'E-Mail ist erforderlich'
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
@@ -264,23 +267,23 @@ function PersonRegistration() {
     }
     if (!dateOfBirth.trim()) newErrors.dateOfBirth = 'Geburtsdatum ist erforderlich'
     if (!sex) newErrors.sex = 'Geschlecht ist erforderlich'
-    
+
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
 
-  const handleChange= (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>)=>{
-    const t= e.target
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const t = e.target
     const name = t.name
     const value = t.value
 
     if (errors[name]) {
-      const newErrors = {...errors}
+      const newErrors = { ...errors }
       delete newErrors[name]
       setErrors(newErrors)
     }
 
-    switch(name){
+    switch (name) {
       case 'firstName':
         setFirstName(value)
         break
@@ -315,7 +318,16 @@ function PersonRegistration() {
         setDateOfBirth(value)
         break
       case 'sex':
-        setSex(value)
+        if (value === "") {
+          setSex("notknown")
+        } else if (value === "male") {
+          setSex("male")
+        } else if (value === "female") {
+          setSex(value)
+        } else if (value === "notapplicable") {
+          setSex(value)
+        }
+
         break
       default:
         console.log('Error: Fehler beim Aendern von personRegistration State in handleChange')
@@ -330,14 +342,14 @@ function PersonRegistration() {
       return
     }
 
-    const person={
+    const person: PersonsCreateType = {
       firstname: firstName,
       lastname: lastName,
       email: email,
       password: password,
       phone: phone,
       dateofbirth: new Date(dateOfBirth),
-      sex: sex, // to be changed
+      sex: sex ?? "notknown",
       addresses: {
         street: strasse + hausnr,
         citycode: plz,
@@ -347,15 +359,14 @@ function PersonRegistration() {
         longitude: 0
       },
     }
-    
-    try{
-      PersonsCreateSchema.parse(person);
-      mutateRegistration(person);
-    }catch(e){
-      console.log('Zod Error: personRegistration'+ e)
-    }
 
-  } 
+    try {
+      PersonsCreateSchema.parse(person);
+    } catch (e) {
+      console.log('Zod Error: personRegistration' + e)
+    }
+    mutateRegistration(person);
+  }
   return (
     <div className="auth-page">
       <div className="auth-container">
@@ -379,7 +390,7 @@ function PersonRegistration() {
                     value={firstName}
                     isInvalid={!!errors.firstName}
                   />
-                  <Form.Control.Feedback type="invalid">  
+                  <Form.Control.Feedback type="invalid">
                     {errors.firstName}
                   </Form.Control.Feedback>
                 </FormGroup>
@@ -430,9 +441,9 @@ function PersonRegistration() {
                     isInvalid={!!errors.sex}
                   >
                     <option value="">Bitte wählen</option>
-                    <option value="Male">Männlich</option>
-                    <option value="Female">Weiblich</option>
-                    <option value="Diverse">Divers</option>
+                    <option value={"male"}>Männlich</option>
+                    <option value={"female"}>Weiblich</option>
+                    <option value={"notapplicable"}>Divers</option>
                   </Form.Select>
                   <Form.Control.Feedback type="invalid">
                     {errors.sex}

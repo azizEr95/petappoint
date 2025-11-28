@@ -1,10 +1,19 @@
 import '../../styles/components/practice/NextAvailableAppointments.scss'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
 import { getAvailableAppointmentsByPracticeId } from '../../api/AppointmentsAPI'
-import type { AppointmentFilterType, AppointmentsType } from '../../../../shared/schemas/ZodSchemas'
-import { compareDates, dateToDateString, dateToTimeString, getShortDate, getShortWeekday } from '../../utils/DateToStringFormat'
+import type {
+  AppointmentFilterType,
+  AppointmentsType,
+} from '../../../../shared/schemas/ZodSchemas'
+import {
+  compareDates,
+  dateToDateString,
+  dateToTimeString,
+  getShortDate,
+  getShortWeekday,
+} from '../../utils/DateToStringFormat'
 
 type NextAvailableAppointmentsProps = {
   praxisID: string
@@ -15,25 +24,59 @@ type NextAvailableAppointmentsProps = {
 export function NextAvailableAppointments({
   praxisID,
   filterOptions,
-  onSlotClick
+  onSlotClick,
 }: NextAvailableAppointmentsProps) {
-  // praxisID zum irgendwie bei Abfrage uebergeben werden
   const [dateAnsicht, setDateAnsicht] = useState(new Date())
   const [expandedDays, setExpandedDays] = useState<Set<number>>(new Set())
+  const [noFutureAppointments, setNoFutureAppointments] =
+    useState<boolean>(false)
   const navigate = useNavigate()
 
   // call here useQuery with filterOptions servicetype
   const { isPending, isError, isSuccess, data } = useQuery<
     Array<AppointmentsType>
   >({
-    queryKey: ["nextAvailableAppointments", praxisID, filterOptions.animalTypeIds, filterOptions.serviceTypeIds],
-    queryFn: () => getAvailableAppointmentsByPracticeId(praxisID, filterOptions),
+    queryKey: [
+      'nextAvailableAppointments',
+      praxisID,
+      filterOptions.animalTypeIds,
+      filterOptions.serviceTypeIds,
+    ],
+    queryFn: () =>
+      getAvailableAppointmentsByPracticeId(praxisID, filterOptions),
     retry: false,
   })
 
-  const handleForwardTermin = () => {
+  // Finde nächsten verfügbaren Termin nach der aktuellen Ansicht
+  const findNextAppointmentDate = (): Date | null => {
+    if (isSuccess) {
+      const endOfCurrentView = new Date(dateAnsicht)
+      endOfCurrentView.setDate(endOfCurrentView.getDate() + 5)
+
+      const futureAppointments = data.filter(
+        (termin) => compareDates(termin.starttime, endOfCurrentView) >= 0,
+      )
+
+      return futureAppointments.length > 0
+        ? futureAppointments[0].starttime
+        : null
+    } else {
+      return null
+    }
+  }
+
+  useEffect(() => {
+    if (findNextAppointmentDate() === null) {
+      setNoFutureAppointments(true)
+    } else {
+      setNoFutureAppointments(false)
+    }
+  }, [findNextAppointmentDate()])
+
+  const handleForwardTermin = (count: number) => {
+    // number of how often the date to be clicked *5
     const newDate = new Date(dateAnsicht) // neues Objekt damit State sich aendert
-    newDate.setDate(newDate.getDate() + 5)
+    newDate.setDate(newDate.getDate() + 5 * count)
     setDateAnsicht(newDate)
     setExpandedDays(new Set()) // Reset expanded state beim Wechsel
   }
@@ -43,16 +86,6 @@ export function NextAvailableAppointments({
     newDate.setDate(newDate.getDate() - 5)
     setDateAnsicht(newDate)
     setExpandedDays(new Set()) // Reset expanded state beim Wechsel
-  }
-
-  const toggleExpandDay = (dayIndex: number) => {
-    const newExpanded = new Set(expandedDays)
-    if (newExpanded.has(dayIndex)) {
-      newExpanded.delete(dayIndex)
-    } else {
-      newExpanded.add(dayIndex)
-    }
-    setExpandedDays(newExpanded)
   }
 
   const backwordPossibleTermin = () => {
@@ -69,6 +102,12 @@ export function NextAvailableAppointments({
     if (onSlotClick) {
       onSlotClick(termin)
     } else {
+      let appointmentTypeId: number[] | null = null
+      if (filterOptions.serviceTypeIds?.length !== undefined) {
+        appointmentTypeId = filterOptions.serviceTypeIds
+      } else {
+        appointmentTypeId = null
+      }
       // navigiert zur Buchungsseite fuer den Termin
       navigate({
         to: '/praxen/$praxisId/booking/$terminId',
@@ -77,7 +116,8 @@ export function NextAvailableAppointments({
           terminId: termin.id.toString(),
         },
         state: {
-          termin: termin,
+          appointment: termin,
+          serviceType: appointmentTypeId,
         },
       })
     }
@@ -117,12 +157,17 @@ export function NextAvailableAppointments({
     const vergleichDate = new Date(dateAnsicht) // erster Tag der in dieser Ansicht zur Auswahl steht
     for (const termin of data) {
       if (compareDates(vergleichDate, new Date()) !== 0) {
-        vergleichDate.setHours(0, 0, 0, 0);
+        vergleichDate.setHours(0, 0, 0, 0)
       } else {
-        const time = new Date();
-        vergleichDate.setHours(time.getHours(), time.getMinutes(), time.getSeconds(), time.getMilliseconds())
+        const time = new Date()
+        vergleichDate.setHours(
+          time.getHours(),
+          time.getMinutes(),
+          time.getSeconds(),
+          time.getMilliseconds(),
+        )
       }
-      
+
       if (termin.starttime > vergleichDate) {
         // Termine vor angegebenem Starttermin werden nicht angezeigt
         while (i < 5) {
@@ -168,24 +213,18 @@ export function NextAvailableAppointments({
       (day) => day.length > 0,
     )
 
-    // Finde nächsten verfügbaren Termin nach der aktuellen Ansicht
-    const findNextAppointmentDate = (): Date | null => {
-      const endOfCurrentView = new Date(dateAnsicht)
-      endOfCurrentView.setDate(endOfCurrentView.getDate() + 5)
-
-      const futureAppointments = data.filter(
-        (termin) => compareDates(termin.starttime, endOfCurrentView) >= 0,
-      )
-
-      return futureAppointments.length > 0
-        ? futureAppointments[0].starttime
-        : null
-    }
-
     const navigateToNextAppointment = () => {
       const nextDate = findNextAppointmentDate()
+      let copyDateAnsicht = new Date(dateAnsicht)
       if (nextDate) {
-        setDateAnsicht(new Date(nextDate))
+        copyDateAnsicht.setDate(copyDateAnsicht.getDate() + 5)
+        let i = 0
+        while (compareDates(copyDateAnsicht, nextDate) <= 0) {
+          // count how often the arrow to the right have to been clicked
+          copyDateAnsicht.setDate(copyDateAnsicht.getDate() + 5)
+          i++
+        }
+        handleForwardTermin(i)
         setExpandedDays(new Set())
       }
     }
@@ -217,103 +256,118 @@ export function NextAvailableAppointments({
             ))}
           </div>
 
-          <button className="nav-arrow" onClick={handleForwardTermin}>
+          <button
+            className="nav-arrow"
+            onClick={() => handleForwardTermin(1)}
+            disabled={noFutureAppointments}
+          >
             <i className="bi bi-chevron-right"></i>
           </button>
         </div>
 
-        {/* Spalten mit Terminen */}
-        <div className="calendar-grid">
-          {(() => {
-            const displayLimit = 5
-            const anyExpanded = expandedDays.size > 0
+        {!noFutureAppointments && (
+          <div>
+            {/* Spalten mit Terminen */}
+            <div className="calendar-grid">
+              {(() => {
+                const displayLimit = 5
+                const anyExpanded = expandedDays.size > 0
 
-            // Berechne maximale Anzahl Slots (bei expansion)
-            const maxAppointments = anyExpanded
-              ? Math.max(...termineTage.map((t) => t.length))
-              : displayLimit
+                // Berechne maximale Anzahl Slots (bei expansion)
+                const maxAppointments = anyExpanded
+                  ? Math.max(...termineTage.map((t) => t.length))
+                  : displayLimit
 
-            // Erstelle Zeilen für die Slots
-            const rows = []
-            for (let rowIndex = 0; rowIndex < maxAppointments; rowIndex++) {
-              const row = [0, 1, 2, 3, 4].map((dayIndex) => {
-                const dayAppointments = termineTage[dayIndex] || []
-                const isExpanded = expandedDays.has(dayIndex)
-                const appointmentsToShow = isExpanded
-                  ? dayAppointments
-                  : dayAppointments.slice(0, displayLimit)
-                const termin = appointmentsToShow[rowIndex]
+                // Erstelle Zeilen für die Slots
+                const rows = []
+                for (let rowIndex = 0; rowIndex < maxAppointments; rowIndex++) {
+                  const row = [0, 1, 2, 3, 4].map((dayIndex) => {
+                    const dayAppointments = termineTage[dayIndex] || []
+                    const isExpanded = expandedDays.has(dayIndex)
+                    const appointmentsToShow = isExpanded
+                      ? dayAppointments
+                      : dayAppointments.slice(0, displayLimit)
+                    const termin = appointmentsToShow[rowIndex]
 
-                if (termin) {
-                  return (
-                    <button
-                      key={`${dayIndex}-${rowIndex}`}
-                      className="time-slot-btn available"
-                      onClick={() => handleBookAppiontment(termin)}
-                    >
-                      {dateToTimeString(termin.starttime)}
-                    </button>
-                  )
-                } else {
-                  return (
-                    <div
-                      key={`${dayIndex}-${rowIndex}`}
-                      className="time-slot-btn unavailable"
-                    >
-                      –
-                    </div>
+                    if (termin) {
+                      return (
+                        <button
+                          key={`${dayIndex}-${rowIndex}`}
+                          className="time-slot-btn available"
+                          onClick={() => handleBookAppiontment(termin)}
+                        >
+                          {dateToTimeString(termin.starttime)}
+                        </button>
+                      )
+                    } else {
+                      return (
+                        <div
+                          key={`${dayIndex}-${rowIndex}`}
+                          className="time-slot-btn unavailable"
+                        >
+                          –
+                        </div>
+                      )
+                    }
+                  })
+                  rows.push(
+                    <div key={`row-${rowIndex}`} className="calendar-row">
+                      {row}
+                    </div>,
                   )
                 }
-              })
-              rows.push(
-                <div key={`row-${rowIndex}`} className="calendar-row">
-                  {row}
-                </div>,
-              )
-            }
 
-            return rows
-          })()}
-        </div>
-
-        {/* Mehr-Button als separate Zeile über alle Spalten */}
-        {(() => {
-          const displayLimit = 5
-          const hasAnyMoreButton = termineTage.some(
-            (day) => day.length > displayLimit,
-          )
-          const anyExpanded = expandedDays.size > 0
-
-          // Nur anzeigen wenn es Termine mit >5 gibt
-          if (!hasAnyMoreButton) return null
-
-          return (
-            <div className="mehr-button-container">
-              <button
-                className="mehr-btn-full"
-                onClick={() => {
-                  if (anyExpanded) {
-                    // Alle schließen
-                    setExpandedDays(new Set())
-                  } else {
-                    // Alle Tage mit >5 Terminen öffnen
-                    const toExpand = new Set<number>()
-                    termineTage.forEach((day, index) => {
-                      if (day.length > displayLimit) {
-                        toExpand.add(index)
-                      }
-                    })
-                    setExpandedDays(toExpand)
-                  }
-                }}
-              >
-                {anyExpanded
-                  ? 'Weniger Termine anzeigen'
-                  : 'Mehr Termine anzeigen'}
-              </button>
+                return rows
+              })()}
             </div>
-          )
-        })()}
+
+            {/* Mehr-Button als separate Zeile über alle Spalten */}
+            {(() => {
+              const displayLimit = 5
+              const hasAnyMoreButton = termineTage.some(
+                (day) => day.length > displayLimit,
+              )
+              const anyExpanded = expandedDays.size > 0
+
+              // Nur anzeigen wenn es Termine mit >5 gibt
+              if (!hasAnyMoreButton) return null
+
+              return (
+                <div className="mehr-button-container">
+                  <button
+                    className="mehr-btn-full"
+                    onClick={() => {
+                      if (anyExpanded) {
+                        // Alle schließen
+                        setExpandedDays(new Set())
+                      } else {
+                        // Alle Tage mit >5 Terminen öffnen
+                        const toExpand = new Set<number>()
+                        termineTage.forEach((day, index) => {
+                          if (day.length > displayLimit) {
+                            toExpand.add(index)
+                          }
+                        })
+                        setExpandedDays(toExpand)
+                      }
+                    }}
+                  >
+                    {anyExpanded
+                      ? 'Weniger Termine anzeigen'
+                      : 'Mehr Termine anzeigen'}
+                  </button>
+                </div>
+              )
+            })()}
+          </div>
+        )}
+
+        {noFutureAppointments && (
+          <div className="no-appointments-message">
+            <i className="bi bi-calendar-x"></i>
+            <p>Keine weiteren Termine in der Zukunft verfügbar</p>
+          </div>
+        )}
 
         {/* "Nächster Termin" Overlay Button wenn keine Termine in aktueller Ansicht */}
         {!hasAppointmentsInCurrentView && findNextAppointmentDate() && (

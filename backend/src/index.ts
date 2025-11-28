@@ -1,6 +1,13 @@
 import http from "http";
 import https from "https"
 import { app } from "./app";
+import path from "path";
+
+declare global {
+    var appRootDir: string;
+};
+
+global.appRootDir = path.resolve(path.join(__dirname, '..'));
 
 async function start() {
     // http server starten lassen bei npm start

@@ -15,6 +15,26 @@ export const getAnimalsFromUser = async (
   return parseAnimalArray(data);
 }
 
+export const getPictureURLForAnimalId = (animalId: number): string => {
+  return import.meta.env.VITE_API_URL + '/animals/' + animalId + '/picture';
+}
+
+export const uploadPictureForAnimalId = async (animalId: number, file: File): Promise<void> => {
+  const formData = new FormData();
+  formData.append('picture', file);
+  const targetURL = import.meta.env.VITE_API_URL + '/animals/' + animalId + '/picture';
+  const response = await fetch(targetURL,
+    {
+      method: 'post',
+      body: formData
+    }
+  )
+
+  if (response.ok) {
+    throw Error("Could not upload image");
+  }
+}
+
 export const createAnimal = async (animal: AnimalsCreateType): Promise<AnimalsType> => {
 
   const requestOptions = {
@@ -24,7 +44,7 @@ export const createAnimal = async (animal: AnimalsCreateType): Promise<AnimalsTy
     },
     body: JSON.stringify(animal),
   }
-  
+
   const res = await fetch(
     import.meta.env.VITE_API_URL + '/animals', requestOptions
   )
@@ -45,7 +65,7 @@ export const editAnimal = async (animalID: number, animal: AnimalsCreateType): P
     },
     body: JSON.stringify(animal),
   }
-  
+
   const res = await fetch(
     import.meta.env.VITE_API_URL + '/animals/' + animalID, requestOptions
   )
@@ -59,17 +79,17 @@ export const editAnimal = async (animalID: number, animal: AnimalsCreateType): P
 
 export const deleteAnimal = async (animalID: number): Promise<void> => {
   const requestOptions = {
-      method: 'DELETE',
-      headers: {
-          'Content-Type': 'application/json',
-      }
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+    }
   }
 
   const res = await fetch(
-      import.meta.env.VITE_API_URL + '/animals/' + animalID, requestOptions
+    import.meta.env.VITE_API_URL + '/animals/' + animalID, requestOptions
   )
   if (!res.ok) {
-      throw new Error('Failed to fetch deleteAnimal')
+    throw new Error('Failed to fetch deleteAnimal')
   }
   return;
 }
@@ -87,10 +107,10 @@ const parseAnimal = (unsafeAnimal: AnimalsType): AnimalsType => {
   console.log(unsafeAnimal)
   const parsed = AnimalsSchema.safeParse(unsafeAnimal);
   if (parsed.error !== undefined) { //if Zod throws an Error print them
-      console.log(parsed.error);
+    console.log(parsed.error);
   }
   if (!parsed.success) {
-      throw new Error(parsed.error.toString());
+    throw new Error(parsed.error.toString());
   }
   return parsed.data;
 }
@@ -100,23 +120,23 @@ const parseAnimal = (unsafeAnimal: AnimalsType): AnimalsType => {
 */
 const parseAnimalArray = (unsafeAnimal: AnimalsType[]): AnimalsType[] => {
   return unsafeAnimal.map((unsafeData) => {
-      if (unsafeData.dateofbirth !== null) {
-        unsafeData.dateofbirth = new Date(unsafeData.dateofbirth) // change Date to Date Object
-      }
-      if (unsafeData.timeofdeath !== null) {
-        unsafeData.timeofdeath = new Date(unsafeData.timeofdeath) // change Date to Date Object
-      }
+    if (unsafeData.dateofbirth !== null) {
+      unsafeData.dateofbirth = new Date(unsafeData.dateofbirth) // change Date to Date Object
+    }
+    if (unsafeData.timeofdeath !== null) {
+      unsafeData.timeofdeath = new Date(unsafeData.timeofdeath) // change Date to Date Object
+    }
 
-      const parsed = AnimalsSchema.safeParse(unsafeData)
-      if (parsed.error !== undefined) {
-        // if Zod throws an Error print them
-        console.log(parsed.error)
-      }
-      if (parsed.success) {
-        return parsed.data
-      }
-      return null
-    })
+    const parsed = AnimalsSchema.safeParse(unsafeData)
+    if (parsed.error !== undefined) {
+      // if Zod throws an Error print them
+      console.log(parsed.error)
+    }
+    if (parsed.success) {
+      return parsed.data
+    }
+    return null
+  })
     .filter((x) => x !== null)
 }
 

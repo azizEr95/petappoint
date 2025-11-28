@@ -71,6 +71,7 @@ CREATE TABLE IF NOT EXISTS animals(
   timeOfDeath DATE,
   isCastrated BOOLEAN NOT NULL,
   lifestyleIsIndoors BOOLEAN NOT NULL DEFAULT TRUE,
+  picturePath VARCHAR(256) DEFAULT NULL,
   sex sexes NOT NULL DEFAULT 'notknown',
   fk_animalTypeId INTEGER NOT NULL REFERENCES animaltypes(id) ON DELETE CASCADE,
   fk_animalGroupId INTEGER REFERENCES animalgroup(id) ON DELETE CASCADE
