@@ -1,11 +1,11 @@
-import { prisma } from '../src/singletonPC';
+import { prisma } from "../src/singletonPC";
 
 /**
  * Seed appointments with future dates
  * Deletes existing appointments and generates new ones for next 4 weeks
  */
 async function seedAppointments() {
-  console.log('🌱 Seeding appointments...');
+  console.log("🌱 Seeding appointments...");
 
   try {
     // Delete all existing appointments
@@ -21,11 +21,11 @@ async function seedAppointments() {
       select: { id: true, fk_veterinarypractice: true },
     });
     const services = await prisma.services.findMany({
-      select: { id: true},
+      select: { id: true },
     });
 
     if (practices.length === 0 || vets.length === 0) {
-      console.log('❌ No practices or vets found. Run testdaten.sql first.');
+      console.log("❌ No practices or vets found. Run testdaten.sql first.");
       return;
     }
 
@@ -37,7 +37,7 @@ async function seedAppointments() {
     // Even index (0,2,4...): appointments from tomorrow
     // Odd index (1,3,5...): appointments start in 2 weeks
     for (const [index, practice] of practices.entries()) {
-      const practiceVets = vets.filter(v => v.fk_veterinarypractice === practice.id);
+      const practiceVets = vets.filter((v) => v.fk_veterinarypractice === practice.id);
       const practiceServices = services;
       const availableVets = practiceVets.length > 0 ? practiceVets : vets;
 
@@ -56,9 +56,7 @@ async function seedAppointments() {
         const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
 
         // Weekdays: 5-8 appointments, Weekends: 2-4 appointments
-        const appointmentsPerDay = isWeekend
-          ? Math.floor(Math.random() * 3) + 2
-          : Math.floor(Math.random() * 4) + 5;
+        const appointmentsPerDay = isWeekend ? Math.floor(Math.random() * 3) + 2 : Math.floor(Math.random() * 4) + 5;
 
         for (let i = 0; i < appointmentsPerDay; i++) {
           const hour = 8 + Math.floor(Math.random() * 10);
@@ -71,9 +69,6 @@ async function seedAppointments() {
           endtime.setMinutes(endtime.getMinutes() + 30 + Math.floor(Math.random() * 3) * 15);
 
           const vet = availableVets[Math.floor(Math.random() * availableVets.length)];
-          const service = Math.random() > 0.4 && practiceServices.length > 0
-            ? practiceServices[Math.floor(Math.random() * practiceServices.length)]
-            : null;
 
           appointments.push({
             starttime,
@@ -81,7 +76,7 @@ async function seedAppointments() {
             fk_animalid: null,
             fk_veterinaryid: vet.id,
             fk_veterinarypracticeid: practice.id,
-            fk_serviceid: service?.id || null,
+            fk_serviceid: null,
             notiz: null,
           });
         }
@@ -97,19 +92,22 @@ async function seedAppointments() {
     });
 
     appointmentIDs.forEach((x) => {
-      appointmentHasService.push({ // add service for every appointment
+      appointmentHasService.push({
+        // add service for every appointment
         fk_appointmentid: x.id,
         fk_serviceid: 1,
-      })
-    })
+      });
+    });
     const created2 = await prisma.appointment_has_service.createMany({
       data: appointmentHasService,
     });
 
     console.log(`✅ Created ${created.count} new appointments`);
-    console.log(`📅 Date range: ${appointments[0].starttime.toLocaleDateString()} - ${appointments[appointments.length - 1].starttime.toLocaleDateString()}`);
+    console.log(
+      `📅 Date range: ${appointments[0].starttime.toLocaleDateString()} - ${appointments[appointments.length - 1].starttime.toLocaleDateString()}`
+    );
   } catch (error) {
-    console.error('❌ Error seeding appointments:', error);
+    console.error("❌ Error seeding appointments:", error);
     process.exit(1);
   } finally {
     await prisma.$disconnect();

@@ -133,6 +133,11 @@ function ConfirmationComponent() {
     }
   }
 
+  const handleCancel = () => {
+    // Go back to search results
+    navigate({ to: '/search' })
+  }
+
   const handleGoToAppointments = () => {
     if (state) {
       navigate({
@@ -158,10 +163,6 @@ function ConfirmationComponent() {
   if (bookingStatus === 'success') {
     return (
       <div className="booking-page">
-        <div className="booking-header">
-          <h1>Buchung erfolgreich!</h1>
-        </div>
-
         <div className="booking-main-centered">
           <div className="booking-confirmation-card">
             <div className="confirmation-icon-wrapper">
@@ -231,14 +232,6 @@ function ConfirmationComponent() {
   if (bookingStatus === 'error') {
     return (
       <div className="booking-page">
-        <div className="booking-header">
-          <button className="back-button" onClick={handleBack}>
-            <i className="bi bi-arrow-left"></i>
-            Zurück
-          </button>
-          <h1>Buchung fehlgeschlagen</h1>
-        </div>
-
         <div className="booking-main-centered">
           <div className="booking-confirmation-card">
             <div className="confirmation-icon-wrapper">
@@ -272,14 +265,6 @@ function ConfirmationComponent() {
   // Show confirmation form (pending state)
   return (
     <div className="booking-page">
-      <div className="booking-header">
-        <button className="back-button" onClick={handleBack} disabled={isSubmitting}>
-          <i className="bi bi-arrow-left"></i>
-          Zurück
-        </button>
-        <h1>{state?.isReschedule ? 'Terminverschiebung bestätigen' : 'Buchung bestätigen'}</h1>
-      </div>
-
       <div className="booking-main-centered">
         <div className="booking-confirmation-card">
           <div className="confirmation-icon-wrapper">
@@ -348,14 +333,24 @@ function ConfirmationComponent() {
                 </>
               )}
             </button>
-            <button
-              className="booking-confirm-button booking-button-secondary"
-              onClick={handleSelectDifferentAppointment}
-              disabled={isSubmitting}
-            >
-              <i className="bi bi-calendar-x"></i>
-              Anderen Termin wählen
-            </button>
+            <div className="confirmation-secondary-actions">
+              <button
+                className="booking-confirm-button booking-button-gray"
+                onClick={handleSelectDifferentAppointment}
+                disabled={isSubmitting}
+              >
+                <i className="bi bi-calendar-x"></i>
+                Anderen Termin wählen
+              </button>
+              <button
+                className="booking-confirm-button booking-button-danger"
+                onClick={handleCancel}
+                disabled={isSubmitting}
+              >
+                <i className="bi bi-x-lg"></i>
+                Abbrechen
+              </button>
+            </div>
           </div>
         </div>
       </div>
