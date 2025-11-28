@@ -17,6 +17,8 @@ const ArrayOfIDs = z.union([
             .filter(n => !isNaN(n) && Number.isInteger(n));
     });
 
+const DateTimeSchema = z.iso.datetime().transform((str) => new Date(str));
+
 //Animalgroup:
 export const AnimalGroupSchema = z.object({
     id: z.number().int(),
@@ -127,22 +129,27 @@ export const PersonsSchema = z.object({
     firstname: z.string().min(2).max(60),
     lastname: z.string().min(2).max(60),
     sex: sexes,
-    dateofbirth: z.date(),
+    dateofbirth: DateTimeSchema,
     addresses: AddressesSchema,
     phone: z.string().min(5).max(20),
     email: z.email().max(100),
-    password: z.string().min(6).max(255),
-
 });
 
 export const PersonsCreateSchema = PersonsSchema.omit({
     id: true
 }).extend({
-    addresses: AddressesCreateSchema
+    addresses: AddressesCreateSchema,
+    password: z.string().min(6).max(255)
 });
 
 export type PersonsCreateType = z.infer<typeof PersonsCreateSchema>;
 export type PersonsType = z.infer<typeof PersonsSchema>;
+
+export const PersonsUpdateSchema = PersonsCreateSchema.extend({
+    id: z.number(),
+    addresses: AddressesSchema,
+});
+export type PersonsUpdateType = z.infer<typeof PersonsUpdateSchema>;
 
 //person with authentication type
 const roles = z.enum(['person']);
