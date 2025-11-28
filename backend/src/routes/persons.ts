@@ -40,13 +40,7 @@ personsRouter.get("/:id/favorites",
 personsRouter.post("/",
     async (req, res) => {
         try {
-            let unsafePerson = req.body;
-            unsafePerson = {
-                ...unsafePerson,
-                dateofbirth: new Date(unsafePerson.dateofbirth)
-            }
-
-            const personData = PersonsCreateSchema.safeParse(unsafePerson);
+            const personData = PersonsCreateSchema.safeParse(req.body);
             if (!personData.success) {
                 res.status(400).send(personData.error);
                 return;
