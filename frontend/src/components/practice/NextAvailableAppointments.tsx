@@ -3,8 +3,17 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
 import { getAvailableAppointmentsByPracticeId } from '../../api/AppointmentsAPI'
-import type { AppointmentFilterType, AppointmentsType } from '../../../../shared/schemas/ZodSchemas'
-import { compareDates, dateToDateString, dateToTimeString, getShortDate, getShortWeekday } from '../../utils/DateToStringFormat'
+import type {
+  AppointmentFilterType,
+  AppointmentsType,
+} from '../../../../shared/schemas/ZodSchemas'
+import {
+  compareDates,
+  dateToDateString,
+  dateToTimeString,
+  getShortDate,
+  getShortWeekday,
+} from '../../utils/DateToStringFormat'
 
 type NextAvailableAppointmentsProps = {
   praxisID: string
@@ -15,19 +24,26 @@ type NextAvailableAppointmentsProps = {
 export function NextAvailableAppointments({
   praxisID,
   filterOptions,
-  onSlotClick
+  onSlotClick,
 }: NextAvailableAppointmentsProps) {
   const [dateAnsicht, setDateAnsicht] = useState(new Date())
   const [expandedDays, setExpandedDays] = useState<Set<number>>(new Set())
-  const [noFutureAppointments, setNoFutureAppointments] = useState<boolean>(false);
+  const [noFutureAppointments, setNoFutureAppointments] =
+    useState<boolean>(false)
   const navigate = useNavigate()
 
   // call here useQuery with filterOptions servicetype
   const { isPending, isError, isSuccess, data } = useQuery<
     Array<AppointmentsType>
   >({
-    queryKey: ["nextAvailableAppointments", praxisID, filterOptions.animalTypeIds, filterOptions.serviceTypeIds],
-    queryFn: () => getAvailableAppointmentsByPracticeId(praxisID, filterOptions),
+    queryKey: [
+      'nextAvailableAppointments',
+      praxisID,
+      filterOptions.animalTypeIds,
+      filterOptions.serviceTypeIds,
+    ],
+    queryFn: () =>
+      getAvailableAppointmentsByPracticeId(praxisID, filterOptions),
     retry: false,
   })
 
@@ -45,7 +61,7 @@ export function NextAvailableAppointments({
         ? futureAppointments[0].starttime
         : null
     } else {
-      return null;
+      return null
     }
   }
 
@@ -53,11 +69,12 @@ export function NextAvailableAppointments({
     if (findNextAppointmentDate() === null) {
       setNoFutureAppointments(true)
     } else {
-      setNoFutureAppointments(false);
+      setNoFutureAppointments(false)
     }
   }, [findNextAppointmentDate()])
 
-  const handleForwardTermin = (count: number) => { // number of how often the date to be clicked *5
+  const handleForwardTermin = (count: number) => {
+    // number of how often the date to be clicked *5
     const newDate = new Date(dateAnsicht) // neues Objekt damit State sich aendert
     newDate.setDate(newDate.getDate() + 5 * count)
     setDateAnsicht(newDate)
@@ -87,16 +104,9 @@ export function NextAvailableAppointments({
     } else {
       let appointmentTypeId: number[] | null = null
       if (filterOptions.serviceTypeIds?.length !== undefined) {
-        appointmentTypeId = filterOptions.serviceTypeIds;
+        appointmentTypeId = filterOptions.serviceTypeIds
       } else {
-        appointmentTypeId = null;
-      }
-      // navigiert zur Buchungsseite fuer den Termin
-      let appointmentTypeId: number[] | null = null
-      if (filterOptions.serviceTypeIds?.length !== undefined) {
-        appointmentTypeId = filterOptions.serviceTypeIds;
-      } else {
-        appointmentTypeId = null;
+        appointmentTypeId = null
       }
       // navigiert zur Buchungsseite fuer den Termin
       navigate({
@@ -107,7 +117,7 @@ export function NextAvailableAppointments({
         },
         state: {
           appointment: termin,
-          serviceType: appointmentTypeId
+          serviceType: appointmentTypeId,
         },
       })
     }
@@ -147,10 +157,15 @@ export function NextAvailableAppointments({
     const vergleichDate = new Date(dateAnsicht) // erster Tag der in dieser Ansicht zur Auswahl steht
     for (const termin of data) {
       if (compareDates(vergleichDate, new Date()) !== 0) {
-        vergleichDate.setHours(0, 0, 0, 0);
+        vergleichDate.setHours(0, 0, 0, 0)
       } else {
-        const time = new Date();
-        vergleichDate.setHours(time.getHours(), time.getMinutes(), time.getSeconds(), time.getMilliseconds())
+        const time = new Date()
+        vergleichDate.setHours(
+          time.getHours(),
+          time.getMinutes(),
+          time.getSeconds(),
+          time.getMilliseconds(),
+        )
       }
 
       if (termin.starttime > vergleichDate) {
@@ -200,16 +215,17 @@ export function NextAvailableAppointments({
 
     const navigateToNextAppointment = () => {
       const nextDate = findNextAppointmentDate()
-      let copyDateAnsicht = new Date(dateAnsicht);
+      let copyDateAnsicht = new Date(dateAnsicht)
       if (nextDate) {
         copyDateAnsicht.setDate(copyDateAnsicht.getDate() + 5)
-        let i = 0;
-        while (compareDates(copyDateAnsicht, nextDate) <= 0) { // count how often the arrow to the right have to been clicked
-          copyDateAnsicht.setDate(copyDateAnsicht.getDate() + 5);
+        let i = 0
+        while (compareDates(copyDateAnsicht, nextDate) <= 0) {
+          // count how often the arrow to the right have to been clicked
+          copyDateAnsicht.setDate(copyDateAnsicht.getDate() + 5)
           i++
         }
-        handleForwardTermin(i);
-        setExpandedDays(new Set());
+        handleForwardTermin(i)
+        setExpandedDays(new Set())
       }
     }
 
@@ -240,12 +256,16 @@ export function NextAvailableAppointments({
             ))}
           </div>
 
-          <button className="nav-arrow" onClick={() => handleForwardTermin(1)} disabled={noFutureAppointments}>
+          <button
+            className="nav-arrow"
+            onClick={() => handleForwardTermin(1)}
+            disabled={noFutureAppointments}
+          >
             <i className="bi bi-chevron-right"></i>
           </button>
         </div>
 
-        {!noFutureAppointments &&
+        {!noFutureAppointments && (
           <div>
             {/* Spalten mit Terminen */}
             <div className="calendar-grid">
@@ -340,14 +360,14 @@ export function NextAvailableAppointments({
               )
             })()}
           </div>
-        }
+        )}
 
-        {noFutureAppointments &&
+        {noFutureAppointments && (
           <div className="no-appointments-message">
             <i className="bi bi-calendar-x"></i>
             <p>Keine weiteren Termine in der Zukunft verfügbar</p>
           </div>
-        }
+        )}
 
         {/* "Nächster Termin" Overlay Button wenn keine Termine in aktueller Ansicht */}
         {!hasAppointmentsInCurrentView && findNextAppointmentDate() && (
