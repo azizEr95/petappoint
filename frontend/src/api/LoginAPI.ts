@@ -2,7 +2,6 @@ import { LoginSchema, type LoginType, type PersonsCreateType } from "../../../sh
 
 
 export const login = async (email: string, password: string): Promise<LoginType> => {
-
     const loginInfos = {
         email: email,
         password: password
@@ -26,7 +25,7 @@ export const login = async (email: string, password: string): Promise<LoginType>
     return parseLogin(data);
 }
 
-export const personRegistration = async (person: PersonsCreateType): Promise<void> => {
+export const personRegistration = async (person: PersonsCreateType): Promise<string> => {
     const requestOptions = {
         method: 'POST',
         headers: {
@@ -35,14 +34,15 @@ export const personRegistration = async (person: PersonsCreateType): Promise<voi
         body: JSON.stringify(person),
     }
     const res = await fetch(
-        import.meta.env.VITE_API_URL + '/login/', requestOptions // to be changed
+        import.meta.env.VITE_API_URL + '/persons/', requestOptions // to be changed
     )
     if (!res.ok) {
+        console.log(res)
         throw new Error('Failed to fetch personRegistration')
     }
 
     const data = await res.json();
-    return data;
+    return data; // is an string, should be from type LoginType
 }
 
 const parseLogin = (unsafeAppointment: LoginType): LoginType => {
