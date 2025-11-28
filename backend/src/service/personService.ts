@@ -5,17 +5,17 @@ import z from 'zod';
 
 export const personService = {
   async create(dataRe: PersonsCreateType): Promise<PersonsType> {
-    const createdAddress = await addressService.create(dataRe.addresses);
     const created = await prisma.persons.create({
+      include: {
+        addresses: true
+      },
       data: {
         firstname: dataRe.firstname,
         lastname: dataRe.lastname,
         sex: dataRe.sex,
         dateofbirth: dataRe.dateofbirth,
         addresses: {
-          connect: {
-            id: createdAddress.id
-          }
+          create: dataRe.addresses
         },
         phone: dataRe.phone,
         email: dataRe.email,
@@ -29,7 +29,7 @@ export const personService = {
       lastname: created.lastname,
       sex: created.sex,
       dateofbirth: created.dateofbirth,
-      addresses: createdAddress,
+      addresses: created.address,
       phone: created.phone,
       email: created.email,
     }

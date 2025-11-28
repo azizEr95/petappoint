@@ -4,7 +4,6 @@ import { AddressesCreateType, AddressesType } from "vetlib-shared/schemas/ZodSch
 
 export const addressService = {
   async create(data: AddressesCreateType): Promise<AddressesType> {
-    console.log(data);
     const createdAddress = await prisma.addresses.create({ data: {
       city: data.city,
       citycode: data.citycode,
@@ -13,8 +12,6 @@ export const addressService = {
       longitude: data.longitude,
       street: data.street
     } });
-    console.log("Created shit address");
-    console.log(createdAddress);
     return createdAddress;
   },
 
