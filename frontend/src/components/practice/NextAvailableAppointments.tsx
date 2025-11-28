@@ -70,6 +70,13 @@ export function NextAvailableAppointments({
       onSlotClick(termin)
     } else {
       // navigiert zur Buchungsseite fuer den Termin
+      let appointmentTypeId: number[] | null = null
+      if (filterOptions.serviceTypeIds?.length !== undefined) {
+        appointmentTypeId = filterOptions.serviceTypeIds;
+      } else {
+        appointmentTypeId = null;
+      }
+      // navigiert zur Buchungsseite fuer den Termin
       navigate({
         to: '/praxen/$praxisId/booking/$terminId',
         params: {
@@ -77,7 +84,8 @@ export function NextAvailableAppointments({
           terminId: termin.id.toString(),
         },
         state: {
-          termin: termin,
+          appointment: termin,
+          serviceType: appointmentTypeId
         },
       })
     }
@@ -122,7 +130,7 @@ export function NextAvailableAppointments({
         const time = new Date();
         vergleichDate.setHours(time.getHours(), time.getMinutes(), time.getSeconds(), time.getMilliseconds())
       }
-      
+
       if (termin.starttime > vergleichDate) {
         // Termine vor angegebenem Starttermin werden nicht angezeigt
         while (i < 5) {
