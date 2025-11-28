@@ -152,25 +152,36 @@ function Appointments() {
                 </button>
             </div>
 
-            <div className='appointments-layout'>
-                <div className="appointments-list-section">
-                    {isCurrentError && (
-                        <div className="empty-state">
-                            <i className="bi bi-exclamation-triangle"></i>
-                            <p>Termine konnten nicht geladen werden</p>
-                        </div>
-                    )}
-                    {isCurrentSuccess && currentData && (
+            {isCurrentError && (
+                <div className="empty-state-centered">
+                    <i className="bi bi-exclamation-triangle"></i>
+                    <p>Termine konnten nicht geladen werden</p>
+                </div>
+            )}
+
+            {isCurrentSuccess && currentData && currentData.length === 0 && (
+                <div className="empty-state-centered">
+                    <AppointmentList
+                        dataAppointments={currentData}
+                        handleShowDetailsAppointment={handleShowDetailsAppointment}
+                        selectedAppointment={selectedAppointment}
+                        isPast={activeTab === 'past'}
+                    />
+                </div>
+            )}
+
+            {isCurrentSuccess && currentData && currentData.length > 0 && (
+                <div className='appointments-layout'>
+                    <div className="appointments-list-section">
                         <AppointmentList
                             dataAppointments={currentData}
                             handleShowDetailsAppointment={handleShowDetailsAppointment}
                             selectedAppointment={selectedAppointment}
                             isPast={activeTab === 'past'}
                         />
-                    )}
-                </div>
+                    </div>
 
-                <div className="appointments-details-column">
+                    <div className="appointments-details-column">
                     {showSuccessNotification && (
                         <div className="booking-success-notification">
                             <div className="notification-icon">
@@ -216,8 +227,9 @@ function Appointments() {
                             onShowCancelSuccess={handleShowCancelSuccess}
                         />
                     )}
+                    </div>
                 </div>
-            </div>
+            )}
         </div>
     )
 }
