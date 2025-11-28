@@ -25,7 +25,7 @@ function Login() {
     },
     onSuccess: () => {
       setLogin(true);
-      navigate({ to: '/appointments' });
+      navigate({ to: '/dashboard' });
     },
   })
 
