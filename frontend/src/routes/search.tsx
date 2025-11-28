@@ -41,8 +41,8 @@ function SearchComponent() {
 
   return (
     <>
-      {/* Sticky Search Bar */}
-      <div className="search-header-sticky">
+      {/* Search Bar */}
+      <div className="search-header">
         <div className="container search-bar-container">
           <SearchField searchFilter={searchFilter} />
           <SearchFilter searchFilter={searchFilter} filterOptions={filterOptions} setFilterServiceType={setFilterServiceType} setFilterAnimalType={setFilterAnimalType} practicePage={null} landingPage={false}/>
@@ -67,63 +67,6 @@ function SearchComponent() {
         {/* Results List */}
         <VeterinaryPracticeList searchName={name ?? ""} searchOrt={address ?? ""} filterOptions={filterOptions} onTotalChange={setTotalResults} />
       </div>
-
-      <style>{`
-        .search-header-sticky {
-          position: sticky;
-          top: 72px;
-          z-index: 999;
-          background: white;
-          padding: 1.5rem 0;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-          margin-bottom: 2rem;
-        }
-
-        .search-bar-container {
-          display: flex;
-          flex-direction: row;
-          justify-content: center;
-          align-items: center;
-          gap: 1rem;
-        }
-
-        .search-results-container {
-          padding-top: 2rem;
-          padding-bottom: 3rem;
-        }
-
-        .search-summary {
-          margin-bottom: 2rem;
-        }
-
-        .search-summary h4 {
-          color: var(--color-primary);
-          font-weight: 600;
-          margin-bottom: 0.5rem;
-        }
-
-        .results-count {
-          color: var(--color-text-light);
-          font-size: 0.95rem;
-          margin: 0;
-        }
-
-        .results-count i {
-          margin-right: 0.5rem;
-          color: var(--color-primary);
-        }
-
-        @media (max-width: 768px) {
-          .search-header-sticky {
-            position: relative;
-            top: 0;
-          }
-
-          .search-bar-container {
-            flex-direction: column;
-          }
-        }
-      `}</style>
     </>
   )
 }
