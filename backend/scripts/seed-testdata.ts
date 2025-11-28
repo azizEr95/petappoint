@@ -147,6 +147,39 @@ async function seedTestdata() {
             ]
         });
 
+        await prisma.person_has_favorized_veterinarypractice.createMany({
+            data: [
+                { fk_personid: 1, fk_veterinarypracticeid: 1 },
+                { fk_personid: 2, fk_veterinarypracticeid: 2 },
+                { fk_personid: 1, fk_veterinarypracticeid: 3 },
+                { fk_personid: 4, fk_veterinarypracticeid: 3 }
+            ]
+        });
+
+        await prisma.veterinary_has_service.createMany({
+            data: [
+                { fk_veterinaryid: 4, fk_serviceid: 1 },
+                { fk_veterinaryid: 4, fk_serviceid: 2 },
+                { fk_veterinaryid: 4, fk_serviceid: 3 },
+                { fk_veterinaryid: 2, fk_serviceid: 3 },
+                { fk_veterinaryid: 2, fk_serviceid: 2 },
+                { fk_veterinaryid: 1, fk_serviceid: 1 },
+                { fk_veterinaryid: 1, fk_serviceid: 2 }
+            ]
+        });
+
+        await prisma.veterinary_can_treat_animaltype.createMany({
+            data: [
+                { fk_veterinaryid: 4, fk_animaltypeid: 1 },
+                { fk_veterinaryid: 4, fk_animaltypeid: 2 },
+                { fk_veterinaryid: 4, fk_animaltypeid: 3 },
+                { fk_veterinaryid: 2, fk_animaltypeid: 3 },
+                { fk_veterinaryid: 2, fk_animaltypeid: 5 },
+                { fk_veterinaryid: 2, fk_animaltypeid: 6 },
+                { fk_veterinaryid: 1, fk_animaltypeid: 3 }
+            ]
+        });
+
 
 
     } catch (error) {

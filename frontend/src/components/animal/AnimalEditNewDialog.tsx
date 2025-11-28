@@ -509,7 +509,7 @@ export function AnimalEditNewDialog({ hideDialogNewAnimal, animalEdit }: AnimalE
             const heightInCm = Math.floor(parseFloat(height.replace(",", ".")) * 100);
 
 
-            let animal: AnimalsCreateType = {
+            const animal: AnimalsCreateType = {
                 name: name,
                 sex: sex !== undefined ? sex : "notknown",
                 dateofbirth: dateOfBirthIsExact === "Yes" ? new Date(dateOfBirth) : new Date(dateOfBirthFromAgeInMonth),
@@ -547,7 +547,7 @@ export function AnimalEditNewDialog({ hideDialogNewAnimal, animalEdit }: AnimalE
                 if (date.getFullYear() > 1900 && date.getFullYear() <= now.getFullYear() && compareDates(date, now) <= 0) {
                     return false; // dateOfBirth is valid
                 } else {
-                    return true; //year or month or day or all together are invalid
+                    return true; // year or month or day or all together are invalid
                 }
             } catch {
                 return true; // error by parsing date

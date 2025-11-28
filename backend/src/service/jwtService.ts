@@ -22,7 +22,7 @@ export async function verifyPasswordAndCreateJWT(email: string, password: string
     // hier füllen wir unsere Zugriffberechtigung aus
     const payload: JwtPayload = {
         sub: personID,
-        role: findperson.roles,
+        role: findperson.role,
     }
 
     // hier unterschreiben wir die Zugriffsberechtigung aus und übergeben das ausgefüllte 'Dokument'
@@ -56,7 +56,7 @@ export function verifyJWT(jwtString: string | undefined): LoginType {
     
     const loginRes : LoginType= {
         id: payloadID,
-        roles: payloadRole,
+        role: payloadRole,
         exp: payloadEXP
     }
     return loginRes;

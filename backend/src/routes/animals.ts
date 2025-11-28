@@ -5,6 +5,7 @@ import { personService } from "../service/personService";
 import { animalRaceService } from "../service/animalRaceService";
 import { animalHasRacesService } from "../service/animalHasRacesService";
 import multer from "multer";
+import { optionalAuthentication, requiresAuthentication } from "./authentication";
 export const animalsRouter = express.Router();
 
 const storage = multer.diskStorage({
@@ -29,16 +30,9 @@ const upload = multer({
 });
 
 animalsRouter.post("/",
+    requiresAuthentication,
     async (req, res) => {
-        // changing String Date props to Date
-
-        let unsafeAnimal = req.body;
-        unsafeAnimal = {
-            ...unsafeAnimal,
-            dateofbirth: new Date(unsafeAnimal.dateofbirth),
-            timeofdeath: unsafeAnimal.timeofdeath !== null ? new Date(unsafeAnimal.timeofdeath) : null
-        }
-        const parseResult = AnimalsCreateSchema.safeParse(unsafeAnimal);
+        const parseResult = AnimalsCreateSchema.safeParse(req.body);
         if (!parseResult.success) {
             res.status(400).send(parseResult.error);
             return;
@@ -46,7 +40,7 @@ animalsRouter.post("/",
 
         // TODO: After implementing validation get the personId or the
         // identifier for the person from the authentification token
-        const personId = 6;
+        const personId = parseInt(req.userId!);
 
         const creationData = parseResult.data;
 
@@ -61,22 +55,15 @@ animalsRouter.post("/",
 );
 
 animalsRouter.put('/:animalId',
+    requiresAuthentication,
     async (req, res) => {
-        let unsafeAnimal = req.body;
-        unsafeAnimal = {
-            ...unsafeAnimal,
-            dateofbirth: new Date(unsafeAnimal.dateofbirth),
-            timeofdeath: unsafeAnimal.timeofdeath !== null ? new Date(unsafeAnimal.timeofdeath) : null
-        }
-
-        const animalId = parseInt(req.params.animalId);
-
-        const parseResult = AnimalUpdateSchema.safeParse(unsafeAnimal);
+        const parseResult = AnimalUpdateSchema.safeParse(req.body);
         if (!parseResult.success) {
             res.status(400).send(parseResult.error);
             return;
         }
 
+        const animalId = parseInt(req.params.animalId);
         if (animalId !== parseResult.data.id) {
             res.status(400).send(`Mismatch in param id '${animalId}' and provided body id '${parseResult.data.id}'.`);
             return;
@@ -88,6 +75,7 @@ animalsRouter.put('/:animalId',
 );
 
 animalsRouter.get('/:animalId/picture',
+    requiresAuthentication,
     async (req, res) => {
         const animalId = parseInt(req.params.animalId);
         const filepath = await animalService.getPicturePath(animalId);
@@ -96,6 +84,7 @@ animalsRouter.get('/:animalId/picture',
 )
 
 animalsRouter.post('/:animalId/picture',
+    requiresAuthentication,
     upload.single('picture'),
     async (req, res) => {
         const animalId = parseInt(req.params.animalId);
@@ -104,6 +93,7 @@ animalsRouter.post('/:animalId/picture',
 )
 
 animalsRouter.delete('/:animalId',
+    requiresAuthentication,
     async (req, res) => {
         const animalId = parseInt(req.params.animalId);
         try {
@@ -116,6 +106,7 @@ animalsRouter.delete('/:animalId',
 )
 
 animalsRouter.get('/:animalId/races',
+    requiresAuthentication,
     async (req, res) => {
         const animalId = parseInt(req.params.animalId);
         const animalRaces: AnimalracesType[] = await animalRaceService.getAnimalRaces(animalId);
@@ -124,6 +115,7 @@ animalsRouter.get('/:animalId/races',
 )
 
 animalsRouter.post('/:animalId/races',
+    requiresAuthentication,
     async (req, res) => {
         const animalId = parseInt(req.params.animalId);
         const animalRaceData = AddRacesToAnimalSchema.safeParse(req.body);
@@ -148,6 +140,7 @@ animalsRouter.post('/:animalId/races',
 )
 
 animalsRouter.delete('/:animalId/races',
+    requiresAuthentication,
     async (req, res) => {
         const animalId = parseInt(req.params.animalId);
         try {
@@ -160,6 +153,7 @@ animalsRouter.delete('/:animalId/races',
 )
 
 animalsRouter.delete('/:animalId/races/:raceId',
+    requiresAuthentication,
     async (req, res) => {
         try {
             await animalHasRacesService.delete({

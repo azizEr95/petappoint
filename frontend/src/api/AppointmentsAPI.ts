@@ -32,13 +32,13 @@ export const getAvailableAppointmentsByPracticeId = async (
         throw new Error('Failed to fetch getAvailableAppointmentsByPracticeId')
     }
 
-    const data = await res.json() as AppointmentsType[];
+    const data = await res.json();
     return parseAppointmentArray(data);
 }
 
-//set animalID and serviceID from an existing appointment
+// Set animalID and serviceID from an existing appointment
 export const bookAppointment = async (appointmentID: number, animalID: number | undefined, serviceID: number | null): Promise<AppointmentsType> => {
-    if (animalID === null || animalID === undefined) {
+    if (animalID === undefined) {
         throw new Error('Failed to fetch bookAppointment: animalID null/undefined');
     }
 
@@ -74,7 +74,7 @@ export const getFutureAppointmentsByUserId = async (userID: string) => {
         throw new Error('Failed to fetch getFutureAppointmentsByUserId');
     }
 
-    const data = await res.json() as AppointmentsType[];
+    const data = await res.json();
     return parseAppointmentArray(data);
 }
 
@@ -86,35 +86,16 @@ export const getPastAppointmentsByUserId = async (userID: string) => {
         throw new Error('Failed to fetch getPastAppointmentsByUserId');
     }
 
-    const data = await res.json() as AppointmentsType[];
+    const data = await res.json();
     return parseAppointmentArray(data);
 }
 
 /*
  * change the date from Appointments to Date Object and safeParse the whole array
  */
-const parseAppointmentArray = (unsafeAppointments: AppointmentsType[]): AppointmentsType[] => {
+const parseAppointmentArray = (unsafeAppointments: Array<AppointmentsType>): Array<AppointmentsType> => {
     return unsafeAppointments.map(x => {
-        const unsafeData = {
-            id: x.id,
-            starttime: new Date(x.starttime),
-            endtime: new Date(x.endtime),
-            animal: x.animal ? {
-                ...x.animal,
-                dateofbirth: x.animal.dateofbirth ? new Date(x.animal.dateofbirth) : x.animal.dateofbirth
-            } : x.animal,
-            veterinary: x.veterinary,
-            veterinarypractice: x.veterinarypractice,
-            service: x.service,
-            availableservices: x.availableservices
-            /**
-             * animals: AnimalsSchema.nullable(),
-                 veterinaries: VeterinariansSchema,
-                 veterinarypractices: VeterinaryPracticeSchema,
-                 services: ServiceSchema.nullable()
-             */
-        }
-        const parsed = AppointmentsSchema.safeParse(unsafeData);
+        const parsed = AppointmentsSchema.safeParse(x);
         if (parsed.error !== undefined) { // if Zod throws an Error print them
             console.log(parsed.error);
         }
@@ -159,13 +140,8 @@ export const updateAppointmentNotiz = async (id: number, notiz: string | null): 
  * change the date from the Appointment to Date Object and safeParse the object
  */
 const parseAppointment = (unsafeAppointment: AppointmentsType): AppointmentsType => {
-    unsafeAppointment.starttime = new Date(unsafeAppointment.starttime);
-    unsafeAppointment.endtime = new Date(unsafeAppointment.endtime);
-    if (unsafeAppointment.animal?.dateofbirth) {
-        unsafeAppointment.animal.dateofbirth = new Date(unsafeAppointment.animal.dateofbirth);
-    }
     const parsed = AppointmentsSchema.safeParse(unsafeAppointment);
-    if (parsed.error !== undefined) { //if Zod throws an Error print them
+    if (parsed.error !== undefined) { // if Zod throws an Error print them
         console.log(parsed.error);
     }
     if (!parsed.success) {

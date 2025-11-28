@@ -1,5 +1,5 @@
 import { AnimalsSchema } from '../../../shared/schemas/ZodSchemas'
-import type { AnimalsType, AnimalsCreateType } from '../../../shared/schemas/ZodSchemas'
+import type { AnimalsCreateType, AnimalsType } from '../../../shared/schemas/ZodSchemas'
 
 export const getAnimalsFromUser = async (
   userId: number,
@@ -102,15 +102,8 @@ export const deleteAnimal = async (animalID: number): Promise<void> => {
  * safeParse animals
  */
 const parseAnimal = (unsafeAnimal: AnimalsType): AnimalsType => {
-  if (unsafeAnimal.dateofbirth !== null) {
-    unsafeAnimal.dateofbirth = new Date(unsafeAnimal.dateofbirth) // change Date to Date Object
-  }
-  if (unsafeAnimal.timeofdeath !== null) {
-    unsafeAnimal.timeofdeath = new Date(unsafeAnimal.timeofdeath) // change Date to Date Object
-  }
-  console.log(unsafeAnimal)
   const parsed = AnimalsSchema.safeParse(unsafeAnimal);
-  if (parsed.error !== undefined) { //if Zod throws an Error print them
+  if (parsed.error !== undefined) { // if Zod throws an Error print them
     console.log(parsed.error);
   }
   if (!parsed.success) {
@@ -122,15 +115,8 @@ const parseAnimal = (unsafeAnimal: AnimalsType): AnimalsType => {
 /*
 * safeParse an array of animals
 */
-const parseAnimalArray = (unsafeAnimal: AnimalsType[]): AnimalsType[] => {
+const parseAnimalArray = (unsafeAnimal: Array<AnimalsType>): Array<AnimalsType> => {
   return unsafeAnimal.map((unsafeData) => {
-    if (unsafeData.dateofbirth !== null) {
-      unsafeData.dateofbirth = new Date(unsafeData.dateofbirth) // change Date to Date Object
-    }
-    if (unsafeData.timeofdeath !== null) {
-      unsafeData.timeofdeath = new Date(unsafeData.timeofdeath) // change Date to Date Object
-    }
-
     const parsed = AnimalsSchema.safeParse(unsafeData)
     if (parsed.error !== undefined) {
       // if Zod throws an Error print them
