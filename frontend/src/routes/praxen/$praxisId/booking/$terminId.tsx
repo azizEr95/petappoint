@@ -175,6 +175,7 @@ function BookingComponent() {
   
   switch (status) {
     case StatusBooking.selectTerminArt:
+
       aktuelleAnzeige = (
         <SelectAppointmentType
         practice={practice}
