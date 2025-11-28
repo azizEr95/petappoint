@@ -61,24 +61,27 @@ export function AnimalEditNewDialog({ hideDialogNewAnimal, animalEdit }: AnimalE
     // BEGIN IMAGE FORM
     const [animalPictureURL, setAnimalPictureURL] = useState<string>(getPictureURLForAnimalId(animalEdit?.id ?? 0));
     const [selectedPictureFile, setSelectedPictureFile] = useState<File>();
-    const handleFileSelect = (e) => {
+    const handleFileSelect = (e: ChangeEvent<HTMLInputElement>) => {
         console.log(e);
-        const file: File | undefined = e.target.files[0];
-        if (file) {
-            if (!file.type.startsWith('image/')) {
-                console.error("Does not start with image.")
-                return;
+        if(e.target.files !== null){
+
+            const file: File | undefined = e.target.files[0];
+            if (file) {
+                if (!file.type.startsWith('image/')) {
+                    console.error("Does not start with image.")
+                    return;
+                }
+                
+                // 2MB max
+                if (file.size > (2 * 1024 * 1024)) {
+                    console.error("File bigger than 2MB.")
+                    return;
+                }
+                
+                setSelectedPictureFile(file);
+                
+                
             }
-
-            // 2MB max
-            if (file.size > (2 * 1024 * 1024)) {
-                console.error("File bigger than 2MB.")
-                return;
-            }
-
-            setSelectedPictureFile(file);
-
-
         }
     }
     const onSubmitPicture = () => {
@@ -597,7 +600,7 @@ export function AnimalEditNewDialog({ hideDialogNewAnimal, animalEdit }: AnimalE
                     // TODO: ALIGN IMAGE CENTER HORIZONTAL
                 }
                 <Container>
-                    <Image src={animalPictureURL} width={200} height={200} roundedCircle onClick={handleFileSelect} />
+                    <Image src={animalPictureURL} width={200} height={200} roundedCircle />
                     <Form>
                         <Form.Group>
                             <Form.Label>Bild auswählen</Form.Label>
