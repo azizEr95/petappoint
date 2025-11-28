@@ -2,10 +2,12 @@ import express from "express";
 import { personService } from "../service/personService";
 import { AnimalsType, PersonsCreateSchema, PersonsType } from "vetlib-shared/schemas/ZodSchemas";
 import { verifyJWT, verifyPasswordAndCreateJWT } from "../service/jwtService";
+import { optionalAuthentication, requiresAuthentication } from "./authentication";
 
 export const personsRouter = express.Router();
 
 personsRouter.get('/all',
+    requiresAuthentication,
     async (_req, res) => {
         const persons: PersonsType[] = await personService.getAll();
         res.send(persons);
@@ -13,6 +15,7 @@ personsRouter.get('/all',
 );
 
 personsRouter.get('/:id/animals',
+    requiresAuthentication,
     async (req, res) => {
         try {
             const id = parseInt(req.params.id);
@@ -25,6 +28,7 @@ personsRouter.get('/:id/animals',
 );
 
 personsRouter.get("/:id/favorites",
+    requiresAuthentication,
     async (req, res) => {
         try {
             const id = parseInt(req.params.id);
@@ -38,6 +42,7 @@ personsRouter.get("/:id/favorites",
 
 
 personsRouter.post("/",
+    requiresAuthentication,
     async (req, res) => {
         try {
             const personData = PersonsCreateSchema.safeParse(req.body);
@@ -77,6 +82,7 @@ personsRouter.post("/",
 
 
 personsRouter.post("/:id/favorites/:practiceId",
+    requiresAuthentication,
     async (req, res) => {
         try {
             const id = parseInt(req.params.id);
@@ -93,6 +99,7 @@ personsRouter.post("/:id/favorites/:practiceId",
 
 
 personsRouter.delete("/:id/favorites/:practiceId",
+    requiresAuthentication,
     async (req, res) => {
         try {
             const id = parseInt(req.params.id);

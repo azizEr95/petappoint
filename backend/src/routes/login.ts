@@ -2,11 +2,13 @@ import express from "express";
 import { JsonWebTokenError } from "jsonwebtoken";
 import { verifyJWT, verifyPasswordAndCreateJWT } from "../service/jwtService";
 import { loginValidator } from "vetlib-shared/schemas/ZodSchemas";
+import { optionalAuthentication } from "./authentication";
 //import { optionalAuthentication } from "./authentication";
 
 export const loginRouter = express.Router();
 
 loginRouter.post("/",
+    optionalAuthentication,
     async (req, res, next) => {
         const loginData = loginValidator.safeParse(req.body)
         if (!loginData.success) {
@@ -46,7 +48,7 @@ loginRouter.post("/",
 
 
 loginRouter.get("/",
-    //optionalAuthentication, 
+    optionalAuthentication,
     async (req, res) => {
         try {
             const jwtString = req.cookies.access_token;
@@ -60,7 +62,9 @@ loginRouter.get("/",
         }
     })
 
-loginRouter.delete("/", async (_req, res) => {
+loginRouter.delete("/",
+    optionalAuthentication,
+    async (_req, res) => {
     res.clearCookie("access_token");
     res.sendStatus(204);
 })

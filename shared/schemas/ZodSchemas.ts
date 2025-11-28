@@ -54,11 +54,11 @@ export type sexesType = z.infer<typeof sexes>;
 export const AnimalsSchema = z.object({
     id: z.number().int(),
     name: z.string().min(1).max(100),
-    dateofbirth: z.date().nullable(),
+    dateofbirth: DateTimeSchema.nullable(),
     dateofbirthisexact: z.boolean().nullable(),
     weightingram: z.number().int().nullable(),
     heightincm: z.number().int().nullable(),
-    timeofdeath: z.date().nullable(),
+    timeofdeath: DateTimeSchema.nullable(),
     iscastrated: z.boolean(),
     lifestyleisindoors: z.boolean(),
     sex: sexes,
@@ -152,9 +152,10 @@ export const PersonsUpdateSchema = PersonsCreateSchema.extend({
 export type PersonsUpdateType = z.infer<typeof PersonsUpdateSchema>;
 
 //person with authentication type
-const roles = z.enum(['person']);
+export const RoleSchema = z.enum(['person']);
+export type RoleEnum = z.infer<typeof RoleSchema>;
 export const PersonsAuthenticatedSchema = z.object({
-    roles: roles,
+    role: RoleSchema,
     id: z.number().int(),
 });
 
@@ -170,7 +171,7 @@ export type LoginValidatorType = z.infer<typeof loginValidator>;
 //Login Type
 export const LoginSchema = z.object({
     id: z.string(),
-    roles: roles,
+    role: RoleSchema,
     exp: z.number(),
 })
 
@@ -233,8 +234,8 @@ export type VeterinariansType = z.infer<typeof VeterinariansSchema>;
 //Appointments:
 export const AppointmentsSchema = z.object({
     id: z.number().int(),
-    starttime: z.date(),
-    endtime: z.date(),
+    starttime: DateTimeSchema,
+    endtime: DateTimeSchema,
     animal: AnimalsSchema.nullable(),
     veterinary: VeterinariansSchema,
     veterinarypractice: VeterinaryPracticeSchema,
@@ -244,8 +245,8 @@ export const AppointmentsSchema = z.object({
 });
 
 export const AppointmentsCreateSchema = z.object({
-    starttime: z.date(),
-    endtime: z.date(),
+    starttime: DateTimeSchema,
+    endtime: DateTimeSchema,
     animalid: z.number().int().nullable(),
     veterinaryid: z.number().int(),
     veterinarypracticeid: z.number().int(),

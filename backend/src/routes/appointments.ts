@@ -1,11 +1,13 @@
 import express from "express";
 import { appointmentService } from "../service/appointmentService";
 import { AppointmentsType, BookAppointmentSchema } from "vetlib-shared/schemas/ZodSchemas";
+import { optionalAuthentication, requiresAuthentication } from "./authentication";
 
 export const appointmentRouter = express.Router();
 
 
 appointmentRouter.get("/all",
+    requiresAuthentication,
     async (_req, res) => {
         const allAppointments: AppointmentsType[] = await appointmentService.getAll();
         res.send(allAppointments);
@@ -13,7 +15,8 @@ appointmentRouter.get("/all",
 )
 
 
-appointmentRouter.get("/past/:personId", 
+appointmentRouter.get("/past/:personId",
+    requiresAuthentication,
     async (req, res,) => {
         try {
             const personId = parseInt(req.params.personId);
@@ -30,7 +33,8 @@ appointmentRouter.get("/past/:personId",
     }
 );
 
-appointmentRouter.get("/future/:personId", 
+appointmentRouter.get("/future/:personId",
+    requiresAuthentication,
     async (req, res,) => {
         try {
             const personId = parseInt(req.params.personId);
@@ -48,6 +52,7 @@ appointmentRouter.get("/future/:personId",
 );
 
 appointmentRouter.get("/:id",
+    optionalAuthentication,
     async (req, res) => {
         try {
             const id = parseInt(req.params.id);
@@ -60,6 +65,7 @@ appointmentRouter.get("/:id",
 )
 
 appointmentRouter.put("/:id",
+    requiresAuthentication,
     async (req, res, next) => {
         try {
             const appointmentData = BookAppointmentSchema.safeParse(req.body);
@@ -87,6 +93,7 @@ appointmentRouter.put("/:id",
 );
 
 appointmentRouter.delete("/:id",
+    requiresAuthentication,
     async (req, res) => {
         try {
             const id = parseInt(req.params.id);
@@ -103,6 +110,7 @@ appointmentRouter.delete("/:id",
 );
 
 appointmentRouter.patch("/:id/notiz",
+    requiresAuthentication,
     async (req, res) => {
         try {
             const id = parseInt(req.params.id);

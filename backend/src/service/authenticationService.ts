@@ -20,7 +20,7 @@ export async function login(email: string, password: string): Promise<PersonsAut
     }
 
     return {
-        roles: "person",
+        role: "person",
         id: foundPerson.id
     }
 }
