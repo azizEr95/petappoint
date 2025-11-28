@@ -154,3 +154,4 @@ vite.config.ts.timestamp-*
 **/package-lock.json
 
 backend/public/uploads/*
+backend/.env
