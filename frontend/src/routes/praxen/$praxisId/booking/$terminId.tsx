@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { createFileRoute, useLocation, useNavigate } from '@tanstack/react-router'
 import '../../../../styles/routes/bookingPage.scss'
 import { useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
@@ -27,7 +27,9 @@ enum StatusBooking {
 }
 
 function BookingComponent() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const location = useLocation();
+  const serviceType = location.state?.serviceType;
   const { praxisId, terminId } = Route.useParams()
   const [selectedAppointmentType, setSelectedAppointmentType] =
     useState<ServiceType | null>(null)
@@ -35,9 +37,9 @@ function BookingComponent() {
   const [status, setStatus] = useState<StatusBooking>(
     StatusBooking.selectTerminArt,
   ) // State in the booking prozess, controls what is displayed
+  const [filteredServices, setFilteredServices] = useState<ServiceType[] | null>(null); // if an filter was selected save which services have to been shown
 
   // load VeterinaryPractice:
-  let praxis: VeterinaryPracticesType | undefined
   const {
     isError: isErrorPractice,
     isSuccess: isSuccessPractice,
@@ -50,7 +52,6 @@ function BookingComponent() {
   })
 
   // load Appointment:
-  let termin: AppointmentsType
   const {
     isError: isErrorAppointment,
     isSuccess: isSuccessAppointment,
@@ -62,20 +63,34 @@ function BookingComponent() {
     retry: false,
   })
 
-  // load Services:
-  // these services are not needed in this component
-  let services: ServiceType[]
-  const {
-    isSuccess: isSuccessServices,
-    data: dataServices,
-  } = useQuery<ServiceType[]>({
-    queryKey: ['service', praxisId],
-    queryFn: () => getServicesFromPractice(praxisId),
-    retry: false,
-  })
+  useEffect(() => {
+    if(serviceType !== null && serviceType !== undefined && isSuccessPractice){
+      const foundService = dataAppointment?.availableservices.filter((avaService) => {
+        const x = serviceType.find((selServ) => {
+          return avaService.id === selServ
+        })
+        return x !== undefined;
+      }
+      )
+      if(foundService !== undefined){
+        setFilteredServices(foundService)
+        if(foundService.length === 1 && serviceType.length === 1){ // if only one ServiceType was selected, skip SelectAppointmentType component
+            setFilteredServices(null);
+            setSelectedAppointmentType(foundService[0]);
+            setStatus(StatusBooking.selectAnimal);
+        }
+      } else {
+        setFilteredServices(null);
+      }
+      
+    }
+  }, [serviceType, isSuccessAppointment, dataAppointment]);
 
-  // Note: API call moved to confirmation page
-  // This mutation is no longer used here
+  useEffect(() => {
+    if(filteredServices !== null && serviceType !== null && serviceType !== undefined ){
+      
+    }
+  }, [filteredServices, serviceType])
 
   useEffect(() => {
     if (isPendingPractice || isPendingAppointment) {
@@ -135,10 +150,10 @@ function BookingComponent() {
       navigate({
         to: '/booking/confirmation',
         state: {
-          appointment: termin,
+          appointment: appointment,
           selectedAnimal: selectedAnimal,
           selectedService: selectedAppointmentType,
-          practice: praxis
+          practice: practice
         },
       })
     }
@@ -148,27 +163,24 @@ function BookingComponent() {
     setSelectedAnimal(animal)
   }
 
-  if (!isSuccessAppointment || !isSuccessPractice || !isSuccessServices) {
+  if (!isSuccessAppointment || !isSuccessPractice) {
     return <></>
   }
-
-  services = dataServices;
   
-  termin = dataAppointment
-  praxis = dataPractice
-  console.log(termin.availableservices)
-  termin.availableservices = dataServices; // TODO: to be removed, every appointment has to be his own services!!
+  let appointment: AppointmentsType = dataAppointment
+  let practice: VeterinaryPracticesType | undefined = dataPractice
   let aktuelleAnzeige
   let submitButton
   let currentStep: 1 | 2 | 3 = 1
-
+  
   switch (status) {
     case StatusBooking.selectTerminArt:
       aktuelleAnzeige = (
         <SelectAppointmentType
-          praxis={praxis}
-          appointment={termin}
+        practice={practice}
+          appointment={appointment}
           handleSelectTerminArt={handleSelectTerminArt}
+          filterServices={filteredServices}
         />
       )
       submitButton = null
@@ -192,12 +204,13 @@ function BookingComponent() {
       currentStep = 2
       break
     default:
+      console.log("stop")
       aktuelleAnzeige = (
         <SelectAppointmentType
-          praxis={praxis}
-          appointment={termin}
+        practice={practice}
+          appointment={appointment}
           handleSelectTerminArt={handleSelectTerminArt}
-        />
+          filterServices={null} />
       )
 
       submitButton = null
@@ -229,7 +242,7 @@ function BookingComponent() {
             <i className="bi bi-hospital"></i>
             <div className="info-content">
               <div className="info-label">Praxis</div>
-              <div className="info-value">{praxis.name}</div>
+              <div className="info-value">{practice.name}</div>
             </div>
           </div>
 
@@ -238,8 +251,8 @@ function BookingComponent() {
             <div className="info-content">
               <div className="info-label">Adresse</div>
               <div className="info-value">
-                {praxis.addresses.street}, {praxis.addresses.citycode}{' '}
-                {praxis.addresses.city}
+                {practice.addresses.street}, {practice.addresses.citycode}{' '}
+                {practice.addresses.city}
               </div>
             </div>
           </div>
@@ -249,7 +262,7 @@ function BookingComponent() {
             <div className="info-content">
               <div className="info-label">Termin</div>
               <div className="info-value">
-                {dateToInfosString(termin.starttime)}
+                {dateToInfosString(appointment.starttime)}
               </div>
             </div>
           </div>

@@ -13,6 +13,7 @@ declare module '@tanstack/react-router' {
     practice?: VeterinaryPracticesType
     termin?: AppointmentsType //TODO changed to appointment
     appointment?: AppointmentsType
+    serviceType?: number[] | null
     selectedAnimal?: AnimalsType,
     selectedService?: ServiceType,
     filterOptions?: AppointmentFilterType
