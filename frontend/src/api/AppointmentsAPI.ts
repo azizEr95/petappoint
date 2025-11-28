@@ -5,7 +5,7 @@ import type { AppointmentFilterType, AppointmentsType } from '../../../shared/sc
 export const getAppointmentsById = async (
     id: string,
 ): Promise<AppointmentsType> => {
-    const res = await fetch(import.meta.env.VITE_API_URL + '/appointments/' + id)
+    const res = await fetch(import.meta.env.VITE_API_URL + '/appointments/' + id, {credentials: 'include'})
     if (!res.ok) {
         throw new Error('Failed to fetch getAppointmentsById')
     }
@@ -27,7 +27,7 @@ export const getAvailableAppointmentsByPracticeId = async (
     if (filterOptions.serviceTypeIds) {
         query += `${query.length > 0 ? '&' : ''}serviceTypeIds=${filterOptions.serviceTypeIds.join(',')}`
     }
-    const res = await fetch(url + query)
+    const res = await fetch(url + query, {credentials: 'include'})
     if (!res.ok) {
         throw new Error('Failed to fetch getAvailableAppointmentsByPracticeId')
     }
@@ -54,6 +54,7 @@ export const bookAppointment = async (appointmentID: number, animalID: number | 
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(requestBody),
+        credentials: 'include'  as RequestCredentials
     }
     const url = import.meta.env.VITE_API_URL + '/appointments/' + appointmentID
     const res = await fetch(url, requestOptions)
@@ -68,7 +69,7 @@ export const bookAppointment = async (appointmentID: number, animalID: number | 
 // get all appointments in the future from one user
 export const getFutureAppointmentsByUserId = async (userID: string) => {
     const url = import.meta.env.VITE_API_URL + '/appointments/future/' + userID;
-    const res = await fetch(url);
+    const res = await fetch(url, {credentials: 'include'});
     if (!res.ok) {
         throw new Error('Failed to fetch getFutureAppointmentsByUserId');
     }
@@ -80,7 +81,7 @@ export const getFutureAppointmentsByUserId = async (userID: string) => {
 // get all appointments in the past from one user
 export const getPastAppointmentsByUserId = async (userID: string) => {
     const url = import.meta.env.VITE_API_URL + '/appointments/past/' + userID;
-    const res = await fetch(url);
+    const res = await fetch(url, {credentials: 'include'});
     if (!res.ok) {
         throw new Error('Failed to fetch getPastAppointmentsByUserId');
     }
@@ -129,6 +130,7 @@ export const cancelAppointment = async (id: number): Promise<void> => {
     const url = import.meta.env.VITE_API_URL + '/appointments/' + id;
     const res = await fetch(url, {
         method: 'DELETE',
+        credentials: 'include'
     });
     if (!res.ok) {
         throw new Error('Failed to cancel appointment');
@@ -144,6 +146,7 @@ export const updateAppointmentNotiz = async (id: number, notiz: string | null): 
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({ notiz }),
+        credentials: 'include'
     });
     if (!res.ok) {
         throw new Error('Failed to update appointment notiz');

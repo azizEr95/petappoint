@@ -2,9 +2,10 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
 import type { ChangeEvent, FormEvent } from 'react'
 import '../styles/routes/login.scss'
-import { useAuthStore } from '../stores/authStore'
 import { useMutation } from '@tanstack/react-query'
-import { login } from '../api/LoginAPI'
+import { loginUser } from '../api/LoginAPI'
+import { useLoginContext } from '../LoginContext'
+import type { LoginType } from '../../../shared/schemas/ZodSchemas'
 
 export const Route = createFileRoute('/login')({
   component: Login,
@@ -15,16 +16,17 @@ function Login() {
   const [password, setPassword] = useState('')
   const [errorLogin, setErrorLogin] = useState('')
   const navigate = useNavigate()
-  const { setLogin } = useAuthStore()
+  const { setLogin } = useLoginContext();
 
   const { mutate: mutateLogin } = useMutation({
     mutationFn: () =>
-      login(email, password),
+      loginUser(email, password),
     onError: () => {
+      setLogin(false);
       setErrorLogin("Email oder Password falsch");
     },
-    onSuccess: () => {
-      setLogin(true);
+    onSuccess: (data: LoginType) => {
+      setLogin(data);
       navigate({ to: '/dashboard' });
     },
   })

@@ -1,7 +1,7 @@
 import { LoginSchema, type LoginType, type PersonsCreateType } from "../../../shared/schemas/ZodSchemas"
 
 
-export const login = async (email: string, password: string): Promise<LoginType> => {
+export const loginUser = async (email: string, password: string): Promise<LoginType> => {
     const loginInfos = {
         email: email,
         password: password
@@ -13,6 +13,7 @@ export const login = async (email: string, password: string): Promise<LoginType>
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(loginInfos),
+        credentials: 'include'  as RequestCredentials
     }
     const res = await fetch(
         import.meta.env.VITE_API_URL + '/login/', requestOptions
@@ -32,6 +33,7 @@ export const personRegistration = async (person: PersonsCreateType): Promise<str
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(person),
+        credentials: 'include'  as RequestCredentials
     }
     const res = await fetch(
         import.meta.env.VITE_API_URL + '/persons/', requestOptions // to be changed
