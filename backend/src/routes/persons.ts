@@ -2,6 +2,7 @@ import express from "express";
 import { personService } from "../service/personService";
 import { AnimalsType, PersonsCreateSchema, PersonsType } from "vetlib-shared/schemas/ZodSchemas";
 import { verifyPasswordAndCreateJWT } from "../service/jwtService";
+import { sendConfirmationEmail } from "../service/emailService";
 
 export const personsRouter = express.Router();
 
@@ -46,9 +47,11 @@ personsRouter.post("/",
                 return;
             }
 
-            await personService.create(personData.data);
+            const person = await personService.create(personData.data);
 
             const jwt = await verifyPasswordAndCreateJWT(personData.data.email, personData.data.password);
+            // confirmation email 
+            await sendConfirmationEmail(person, jwt);
             res.status(201).send(jwt);
         } catch (ex) {
             if(String(ex).includes("JSON Web Token ist ungültig")) {
