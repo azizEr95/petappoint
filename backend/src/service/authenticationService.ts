@@ -9,6 +9,10 @@ export async function login(email: string, password: string): Promise<PersonsAut
     const foundPerson = await prisma.persons.findFirst({
         where: {
             email: email
+        },
+        select: {
+            id: true,
+            password: true
         }
     });
 

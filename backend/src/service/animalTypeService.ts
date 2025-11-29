@@ -1,12 +1,13 @@
 import { prisma } from "../singletonPC";
 import { animaltypes } from "../../generated/prisma";
+import { AnimalTypeType } from "vetlib-shared/schemas/ZodSchemas";
 
 export const animalTypeService = {
-  async create(data: animaltypes): Promise<animaltypes> {
+  async create(data: animaltypes): Promise<AnimalTypeType> {
     return await prisma.animaltypes.create({ data: data });
   },
 
-  async getById(id: number): Promise<animaltypes> {
+  async getById(id: number): Promise<AnimalTypeType> {
     const foundAnimalType = await prisma.animaltypes.findUnique({ where: { id } });
 
     if (!foundAnimalType) throw new Error(`Animal Type not found with id: ${id}`);
@@ -14,7 +15,7 @@ export const animalTypeService = {
     return foundAnimalType;
   },
 
-  async getByName(name: string): Promise<animaltypes> {
+  async getByName(name: string): Promise<AnimalTypeType> {
     const foundAnimalType = await prisma.animals.findFirst({ where: { name } });
 
     if (!foundAnimalType) throw new Error(`Animal Type not found with name: ${name}`);
@@ -22,11 +23,11 @@ export const animalTypeService = {
     return foundAnimalType;
   },
 
-  async getAll(): Promise<animaltypes[]> {
+  async getAll(): Promise<AnimalTypeType[]> {
     return await prisma.animaltypes.findMany();
   },
 
-  async update(data: animaltypes): Promise<animaltypes> {
+  async update(data: AnimalTypeType): Promise<AnimalTypeType> {
     if (!data.id) throw new Error("ID is required for update");
 
     return await prisma.animaltypes.update({ where: { id: data.id }, data: data.name });

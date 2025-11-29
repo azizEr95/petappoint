@@ -5,7 +5,7 @@ import { RoleEnum } from "vetlib-shared/schemas/ZodSchemas";
 declare global {
     namespace Express {
         export interface Request {
-            userId?: string;
+            userId?: number;
             role?: RoleEnum;
         }
     }
@@ -26,7 +26,7 @@ export function optionalAuthentication(req: Request, res: Response, next: NextFu
     if (jwtString) {
         try {
             const loginRes = verifyJWT(jwtString);
-            req.userId = loginRes.id;
+            req.userId = parseInt(loginRes.id);
             req.role = loginRes.role;
         } catch (err) {
             res.sendStatus(401);

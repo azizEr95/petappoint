@@ -1,7 +1,8 @@
 import { prisma } from "../singletonPC";
-import { AnimalsType, PersonsCreateType, PersonsType, PersonsUpdateSchema, PersonsUpdateType } from "vetlib-shared/schemas/ZodSchemas";
+import { AnimalsType, PersonsCreateType, PersonsType, PersonsUpdateSchema, PersonsUpdateType, PostgresIdSchema } from "vetlib-shared/schemas/ZodSchemas";
 import { addressService } from "./addressService";
 import z from 'zod';
+import { ResourceNotFoundError } from "../exceptions/errors/ResourceNotFoundError";
 
 export const personService = {
   async create(dataRe: PersonsCreateType): Promise<PersonsType> {
@@ -52,7 +53,9 @@ export const personService = {
       where: { id }
     });
 
-    if (!foundPerson) throw new Error(`Person not found with id: ${id}`);
+    if (!foundPerson) {
+      throw new ResourceNotFoundError(`Person not found with id: ${id}`, 'id', id);
+    }
 
     return {
       id: foundPerson.id,
@@ -74,7 +77,9 @@ export const personService = {
       where: { email }
     });
 
-    if (!foundPerson) throw new Error(`Person not found with the email ${email}`);
+    if (!foundPerson) {
+      throw new ResourceNotFoundError(`Person not found with the email ${email}`, 'email', email);
+    }
 
     return {
       id: foundPerson.id,
@@ -108,8 +113,6 @@ export const personService = {
   },
 
   async update(dataRe: PersonsUpdateType): Promise<PersonsType> {
-    if (!dataRe.id) throw new Error("ID is required for update");
-
     await addressService.update(dataRe.addresses);
 
     const updatedPerson = await prisma.persons.update({
@@ -141,11 +144,9 @@ export const personService = {
   },
 
   async favorizeVeterinaryPracticesByIds(personId: number, practiceIds: number[]): Promise<void> {
-    if (!Number.isInteger(personId)) {
-      throw new Error("personId needs to be an integer.");
-    }
-
-    practiceIds = practiceIds.filter(x => Number.isInteger(x));
+    practiceIds = practiceIds.map(x => PostgresIdSchema.safeParse(x))
+      .filter(x => x.success)
+      .map(x => x.data);
     if (practiceIds.length === 0) {
       return;
     }
@@ -159,13 +160,6 @@ export const personService = {
   },
 
   async deleteFavorizedVeterinaryPracticeId(personId: number, practiceId: number): Promise<void> {
-    if (!Number.isInteger(personId)) {
-      throw new Error("personId needs to be an integer.");
-    }
-
-    if (!Number.isInteger(practiceId)) {
-      throw new Error("practiceId needs to be an integer.");
-    }
 
     const result = await prisma.person_has_favorized_veterinarypractice.delete({
       where: {
@@ -178,10 +172,6 @@ export const personService = {
   },
 
   async getFavorizedVeterinaryPracticeIds(personId: number): Promise<number[]> {
-    if (!Number.isInteger(personId)) {
-      throw new Error("personId needs to be an integer.");
-    }
-
     const result = await prisma.person_has_favorized_veterinarypractice.findMany({
       where: {
         fk_personid: personId
@@ -191,10 +181,6 @@ export const personService = {
   },
 
   async getAnimalsForPersonId(personId: number): Promise<AnimalsType[]> {
-    if (!Number.isInteger(personId)) {
-      throw new Error("personId needs to be an integer.");
-    }
-
     const animals = await prisma.person_has_animal.findMany({
       where: {
         fk_personid: personId

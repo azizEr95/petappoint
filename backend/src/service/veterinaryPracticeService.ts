@@ -1,6 +1,8 @@
 import { prisma } from "../singletonPC";
 import { AnimalTypeType, ServiceType, VeterinaryPracticesCreateType, VeterinaryPracticeSearchQueryType, VeterinaryPracticesType, VeterinaryPracticeSearchResultType } from "vetlib-shared/schemas/ZodSchemas";
 import { addressService } from "./addressService";
+import { ResourceNotFoundError } from "../exceptions/errors/ResourceNotFoundError";
+import { ConstraintError } from "../exceptions/errors/ContraintError";
 
 export const veterinaryPracticeService = {
   async create(veterinaryPracticeRe: VeterinaryPracticesCreateType): Promise<VeterinaryPracticesType> {
@@ -21,7 +23,7 @@ export const veterinaryPracticeService = {
     });
   },
 
-  async getById(id: string): Promise<VeterinaryPracticesType> {
+  async getById(id: number): Promise<VeterinaryPracticesType> {
     const foundPractice = await prisma.veterinarypractices.findUnique({
       include: {
         addresses: true,
@@ -30,12 +32,12 @@ export const veterinaryPracticeService = {
         fk_addressid: true
       },
       where: {
-        id: parseInt(id)
+        id: id
       }
     });
 
     if (!foundPractice) {
-      throw new Error(`Veterinary Practice not found with id: ${id}`);
+      throw new ResourceNotFoundError('Veterinary Practice not found with id:', 'id', id);
     }
 
     return foundPractice;
@@ -152,7 +154,9 @@ export const veterinaryPracticeService = {
   },
 
   async update(data: VeterinaryPracticesType): Promise<VeterinaryPracticesType> {
-    if (!data.id) throw new Error("ID is required for update");
+    if (!data.id) {
+      throw new ConstraintError("ID is required for update", [{ path: 'veterinarypractice.id', value: data.id }]);
+    }
 
     await addressService.update(data.addresses);
 

@@ -1,10 +1,27 @@
 import express from "express";
 import { appointmentService } from "../service/appointmentService";
-import { AppointmentsType, BookAppointmentSchema } from "vetlib-shared/schemas/ZodSchemas";
+import { AppointmentsType, BookAppointmentSchema, PostgresIdSchema } from "vetlib-shared/schemas/ZodSchemas";
 import { optionalAuthentication, requiresAuthentication } from "./authentication";
+import { AuthorizationError } from "../exceptions/errors/AuthorizationError";
+import { animalService } from "../service/animalService";
+import { ConstraintError } from "../exceptions/errors/ContraintError";
+import z from 'zod';
 
 export const appointmentRouter = express.Router();
 
+async function ensureUserCanAccessAppointment(personId: number, appointmentId: number) {
+    const hasAccess = await appointmentService.canPersonAccessAppointment(personId, appointmentId);
+    if (!hasAccess) {
+        throw new AuthorizationError("No read access");
+    }
+}
+
+async function ensureUserCanEditAppointment(personId: number, appointmentId: number) {
+    const hasAccess = await appointmentService.canPersonAccessAppointment(personId, appointmentId);
+    if (!hasAccess) {
+        throw new AuthorizationError("No write access");
+    }
+}
 
 appointmentRouter.get("/all",
     requiresAuthentication,
@@ -14,117 +31,96 @@ appointmentRouter.get("/all",
     }
 )
 
-
 appointmentRouter.get("/past/:personId",
     requiresAuthentication,
     async (req, res,) => {
-        try {
-            const personId = parseInt(req.params.personId);
-            if (!personId) {
-                res.sendStatus(400);
-                return;
-            }
-            const pastAppointments: AppointmentsType[] = await appointmentService.getPastAppointmentsForPerson(personId);
-            res.send(pastAppointments);
-        } catch (e) {
-            res.sendStatus(404);
-            return;
+        const personId = PostgresIdSchema.parse(parseInt(req.params.personId));
+
+        if (personId !== req.userId!) {
+            throw new AuthorizationError(`User(${req.userId!}) is not allowed to access ${personId}`);
         }
+
+        const pastAppointments: AppointmentsType[] = await appointmentService.getPastAppointmentsForPerson(personId);
+        res.send(pastAppointments);
     }
 );
 
 appointmentRouter.get("/future/:personId",
     requiresAuthentication,
     async (req, res,) => {
-        try {
-            const personId = parseInt(req.params.personId);
-            if (!personId) {
-                res.sendStatus(400);
-                return;
-            }
-            const futureAppointments: AppointmentsType[] = await appointmentService.getFutureAppointmentsForPerson(personId);
-            res.send(futureAppointments);
-        } catch (e) {
-            res.sendStatus(404);
-            return;
+        const personId = PostgresIdSchema.parse(parseInt(req.params.personId));
+
+        if (personId !== req.userId!) {
+            throw new AuthorizationError(`User(${req.userId!}) is not allowed to access ${personId}`);
         }
+
+        const futureAppointments: AppointmentsType[] = await appointmentService.getFutureAppointmentsForPerson(personId);
+        res.send(futureAppointments);
     }
 );
 
 appointmentRouter.get("/:id",
     optionalAuthentication,
     async (req, res) => {
-        try {
-            const id = parseInt(req.params.id);
-            const appointment: AppointmentsType = await appointmentService.getById(id);
-            res.send(appointment);
-        } catch (ex) {
-            res.sendStatus(404);
+        const id = PostgresIdSchema.parse(parseInt(req.params.id));
+
+        const appointment: AppointmentsType = await appointmentService.getById(id);
+        if (appointment.animal) {
+            if (!req.userId) {
+                throw new AuthorizationError("Guest is trying to access an active appointment.");
+            }
+
+            if (!animalService.canPersonAccessAnimal(req.userId, appointment.animal.id)) {
+                throw new AuthorizationError("User is trying to access an appointment for an unowned animal.");
+            }
         }
+
+        res.send(appointment);
     }
 )
 
 appointmentRouter.put("/:id",
     requiresAuthentication,
     async (req, res, next) => {
-        try {
-            const appointmentData = BookAppointmentSchema.safeParse(req.body);
-            if(!appointmentData.success) {
-                res.status(400).send(appointmentData.error);
-                return;
-            }
-            const bookingDetails = appointmentData.data;
-            const bookedAppointment = await appointmentService.updateAppointmentAsPerson(bookingDetails.id, bookingDetails.animalid, bookingDetails.serviceid);
-            res.status(201).send(bookedAppointment);
-            return;
-        } catch (e) {
-            if (String(e).includes("ID and AnimalID is required for update")) {
-                res.status(400).send(e);
-                return;
-            }
-            if (String(e).includes("Termin is already taken")) {
-                res.status(400).send(e)
-                return;
-            }
-            res.status(500);
-            next(e)
+        const appointmentId = parseInt(req.params.id);
+        const validatedData = BookAppointmentSchema.parse(req.body);
+
+        if (appointmentId !== validatedData.id) {
+            throw new ConstraintError("Mismatch between param and body", [
+                { path: 'params', value: appointmentId },
+                { path: 'body', value: validatedData.id }
+            ]);
         }
+
+        ensureUserCanEditAppointment(req.userId!, validatedData.id);
+
+        const bookedAppointment = await appointmentService.updateAppointmentAsPerson(validatedData.id, validatedData.animalid, validatedData.serviceid);
+        res.status(201).send(bookedAppointment);
     }
 );
 
 appointmentRouter.delete("/:id",
     requiresAuthentication,
     async (req, res) => {
-        try {
-            const id = parseInt(req.params.id);
-            if (!id) {
-                res.sendStatus(400);
-                return;
-            }
-            await appointmentService.cancelAppointmentAsPerson(id);
-            res.sendStatus(204);
-        } catch (e) {
-            res.sendStatus(404);
-        }
+        const appointmentId = PostgresIdSchema.parse(parseInt(req.params.id));
+
+        ensureUserCanEditAppointment(req.userId!, appointmentId);
+
+        await appointmentService.cancelAppointmentAsPerson(appointmentId);
+        res.sendStatus(204);
     }
 );
 
 appointmentRouter.patch("/:id/notiz",
     requiresAuthentication,
     async (req, res) => {
-        try {
-            const id = parseInt(req.params.id);
-            const { notiz } = req.body;
+        const appointmentId = PostgresIdSchema.parse(parseInt(req.params.id));
+        const notiz = z.string().min(1).max(1000).optional().parse(req.body);
 
-            if (!id) {
-                res.sendStatus(400);
-                return;
-            }
+        ensureUserCanEditAppointment(req.userId!, appointmentId);
 
-            const updated = await appointmentService.updateNotiz(id, notiz || null);
-            res.status(200).send(updated);
-        } catch (e) {
-            res.sendStatus(404);
-        }
+        const updated = await appointmentService.updateNotiz(appointmentId, notiz || null);
+
+        res.status(200).send(updated);
     }
 );
