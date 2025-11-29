@@ -8,13 +8,16 @@ import { animalsRouter } from './routes/animals';
 import { animaltypeRouter } from './routes/animaltypes';
 import { serviceRouter } from './routes/services';
 import { loginRouter } from './routes/login';
+import { routerExceptionHandler } from './exceptions/routerExceptionMiddleware';
 
 export const app = express();
 
 configureCORS(app);
-app.use(cookieParser());
 
+app.use(cookieParser());
 app.use(express.json());
+
+app.use(routerExceptionHandler);
 app.use("/api/login", loginRouter);
 app.use("/api/veterinary-practice", veterinaryPracticeRouter);
 app.use("/api/appointments", appointmentRouter);

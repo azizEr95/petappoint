@@ -143,7 +143,7 @@ model animal_has_vaccination {
 
 model animalgroup {
   id      Int       @id @default(autoincrement())
-  name    String?   @db.VarChar(100)
+  name    String    @db.VarChar(100)
   animals animals[]
 }
 

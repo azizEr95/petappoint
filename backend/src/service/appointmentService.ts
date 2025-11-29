@@ -2,6 +2,8 @@ import { prisma } from "../singletonPC";
 import { appointments } from "../../generated/prisma";
 import { AppointmentFilterType, AppointmentsCreateType, AppointmentsType, ServiceType } from "vetlib-shared/schemas/ZodSchemas";
 import { animalService } from "./animalService";
+import { ResourceNotFoundError } from "../exceptions/errors/ResourceNotFoundError";
+import { ConstraintError } from "../exceptions/errors/ContraintError";
 
 export const appointmentService = {
   async create(data: AppointmentsCreateType): Promise<AppointmentsType> {
@@ -444,7 +446,16 @@ export const appointmentService = {
             services: true
           }
         },
-        veterinaries: true,
+        veterinaries: {
+          include: {
+            veterinary_can_treat_animaltype: true,
+            veterinary_has_service: {
+              include: {
+                services: true
+              }
+            }
+          }
+        },
         veterinarypractices: {
           include: {
             addresses: true
@@ -459,7 +470,7 @@ export const appointmentService = {
         fk_animalid: null,
         fk_serviceid: null,
         // FILTER
-        ... (filter && filter.animalTypeIds && {
+        ... (filter && filter.animalTypeIds && filter.animalTypeIds.length > 0 && {
           veterinarypractices: {
             veterinaries: {
               some: {
@@ -472,36 +483,24 @@ export const appointmentService = {
             }
           }
         }),
-        ... (filter && filter.serviceTypeIds && {
+        ... (filter && filter.serviceTypeIds && filter.serviceTypeIds.length > 0 && {
           OR: [
             {
-              services: {
-                id: {
-                  in: filter.serviceTypeIds
+              appointment_has_service: {
+                some: {
+                  fk_serviceid: { in: filter.serviceTypeIds }
                 }
               }
             },
             {
-              AND: [
-                {
-                  services: {
-                    appointment_has_service: {
-                      none: {}
-                    }
-                  },
-                },
-                {
-                  veterinaries: {
-                    veterinary_has_service: {
-                      some: {
-                        services: {
-                          id: { in: filter.serviceTypeIds }
-                        }
-                      }
-                    }
+              appointment_has_service: { none: {} },
+              veterinaries: {
+                veterinary_has_service: {
+                  some: {
+                    fk_serviceid: { in: filter.serviceTypeIds }
                   }
                 }
-              ]
+              }
             }
           ]
         }),
@@ -509,46 +508,52 @@ export const appointmentService = {
       },
     });
 
-    return found.map(foundAppointment => ({
-      id: foundAppointment.id,
-      starttime: foundAppointment.starttime,
-      endtime: foundAppointment.endtime,
-      animal: foundAppointment.animals ? {
-        id: foundAppointment.animals.id,
-        name: foundAppointment.animals.name,
-        dateofbirth: foundAppointment.animals.dateofbirth,
-        dateofbirthisexact: foundAppointment.animals.dateofbirthisexact,
-        heightincm: foundAppointment.animals.heightincm,
-        weightingram: foundAppointment.animals.weightingram,
-        iscastrated: foundAppointment.animals.iscastrated,
-        lifestyleisindoors: foundAppointment.animals.lifestyleisindoors,
-        sex: foundAppointment.animals.sex,
-        timeofdeath: foundAppointment.animals.timeofdeath,
-        animalgroupid: foundAppointment.animals.fk_animalgroupid,
-        animaltypeid: foundAppointment.animals.fk_animaltypeid
-      } : null,
-      veterinarypractice: {
-        id: foundAppointment.veterinarypractices.id,
-        addresses: foundAppointment.veterinarypractices.addresses,
-        email: foundAppointment.veterinarypractices.email,
-        info: foundAppointment.veterinarypractices.info,
-        infoemail: foundAppointment.veterinarypractices.infoemail,
-        name: foundAppointment.veterinarypractices.name,
-        phone: foundAppointment.veterinarypractices.phone,
-        website: foundAppointment.veterinarypractices.website
-      },
-      veterinary: {
-        id: foundAppointment.veterinaries.id,
-        infoemail: foundAppointment.veterinaries.infoemail,
-        veterinarypractice: foundAppointment.veterinarypractices.id
-      },
-      service: foundAppointment.services ? {
-        id: foundAppointment.services.id,
-        name: foundAppointment.services.name
-      } : null,
-      availableservices: foundAppointment.services ? foundAppointment.appointment_has_service.flatMap(x => x.services) : [],
-      notiz: foundAppointment.notiz
-    }));
+    return found.map(foundAppointment => {
+      let availableServices: ServiceType[] = (foundAppointment.appointment_has_service.length > 0) ? foundAppointment.appointment_has_service.map(x => x.services) : foundAppointment.veterinaries.veterinary_has_service.map(x => x.services);
+      if (filter && filter.serviceTypeIds && filter.serviceTypeIds.length > 0) {
+        availableServices = availableServices.filter(x => filter.serviceTypeIds?.includes(x.id));
+      }
+      return {
+        id: foundAppointment.id,
+        starttime: foundAppointment.starttime,
+        endtime: foundAppointment.endtime,
+        animal: foundAppointment.animals ? {
+          id: foundAppointment.animals.id,
+          name: foundAppointment.animals.name,
+          dateofbirth: foundAppointment.animals.dateofbirth,
+          dateofbirthisexact: foundAppointment.animals.dateofbirthisexact,
+          heightincm: foundAppointment.animals.heightincm,
+          weightingram: foundAppointment.animals.weightingram,
+          iscastrated: foundAppointment.animals.iscastrated,
+          lifestyleisindoors: foundAppointment.animals.lifestyleisindoors,
+          sex: foundAppointment.animals.sex,
+          timeofdeath: foundAppointment.animals.timeofdeath,
+          animalgroupid: foundAppointment.animals.fk_animalgroupid,
+          animaltypeid: foundAppointment.animals.fk_animaltypeid
+        } : null,
+        veterinarypractice: {
+          id: foundAppointment.veterinarypractices.id,
+          addresses: foundAppointment.veterinarypractices.addresses,
+          email: foundAppointment.veterinarypractices.email,
+          info: foundAppointment.veterinarypractices.info,
+          infoemail: foundAppointment.veterinarypractices.infoemail,
+          name: foundAppointment.veterinarypractices.name,
+          phone: foundAppointment.veterinarypractices.phone,
+          website: foundAppointment.veterinarypractices.website
+        },
+        veterinary: {
+          id: foundAppointment.veterinaries.id,
+          infoemail: foundAppointment.veterinaries.infoemail,
+          veterinarypractice: foundAppointment.veterinarypractices.id
+        },
+        service: foundAppointment.services ? {
+          id: foundAppointment.services.id,
+          name: foundAppointment.services.name
+        } : null,
+        availableservices: availableServices,
+        notiz: foundAppointment.notiz
+      }
+    });
   },
 
   async getPastAppointmentsForPerson(personId: number, filter?: AppointmentFilterType): Promise<AppointmentsType[]> {
@@ -882,17 +887,22 @@ export const appointmentService = {
   },
 
   async updateAppointmentAsPerson(id: number, fk_animalid: number, fk_serviceid: number): Promise<AppointmentsType> {
-    // check if dto is complete
-    if (!id || !fk_animalid) throw new Error("ID and AnimalID is required for update");
-
     // check if appointment is available
     const appointment = await prisma.appointments.findUnique({
       where: {
         id: id
       }
-    })
+    });
+    if (!appointment) {
+      throw new ResourceNotFoundError(`Appointment with id(${id}) does not exist`, 'id', id);
+    }
 
-    if (appointment?.fk_animalid) throw new Error("Termin is already taken");
+    if (appointment.fk_animalid) {
+      throw new ConstraintError("Appointment is already taken.", [{
+        path: 'id',
+        value: id
+      }]);
+    }
 
     const updated = await prisma.appointments.update({
       include: {
@@ -1102,4 +1112,46 @@ export const appointmentService = {
       notiz: updated.notiz
     };
   },
+
+  async canPersonAccessAppointment(personId: number, appointmentId: number): Promise<boolean> {
+    const appointment = await prisma.appointments.findUnique({
+      where: {
+        id: appointmentId
+      },
+      select: {
+        fk_animalid: true
+      }
+    });
+
+    if (!appointment) {
+      return false;
+    }
+
+    if (!appointment.fk_animalid) {
+      return true;
+    }
+
+    return animalService.canPersonAccessAnimal(personId, appointment.fk_animalid);
+  },
+
+  async canPersonEditAppointment(personId: number, appointmentId: number): Promise<boolean> {
+    const appointment = await prisma.appointments.findUnique({
+      where: {
+        id: appointmentId
+      },
+      select: {
+        fk_animalid: true
+      }
+    });
+
+    if (!appointment) {
+      return false;
+    }
+
+    if (!appointment.fk_animalid) {
+      return false;
+    }
+
+    return animalService.canPersonAccessAnimal(personId, appointment.fk_animalid);
+  }
 };

@@ -1,5 +1,6 @@
 import { prisma } from "../singletonPC";
 import { appointment_has_review } from "../../generated/prisma";
+import { ResourceNotFoundError } from "../exceptions/errors/ResourceNotFoundError";
 
 export const appointmentHasReviewService = {
   async create(data: appointment_has_review): Promise<appointment_has_review> {
@@ -21,8 +22,8 @@ export const appointmentHasReviewService = {
     });
 
     if (!found)
-      throw new Error(
-        `Appointment with appointmentId ${fk_appointmentid} and reviewId ${fk_reviewid} does not have a review`
+      throw new ResourceNotFoundError(
+        `Appointment with appointmentId ${fk_appointmentid} and reviewId ${fk_reviewid} does not have a review`, 'ids', [fk_appointmentid, fk_reviewid]
       );
 
     return found;

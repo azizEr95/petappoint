@@ -1,9 +1,10 @@
 import { prisma } from "../singletonPC";
 import { animal_has_races, animalraces } from "../../generated/prisma";
-import { AnimalracesType } from "vetlib-shared/schemas/ZodSchemas";
+import { AnimalracesCreateType, AnimalracesType } from "vetlib-shared/schemas/ZodSchemas";
+import { ResourceNotFoundError } from "../exceptions/errors/ResourceNotFoundError";
 
 export const animalRaceService = {
-  async create(data: animalraces): Promise<AnimalracesType> {
+  async create(data: AnimalracesCreateType): Promise<AnimalracesType> {
     let created = await prisma.animalraces.create({
       data: {
         name: data.name,
@@ -12,7 +13,7 @@ export const animalRaceService = {
         // Kann er sich ein spaß erlauben und sagen mein race hat den type ugga-buuga
         // wäre doch besser, wenn er nur welche auswählen kann die wir vorgeben
         // https://www.prisma.io/docs/orm/prisma-client/queries/relation-queries#nested-writes
-        animaltypes: { connect: { id: data.fk_animaltypeid } },
+        animaltypes: { connect: { id: data.animaltypeid } },
       },
     });
 
@@ -26,7 +27,9 @@ export const animalRaceService = {
   async getById(id: number): Promise<AnimalracesType> {
     const foundAnimalRace = await prisma.animalraces.findUnique({ where: { id } });
 
-    if (!foundAnimalRace) throw new Error(`Animal Kind not found with id: ${id}`);
+    if (!foundAnimalRace) {
+      throw new ResourceNotFoundError(`Animal Kind not found with id: ${id}`, 'id', id);
+    }
 
     return ({
       id: foundAnimalRace.id,
@@ -38,7 +41,9 @@ export const animalRaceService = {
   async getByName(name: string): Promise<AnimalracesType> {
     const foundAnimalRace = await prisma.animalraces.findFirst({ where: { name } });
 
-    if (!foundAnimalRace) throw new Error(`Animal Race not found with name: ${name}`);
+    if (!foundAnimalRace) {
+      throw new ResourceNotFoundError(`Animal Race not found with name: ${name}`, 'name', name);
+    }
 
     return ({
       id: foundAnimalRace.id,
@@ -56,10 +61,6 @@ export const animalRaceService = {
   },
 
   async getAllForAnimalType(animalTypeId: number): Promise<AnimalracesType[]> {
-    if (!Number.isInteger(animalTypeId)) {
-      throw new Error("animalTypeId needs to be an integer.");
-    }
-
     return (await prisma.animalraces.findMany({
       where: {
         fk_animaltypeid: animalTypeId
@@ -72,9 +73,6 @@ export const animalRaceService = {
   },
 
   async getAnimalRaces(animalId: number): Promise<AnimalracesType[]> {
-    if (!Number.isInteger(animalId)) {
-      throw new Error("animalId needs to be an integer.");
-    }
 
     return (await prisma.animal_has_races.findMany({
       where: {
@@ -91,8 +89,6 @@ export const animalRaceService = {
   },
 
   async update(data: AnimalracesType): Promise<AnimalracesType> {
-    if (!data.id) throw new Error("ID is required for update");
-
     const updated = await prisma.animalraces.update({ where: { id: data.id }, data: data });
     return ({
       id: updated.id,

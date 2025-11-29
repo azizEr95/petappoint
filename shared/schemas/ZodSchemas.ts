@@ -1,5 +1,8 @@
 import { z } from "zod";
 
+export const PostgresIdSchema = z.number().int();
+export type PostgresIdType = z.infer<typeof PostgresIdSchema>;
+
 const ArrayOfIDs = z.union([
     z.string(),
     z.array(z.string())
@@ -21,8 +24,8 @@ const DateTimeSchema = z.iso.datetime().transform((str) => new Date(str));
 
 //Animalgroup:
 export const AnimalGroupSchema = z.object({
-    id: z.number().int(),
-    name: z.string().optional(),
+    id: PostgresIdSchema,
+    name: z.string(),
 });
 
 export const AnimalGroupCreateSchema = AnimalGroupSchema.omit({ //alles ohne id (das was beim Erstellen von Objekt vorhanden sein muss)
@@ -35,7 +38,7 @@ export type AnimalGroupType = z.infer<typeof AnimalGroupSchema>;
 
 //Animaltype:
 export const AnimalTypeSchema = z.object({
-    id: z.number().int(),
+    id: PostgresIdSchema,
     name: z.string(),
 });
 
@@ -52,7 +55,7 @@ const sexes = z.enum(['notknown', 'male', 'female', 'notapplicable']);
 export type sexesType = z.infer<typeof sexes>;
 
 export const AnimalsSchema = z.object({
-    id: z.number().int(),
+    id: PostgresIdSchema,
     name: z.string().min(1).max(100),
     dateofbirth: DateTimeSchema.nullable(),
     dateofbirthisexact: z.boolean().nullable(),
@@ -77,9 +80,9 @@ export type AnimalsType = z.infer<typeof AnimalsSchema>;
 
 //Animalraces:
 export const AnimalracesSchema = z.object({
-    id: z.number().int(),
+    id: PostgresIdSchema,
     name: z.string(),
-    animaltypeid: z.number().int(),
+    animaltypeid: PostgresIdSchema,
 });
 
 export const AnimalracesCreateSchema = AnimalracesSchema;
@@ -90,7 +93,7 @@ export type AnimalracesType = z.infer<typeof AnimalracesSchema>;
 
 //Animal has Races:
 export const Animal_has_RacesSchema = z.object({
-    animalid: z.number().int(),
+    animalid: PostgresIdSchema,
     animalrace: z.array(AnimalracesSchema),
 });
 
@@ -99,14 +102,14 @@ export type Animal_has_RacesCreateType = z.infer<typeof Animal_has_RacesCreateSc
 export type Animal_has_RacesType = z.infer<typeof Animal_has_RacesSchema>;
 
 export const AddRacesToAnimalSchema = z.object({
-    animalid: z.number().int(),
+    animalid: PostgresIdSchema,
     animalraceids: z.array(z.number()).min(1)
 });
 export type AddRacesToAnimalType = z.infer<typeof AddRacesToAnimalSchema>;
 
 //Adressen: 
 export const AddressesSchema = z.object({
-    id: z.number().int(),
+    id: PostgresIdSchema,
     street: z.string().min(3).max(80),
     citycode: z.string().min(3).max(12),
     city: z.string().min(3).max(60),
@@ -125,7 +128,7 @@ export type AddressesType = z.infer<typeof AddressesSchema>;
 
 //Persons:
 export const PersonsSchema = z.object({
-    id: z.number().int(),
+    id: PostgresIdSchema,
     firstname: z.string().min(2).max(60),
     lastname: z.string().min(2).max(60),
     sex: sexes,
@@ -156,7 +159,7 @@ export const RoleSchema = z.enum(['person']);
 export type RoleEnum = z.infer<typeof RoleSchema>;
 export const PersonsAuthenticatedSchema = z.object({
     role: RoleSchema,
-    id: z.number().int(),
+    id: PostgresIdSchema,
 });
 
 export type PersonsAuthenticatedType = z.infer<typeof PersonsAuthenticatedSchema>;
@@ -179,7 +182,7 @@ export type LoginType = z.infer<typeof LoginSchema>;
 
 //Person has Animal:
 export const Person_has_AnimalSchema = z.object({
-    personid: z.number().int(),
+    personid: PostgresIdSchema,
     animals: z.array(AnimalsSchema),
 });
 
@@ -189,7 +192,7 @@ export type Person_has_AnimalCreateType = z.infer<typeof Person_has_AnimalCreate
 export type Person_has_AnimalType = z.infer<typeof Person_has_AnimalSchema>;
 
 export const ServiceSchema = z.object({
-    id: z.number().int(),
+    id: PostgresIdSchema,
     name: z.string().min(1).max(100)
 });
 
@@ -198,7 +201,7 @@ export type ServiceType = z.infer<typeof ServiceSchema>;
 
 //VeterinaryPractice:
 export const VeterinaryPracticeSchema = z.object({
-    id: z.number().int(),
+    id: PostgresIdSchema,
     name: z.string().min(5).max(200),
     email: z.email().max(100),
     phone: z.string().min(5).max(20),
@@ -220,9 +223,9 @@ export type VeterinaryPracticesType = z.infer<typeof VeterinaryPracticeSchema>;
 
 //Veterinarians:
 export const VeterinariansSchema = z.object({
-    id: z.number().int(), //ist identisch zur Personen ID
+    id: PostgresIdSchema, //ist identisch zur Personen ID
     infoemail: z.email().nullable(),
-    veterinarypractice: z.number().int().nullable(),
+    veterinarypractice: PostgresIdSchema.nullable(),
 });
 
 export const VeterinariansCreateSchema = VeterinariansSchema //id muss uebergeben werden, da Referenz zur Person wichtig ist
@@ -233,7 +236,7 @@ export type VeterinariansType = z.infer<typeof VeterinariansSchema>;
 
 //Appointments:
 export const AppointmentsSchema = z.object({
-    id: z.number().int(),
+    id: PostgresIdSchema,
     starttime: DateTimeSchema,
     endtime: DateTimeSchema,
     animal: AnimalsSchema.nullable(),
@@ -247,16 +250,16 @@ export const AppointmentsSchema = z.object({
 export const AppointmentsCreateSchema = z.object({
     starttime: DateTimeSchema,
     endtime: DateTimeSchema,
-    animalid: z.number().int().nullable(),
-    veterinaryid: z.number().int(),
-    veterinarypracticeid: z.number().int(),
-    serviceid: z.number().int().nullable(),
+    animalid: PostgresIdSchema.nullable(),
+    veterinaryid: PostgresIdSchema,
+    veterinarypracticeid: PostgresIdSchema,
+    serviceid: PostgresIdSchema.nullable(),
 })
 
 export const BookAppointmentSchema = z.object({
-    id: z.number().int(),
-    animalid: z.number().int(),
-    serviceid: z.number().int()
+    id: PostgresIdSchema,
+    animalid: PostgresIdSchema,
+    serviceid: PostgresIdSchema
 })
 
 export type AppointmentsUpdateAsPersonType = z.infer<typeof BookAppointmentSchema>;

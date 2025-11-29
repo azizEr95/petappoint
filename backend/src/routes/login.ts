@@ -9,43 +9,34 @@ export const loginRouter = express.Router();
 
 loginRouter.post("/",
     optionalAuthentication,
-    async (req, res, next) => {
-        const loginData = loginValidator.safeParse(req.body)
-        if (!loginData.success) {
-            res.status(400).send(loginData.error);
-            return;
+    async (req, res) => {
+        const validatedBody = loginValidator.parse(req.body);
+        const jwtString = await verifyPasswordAndCreateJWT(validatedBody.email, validatedBody.password);
+        if (!jwtString) {
+            return res.sendStatus(401);
         }
-        try {
-            const jwtString = await verifyPasswordAndCreateJWT(loginData.data.email, loginData.data.password);
-            const logRes = verifyJWT(jwtString);
-            res.cookie("access_token", jwtString!, {
-                httpOnly: true,
-                // läuft zu dem Datum und zu der Zeit ab
-                // Beim Cookie werden numerische Werte als Millisekunden interpretiert,
-                // beim jsonwebtoken werden numerische Werte als Sekunden interpretiert,
-                // deshalb * 1000, um von Milli zu Sekunden umzuwandeln
-                expires: new Date(logRes.exp * 1000),
-                secure: true, // cookie kann nur über eine sichere Verbindung verschickt werden -> https
-                /**
-                * None- Cookies werden in allen Kontexten gesendet, 
-                * d.h. das Senden von Cross-Origin ist zulässig. 
-                * Der Browser sendet das Cookie mit 
-                * standortübergreifenden Anforderungen.
-                */
-                sameSite: "none"
-            });
-            res.status(201).send(logRes);
-            return;
-        } catch (err) {
-            if (err instanceof JsonWebTokenError) {
-                res.sendStatus(401);
-                return;
-            }
-            next(err);
-            return;
-        }
-    })
 
+        const logRes = verifyJWT(jwtString);
+        res.cookie("access_token", jwtString, {
+            httpOnly: true,
+            // läuft zu dem Datum und zu der Zeit ab
+            // Beim Cookie werden numerische Werte als Millisekunden interpretiert,
+            // beim jsonwebtoken werden numerische Werte als Sekunden interpretiert,
+            // deshalb * 1000, um von Milli zu Sekunden umzuwandeln
+            expires: new Date(logRes.exp * 1000),
+            secure: true, // cookie kann nur über eine sichere Verbindung verschickt werden -> https
+            /**
+            * None- Cookies werden in allen Kontexten gesendet, 
+            * d.h. das Senden von Cross-Origin ist zulässig. 
+            * Der Browser sendet das Cookie mit 
+            * standortübergreifenden Anforderungen.
+            */
+            sameSite: "none"
+        });
+        res.status(201).send(logRes);
+        return;
+    }
+);
 
 loginRouter.get("/",
     optionalAuthentication,
@@ -65,6 +56,6 @@ loginRouter.get("/",
 loginRouter.delete("/",
     optionalAuthentication,
     async (_req, res) => {
-    res.clearCookie("access_token");
-    res.sendStatus(204);
-})
+        res.clearCookie("access_token");
+        res.sendStatus(204);
+    })
