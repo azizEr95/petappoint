@@ -106,6 +106,7 @@ export const deleteFavoritesVeterinaryPractices = async (
     headers: {
         'Content-Type': 'application/json',
     },
+    credentials: 'include' as RequestCredentials
 }
 
   const res = await fetch(

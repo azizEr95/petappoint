@@ -1,19 +1,25 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
-import type { PersonsType, AnimalsType } from '../../../shared/schemas/ZodSchemas'
 import { DashboardProfileCard } from '../components/dashboard/DashboardProfileCard'
 import { QuickActions } from '../components/dashboard/QuickActions'
 import { DashboardPetsSection } from '../components/dashboard/DashboardPetsSection'
 import { DashboardAppointmentsSection } from '../components/dashboard/DashboardAppointmentsSection'
 import { AnimalEditNewDialog } from '../components/animal/AnimalEditNewDialog'
 import '../styles/routes/dashboard.scss'
+import { useLoginContext } from '../LoginContext'
+import type { PersonsType } from '../../../shared/schemas/ZodSchemas'
 
 export const Route = createFileRoute('/dashboard')({
   component: Dashboard,
 })
 
 function Dashboard() {
-  const userId = 6 // TODO: get from auth context
+  const {login} = useLoginContext();
+  if (!login) {
+    return;
+  }
+
+  const userId = login.id;
 
   // Dummy user data - will be replaced with real API call in Phase 10
   const dummyUser: PersonsType = {
@@ -23,7 +29,6 @@ function Dashboard() {
     email: 'max.mustermann@example.com',
     phone: '+49 30 12345678',
     dateofbirth: new Date('1990-01-15'),
-    password: '', // not displayed
     sex: 'male',
     addresses: {
       id: 1,

@@ -1,19 +1,25 @@
 import { createFileRoute, useLocation, useNavigate } from '@tanstack/react-router'
-import { AppointmentList } from '../components/appointment/AppointmentList'
-import type { AppointmentsType } from '../../../shared/schemas/ZodSchemas'
+import { useEffect, useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { AppointmentList } from '../components/appointment/AppointmentList'
 import { getFutureAppointmentsByUserId, getPastAppointmentsByUserId } from '../api/AppointmentsAPI';
-import { useEffect, useState, useMemo } from 'react';
 import { AppointmentDetails } from '../components/appointment/AppointmentDetails';
 import '../styles/routes/appointments.scss';
+import { useLoginContext } from '../LoginContext';
+import type { AppointmentsType } from '../../../shared/schemas/ZodSchemas'
 
 export const Route = createFileRoute('/appointments')({
     component: Appointments,
 })
 
 function Appointments() {
+    const {login} = useLoginContext();
     const location = useLocation();
     const navigate = useNavigate();
+
+    if (!login) {
+        return;
+    }
 
     // Capture state once on mount to survive navigation state clearing
     const [initialState] = useState(() => {
@@ -31,7 +37,7 @@ function Appointments() {
     const [hasJustBooked, setHasJustBooked] = useState(initialState.justBooked);
     const [showCancelSuccess, setShowCancelSuccess] = useState(false);
 
-    const userID = 6; // TODO: get from auth context
+    const userID = login.id; // TODO: get from auth context
 
     const { isError: isErrorFuture, isSuccess: isSuccessFuture, data: dataFuture } = useQuery<Array<AppointmentsType>>({
         queryKey: ['appointmentsFuture', userID],
@@ -92,9 +98,9 @@ function Appointments() {
         // If selected appointment no longer exists in current list, select next one
         if (selectedAppointment) {
             const currentList = activeTab === 'upcoming' ? sortedFuture : sortedPast;
-            const stillExists = currentList?.some(apt => apt.id === selectedAppointment.id);
+            const stillExists = currentList.some(apt => apt.id === selectedAppointment.id);
 
-            if (!stillExists && currentList && currentList.length > 0) {
+            if (!stillExists && currentList.length > 0) {
                 setSelectedAppointment(currentList[0]);
             } else if (!stillExists) {
                 setSelectedAppointment(undefined);
@@ -141,14 +147,14 @@ function Appointments() {
                     onClick={() => setActiveTab('upcoming')}
                 >
                     Bevorstehend
-                    {isSuccessFuture && dataFuture && dataFuture.length > 0 && ` (${dataFuture.length})`}
+                    {isSuccessFuture && dataFuture.length > 0 && ` (${dataFuture.length})`}
                 </button>
                 <button
                     className={`tab-button ${activeTab === 'past' ? 'active' : ''}`}
                     onClick={() => setActiveTab('past')}
                 >
                     Vergangen
-                    {isSuccessPast && dataPast && dataPast.length > 0 && ` (${dataPast.length})`}
+                    {isSuccessPast && dataPast.length > 0 && ` (${dataPast.length})`}
                 </button>
             </div>
 
@@ -159,7 +165,7 @@ function Appointments() {
                 </div>
             )}
 
-            {isCurrentSuccess && currentData && currentData.length === 0 && (
+            {isCurrentSuccess && currentData.length === 0 && (
                 <div className="empty-state-centered">
                     <AppointmentList
                         dataAppointments={currentData}
@@ -170,7 +176,7 @@ function Appointments() {
                 </div>
             )}
 
-            {isCurrentSuccess && currentData && currentData.length > 0 && (
+            {isCurrentSuccess && currentData.length > 0 && (
                 <div className='appointments-layout'>
                     <div className="appointments-list-section">
                         <AppointmentList

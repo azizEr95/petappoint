@@ -55,7 +55,7 @@ export function verifyJWT(jwtString: string | undefined): LoginType {
     const payloadEXP = payload.exp as number;
     
     const loginRes : LoginType= {
-        id: payloadID,
+        id: parseInt(payloadID),
         role: payloadRole,
         exp: payloadEXP
     }
