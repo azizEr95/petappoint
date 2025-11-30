@@ -173,7 +173,7 @@ export type LoginValidatorType = z.infer<typeof loginValidator>;
 
 //Login Type
 export const LoginSchema = z.object({
-    id: z.string(),
+    id: PostgresIdSchema,
     role: RoleSchema,
     exp: z.number(),
 })

@@ -26,7 +26,7 @@ export function optionalAuthentication(req: Request, res: Response, next: NextFu
     if (jwtString) {
         try {
             const loginRes = verifyJWT(jwtString);
-            req.userId = parseInt(loginRes.id);
+            req.userId = loginRes.id;
             req.role = loginRes.role;
         } catch (err) {
             res.sendStatus(401);

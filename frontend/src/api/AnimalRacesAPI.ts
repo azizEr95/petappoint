@@ -1,7 +1,8 @@
-import { AddRacesToAnimalSchema, AnimalracesSchema, type AddRacesToAnimalType, type AnimalracesType } from "../../../shared/schemas/ZodSchemas";
+import { AddRacesToAnimalSchema, AnimalracesSchema   } from "../../../shared/schemas/ZodSchemas";
+import type {AddRacesToAnimalType, AnimalracesType} from "../../../shared/schemas/ZodSchemas";
 
 
-export const getRacesByAnimalTypeID = async (animalTypeID: number | undefined): Promise<AnimalracesType[]> => {
+export const getRacesByAnimalTypeID = async (animalTypeID: number | undefined): Promise<Array<AnimalracesType>> => {
     if (animalTypeID === undefined) { // should be also !== undefined, because of the enabled condition in useQuery
         throw new Error('Error getRacesByAnimalTypeID: animalTypeID is undefined')
     }
@@ -15,7 +16,7 @@ export const getRacesByAnimalTypeID = async (animalTypeID: number | undefined): 
     return parseAnimalRacesArray(data);
 }
 
-export const getRacesByAnimalID = async (animalID: number | undefined): Promise<AnimalracesType[]> => {
+export const getRacesByAnimalID = async (animalID: number | undefined): Promise<Array<AnimalracesType>> => {
     if (animalID === undefined) { // should be also !== undefined, because of the enabled condition in useQuery
         throw new Error('Error getRacesByAnimalID: animalID is undefined')
     }
@@ -29,21 +30,21 @@ export const getRacesByAnimalID = async (animalID: number | undefined): Promise<
     return parseAnimalRacesArray(data);
 }
 
-export const addRacesToAnimal = async (addRacesToAnimal: AddRacesToAnimalType): Promise<AddRacesToAnimalType> => {
-    if(addRacesToAnimal.animalraceids.length === 0){
-        return addRacesToAnimal;
+export const addRacesToAnimal = async (race: AddRacesToAnimalType): Promise<AddRacesToAnimalType> => {
+    if(race.animalraceids.length === 0){
+        return race;
     }
     const requestOptions = {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(addRacesToAnimal),
+        body: JSON.stringify(race),
         credentials: 'include' as RequestCredentials
     }
 
     const res = await fetch(
-        import.meta.env.VITE_API_URL + '/animals/' + addRacesToAnimal.animalid + '/races', requestOptions
+        import.meta.env.VITE_API_URL + '/animals/' + race.animalid + '/races', requestOptions
     )
     if (!res.ok) {
         throw new Error('Failed to fetch addRacesToAnimal')
@@ -90,7 +91,7 @@ export const deleteAllRacesFromAnimal = async (animalID: number): Promise<void> 
 /*
 * safeParse an array of animalraces
 */
-const parseAnimalRacesArray = (unsafeRaces: AnimalracesType[]): AnimalracesType[] => {
+const parseAnimalRacesArray = (unsafeRaces: Array<AnimalracesType>): Array<AnimalracesType> => {
     return unsafeRaces.map(unsafeRace => {
         const parsed = AnimalracesSchema.safeParse(unsafeRace);
         if (parsed.error !== undefined) { // if Zod throws an Error print them

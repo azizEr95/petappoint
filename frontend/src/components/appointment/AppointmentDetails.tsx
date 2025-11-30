@@ -8,6 +8,7 @@ import { getServicesFromPractice } from "../../api/ServicesAPI";
 import { useEffect, useState } from "react";
 import { exportToCalendar } from "../../utils/calendarExport";
 import { useNavigate } from "@tanstack/react-router";
+import { useLoginContext } from "../../LoginContext";
 
 type AppointmentDetailsProps = {
     appointment: AppointmentsType,
@@ -16,6 +17,7 @@ type AppointmentDetailsProps = {
 }
 
 export function AppointmentDetails({ appointment, onAppointmentCancelled, onShowCancelSuccess }: AppointmentDetailsProps) {
+    const {login} = useLoginContext();
     const [futureAppointment, setFutureAppointment] = useState(true);
     const [notes, setNotes] = useState('');
     const [editingAnimal, setEditingAnimal] = useState(false);
@@ -25,8 +27,12 @@ export function AppointmentDetails({ appointment, onAppointmentCancelled, onShow
     const queryClient = useQueryClient();
     const navigate = useNavigate();
 
+    if (!login) {
+        return;
+    }
+
     const practiceID = appointment.veterinarypractice.id;
-    const userID = 6; // TODO: get from auth context
+    const userID = login.id; // TODO: get from auth context
 
     const { isSuccess, data } = useQuery<VeterinaryPracticesType>({
         queryKey: ['veterinaryPractice', practiceID],
@@ -114,7 +120,7 @@ export function AppointmentDetails({ appointment, onAppointmentCancelled, onShow
     };
 
     const handleExport = () => {
-        if (isSuccess && data) {
+        if (isSuccess) {
             const practice = data;
             const appointmentType = appointment.availableservices.find((x) => x.id === appointment.service?.id);
             const address = `${practice.addresses.street}, ${practice.addresses.citycode} ${practice.addresses.city}`;
@@ -124,7 +130,7 @@ export function AppointmentDetails({ appointment, onAppointmentCancelled, onShow
     };
 
     const handleMapsLink = () => {
-        if (isSuccess && data) {
+        if (isSuccess) {
             const address = `${data.addresses.street}, ${data.addresses.citycode} ${data.addresses.city}`;
             const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
             window.open(mapsUrl, '_blank');
