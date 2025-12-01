@@ -3,8 +3,17 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
 import { getAvailableAppointmentsByPracticeId } from '../../api/AppointmentsAPI'
-import { compareDates, dateToDateString, dateToTimeString, getShortDate, getShortWeekday } from '../../utils/DateToStringFormat'
-import type { AppointmentFilterType, AppointmentsType, } from '../../../../shared/schemas/ZodSchemas'
+import {
+  compareDates,
+  dateToDateString,
+  dateToTimeString,
+  getShortDate,
+  getShortWeekday,
+} from '../../utils/DateToStringFormat'
+import type {
+  AppointmentFilterType,
+  AppointmentsType,
+} from '../../../../shared/schemas/ZodSchemas'
 
 type NextAvailableAppointmentsProps = {
   praxisID: string
@@ -79,7 +88,7 @@ export function NextAvailableAppointments({
     setExpandedDays(new Set()) // Reset expanded state beim Wechsel
   }
 
-  const backwordPossibleTermin = () => {
+  const backwardPossibleAppointment = () => {
     const newDate = new Date(dateAnsicht)
     newDate.setDate(newDate.getDate() - 1) // wenn Tag davor in Vergangenheit ist darf nicht geklickt werden
     const now = new Date()
@@ -88,7 +97,7 @@ export function NextAvailableAppointments({
     }
   }
 
-  const handleBookAppiontment = (termin: AppointmentsType) => {
+  const handleBookAppointment = (termin: AppointmentsType) => {
     // Use custom onSlotClick if provided, otherwise default navigation
     if (onSlotClick) {
       onSlotClick(termin)
@@ -110,7 +119,11 @@ export function NextAvailableAppointments({
           appointment: termin,
           serviceType: appointmentTypeId,
           filterAnimalId: filterOptions.animal,
-          filterAnimalTypeId: filterOptions.animalTypeIds !== undefined && filterOptions.animalTypeIds.length > 0 ? filterOptions.animalTypeIds[0] : undefined
+          filterAnimalTypeId:
+            filterOptions.animalTypeIds !== undefined &&
+            filterOptions.animalTypeIds.length > 0
+              ? filterOptions.animalTypeIds[0]
+              : undefined,
         },
       })
     }
@@ -133,7 +146,6 @@ export function NextAvailableAppointments({
       </div>
     )
   }
-
 
   data.sort((zeitA, zeitB) => {
     // sortiert die Termine nach Anfangszeit
@@ -166,8 +178,7 @@ export function NextAvailableAppointments({
       while (i < 5) {
         // wenn Date String gleich ist dann ist richtige Pos im Array gefunden, dadurch wird sichergestellt das Tag Monat und Jahr uebereinstimmen
         if (
-          dateToDateString(termin.starttime) ===
-          dateToDateString(vergleichDate)
+          dateToDateString(termin.starttime) === dateToDateString(vergleichDate)
         ) {
           termineTage[i].push(termin)
           break
@@ -202,9 +213,7 @@ export function NextAvailableAppointments({
   }
 
   // Prüfe ob es Termine in der aktuellen Ansicht gibt
-  const hasAppointmentsInCurrentView = termineTage.some(
-    (day) => day.length > 0,
-  )
+  const hasAppointmentsInCurrentView = termineTage.some((day) => day.length > 0)
 
   const navigateToNextAppointment = () => {
     const nextDate = findNextAppointmentDate()
@@ -229,7 +238,7 @@ export function NextAvailableAppointments({
         <button
           className="nav-arrow"
           onClick={handleBackwardTermin}
-          disabled={backwordPossibleTermin()}
+          disabled={backwardPossibleAppointment()}
         >
           <i className="bi bi-chevron-left"></i>
         </button>
@@ -283,12 +292,13 @@ export function NextAvailableAppointments({
                   const termin = appointmentsToShow[rowIndex]
 
                   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-                  if (termin) { // eslint not correct because of indexing in array, termin is not always truthy here
+                  if (termin) {
+                    // eslint not correct because of indexing in array, termin is not always truthy here
                     return (
                       <button
                         key={`${dayIndex}-${rowIndex}`}
                         className="time-slot-btn available"
-                        onClick={() => handleBookAppiontment(termin)}
+                        onClick={() => handleBookAppointment(termin)}
                       >
                         {dateToTimeString(termin.starttime)}
                       </button>
@@ -377,5 +387,4 @@ export function NextAvailableAppointments({
       )}
     </div>
   )
-
 }

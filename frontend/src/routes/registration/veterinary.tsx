@@ -2,9 +2,12 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
 import type { ChangeEvent, FormEvent } from 'react'
 import '../../styles/routes/veterinaryRegistration.scss'
-import { VeterinaryPracticeCreateSchema, type VeterinaryPracticesCreateType } from '../../../../shared/schemas/ZodSchemas'
+import {
+  VeterinaryPracticeCreateSchema,
+  type VeterinaryPracticesCreateType,
+} from '../../../../shared/schemas/ZodSchemas'
 import { useMutation } from '@tanstack/react-query'
-import { creatVeterinaryPractice } from '../../api/VeterinaryPracticeAPI'
+import { createVeterinaryPractice } from '../../api/VeterinaryPracticeAPI'
 import { Form, FormGroup } from 'react-bootstrap'
 
 export const Route = createFileRoute('/registration/veterinary')({
@@ -24,12 +27,12 @@ function VeterinaryRegistration() {
   const [infoemail, setInfoemail] = useState('')
   const [website, setWebsite] = useState('')
   const [info, setInfo] = useState('')
-  const [errors, setErrors] = useState<{[key: string]: string}>({})
-  const navigate = useNavigate();
+  const [errors, setErrors] = useState<{ [key: string]: string }>({})
+  const navigate = useNavigate()
 
   const validateField = (name: string, value: string) => {
     let error = ''
-    
+
     if (name === 'name') {
       if (!value.trim()) {
         error = 'Praxisname ist erforderlich'
@@ -39,17 +42,20 @@ function VeterinaryRegistration() {
         error = 'Praxisname muss mindestens aus 3 Zeichen bestehen'
       }
     }
-    
+
     if (name === 'strasse') {
       if (!value.trim()) {
         error = 'Straße ist erforderlich'
-      } else if (!/^(?=.*[a-zA-ZäöüÄÖÜß0-9])[a-zA-ZäöüÄÖÜß0-9 '`.-]+$/.test(value)) {
-        error = 'Straße muss mindestens einen Buchstaben oder eine Zahl enthalten'
+      } else if (
+        !/^(?=.*[a-zA-ZäöüÄÖÜß0-9])[a-zA-ZäöüÄÖÜß0-9 '`.-]+$/.test(value)
+      ) {
+        error =
+          'Straße muss mindestens einen Buchstaben oder eine Zahl enthalten'
       } else if (value.length < 3) {
         error = 'Straße muss mindestens aus 3 Zeichen bestehen'
       }
     }
-    
+
     if (name === 'hausnr') {
       if (!value.trim()) {
         error = 'Hausnummer ist erforderlich'
@@ -57,7 +63,7 @@ function VeterinaryRegistration() {
         error = 'Hausnummer muss mindestens eine Zahl enthalten'
       }
     }
-    
+
     if (name === 'plz') {
       if (!value.trim()) {
         error = 'Postleitzahl ist erforderlich'
@@ -65,7 +71,7 @@ function VeterinaryRegistration() {
         error = 'Postleitzahl muss mindestens eine Zahl enthalten'
       }
     }
-    
+
     if (name === 'stadt') {
       if (!value.trim()) {
         error = 'Stadt ist erforderlich'
@@ -75,7 +81,7 @@ function VeterinaryRegistration() {
         error = 'Stadt muss mindestens aus 3 Zeichen bestehen'
       }
     }
-    
+
     if (name === 'land') {
       if (!value.trim()) {
         error = 'Land ist erforderlich'
@@ -85,7 +91,7 @@ function VeterinaryRegistration() {
         error = 'Land muss mindestens aus 3 Zeichen bestehen'
       }
     }
-    
+
     if (name === 'email') {
       if (!value.trim()) {
         error = 'E-Mail ist erforderlich'
@@ -97,12 +103,14 @@ function VeterinaryRegistration() {
         const beforeAt = value.split('@')[0]
         if (!/[a-zA-Z]/.test(beforeAt)) {
           error = 'E-Mail muss vor dem @ mindestens einen Buchstaben enthalten'
-        } else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value)) {
+        } else if (
+          !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value)
+        ) {
           error = 'E-Mail enthält ungültige Zeichen'
         }
       }
     }
-    
+
     if (name === 'password') {
       if (!value.trim()) {
         error = 'Passwort ist erforderlich'
@@ -116,7 +124,7 @@ function VeterinaryRegistration() {
         error = 'Passwort muss mindestens ein Sonderzeichen enthalten'
       }
     }
-    
+
     if (name === 'phone') {
       if (!value.trim()) {
         error = 'Telefon ist erforderlich'
@@ -129,7 +137,7 @@ function VeterinaryRegistration() {
         }
       }
     }
-    
+
     if (name === 'infoemail') {
       if (value.trim()) {
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value)) {
@@ -139,87 +147,101 @@ function VeterinaryRegistration() {
         } else {
           const beforeAt = value.split('@')[0]
           if (!/[a-zA-Z]/.test(beforeAt)) {
-            error = 'E-Mail muss vor dem @ mindestens einen Buchstaben enthalten'
-          } else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value)) {
+            error =
+              'E-Mail muss vor dem @ mindestens einen Buchstaben enthalten'
+          } else if (
+            !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value)
+          ) {
             error = 'E-Mail enthält ungültige Zeichen'
           }
         }
       }
     }
-    
+
     if (name === 'website') {
       if (value.trim()) {
         if (!/^https?:\/\/.+\..+/.test(value)) {
-          error = 'Bitte geben Sie eine gültige URL ein (z.B. https://beispiel.de)'
+          error =
+            'Bitte geben Sie eine gültige URL ein (z.B. https://beispiel.de)'
         }
       }
     }
-    
+
     return error
   }
 
-  const handleBlur = (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const handleBlur = (
+    e: React.FocusEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >,
+  ) => {
     const name = e.target.name
     const value = e.target.value
-    
+
     const error = validateField(name, value)
-    
+
     if (error) {
-      setErrors({...errors, [name]: error})
+      setErrors({ ...errors, [name]: error })
     } else {
-      const newErrors = {...errors}
+      const newErrors = { ...errors }
       delete newErrors[name]
       setErrors(newErrors)
     }
   }
 
   const validateForm = () => {
-    const newErrors: {[key: string]: string} = {}
-    
+    const newErrors: { [key: string]: string } = {}
+
     if (!name.trim()) {
       newErrors.name = 'Praxisname ist erforderlich'
     } else if (!/^[a-zA-ZäöüÄÖÜß '`-]+$/.test(name)) {
-      newErrors.name = 'Diese Zeichen sind in diesem Feld nicht erlaubt (Zahlen,/,.)'
+      newErrors.name =
+        'Diese Zeichen sind in diesem Feld nicht erlaubt (Zahlen,/,.)'
     } else if (name.length < 3) {
       newErrors.name = 'Praxisname muss mindestens aus 3 Zeichen bestehen'
     }
-    
+
     if (!strasse.trim()) {
       newErrors.strasse = 'Straße ist erforderlich'
-    } else if (!/^(?=.*[a-zA-ZäöüÄÖÜß0-9])[a-zA-ZäöüÄÖÜß0-9 '`.-]+$/.test(strasse)) {
-      newErrors.strasse = 'Straße muss mindestens einen Buchstaben oder eine Zahl enthalten'
+    } else if (
+      !/^(?=.*[a-zA-ZäöüÄÖÜß0-9])[a-zA-ZäöüÄÖÜß0-9 '`.-]+$/.test(strasse)
+    ) {
+      newErrors.strasse =
+        'Straße muss mindestens einen Buchstaben oder eine Zahl enthalten'
     } else if (strasse.length < 3) {
       newErrors.strasse = 'Straße muss mindestens aus 3 Zeichen bestehen'
     }
-    
+
     if (!hausnr.trim()) {
       newErrors.hausnr = 'Hausnummer ist erforderlich'
     } else if (!/^(?=.*[0-9])[a-zA-Z0-9]+$/.test(hausnr)) {
       newErrors.hausnr = 'Hausnummer muss mindestens eine Zahl enthalten'
     }
-    
+
     if (!plz.trim()) {
       newErrors.plz = 'Postleitzahl ist erforderlich'
     } else if (!/^(?=.*[0-9])[a-zA-Z0-9]+$/.test(plz)) {
       newErrors.plz = 'Postleitzahl muss mindestens eine Zahl enthalten'
     }
-    
+
     if (!stadt.trim()) {
       newErrors.stadt = 'Stadt ist erforderlich'
     } else if (!/^[a-zA-ZäöüÄÖÜß '`-]+$/.test(stadt)) {
-      newErrors.stadt = 'Diese Zeichen sind in diesem Feld nicht erlaubt (Zahlen,/,.)'
+      newErrors.stadt =
+        'Diese Zeichen sind in diesem Feld nicht erlaubt (Zahlen,/,.)'
     } else if (stadt.length < 3) {
       newErrors.stadt = 'Stadt muss mindestens aus 3 Zeichen bestehen'
     }
-    
+
     if (!land.trim()) {
       newErrors.land = 'Land ist erforderlich'
     } else if (!/^[a-zA-ZäöüÄÖÜß '`-]+$/.test(land)) {
-      newErrors.land = 'Diese Zeichen sind in diesem Feld nicht erlaubt (Zahlen,/,.)'
+      newErrors.land =
+        'Diese Zeichen sind in diesem Feld nicht erlaubt (Zahlen,/,.)'
     } else if (land.length < 3) {
       newErrors.land = 'Land muss mindestens aus 3 Zeichen bestehen'
     }
-    
+
     if (!email.trim()) {
       newErrors.email = 'E-Mail ist erforderlich'
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
@@ -229,35 +251,41 @@ function VeterinaryRegistration() {
     } else {
       const beforeAt = email.split('@')[0]
       if (!/[a-zA-Z]/.test(beforeAt)) {
-        newErrors.email = 'E-Mail muss vor dem @ mindestens einen Buchstaben enthalten'
-      } else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
+        newErrors.email =
+          'E-Mail muss vor dem @ mindestens einen Buchstaben enthalten'
+      } else if (
+        !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)
+      ) {
         newErrors.email = 'E-Mail enthält ungültige Zeichen'
       }
     }
-    
+
     if (!password.trim()) {
       newErrors.password = 'Passwort ist erforderlich'
     } else if (password.length < 6) {
       newErrors.password = 'Passwort muss mindestens aus 6 Zeichen bestehen'
     } else if (!/[A-Z]/.test(password)) {
-      newErrors.password = 'Passwort muss mindestens einen Großbuchstaben enthalten'
+      newErrors.password =
+        'Passwort muss mindestens einen Großbuchstaben enthalten'
     } else if (!/[0-9]/.test(password)) {
       newErrors.password = 'Passwort muss mindestens eine Zahl enthalten'
     } else if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
-      newErrors.password = 'Passwort muss mindestens ein Sonderzeichen enthalten'
+      newErrors.password =
+        'Passwort muss mindestens ein Sonderzeichen enthalten'
     }
-    
+
     if (!phone.trim()) {
       newErrors.phone = 'Telefon ist erforderlich'
     } else if (!/^[+]?[0-9]+$/.test(phone)) {
-      newErrors.phone = 'Telefon darf nur Zahlen und optional ein + am Anfang enthalten'
+      newErrors.phone =
+        'Telefon darf nur Zahlen und optional ein + am Anfang enthalten'
     } else {
       const numbers = phone.replace('+', '')
       if (numbers.length < 6) {
         newErrors.phone = 'Telefon muss mindestens aus 6 Zahlen bestehen'
       }
     }
-    
+
     if (infoemail.trim()) {
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(infoemail)) {
         newErrors.infoemail = 'Bitte geben Sie eine gültige E-Mail-Adresse ein'
@@ -266,42 +294,48 @@ function VeterinaryRegistration() {
       } else {
         const beforeAt = infoemail.split('@')[0]
         if (!/[a-zA-Z]/.test(beforeAt)) {
-          newErrors.infoemail = 'E-Mail muss vor dem @ mindestens einen Buchstaben enthalten'
-        } else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(infoemail)) {
+          newErrors.infoemail =
+            'E-Mail muss vor dem @ mindestens einen Buchstaben enthalten'
+        } else if (
+          !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(infoemail)
+        ) {
           newErrors.infoemail = 'E-Mail enthält ungültige Zeichen'
         }
       }
     }
-    
+
     if (website.trim()) {
       if (!/^https?:\/\/.+\..+/.test(website)) {
-        newErrors.website = 'Bitte geben Sie eine gültige URL ein (z.B. https://beispiel.de)'
+        newErrors.website =
+          'Bitte geben Sie eine gültige URL ein (z.B. https://beispiel.de)'
       }
     }
-    
+
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
- 
+
   const { mutate: mutateCreatePractice } = useMutation({
     mutationFn: (practice: VeterinaryPracticesCreateType) =>
-      creatVeterinaryPractice(practice),
+      createVeterinaryPractice(practice),
     onError: (e) => {
-      console.log(e);
+      console.log(e)
     },
     onSuccess: () => {
-      console.log("success");
-      navigate({to: "/"})
+      console.log('success')
+      navigate({ to: '/' })
     },
   })
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
+  ) => {
     const t = e.target
     const name = t.name
     const value = t.value
 
     if (errors[name]) {
-      const newErrors = {...errors}
+      const newErrors = { ...errors }
       delete newErrors[name]
       setErrors(newErrors)
     }
@@ -344,7 +378,9 @@ function VeterinaryRegistration() {
         setInfo(value)
         break
       default:
-        console.log('Error: Fehler beim Aendern von veterinaryRegistration State in handleChange')
+        console.log(
+          'Error: Fehler beim Aendern von veterinaryRegistration State in handleChange',
+        )
     }
   }
 
@@ -356,7 +392,7 @@ function VeterinaryRegistration() {
       return
     }
 
-    const practice:VeterinaryPracticesCreateType = {
+    const practice: VeterinaryPracticesCreateType = {
       name: name,
       email: email,
       password: password,
@@ -368,7 +404,7 @@ function VeterinaryRegistration() {
         street: strasse + hausnr,
         citycode: plz,
         city: stadt,
-        country:land,
+        country: land,
         longitude: 0,
         latitude: 0,
       },
@@ -376,7 +412,7 @@ function VeterinaryRegistration() {
     try {
       VeterinaryPracticeCreateSchema.parse(practice)
       mutateCreatePractice(practice)
-      console.log("mutate")
+      console.log('mutate')
     } catch (e) {
       console.log('Zod Error: veterinaryRegistration ' + e)
     }
@@ -393,7 +429,9 @@ function VeterinaryRegistration() {
               <h2 className="form-section-title">Praxisdaten</h2>
 
               <FormGroup className="form-group">
-                <Form.Label htmlFor="name" className="form-label">Praxisname *</Form.Label>
+                <Form.Label htmlFor="name" className="form-label">
+                  Praxisname *
+                </Form.Label>
                 <Form.Control
                   id="name"
                   type="text"
@@ -411,7 +449,9 @@ function VeterinaryRegistration() {
 
               <div className="form-row equal-col">
                 <FormGroup className="form-group">
-                  <Form.Label htmlFor="email" className="form-label">E-Mail *</Form.Label>
+                  <Form.Label htmlFor="email" className="form-label">
+                    E-Mail *
+                  </Form.Label>
                   <Form.Control
                     id="email"
                     type="email"
@@ -428,7 +468,9 @@ function VeterinaryRegistration() {
                 </FormGroup>
 
                 <FormGroup className="form-group">
-                  <Form.Label htmlFor="phone" className="form-label">Telefon *</Form.Label>
+                  <Form.Label htmlFor="phone" className="form-label">
+                    Telefon *
+                  </Form.Label>
                   <Form.Control
                     id="phone"
                     type="tel"
@@ -446,7 +488,9 @@ function VeterinaryRegistration() {
               </div>
 
               <FormGroup className="form-group">
-                <Form.Label htmlFor="password" className="form-label">Passwort *</Form.Label>
+                <Form.Label htmlFor="password" className="form-label">
+                  Passwort *
+                </Form.Label>
                 <Form.Control
                   id="password"
                   type="password"
@@ -468,7 +512,9 @@ function VeterinaryRegistration() {
 
               <div className="form-row two-col">
                 <FormGroup className="form-group">
-                  <Form.Label htmlFor="strasse" className="form-label">Straße *</Form.Label>
+                  <Form.Label htmlFor="strasse" className="form-label">
+                    Straße *
+                  </Form.Label>
                   <Form.Control
                     id="strasse"
                     type="text"
@@ -485,7 +531,9 @@ function VeterinaryRegistration() {
                 </FormGroup>
 
                 <FormGroup className="form-group">
-                  <Form.Label htmlFor="hausnr" className="form-label">Nr. *</Form.Label>
+                  <Form.Label htmlFor="hausnr" className="form-label">
+                    Nr. *
+                  </Form.Label>
                   <Form.Control
                     id="hausnr"
                     type="text"
@@ -504,7 +552,9 @@ function VeterinaryRegistration() {
 
               <div className="form-row equal-col">
                 <FormGroup className="form-group">
-                  <Form.Label htmlFor="plz" className="form-label">PLZ *</Form.Label>
+                  <Form.Label htmlFor="plz" className="form-label">
+                    PLZ *
+                  </Form.Label>
                   <Form.Control
                     id="plz"
                     type="text"
@@ -521,7 +571,9 @@ function VeterinaryRegistration() {
                 </FormGroup>
 
                 <FormGroup className="form-group">
-                  <Form.Label htmlFor="stadt" className="form-label">Stadt *</Form.Label>
+                  <Form.Label htmlFor="stadt" className="form-label">
+                    Stadt *
+                  </Form.Label>
                   <Form.Control
                     id="stadt"
                     type="text"
@@ -539,7 +591,9 @@ function VeterinaryRegistration() {
               </div>
 
               <FormGroup className="form-group">
-                <Form.Label htmlFor="land" className="form-label">Land *</Form.Label>
+                <Form.Label htmlFor="land" className="form-label">
+                  Land *
+                </Form.Label>
                 <Form.Control
                   id="land"
                   type="text"
@@ -561,7 +615,9 @@ function VeterinaryRegistration() {
 
               <div className="form-row equal-col">
                 <FormGroup className="form-group">
-                  <Form.Label htmlFor="infoemail" className="form-label">Info E-Mail</Form.Label>
+                  <Form.Label htmlFor="infoemail" className="form-label">
+                    Info E-Mail
+                  </Form.Label>
                   <Form.Control
                     id="infoemail"
                     type="email"
@@ -578,7 +634,9 @@ function VeterinaryRegistration() {
                 </FormGroup>
 
                 <FormGroup className="form-group">
-                  <Form.Label htmlFor="website" className="form-label">Webseite</Form.Label>
+                  <Form.Label htmlFor="website" className="form-label">
+                    Webseite
+                  </Form.Label>
                   <Form.Control
                     id="website"
                     type="url"
@@ -596,7 +654,9 @@ function VeterinaryRegistration() {
               </div>
 
               <FormGroup className="form-group">
-                <Form.Label htmlFor="info" className="form-label">Praxisbeschreibung</Form.Label>
+                <Form.Label htmlFor="info" className="form-label">
+                  Praxisbeschreibung
+                </Form.Label>
                 <Form.Control
                   as="textarea"
                   id="info"

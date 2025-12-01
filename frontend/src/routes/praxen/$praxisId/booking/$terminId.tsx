@@ -1,4 +1,8 @@
-import { createFileRoute, useLocation, useNavigate } from '@tanstack/react-router'
+import {
+  createFileRoute,
+  useLocation,
+  useNavigate,
+} from '@tanstack/react-router'
 import '../../../../styles/routes/bookingPage.scss'
 import { useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
@@ -28,11 +32,11 @@ enum StatusBooking {
 }
 
 function BookingComponent() {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { login } = useLoginContext();
-  const serviceType = location.state.serviceType;
-  const animalId = location.state.filterAnimalId;
+  const navigate = useNavigate()
+  const location = useLocation()
+  const { login } = useLoginContext()
+  const serviceType = location.state.serviceType
+  const animalId = location.state.filterAnimalId
   const animalTypeId = location.state.filterAnimalTypeId
   const { praxisId, terminId } = Route.useParams()
   const [selectedAppointmentType, setSelectedAppointmentType] =
@@ -41,11 +45,17 @@ function BookingComponent() {
   const [status, setStatus] = useState<StatusBooking>(
     StatusBooking.selectTerminArt,
   ) // State in the booking prozess, controls what is displayed
-  const [foundFilteredServices, setFoundFilteredServices] = useState<Array<ServiceType> | null>(null); // if an filter was selected save which services have to been shown and available
-  const [notFoundFilteredServices, setNotFoundFilteredServices] = useState<Array<ServiceType> | null>(null); // if filter was selected all services from the filter that are not available
+  const [foundFilteredServices, setFoundFilteredServices] =
+    useState<Array<ServiceType> | null>(null) // if an filter was selected save which services have to been shown and available
+  const [notFoundFilteredServices, setNotFoundFilteredServices] =
+    useState<Array<ServiceType> | null>(null) // if filter was selected all services from the filter that are not available
 
   // load VeterinaryPractice:
-  const { isError: isErrorPractice, isSuccess: isSuccessPractice, isPending: isPendingPractice, data: dataPractice
+  const {
+    isError: isErrorPractice,
+    isSuccess: isSuccessPractice,
+    isPending: isPendingPractice,
+    data: dataPractice,
   } = useQuery<VeterinaryPracticesType>({
     queryKey: ['tierarztpraxen', praxisId],
     queryFn: () => getVeterinaryPracticesById(praxisId),
@@ -53,7 +63,11 @@ function BookingComponent() {
   })
 
   // load Appointment:
-  const { isError: isErrorAppointment, isSuccess: isSuccessAppointment, isPending: isPendingAppointment, data: dataAppointment
+  const {
+    isError: isErrorAppointment,
+    isSuccess: isSuccessAppointment,
+    isPending: isPendingAppointment,
+    data: dataAppointment,
   } = useQuery<AppointmentsType>({
     queryKey: ['appointment', terminId],
     queryFn: () => getAppointmentsById(terminId),
@@ -61,44 +75,53 @@ function BookingComponent() {
   })
 
   // load animal if it was in filter selected:
-  const userId = login ? login.id : -1;
-  const { isSuccess: isSuccessAnimal, data: dataAnimal
-  } = useQuery<Array<AnimalsType>>({
+  const userId = login ? login.id : -1
+  const { isSuccess: isSuccessAnimal, data: dataAnimal } = useQuery<
+    Array<AnimalsType>
+  >({
     queryKey: ['animal', userId],
     queryFn: () => getAnimalsFromUser(userId),
     retry: false,
-    enabled: userId !== -1
-  });
+    enabled: userId !== -1,
+  })
 
   useEffect(() => {
-    if (serviceType !== null && serviceType !== undefined && isSuccessAppointment) {
-      const uniqueService = new Set(serviceType);
-      const foundService = dataAppointment.availableservices.filter((avaService) => { // all services that are filtered and for this appointment are available
-        return uniqueService.has(avaService.id)
-      })
-      const notFoundService = dataAppointment.availableservices.filter((avaService) => { // all services that are filtered and for this appointment not available
-        // should be from all services from the veterinary
-        return !uniqueService.has(avaService.id)
-      })
+    if (
+      serviceType !== null &&
+      serviceType !== undefined &&
+      isSuccessAppointment
+    ) {
+      const uniqueService = new Set(serviceType)
+      const foundService = dataAppointment.availableservices.filter(
+        (avaService) => {
+          // all services that are filtered and for this appointment are available
+          return uniqueService.has(avaService.id)
+        },
+      )
+      const notFoundService = dataAppointment.availableservices.filter(
+        (avaService) => {
+          // all services that are filtered and for this appointment not available
+          // should be from all services from the veterinary
+          return !uniqueService.has(avaService.id)
+        },
+      )
       setFoundFilteredServices(foundService)
-      if (foundService.length === 1 && serviceType.length === 1) { // if only one ServiceType was selected, skip SelectAppointmentType component
-        setFoundFilteredServices(null);
-        setSelectedAppointmentType(foundService[0]);
-        setStatus(StatusBooking.selectAnimal);
+      if (foundService.length === 1 && serviceType.length === 1) {
+        // if only one ServiceType was selected, skip SelectAppointmentType component
+        setFoundFilteredServices(null)
+        setSelectedAppointmentType(foundService[0])
+        setStatus(StatusBooking.selectAnimal)
       }
-      setNotFoundFilteredServices(notFoundService);
+      setNotFoundFilteredServices(notFoundService)
     }
-  }, [serviceType, isSuccessAppointment, dataAppointment]);
+  }, [serviceType, isSuccessAppointment, dataAppointment])
 
   useEffect(() => {
     if (isPendingPractice || isPendingAppointment) {
       return
     }
 
-    if (
-      isErrorPractice ||
-      isErrorAppointment
-    ) {
+    if (isErrorPractice || isErrorAppointment) {
       navigate({ to: '/' })
     }
   }, [
@@ -108,22 +131,23 @@ function BookingComponent() {
     isErrorAppointment,
     isSuccessAppointment,
     isPendingAppointment,
-  ]);
+  ])
 
   useEffect(() => {
     if (isSuccessAnimal) {
       const animal = dataAnimal.find((x) => {
-        return x.id === animalId;
+        return x.id === animalId
       })
       if (animal !== undefined) {
-        setSelectedAnimal(animal);
+        setSelectedAnimal(animal)
       }
     }
   }, [isSuccessAnimal, dataAnimal])
 
   useEffect(() => {
-    if (status === 'SELECT_ANIMAL' && selectedAnimal !== null) { // if animal was selected in filter book appointment immediately
-      handleBookAppoinment();
+    if (status === 'SELECT_ANIMAL' && selectedAnimal !== null) {
+      // if animal was selected in filter book appointment immediately
+      handleBookAppoinment()
     }
   }, [status])
 
@@ -144,16 +168,13 @@ function BookingComponent() {
     }
   }
 
-  const handleSelectTerminArt = (appointmenType: ServiceType) => {
-    setSelectedAppointmentType(appointmenType)
+  const handleSelectTerminArt = (appointmentType: ServiceType) => {
+    setSelectedAppointmentType(appointmentType)
     setStatus(StatusBooking.selectAnimal)
   }
 
   const handleBookAppoinment = () => {
-    if (
-      selectedAnimal === null ||
-      selectedAppointmentType === null
-    ) {
+    if (selectedAnimal === null || selectedAppointmentType === null) {
       // no animal or appointmentType was selected, booking is not possible
       navigate({ to: '/praxen/' + praxisId + '/booking/' + terminId })
     } else {
@@ -164,7 +185,7 @@ function BookingComponent() {
           appointment: appointment,
           selectedAnimal: selectedAnimal,
           selectedService: selectedAppointmentType,
-          practice: practice
+          practice: practice,
         },
       })
     }
@@ -191,13 +212,20 @@ function BookingComponent() {
           practice={practice}
           appointment={appointment}
           handleSelectTerminArt={handleSelectTerminArt}
-          foundFilterServices={foundFilteredServices} notFoundFilterServices={notFoundFilteredServices} />
+          foundFilterServices={foundFilteredServices}
+          notFoundFilterServices={notFoundFilteredServices}
+        />
       )
       submitButton = null
       currentStep = 1
       break
     case StatusBooking.selectAnimal:
-      aktuelleAnzeige = <SelectAnimal handleChangeAnimal={handleChangeAnimal} filteredAnimalType={animalTypeId} />
+      aktuelleAnzeige = (
+        <SelectAnimal
+          handleChangeAnimal={handleChangeAnimal}
+          filteredAnimalType={animalTypeId}
+        />
+      )
       submitButton = (
         <div className="select-animal-actions">
           <button
@@ -219,7 +247,9 @@ function BookingComponent() {
           practice={practice}
           appointment={appointment}
           handleSelectTerminArt={handleSelectTerminArt}
-          foundFilterServices={null} notFoundFilterServices={null} />
+          foundFilterServices={null}
+          notFoundFilterServices={null}
+        />
       )
 
       submitButton = null
