@@ -22,24 +22,26 @@ export const serviceService = {
   async getAllAvailable(): Promise<ServiceType[]> {
     const found = await prisma.veterinarypractices.findMany({
       select: {
-        veterinaries: {
+        veterinarians: {
           select: {
             veterinary_has_service: {
               include: {
                 services: true,
-              }
-            }
-          }
-        }
-      }
+              },
+            },
+          },
+        },
+      },
     });
 
-    const availableServices = found.flatMap(x => x.veterinaries)
-      .flatMap(x => x.veterinary_has_service)
-      .flatMap(x => x.services);
+    const availableServices = found
+      .flatMap((x) => x.veterinarians)
+      .flatMap((x) => x.veterinary_has_service)
+      .flatMap((x) => x.services);
 
-    const uniqueServices = availableServices
-      .filter((item, index, self) => index === self.findIndex((o) => o.id === item.id));
+    const uniqueServices = availableServices.filter(
+      (item, index, self) => index === self.findIndex((o) => o.id === item.id)
+    );
 
     return uniqueServices;
   },

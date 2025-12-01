@@ -1,13 +1,13 @@
 import { prisma } from "../singletonPC";
-import { veterinaries } from "../../generated/prisma";
+import { veterinarians } from "../../generated/prisma";
 
 export const veterinaryService = {
-  async create(data: veterinaries): Promise<veterinaries> {
-    return await prisma.veterinaries.create({ data: data });
+  async create(data: veterinarians): Promise<veterinarians> {
+    return await prisma.veterinarians.create({ data: data });
   },
 
-  async getById(id: number): Promise<veterinaries> {
-    const foundVeterinary = await prisma.veterinaries.findUnique({
+  async getById(id: number): Promise<veterinarians> {
+    const foundVeterinary = await prisma.veterinarians.findUnique({
       where: { id },
       include: {
         appointments: true,
@@ -26,21 +26,21 @@ export const veterinaryService = {
     return foundVeterinary;
   },
 
-  async getByPractice(practiceId: number): Promise<veterinaries[]> {
-    return await prisma.veterinaries.findMany({
+  async getByPractice(practiceId: number): Promise<veterinarians[]> {
+    return await prisma.veterinarians.findMany({
       where: { fk_veterinarypractice: practiceId },
     });
   },
 
-  async getAll(): Promise<veterinaries[]> {
-    return await prisma.veterinaries.findMany();
+  async getAll(): Promise<veterinarians[]> {
+    return await prisma.veterinarians.findMany();
   },
 
-  async update(data: veterinaries): Promise<veterinaries> {
-    return await prisma.veterinaries.update({ where: { id: data.id }, data: data });
+  async update(data: veterinarians): Promise<veterinarians> {
+    return await prisma.veterinarians.update({ where: { id: data.id }, data: data });
   },
 
   async delete(id: number): Promise<void> {
-    await prisma.veterinaries.delete({ where: { id } });
+    await prisma.veterinarians.delete({ where: { id } });
   },
 };

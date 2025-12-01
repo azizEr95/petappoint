@@ -9,7 +9,7 @@ DROP TABLE IF EXISTS reviews;
 DROP TABLE IF EXISTS services;
 DROP TABLE IF EXISTS appointments;
 DROP TABLE IF EXISTS veterinary_has_specialization;
-DROP TABLE IF EXISTS veterinaries;
+DROP TABLE IF EXISTS veterinarians;
 DROP TABLE IF EXISTS veterinarypractices;
 DROP TABLE IF EXISTS person_has_animal;
 DROP TABLE IF EXISTS animal_has_races;
@@ -101,7 +101,7 @@ CREATE TABLE IF NOT EXISTS veterinarypractices(
   fk_addressId INTEGER NOT NULL REFERENCES addresses(id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS veterinaries(
+CREATE TABLE IF NOT EXISTS veterinarians(
   id INTEGER PRIMARY KEY REFERENCES persons(id) ON DELETE CASCADE,
   infoEmail VARCHAR(100),
   fk_veterinarypractice INTEGER REFERENCES veterinarypractices(id) ON DELETE CASCADE
@@ -113,14 +113,14 @@ CREATE TABLE IF NOT EXISTS services(
 );
 
 CREATE TABLE IF NOT EXISTS veterinary_has_service(
-  fk_veterinaryId INTEGER NOT NULL REFERENCES veterinaries(id) ON DELETE CASCADE,
+  fk_veterinaryId INTEGER NOT NULL REFERENCES veterinarians(id) ON DELETE CASCADE,
   fk_serviceId INTEGER NOT NULL REFERENCES services(id) ON DELETE CASCADE,
   notes TEXT,
   PRIMARY KEY (fk_veterinaryId, fk_serviceId)
 );
 
 CREATE TABLE IF NOT EXISTS veterinary_can_treat_animaltype(
-  fk_veterinaryId INTEGER NOT NULL REFERENCES veterinaries(id) ON DELETE CASCADE,
+  fk_veterinaryId INTEGER NOT NULL REFERENCES veterinarians(id) ON DELETE CASCADE,
   fk_animaltypeId INTEGER NOT NULL REFERENCES animaltypes(id) ON DELETE CASCADE,
   PRIMARY KEY (fk_veterinaryId, fk_animaltypeId)
 );
@@ -130,7 +130,7 @@ CREATE TABLE IF NOT EXISTS appointments(
   startTime TIMESTAMP NOT NULL,
   endTime TIMESTAMP NOT NULL,
   fk_animalId INTEGER REFERENCES animals(id) ON DELETE CASCADE,
-  fk_veterinaryId INTEGER NOT NULL REFERENCES veterinaries(id) ON DELETE CASCADE,
+  fk_veterinaryId INTEGER NOT NULL REFERENCES veterinarians(id) ON DELETE CASCADE,
   fk_veterinaryPracticeId INTEGER NOT NULL REFERENCES veterinarypractices(id) ON DELETE CASCADE,
   fk_serviceId INTEGER REFERENCES services(id) ON DELETE CASCADE DEFAULT NULL,
   notes TEXT
@@ -188,7 +188,7 @@ CREATE TABLE IF NOT EXISTS recipes(
 );
 
 CREATE TABLE IF NOT EXISTS veterinary_has_invitation(
-  fk_veterinaryId INTEGER NOT NULL REFERENCES veterinaries(id) ON DELETE CASCADE,
+  fk_veterinaryId INTEGER NOT NULL REFERENCES veterinarians(id) ON DELETE CASCADE,
   fk_veterinarypracticeId INTEGER NOT NULL REFERENCES veterinarypractices(id) ON DELETE CASCADE,
   dateOfInvitation DATE NOT NULL,
   PRIMARY KEY (fk_veterinaryId, fk_veterinarypracticeId)

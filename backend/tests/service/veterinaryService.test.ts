@@ -1,13 +1,13 @@
 // WICHTIG: Zuerst den singleton importieren, damit das Mocking funktioniert
 import { prismaMock } from "../../testConfig/mockConfig";
 // Danach die Types importieren
-import { veterinaries } from "../../generated/prisma";
+import { veterinarians } from "../../generated/prisma";
 // Dann den Service importieren
 import { veterinaryService } from "../../src/service/veterinaryService";
 
 describe("veterinaryService", () => {
   // Test-Datenvorbereitung
-  const mockVeterinary: veterinaries = {
+  const mockVeterinary: veterinarians = {
     id: 1,
     infoemail: "dr.mueller@tierarzt.de",
     fk_veterinarypractice: 1,
@@ -52,20 +52,20 @@ describe("veterinaryService", () => {
 
   describe("create", () => {
     it("sollte einen neuen Tierarzt erstellen", async () => {
-      prismaMock.veterinaries.create.mockResolvedValue(mockVeterinary);
+      prismaMock.veterinarians.create.mockResolvedValue(mockVeterinary);
 
       const result = await veterinaryService.create(mockVeterinary);
 
       expect(result).toEqual(mockVeterinary);
-      expect(prismaMock.veterinaries.create).toHaveBeenCalledWith({
+      expect(prismaMock.veterinarians.create).toHaveBeenCalledWith({
         data: mockVeterinary,
       });
-      expect(prismaMock.veterinaries.create).toHaveBeenCalledTimes(1);
+      expect(prismaMock.veterinarians.create).toHaveBeenCalledTimes(1);
     });
 
     it("sollte einen Fehler werfen, wenn die Erstellung fehlschlägt", async () => {
       const error = new Error("Database error");
-      prismaMock.veterinaries.create.mockRejectedValue(error);
+      prismaMock.veterinarians.create.mockRejectedValue(error);
 
       await expect(veterinaryService.create(mockVeterinary)).rejects.toThrow("Database error");
     });
@@ -73,12 +73,12 @@ describe("veterinaryService", () => {
 
   describe("getById", () => {
     it("sollte einen Tierarzt mit allen Relationen finden", async () => {
-      prismaMock.veterinaries.findUnique.mockResolvedValue(mockVeterinaryWithRelations as any);
+      prismaMock.veterinarians.findUnique.mockResolvedValue(mockVeterinaryWithRelations as any);
 
       const result = await veterinaryService.getById(1);
 
       expect(result).toEqual(mockVeterinaryWithRelations);
-      expect(prismaMock.veterinaries.findUnique).toHaveBeenCalledWith({
+      expect(prismaMock.veterinarians.findUnique).toHaveBeenCalledWith({
         where: { id: 1 },
         include: {
           appointments: true,
@@ -94,7 +94,7 @@ describe("veterinaryService", () => {
     });
 
     it("sollte einen Fehler werfen, wenn der Tierarzt nicht gefunden wird", async () => {
-      prismaMock.veterinaries.findUnique.mockResolvedValue(null);
+      prismaMock.veterinarians.findUnique.mockResolvedValue(null);
 
       await expect(veterinaryService.getById(999)).rejects.toThrow("Veterinary not found with id: 999");
     });
@@ -102,20 +102,20 @@ describe("veterinaryService", () => {
 
   describe("getByPractice", () => {
     it("sollte alle Tierärzte einer Praxis finden", async () => {
-      const mockVeterinaries = [mockVeterinary, { ...mockVeterinary, id: 2, infoemail: "dr.schmidt@tierarzt.de" }];
+      const mockveterinarians = [mockVeterinary, { ...mockVeterinary, id: 2, infoemail: "dr.schmidt@tierarzt.de" }];
 
-      prismaMock.veterinaries.findMany.mockResolvedValue(mockVeterinaries);
+      prismaMock.veterinarians.findMany.mockResolvedValue(mockveterinarians);
 
       const result = await veterinaryService.getByPractice(1);
 
-      expect(result).toEqual(mockVeterinaries);
-      expect(prismaMock.veterinaries.findMany).toHaveBeenCalledWith({
+      expect(result).toEqual(mockveterinarians);
+      expect(prismaMock.veterinarians.findMany).toHaveBeenCalledWith({
         where: { fk_veterinarypractice: 1 },
       });
     });
 
     it("sollte ein leeres Array zurückgeben, wenn keine Tierärzte gefunden werden", async () => {
-      prismaMock.veterinaries.findMany.mockResolvedValue([]);
+      prismaMock.veterinarians.findMany.mockResolvedValue([]);
 
       const result = await veterinaryService.getByPractice(999);
 
@@ -126,7 +126,7 @@ describe("veterinaryService", () => {
 
   describe("getAll", () => {
     it("sollte alle Tierärzte finden", async () => {
-      const mockVeterinaries = [
+      const mockveterinarians = [
         mockVeterinary,
         {
           id: 2,
@@ -135,17 +135,17 @@ describe("veterinaryService", () => {
         },
       ];
 
-      prismaMock.veterinaries.findMany.mockResolvedValue(mockVeterinaries);
+      prismaMock.veterinarians.findMany.mockResolvedValue(mockveterinarians);
 
       const result = await veterinaryService.getAll();
 
-      expect(result).toEqual(mockVeterinaries);
-      expect(prismaMock.veterinaries.findMany).toHaveBeenCalledWith();
+      expect(result).toEqual(mockveterinarians);
+      expect(prismaMock.veterinarians.findMany).toHaveBeenCalledWith();
       expect(result.length).toBe(2);
     });
 
     it("sollte ein leeres Array zurückgeben, wenn keine Tierärzte existieren", async () => {
-      prismaMock.veterinaries.findMany.mockResolvedValue([]);
+      prismaMock.veterinarians.findMany.mockResolvedValue([]);
 
       const result = await veterinaryService.getAll();
 
@@ -161,12 +161,12 @@ describe("veterinaryService", () => {
         infoemail: "dr.mueller.neu@tierarzt.de",
       };
 
-      prismaMock.veterinaries.update.mockResolvedValue(updatedVeterinary);
+      prismaMock.veterinarians.update.mockResolvedValue(updatedVeterinary);
 
       const result = await veterinaryService.update(updatedVeterinary);
 
       expect(result).toEqual(updatedVeterinary);
-      expect(prismaMock.veterinaries.update).toHaveBeenCalledWith({
+      expect(prismaMock.veterinarians.update).toHaveBeenCalledWith({
         where: { id: updatedVeterinary.id },
         data: updatedVeterinary,
       });
@@ -174,7 +174,7 @@ describe("veterinaryService", () => {
 
     it("sollte einen Fehler werfen, wenn der zu aktualisierende Tierarzt nicht existiert", async () => {
       const error = new Error("Record to update not found");
-      prismaMock.veterinaries.update.mockRejectedValue(error);
+      prismaMock.veterinarians.update.mockRejectedValue(error);
 
       await expect(veterinaryService.update({ ...mockVeterinary, id: 999 })).rejects.toThrow(
         "Record to update not found"
@@ -184,19 +184,19 @@ describe("veterinaryService", () => {
 
   describe("delete", () => {
     it("sollte einen Tierarzt löschen", async () => {
-      prismaMock.veterinaries.delete.mockResolvedValue(mockVeterinary);
+      prismaMock.veterinarians.delete.mockResolvedValue(mockVeterinary);
 
       await veterinaryService.delete(1);
 
-      expect(prismaMock.veterinaries.delete).toHaveBeenCalledWith({
+      expect(prismaMock.veterinarians.delete).toHaveBeenCalledWith({
         where: { id: 1 },
       });
-      expect(prismaMock.veterinaries.delete).toHaveBeenCalledTimes(1);
+      expect(prismaMock.veterinarians.delete).toHaveBeenCalledTimes(1);
     });
 
     it("sollte einen Fehler werfen, wenn der zu löschende Tierarzt nicht existiert", async () => {
       const error = new Error("Record to delete does not exist");
-      prismaMock.veterinaries.delete.mockRejectedValue(error);
+      prismaMock.veterinarians.delete.mockRejectedValue(error);
 
       await expect(veterinaryService.delete(999)).rejects.toThrow("Record to delete does not exist");
     });

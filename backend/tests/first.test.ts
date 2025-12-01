@@ -123,9 +123,9 @@ test("should find all tieraerzte", async () => {
     },
   ];
 
-  prismaMock.veterinaries.findMany.mockResolvedValue(tierAerzte);
+  prismaMock.veterinarians.findMany.mockResolvedValue(tierAerzte);
 
-  await expect(prismaMock.veterinaries.findMany()).resolves.toEqual(tierAerzte);
+  await expect(prismaMock.veterinarians.findMany()).resolves.toEqual(tierAerzte);
 });
 
 test("should create tierarztpraxis", async () => {

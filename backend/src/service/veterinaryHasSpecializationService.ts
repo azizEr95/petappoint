@@ -11,28 +11,28 @@ export const veterinaryHasSpecializationService = {
       where: { fk_veterinaryid: veterinaryId },
       include: {
         specializations: true,
-        veterinaries: true,
+        veterinarians: true,
       },
     });
 
     return vetSpecializations.map((vs) => ({
       specialization: vs.specializations,
-      veterinary: vs.veterinaries,
+      veterinary: vs.veterinarians,
     }));
   },
 
-  async getVeterinariesBySpecialization(specializationId: number) {
+  async getVeterinariansBySpecialization(specializationId: number) {
     const vetSpecializations = await prisma.veterinary_has_specialization.findMany({
       where: { fk_specializationid: specializationId },
       include: {
         specializations: true,
-        veterinaries: true,
+        veterinarians: true,
       },
     });
 
     return vetSpecializations.map((vs) => ({
       specialization: vs.specializations,
-      veterinary: vs.veterinaries,
+      veterinary: vs.veterinarians,
     }));
   },
 

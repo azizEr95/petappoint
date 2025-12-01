@@ -21,7 +21,7 @@ export const appointmentService = {
             services: true,
           },
         },
-        veterinaries: true,
+        veterinarians: true,
         veterinarypractices: {
           include: {
             addresses: true,
@@ -35,7 +35,7 @@ export const appointmentService = {
         starttime: data.starttime,
         endtime: data.endtime,
         animals: data.animalid ? { connect: { id: data.animalid } } : undefined,
-        veterinaries: { connect: { id: data.veterinaryid } },
+        veterinarians: { connect: { id: data.veterinaryid } },
         veterinarypractices: { connect: { id: data.veterinarypracticeid } },
       },
     });
@@ -72,8 +72,8 @@ export const appointmentService = {
         website: created.veterinarypractices.website,
       },
       veterinary: {
-        id: created.veterinaries.id,
-        infoemail: created.veterinaries.infoemail,
+        id: created.veterinarians.id,
+        infoemail: created.veterinarians.infoemail,
         veterinarypractice: created.veterinarypractices.id,
       },
       service: created.services
@@ -98,7 +98,7 @@ export const appointmentService = {
             services: true,
           },
         },
-        veterinaries: true,
+        veterinarians: true,
         veterinarypractices: {
           include: {
             addresses: true,
@@ -146,8 +146,8 @@ export const appointmentService = {
         website: foundAppointment.veterinarypractices.website,
       },
       veterinary: {
-        id: foundAppointment.veterinaries.id,
-        infoemail: foundAppointment.veterinaries.infoemail,
+        id: foundAppointment.veterinarians.id,
+        infoemail: foundAppointment.veterinarians.infoemail,
         veterinarypractice: foundAppointment.veterinarypractices.id,
       },
       service: foundAppointment.services
@@ -175,7 +175,7 @@ export const appointmentService = {
             services: true,
           },
         },
-        veterinaries: true,
+        veterinarians: true,
         veterinarypractices: {
           include: {
             addresses: true,
@@ -194,7 +194,7 @@ export const appointmentService = {
         ...(filter &&
           filter.animalTypeIds && {
             veterinarypractices: {
-              veterinaries: {
+              veterinarians: {
                 some: {
                   veterinary_can_treat_animaltype: {
                     some: {
@@ -254,8 +254,8 @@ export const appointmentService = {
         website: foundAppointment.veterinarypractices.website,
       },
       veterinary: {
-        id: foundAppointment.veterinaries.id,
-        infoemail: foundAppointment.veterinaries.infoemail,
+        id: foundAppointment.veterinarians.id,
+        infoemail: foundAppointment.veterinarians.infoemail,
         veterinarypractice: foundAppointment.veterinarypractices.id,
       },
       service: foundAppointment.services
@@ -279,7 +279,7 @@ export const appointmentService = {
         ...(filter &&
           filter.animalTypeIds && {
             veterinarypractices: {
-              veterinaries: {
+              veterinarians: {
                 some: {
                   veterinary_can_treat_animaltype: {
                     some: {
@@ -314,7 +314,7 @@ export const appointmentService = {
             services: true,
           },
         },
-        veterinaries: true,
+        veterinarians: true,
         veterinarypractices: {
           include: {
             addresses: true,
@@ -357,8 +357,8 @@ export const appointmentService = {
         website: foundAppointment.veterinarypractices.website,
       },
       veterinary: {
-        id: foundAppointment.veterinaries.id,
-        infoemail: foundAppointment.veterinaries.infoemail,
+        id: foundAppointment.veterinarians.id,
+        infoemail: foundAppointment.veterinarians.infoemail,
         veterinarypractice: foundAppointment.veterinarypractices.id,
       },
       service: foundAppointment.services
@@ -384,7 +384,7 @@ export const appointmentService = {
             services: true,
           },
         },
-        veterinaries: true,
+        veterinarians: true,
         veterinarypractices: {
           include: {
             addresses: true,
@@ -400,7 +400,7 @@ export const appointmentService = {
         ...(filter &&
           filter.animalTypeIds && {
             veterinarypractices: {
-              veterinaries: {
+              veterinarians: {
                 some: {
                   veterinary_can_treat_animaltype: {
                     some: {
@@ -460,8 +460,8 @@ export const appointmentService = {
         website: foundAppointment.veterinarypractices.website,
       },
       veterinary: {
-        id: foundAppointment.veterinaries.id,
-        infoemail: foundAppointment.veterinaries.infoemail,
+        id: foundAppointment.veterinarians.id,
+        infoemail: foundAppointment.veterinarians.infoemail,
         veterinarypractice: foundAppointment.veterinarypractices.id,
       },
       service: foundAppointment.services
@@ -490,7 +490,7 @@ export const appointmentService = {
             services: true,
           },
         },
-        veterinaries: {
+        veterinarians: {
           include: {
             veterinary_can_treat_animaltype: true,
             veterinary_has_service: {
@@ -518,7 +518,7 @@ export const appointmentService = {
           filter.animalTypeIds &&
           filter.animalTypeIds.length > 0 && {
             veterinarypractices: {
-              veterinaries: {
+              veterinarians: {
                 some: {
                   veterinary_can_treat_animaltype: {
                     some: {
@@ -542,7 +542,7 @@ export const appointmentService = {
               },
               {
                 appointment_has_service: { none: {} },
-                veterinaries: {
+                veterinarians: {
                   veterinary_has_service: {
                     some: {
                       fk_serviceid: { in: filter.serviceTypeIds },
@@ -560,7 +560,7 @@ export const appointmentService = {
       let availableServices: ServiceType[] =
         foundAppointment.appointment_has_service.length > 0
           ? foundAppointment.appointment_has_service.map((x) => x.services)
-          : foundAppointment.veterinaries.veterinary_has_service.map((x) => x.services);
+          : foundAppointment.veterinarians.veterinary_has_service.map((x) => x.services);
       if (filter && filter.serviceTypeIds && filter.serviceTypeIds.length > 0) {
         availableServices = availableServices.filter((x) => filter.serviceTypeIds?.includes(x.id));
       }
@@ -595,8 +595,8 @@ export const appointmentService = {
           website: foundAppointment.veterinarypractices.website,
         },
         veterinary: {
-          id: foundAppointment.veterinaries.id,
-          infoemail: foundAppointment.veterinaries.infoemail,
+          id: foundAppointment.veterinarians.id,
+          infoemail: foundAppointment.veterinarians.infoemail,
           veterinarypractice: foundAppointment.veterinarypractices.id,
         },
         service: foundAppointment.services
@@ -623,7 +623,7 @@ export const appointmentService = {
     const appointments = await prisma.appointments.findMany({
       include: {
         animals: true,
-        veterinaries: true,
+        veterinarians: true,
         services: true,
         appointment_has_service: {
           include: {
@@ -650,7 +650,7 @@ export const appointmentService = {
         ...(filter &&
           filter.animalTypeIds && {
             veterinarypractices: {
-              veterinaries: {
+              veterinarians: {
                 some: {
                   veterinary_can_treat_animaltype: {
                     some: {
@@ -700,8 +700,8 @@ export const appointmentService = {
         website: foundAppointment.veterinarypractices.website,
       },
       veterinary: {
-        id: foundAppointment.veterinaries.id,
-        infoemail: foundAppointment.veterinaries.infoemail,
+        id: foundAppointment.veterinarians.id,
+        infoemail: foundAppointment.veterinarians.infoemail,
         veterinarypractice: foundAppointment.veterinarypractices.id,
       },
       service: foundAppointment.services
@@ -735,7 +735,7 @@ export const appointmentService = {
             services: true,
           },
         },
-        veterinaries: true,
+        veterinarians: true,
         veterinarypractices: {
           include: {
             addresses: true,
@@ -756,7 +756,7 @@ export const appointmentService = {
         ...(filter &&
           filter.animalTypeIds && {
             veterinarypractices: {
-              veterinaries: {
+              veterinarians: {
                 some: {
                   veterinary_can_treat_animaltype: {
                     some: {
@@ -806,8 +806,8 @@ export const appointmentService = {
         website: foundAppointment.veterinarypractices.website,
       },
       veterinary: {
-        id: foundAppointment.veterinaries.id,
-        infoemail: foundAppointment.veterinaries.infoemail,
+        id: foundAppointment.veterinarians.id,
+        infoemail: foundAppointment.veterinarians.infoemail,
         veterinarypractice: foundAppointment.veterinarypractices.id,
       },
       service: foundAppointment.services
@@ -833,7 +833,7 @@ export const appointmentService = {
             services: true,
           },
         },
-        veterinaries: true,
+        veterinarians: true,
         veterinarypractices: {
           include: {
             addresses: true,
@@ -876,8 +876,8 @@ export const appointmentService = {
         website: foundAppointment.veterinarypractices.website,
       },
       veterinary: {
-        id: foundAppointment.veterinaries.id,
-        infoemail: foundAppointment.veterinaries.infoemail,
+        id: foundAppointment.veterinarians.id,
+        infoemail: foundAppointment.veterinarians.infoemail,
         veterinarypractice: foundAppointment.veterinarypractices.id,
       },
       service: foundAppointment.services
@@ -907,7 +907,7 @@ export const appointmentService = {
             services: true,
           },
         },
-        veterinaries: true,
+        veterinarians: true,
         veterinarypractices: {
           include: {
             addresses: true,
@@ -952,8 +952,8 @@ export const appointmentService = {
         website: updated.veterinarypractices.website,
       },
       veterinary: {
-        id: updated.veterinaries.id,
-        infoemail: updated.veterinaries.infoemail,
+        id: updated.veterinarians.id,
+        infoemail: updated.veterinarians.infoemail,
         veterinarypractice: updated.veterinarypractices.id,
       },
       service: updated.services
@@ -996,7 +996,7 @@ export const appointmentService = {
             services: true,
           },
         },
-        veterinaries: true,
+        veterinarians: true,
         veterinarypractices: {
           include: {
             addresses: true,
@@ -1046,8 +1046,8 @@ export const appointmentService = {
         website: updated.veterinarypractices.website,
       },
       veterinary: {
-        id: updated.veterinaries.id,
-        infoemail: updated.veterinaries.infoemail,
+        id: updated.veterinarians.id,
+        infoemail: updated.veterinarians.infoemail,
         veterinarypractice: updated.veterinarypractices.id,
       },
       service: updated.services
@@ -1075,7 +1075,7 @@ export const appointmentService = {
             services: true,
           },
         },
-        veterinaries: true,
+        veterinarians: true,
         veterinarypractices: {
           include: {
             addresses: true,
@@ -1123,8 +1123,8 @@ export const appointmentService = {
         website: updated.veterinarypractices.website,
       },
       veterinary: {
-        id: updated.veterinaries.id,
-        infoemail: updated.veterinaries.infoemail,
+        id: updated.veterinarians.id,
+        infoemail: updated.veterinarians.infoemail,
         veterinarypractice: updated.veterinarypractices.id,
       },
       service: updated.services
@@ -1148,7 +1148,7 @@ export const appointmentService = {
             services: true,
           },
         },
-        veterinaries: true,
+        veterinarians: true,
         veterinarypractices: {
           include: {
             addresses: true,
@@ -1193,8 +1193,8 @@ export const appointmentService = {
         website: updated.veterinarypractices.website,
       },
       veterinary: {
-        id: updated.veterinaries.id,
-        infoemail: updated.veterinaries.infoemail,
+        id: updated.veterinarians.id,
+        infoemail: updated.veterinarians.infoemail,
         veterinarypractice: updated.veterinarypractices.id,
       },
       service: updated.services

@@ -1,5 +1,12 @@
 import { prisma } from "../singletonPC";
-import { AnimalTypeType, ServiceType, VeterinaryPracticesCreateType, VeterinaryPracticeSearchQueryType, VeterinaryPracticesType, VeterinaryPracticeSearchResultType } from "vetlib-shared/schemas/ZodSchemas";
+import {
+  AnimalTypeType,
+  ServiceType,
+  VeterinaryPracticesCreateType,
+  VeterinaryPracticeSearchQueryType,
+  VeterinaryPracticesType,
+  VeterinaryPracticeSearchResultType,
+} from "vetlib-shared/schemas/ZodSchemas";
 import { addressService } from "./addressService";
 import { ResourceNotFoundError } from "../exceptions/errors/ResourceNotFoundError";
 import { ConstraintError } from "../exceptions/errors/ContraintError";
@@ -8,7 +15,7 @@ export const veterinaryPracticeService = {
   async create(veterinaryPracticeRe: VeterinaryPracticesCreateType): Promise<VeterinaryPracticesType> {
     return await prisma.veterinarypractices.create({
       include: {
-        addresses: true
+        addresses: true,
       },
       data: {
         name: veterinaryPracticeRe.name,
@@ -17,9 +24,9 @@ export const veterinaryPracticeService = {
         email: veterinaryPracticeRe.email,
         password: veterinaryPracticeRe.password,
         addresses: {
-          create: veterinaryPracticeRe.addresses
-        }
-      }
+          create: veterinaryPracticeRe.addresses,
+        },
+      },
     });
   },
 
@@ -29,15 +36,15 @@ export const veterinaryPracticeService = {
         addresses: true,
       },
       omit: {
-        fk_addressid: true
+        fk_addressid: true,
       },
       where: {
-        id: id
-      }
+        id: id,
+      },
     });
 
     if (!foundPractice) {
-      throw new ResourceNotFoundError('Veterinary Practice not found with id:', 'id', id);
+      throw new ResourceNotFoundError("Veterinary Practice not found with id:", "id", id);
     }
 
     return foundPractice;
@@ -50,79 +57,87 @@ export const veterinaryPracticeService = {
 
     const whereCondition = {
       AND: [
-        (!query.animalTypeIds || query.animalTypeIds.length <= 0) ? {} : {
-          veterinaries: {
-            some: {
-              veterinary_can_treat_animaltype: {
+        !query.animalTypeIds || query.animalTypeIds.length <= 0
+          ? {}
+          : {
+              veterinarians: {
                 some: {
-                  fk_animaltypeid: { in: query.animalTypeIds }
-                }
-              }
-            }
-          }
-        },
-        (!query.serviceTypeIds || query.serviceTypeIds.length <= 0) ? {} : {
-          veterinaries: {
-            some: {
-              veterinary_has_service: {
+                  veterinary_can_treat_animaltype: {
+                    some: {
+                      fk_animaltypeid: { in: query.animalTypeIds },
+                    },
+                  },
+                },
+              },
+            },
+        !query.serviceTypeIds || query.serviceTypeIds.length <= 0
+          ? {}
+          : {
+              veterinarians: {
                 some: {
-                  fk_serviceid: { in: query.serviceTypeIds }
-                }
-              }
-            }
-          }
-        },
-        query.name.length <= 0 ? {} : {
-          name: {
-            contains: query.name,
-            mode: "insensitive" as const
-          }
-        },
-        query.address.length <= 0 ? {} : {
-          addresses: {
-            OR: [
-              {
-                street: {
-                  contains: query.address,
-                  mode: "insensitive" as const
-                }
+                  veterinary_has_service: {
+                    some: {
+                      fk_serviceid: { in: query.serviceTypeIds },
+                    },
+                  },
+                },
               },
-              {
-                city: {
-                  contains: query.address,
-                  mode: "insensitive" as const
-                }
+            },
+        query.name.length <= 0
+          ? {}
+          : {
+              name: {
+                contains: query.name,
+                mode: "insensitive" as const,
               },
-              {
-                citycode: {
-                  contains: query.address,
-                  mode: "insensitive" as const
-                }
+            },
+        query.address.length <= 0
+          ? {}
+          : {
+              addresses: {
+                OR: [
+                  {
+                    street: {
+                      contains: query.address,
+                      mode: "insensitive" as const,
+                    },
+                  },
+                  {
+                    city: {
+                      contains: query.address,
+                      mode: "insensitive" as const,
+                    },
+                  },
+                  {
+                    citycode: {
+                      contains: query.address,
+                      mode: "insensitive" as const,
+                    },
+                  },
+                  {
+                    country: {
+                      contains: query.address,
+                      mode: "insensitive" as const,
+                    },
+                  },
+                ],
               },
-              {
-                country: {
-                  contains: query.address,
-                  mode: "insensitive" as const
-                }
-              }
-            ]
-          }
-        }
-      ]
+            },
+      ],
     } as const;
 
     const [searchResults, total] = await Promise.all([
       prisma.veterinarypractices.findMany({
         include: {
-          addresses: true
+          addresses: true,
         },
         where: whereCondition as any,
         skip,
         take: pageSize,
       }),
       prisma.veterinarypractices.count({
-        where: whereCondition as any
-      })
+        where: whereCondition as any,
+      }),
     ]);
 
     return {
@@ -136,26 +151,26 @@ export const veterinaryPracticeService = {
   async getByEmail(email: string): Promise<VeterinaryPracticesType | null> {
     return await prisma.veterinarypractices.findFirst({
       include: {
-        addresses: true
+        addresses: true,
       },
 
       where: {
-        email
-      }
+        email,
+      },
     });
   },
 
   async getAll(): Promise<VeterinaryPracticesType[]> {
     return await prisma.veterinarypractices.findMany({
       include: {
-        addresses: true
-      }
+        addresses: true,
+      },
     });
   },
 
   async update(data: VeterinaryPracticesType): Promise<VeterinaryPracticesType> {
     if (!data.id) {
-      throw new ConstraintError("ID is required for update", [{ path: 'veterinarypractice.id', value: data.id }]);
+      throw new ConstraintError("ID is required for update", [{ path: "veterinarypractice.id", value: data.id }]);
     }
 
     await addressService.update(data.addresses);
@@ -177,32 +192,31 @@ export const veterinaryPracticeService = {
     return updatedPractice;
   },
 
-
   async delete(id: number): Promise<void> {
     await prisma.veterinarypractices.delete({
-      where: { id }
+      where: { id },
     });
   },
 
   async getServicesForPractice(veterinaryPracticeId: number): Promise<ServiceType[]> {
-    const services = await prisma.veterinaries.findMany({
+    const services = await prisma.veterinarians.findMany({
       select: {
         veterinary_has_service: {
           select: {
-            services: true
-          }
-        }
+            services: true,
+          },
+        },
       },
       where: {
-        fk_veterinarypractice: veterinaryPracticeId
-      }
+        fk_veterinarypractice: veterinaryPracticeId,
+      },
     });
 
-    const flatServices = services.flatMap(x => x.veterinary_has_service).flatMap(x => x.services);
+    const flatServices = services.flatMap((x) => x.veterinary_has_service).flatMap((x) => x.services);
 
     // check that every service ist only one time in the array
     const uniqueServicesMap = new Map<number, ServiceType>();
-    const serviceArray: ServiceType[] = []
+    const serviceArray: ServiceType[] = [];
 
     for (const service of flatServices) {
       if (service && !uniqueServicesMap.has(service.id)) {
@@ -216,26 +230,28 @@ export const veterinaryPracticeService = {
   async getAllAnimalTypes(praxisId: number): Promise<AnimalTypeType[]> {
     const found = await prisma.veterinarypractices.findMany({
       select: {
-        veterinaries: {
+        veterinarians: {
           select: {
             veterinary_can_treat_animaltype: {
               include: {
-                animaltypes: true
-              }
-            }
-          }
-        }
+                animaltypes: true,
+              },
+            },
+          },
+        },
       },
-      where: { id: praxisId }
+      where: { id: praxisId },
     });
 
-    const curableAnimalTypes = found.flatMap(x => x.veterinaries)
-      .flatMap(x => x.veterinary_can_treat_animaltype)
-      .flatMap(x => x.animaltypes);
+    const curableAnimalTypes = found
+      .flatMap((x) => x.veterinarians)
+      .flatMap((x) => x.veterinary_can_treat_animaltype)
+      .flatMap((x) => x.animaltypes);
 
-    const uniqueAnimalTypes = curableAnimalTypes
-      .filter((item, index, self) => index === self.findIndex(o => o.id === item.id));
+    const uniqueAnimalTypes = curableAnimalTypes.filter(
+      (item, index, self) => index === self.findIndex((o) => o.id === item.id)
+    );
 
     return uniqueAnimalTypes;
-  }
+  },
 };

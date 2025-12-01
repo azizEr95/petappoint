@@ -19,7 +19,7 @@ describe("veterinaryHasSpecializationService", () => {
       id: 1,
       name: "Chirurgie",
     },
-    veterinaries: {
+    veterinarians: {
       id: 1,
       infoemail: "dr.mueller@tierarzt.de",
       fk_veterinarypractice: 1,
@@ -58,7 +58,7 @@ describe("veterinaryHasSpecializationService", () => {
             id: 2,
             name: "Orthopädie",
           },
-          veterinaries: {
+          veterinarians: {
             id: 1,
             infoemail: "dr.mueller@tierarzt.de",
             fk_veterinarypractice: 1,
@@ -73,18 +73,18 @@ describe("veterinaryHasSpecializationService", () => {
       expect(result).toEqual([
         {
           specialization: mockVetSpecializations[0].specializations,
-          veterinary: mockVetSpecializations[0].veterinaries,
+          veterinary: mockVetSpecializations[0].veterinarians,
         },
         {
           specialization: mockVetSpecializations[1].specializations,
-          veterinary: mockVetSpecializations[1].veterinaries,
+          veterinary: mockVetSpecializations[1].veterinarians,
         },
       ]);
       expect(prismaMock.veterinary_has_specialization.findMany).toHaveBeenCalledWith({
         where: { fk_veterinaryid: 1 },
         include: {
           specializations: true,
-          veterinaries: true,
+          veterinarians: true,
         },
       });
     });
@@ -99,7 +99,7 @@ describe("veterinaryHasSpecializationService", () => {
     });
   });
 
-  describe("getVeterinariesBySpecialization", () => {
+  describe("getveterinariansBySpecialization", () => {
     it("sollte alle Tierärzte mit einer bestimmten Spezialisierung finden", async () => {
       const mockVetSpecializations = [
         mockVetHasSpecWithRelations,
@@ -110,7 +110,7 @@ describe("veterinaryHasSpecializationService", () => {
             id: 1,
             name: "Chirurgie",
           },
-          veterinaries: {
+          veterinarians: {
             id: 2,
             infoemail: "dr.schmidt@tierarzt.de",
             fk_veterinarypractice: 1,
@@ -120,23 +120,23 @@ describe("veterinaryHasSpecializationService", () => {
 
       prismaMock.veterinary_has_specialization.findMany.mockResolvedValue(mockVetSpecializations as any);
 
-      const result = await veterinaryHasSpecializationService.getVeterinariesBySpecialization(1);
+      const result = await veterinaryHasSpecializationService.getveterinariansBySpecialization(1);
 
       expect(result).toEqual([
         {
           specialization: mockVetSpecializations[0].specializations,
-          veterinary: mockVetSpecializations[0].veterinaries,
+          veterinary: mockVetSpecializations[0].veterinarians,
         },
         {
           specialization: mockVetSpecializations[1].specializations,
-          veterinary: mockVetSpecializations[1].veterinaries,
+          veterinary: mockVetSpecializations[1].veterinarians,
         },
       ]);
       expect(prismaMock.veterinary_has_specialization.findMany).toHaveBeenCalledWith({
         where: { fk_specializationid: 1 },
         include: {
           specializations: true,
-          veterinaries: true,
+          veterinarians: true,
         },
       });
     });
@@ -144,7 +144,7 @@ describe("veterinaryHasSpecializationService", () => {
     it("sollte ein leeres Array zurückgeben, wenn keine Tierärzte die Spezialisierung haben", async () => {
       prismaMock.veterinary_has_specialization.findMany.mockResolvedValue([]);
 
-      const result = await veterinaryHasSpecializationService.getVeterinariesBySpecialization(999);
+      const result = await veterinaryHasSpecializationService.getveterinariansBySpecialization(999);
 
       expect(result).toEqual([]);
       expect(result.length).toBe(0);

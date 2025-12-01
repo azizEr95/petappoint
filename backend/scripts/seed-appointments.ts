@@ -17,7 +17,7 @@ async function seedAppointments() {
     const practices = await prisma.veterinarypractices.findMany({
       select: { id: true },
     });
-    const vets = await prisma.veterinaries.findMany({
+    const vets = await prisma.veterinarians.findMany({
       select: { id: true, fk_veterinarypractice: true },
     });
     const services = await prisma.services.findMany({
