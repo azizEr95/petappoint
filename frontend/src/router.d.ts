@@ -1,7 +1,7 @@
 import '@tanstack/react-router'
 import type {
-  AppointmentFilterType,
   AnimalsType,
+  AppointmentFilterType,
   AppointmentsType,
   ServiceType,
   VeterinaryPracticesType,
@@ -11,11 +11,13 @@ import type {
 declare module '@tanstack/react-router' {
   interface HistoryState {
     practice?: VeterinaryPracticesType
-    termin?: AppointmentsType //TODO changed to appointment
+    termin?: AppointmentsType // TODO changed to appointment
     appointment?: AppointmentsType
-    serviceType?: number[] | null
+    serviceType?: Array<number> | null
     selectedAnimal?: AnimalsType,
     selectedService?: ServiceType,
-    filterOptions?: AppointmentFilterType
+    filterOptions?: AppointmentFilterType,
+    filterAnimalId?: number | undefined,
+    filterAnimalTypeId?: number | undefined
   }
 }

@@ -34,12 +34,12 @@ export function VeterinaryPracticeList({
 
   useEffect(() => {
     // Notify parent of total count changes
-    if (isSuccess && data && onTotalChange) {
+    if (isSuccess && onTotalChange) {
       onTotalChange(data.total)
     }
   }, [isSuccess, data])
 
-  if (isSuccess && data) {
+  if (isSuccess) {
     const totalPages = Math.ceil(data.total / data.pageSize)
 
     if (data.data.length !== 0) {

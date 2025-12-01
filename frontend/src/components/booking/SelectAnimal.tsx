@@ -9,15 +9,18 @@ import { useLoginContext } from '../../LoginContext'
 import type { AnimalsType } from '../../../../shared/schemas/ZodSchemas'
 
 type SelectAnimalProps = {
+    filteredAnimalType: number | undefined
     handleChangeAnimal: (animal: AnimalsType | null) => void
 }
 
-export function SelectAnimal({ handleChangeAnimal }: SelectAnimalProps) {
+export function SelectAnimal({ handleChangeAnimal, filteredAnimalType }: SelectAnimalProps) {
     const { login } = useLoginContext();
     const [selectedAnimal, setSelectedAnimal] = useState(-1);
     const [showDialogNewAnimal, setShowDialogNewAnimal] = useState(false);
     const [showDialogEditAnimal, setShowDialogEditAnimal] = useState<AnimalsType | null>(null);
     const [showDialogDeleteAnimal, setShowDialogDeleteAnimal] = useState<AnimalsType | null>(null);
+    const [selectableAnimals, setSelectableAnimals] = useState<Array<AnimalsType>>([])
+    const [notSelectableAnimals, setNotSelectableAnimals] = useState<Array<AnimalsType>>([])
 
     if (!login) {
         return;
@@ -34,14 +37,30 @@ export function SelectAnimal({ handleChangeAnimal }: SelectAnimalProps) {
                 handleChangeAnimal(null);
             }
         }
+
     }, [animals])
 
-    const userId = login.id; // for user with ID 6, to be changed...
+    const userId = login.id;
     const { isSuccess, data } = useQuery<Array<AnimalsType>>({ // for this query is no error handling implemented, if the query fails
         queryKey: ['animals', userId],
         queryFn: () => getAnimalsFromUser(userId),
         retry: false
     });
+
+    useEffect(() => {
+        if(isSuccess && filteredAnimalType !== undefined){
+            const isSelectable = data.filter((x) => {
+                return x.animaltypeid === filteredAnimalType;
+            })
+            const isNotSelectable = data.filter((x) => {
+                return x.animaltypeid !== filteredAnimalType;
+            })
+            setSelectableAnimals(isSelectable);
+            setNotSelectableAnimals(isNotSelectable);
+        } else if(isSuccess){
+            setSelectableAnimals(data)
+        }
+    }, [isSuccess, data, filteredAnimalType])
 
     const handleSelectAnimal = (animal: AnimalsType) => {
         if (selectedAnimal === animal.id) {
@@ -86,12 +105,31 @@ export function SelectAnimal({ handleChangeAnimal }: SelectAnimalProps) {
             <div className="select-animal">
                 <h5 className="section-title">Tier auswählen:</h5>
                 <div className="animal-list">
-                    {animals.map((animal) => (
+                    {selectableAnimals.map((animal) => (
                         <div
                             key={animal.id}
                             className={`animal-item ${selectedAnimal === animal.id ? 'selected' : ''}`}
                             onClick={() => handleSelectAnimal(animal)}
                         >
+                            <div className="animal-name">{animal.name}</div>
+                            <button
+                                className="edit-button"
+                                onClick={(e) => handleAnimalEdit(animal, e)}
+                            >
+                                <i className="bi bi-pencil-fill"></i>
+                            </button>
+                            <button
+                                className="delete-button"
+                                onClick={(e) => handleAnimalDelete(animal, e)}
+                            >
+                                <i className="bi bi-trash3"></i>
+                            </button>
+                        </div>
+                    ))}
+                    {notSelectableAnimals.map((animal) => ( // should be shown as diabled and not clickable (edit and delete are allowed), animaltype does not matches with the filtered animaltype
+                        <div
+                            key={animal.id}
+                            className={`animal-item disabled`}>
                             <div className="animal-name">{animal.name}</div>
                             <button
                                 className="edit-button"

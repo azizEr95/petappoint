@@ -269,6 +269,7 @@ export type AppointmentsType = z.infer<typeof AppointmentsSchema>;
 export const AppointmentFilterSchema = z.object({
     animalTypeIds: ArrayOfIDs.optional(),
     serviceTypeIds: ArrayOfIDs.optional(),
+    animal: z.number().optional() // only for Frontend to propagate filteredAnimal through components
 });
 
 export type AppointmentFilterType = z.infer<typeof AppointmentFilterSchema>;
