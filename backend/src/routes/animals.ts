@@ -33,6 +33,7 @@ const upload = multer({
 
 async function ensureUserCanAccessAnimal(personId: number, animalId: number) {
     const hasAccess = await animalService.canPersonAccessAnimal(personId, animalId);
+
     if (!hasAccess) {
         throw new AuthorizationError("No access");
     }
@@ -66,7 +67,7 @@ animalsRouter.put('/:animalId',
             ]);
         }
 
-        ensureUserCanAccessAnimal(req.userId!, validatedBody.id);
+        await ensureUserCanAccessAnimal(req.userId!, validatedBody.id);
 
         const animal = await animalService.update(validatedBody);
         return res.send(animal);
@@ -78,7 +79,7 @@ animalsRouter.get('/:animalId/picture',
     async (req, res) => {
         const animalId = PostgresIdSchema.parse(parseInt(req.params.animalId));
 
-        ensureUserCanAccessAnimal(req.userId!, animalId);
+        await ensureUserCanAccessAnimal(req.userId!, animalId);
 
         const filepath = await animalService.getPicturePath(animalId);
         res.sendFile(filepath);
@@ -91,7 +92,7 @@ animalsRouter.post('/:animalId/picture',
     async (req, res) => {
         const animalId = PostgresIdSchema.parse(parseInt(req.params.animalId));
 
-        ensureUserCanAccessAnimal(req.userId!, animalId);
+        await ensureUserCanAccessAnimal(req.userId!, animalId);
 
         await animalService.savePicture(animalId, req.file?.path ?? null);
     }
@@ -102,7 +103,7 @@ animalsRouter.delete('/:animalId',
     async (req, res) => {
         const animalId = PostgresIdSchema.parse(parseInt(req.params.animalId));
 
-        ensureUserCanAccessAnimal(req.userId!, animalId);
+        await ensureUserCanAccessAnimal(req.userId!, animalId);
 
         await animalService.delete(animalId);
         res.sendStatus(204);
@@ -114,7 +115,7 @@ animalsRouter.get('/:animalId/races',
     async (req, res) => {
         const animalId = PostgresIdSchema.parse(parseInt(req.params.animalId));
 
-        ensureUserCanAccessAnimal(req.userId!, animalId);
+        await ensureUserCanAccessAnimal(req.userId!, animalId);
 
         const animalRaces: AnimalracesType[] = await animalRaceService.getAnimalRaces(animalId);
         return res.send(animalRaces);
@@ -132,8 +133,8 @@ animalsRouter.post('/:animalId/races',
             return;
         }
 
-        ensureUserCanAccessAnimal(req.userId!, animalId);
-        
+        await ensureUserCanAccessAnimal(req.userId!, animalId);
+
         const animalRace = await animalHasRacesService.create({
             animalid: validatedBody.animalid,
             animalraceids: validatedBody.animalraceids
@@ -148,7 +149,7 @@ animalsRouter.delete('/:animalId/races',
     async (req, res) => {
         const animalId = PostgresIdSchema.parse(parseInt(req.params.animalId));
 
-        ensureUserCanAccessAnimal(req.userId!, animalId);
+        await ensureUserCanAccessAnimal(req.userId!, animalId);
 
         await animalHasRacesService.deleteAllRacesFromAnimal(animalId);
         res.sendStatus(204);
@@ -161,7 +162,7 @@ animalsRouter.delete('/:animalId/races/:raceId',
         const animalId = PostgresIdSchema.parse(parseInt(req.params.animalId));
         const raceId = PostgresIdSchema.parse(parseInt(req.params.raceId));
 
-        ensureUserCanAccessAnimal(req.userId!, animalId);
+        await ensureUserCanAccessAnimal(req.userId!, animalId);
 
         await animalHasRacesService.delete({
             fk_animalid: animalId,

@@ -1,10 +1,11 @@
-import {ErrorRequestHandler, Request, Response} from 'express';
+import { ErrorRequestHandler, Request, Response } from 'express';
 import { ResourceNotFoundError } from './errors/ResourceNotFoundError';
 import { ZodValidationError } from './errors/ZodValidationError';
 import { JsonWebTokenError } from 'jsonwebtoken';
 import { AuthorizationError } from './errors/AuthorizationError';
 
 export const routerExceptionHandler: ErrorRequestHandler = (err, req, res, next) => {
+    console.error(err.stack);
     if (err instanceof ResourceNotFoundError) {
         res.sendStatus(404);
         return;

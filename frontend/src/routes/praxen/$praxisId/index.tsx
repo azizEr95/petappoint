@@ -4,10 +4,10 @@ import { useQuery } from '@tanstack/react-query'
 import { NextAvailableAppointments } from '../../../components/practice/NextAvailableAppointments'
 import '../../../styles/routes/praxisPage.scss'
 import { getVeterinaryPracticesById } from '../../../api/VeterinaryPracticeAPI'
-import type { AnimalTypeType, VeterinaryPracticesType } from '../../../../../shared/schemas/ZodSchemas'
 import { SearchFilter } from '../../../components/common/SearchFilter'
 import { getAnimaltypesFromPractice } from '../../../api/AnimalTypeAPI'
 import { FavoritePractice } from '../../../components/practice/FavoritePractice'
+import type { AnimalTypeType, VeterinaryPracticeSearchQueryType, VeterinaryPracticesType } from '../../../../../shared/schemas/ZodSchemas'
 
 
 export const Route = createFileRoute('/praxen/$praxisId/')({
@@ -18,14 +18,16 @@ function VeterinaryPractice() {
   const navigate = useNavigate()
   const location = useLocation();
   const { praxisId } = Route.useParams()
-  let practice = location.state?.practice
-  let filterOptions = location.state?.filterOptions
-  const [filterServiceType, setFilterServiceType] = useState<number[]>(filterOptions?.serviceTypeIds !== undefined ? filterOptions.serviceTypeIds : []);
-  const [filterAnimalType, setFilterAnimalType] = useState<number[]>(filterOptions?.animalTypeIds !== undefined ? filterOptions.animalTypeIds : []);
+  let practice = location.state.practice
+  let filterOptions = location.state.filterOptions
+  const [filterServiceType, setFilterServiceType] = useState<Array<number>>(filterOptions?.serviceTypeIds !== undefined ? filterOptions.serviceTypeIds : []);
+  const [filterAnimalType, setFilterAnimalType] = useState<Array<number>>(filterOptions?.animalTypeIds !== undefined ? filterOptions.animalTypeIds : []);
+  const [filterAnimal, setFilterAnimal] = useState<number | undefined>(filterOptions?.animal);
 
   filterOptions = {
     animalTypeIds: filterAnimalType,
-    serviceTypeIds: filterServiceType
+    serviceTypeIds: filterServiceType,
+    animal: filterAnimal
   }
 
   // load VeterinaryPractices:
@@ -67,22 +69,31 @@ function VeterinaryPractice() {
     practice = data;
   }
 
-  //practice is here always defined, because of the state or useQuery is success
+  // practice is here always defined, because of the state or useQuery is success
   if (practice === undefined) {
     return;
   }
 
-  let animaltypesString: string = ""
+  let animaltypesString = ""
   if (isSuccessAnimaltypesPractice) {
-    for (let i = 0; i < dataAnimaltypesPractice.length; i++) {
+    for (const animaltype of dataAnimaltypesPractice) {
       if (animaltypesString !== "") {
-        animaltypesString = animaltypesString + ", "
+          animaltypesString = animaltypesString + ", ";
       }
-      animaltypesString = animaltypesString + dataAnimaltypesPractice[i].name
-    }
+      animaltypesString = animaltypesString + animaltype.name;
+  }
     if (animaltypesString === "") {
       animaltypesString = "keine"
     }
+  }
+
+  const searchFilter: VeterinaryPracticeSearchQueryType = { // only for propagation to component SearchFilter, only are animalTypeIds and ServcieTypeIDs are used from this
+    name: '',
+    address: '',
+    animalTypeIds: filterOptions.animalTypeIds,
+    serviceTypeIds: filterOptions.serviceTypeIds,
+    page: 0,
+    pageSize: 0
   }
 
   return (
@@ -134,7 +145,7 @@ function VeterinaryPractice() {
               <p>
                 <a href={`mailto:${practice.infoemail}`}>{practice.infoemail}</a>
               </p>
-              {practice?.website && (
+              {practice.website && (
                 <p>
                   <a
                     href={practice.website}
@@ -154,7 +165,7 @@ function VeterinaryPractice() {
           <div className="appointments-header-section flex-row">
             <h2>Verfügbare Termine</h2>
             <div id="FilterPracticePage">
-              <SearchFilter filterOptions={filterOptions} setFilterServiceType={setFilterServiceType} setFilterAnimalType={setFilterAnimalType} practicePage={practice} searchFilter={null} landingPage={false} />
+              <SearchFilter filterOptions={filterOptions} setFilterServiceType={setFilterServiceType} setFilterAnimalType={setFilterAnimalType} setFilterAnimal={setFilterAnimal} practicePage={practice} searchFilter={searchFilter} landingPage={false} />
             </div>
           </div>
           <NextAvailableAppointments praxisID={practice.id.toString()} filterOptions={filterOptions} />

@@ -7,11 +7,13 @@ import type { VeterinaryPracticeSearchQueryType } from '../../../../shared/schem
 
 type SearchFieldProps = {
   searchFilter: VeterinaryPracticeSearchQueryType
+  filterAnimal: number | undefined
   handleChangeNameAddress?: (name: string | undefined, address: string | undefined) => void // if this is not undefined, then is this the SearchField on the LandingPage
 }
 
 export function SearchField({
   searchFilter,
+  filterAnimal,
   handleChangeNameAddress
 }: SearchFieldProps) {
   const [searchTermName, setSearchTermName] = useState(searchFilter.name)
@@ -19,12 +21,7 @@ export function SearchField({
   const [isLoadingLocation, setIsLoadingLocation] = useState(false)
   const navigate = useNavigate()
 
-  const handleGetCurrentLocation = async () => {
-    if (!navigator.geolocation) {
-      alert('Geolocation wird von Ihrem Browser nicht unterstützt')
-      return
-    }
-
+  const handleGetCurrentLocation = () => {
     setIsLoadingLocation(true)
 
     navigator.geolocation.getCurrentPosition(
@@ -96,6 +93,9 @@ export function SearchField({
         animalType: searchFilter.animalTypeIds?.join("-") ?? "",
         serviceType: searchFilter.serviceTypeIds?.join("-") ?? ""
       },
+      state: {
+        filterAnimalId: filterAnimal,
+      }
     })
   }
 

@@ -1,10 +1,11 @@
+import { useQueryClient } from '@tanstack/react-query'
 import '../../styles/components/practice/VeterinaryPracticeCard.scss'
 import { useNavigate } from '@tanstack/react-router'
 import { NextAvailableAppointments } from './NextAvailableAppointments.tsx'
-import {type MouseEvent } from 'react'
-import type { AppointmentFilterType, VeterinaryPracticesType } from '../../../../shared/schemas/ZodSchemas'
-import { useQueryClient } from '@tanstack/react-query'
 import { FavoritePractice } from './FavoritePractice.tsx'
+import type { MouseEvent } from 'react'
+import type { AppointmentFilterType, VeterinaryPracticesType } from '../../../../shared/schemas/ZodSchemas'
+
 
 type VeterinaryPracticeCardProps = {
   practice: VeterinaryPracticesType
