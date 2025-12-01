@@ -94,7 +94,7 @@ async function seedTestdata() {
         /* 05 */ {
           firstname: "Denis",
           lastname: "Deniz",
-          sex: "notknown",
+          sex: "not_known",
           dateofbirth: new Date("2050-01-01"),
           fk_address: 5,
           phone: "+493000000004",
@@ -275,7 +275,7 @@ async function seedTestdata() {
           timeofdeath: null,
           iscastrated: true,
           lifestyleisindoors: false,
-          sex: "notapplicable",
+          sex: "not_applicable",
           fk_animaltypeid: 2,
           fk_animalgroupid: null,
         },

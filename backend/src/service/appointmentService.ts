@@ -8,7 +8,7 @@ import {
 } from "vetlib-shared/schemas/ZodSchemas";
 import { animalService } from "./animalService";
 import { ResourceNotFoundError } from "../exceptions/errors/ResourceNotFoundError";
-import { ConstraintError } from "../exceptions/errors/ContraintError";
+import { ConstraintError } from "../exceptions/errors/ConstraintError";
 
 export const appointmentService = {
   async create(data: AppointmentsCreateType): Promise<AppointmentsType> {

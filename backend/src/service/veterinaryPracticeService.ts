@@ -9,7 +9,7 @@ import {
 } from "vetlib-shared/schemas/ZodSchemas";
 import { addressService } from "./addressService";
 import { ResourceNotFoundError } from "../exceptions/errors/ResourceNotFoundError";
-import { ConstraintError } from "../exceptions/errors/ContraintError";
+import { ConstraintError } from "../exceptions/errors/ConstraintError";
 
 export const veterinaryPracticeService = {
   async create(veterinaryPracticeRe: VeterinaryPracticesCreateType): Promise<VeterinaryPracticesType> {

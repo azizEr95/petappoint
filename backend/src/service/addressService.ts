@@ -2,7 +2,7 @@ import { prisma } from "../singletonPC";
 import { addresses } from "../../generated/prisma";
 import { AddressesCreateType, AddressesType } from "vetlib-shared/schemas/ZodSchemas";
 import { ResourceNotFoundError } from "../exceptions/errors/ResourceNotFoundError";
-import { ConstraintError } from "../exceptions/errors/ContraintError";
+import { ConstraintError } from "../exceptions/errors/ConstraintError";
 
 export const addressService = {
   async create(data: AddressesCreateType): Promise<AddressesType> {
@@ -13,8 +13,8 @@ export const addressService = {
         country: data.country,
         latitude: data.latitude,
         longitude: data.longitude,
-        street: data.street
-      }
+        street: data.street,
+      },
     });
     return createdAddress;
   },
@@ -23,7 +23,7 @@ export const addressService = {
     const foundAddress = await prisma.addresses.findUnique({ where: { id } });
 
     if (!foundAddress) {
-      throw new ResourceNotFoundError(`Address with ${id} does not exist`, 'id', id);
+      throw new ResourceNotFoundError(`Address with ${id} does not exist`, "id", id);
     }
 
     return foundAddress;
@@ -35,7 +35,7 @@ export const addressService = {
 
   async update(data: AddressesType): Promise<AddressesType> {
     if (!data.id) {
-      throw new ConstraintError('ID is required for update', [{ path: 'id', value: data.id }]);
+      throw new ConstraintError("ID is required for update", [{ path: "id", value: data.id }]);
     }
 
     const updatedAddress = await prisma.addresses.update({

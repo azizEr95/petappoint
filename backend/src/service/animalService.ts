@@ -4,7 +4,7 @@ import { AnimalsCreateType, AnimalsType, AnimalUpdateType } from "vetlib-shared/
 import fs from "node:fs/promises";
 import path from "node:path";
 import { ResourceNotFoundError } from "../exceptions/errors/ResourceNotFoundError";
-import { ConstraintError } from "../exceptions/errors/ContraintError";
+import { ConstraintError } from "../exceptions/errors/ConstraintError";
 
 export const animalService = {
   async create(data: AnimalsCreateType): Promise<AnimalsType> {
@@ -23,12 +23,12 @@ export const animalService = {
         animaltypes: {
           connect: {
             id: data.animaltypeid,
-          }
+          },
         },
       },
     });
 
-    return ({
+    return {
       dateofbirth: created.dateofbirth,
       dateofbirthisexact: created.dateofbirthisexact,
       heightincm: created.heightincm,
@@ -40,14 +40,14 @@ export const animalService = {
       timeofdeath: created.timeofdeath,
       weightingram: created.weightingram,
       animalgroupid: created.fk_animalgroupid,
-      animaltypeid: created.fk_animaltypeid
-    });
+      animaltypeid: created.fk_animaltypeid,
+    };
   },
 
   async update(data: AnimalUpdateType): Promise<AnimalsType> {
     const updated = await prisma.animals.update({
       where: {
-        id: data.id
+        id: data.id,
       },
       data: {
         name: data.name,
@@ -62,7 +62,7 @@ export const animalService = {
       },
     });
 
-    return ({
+    return {
       dateofbirth: updated.dateofbirth,
       dateofbirthisexact: updated.dateofbirthisexact,
       heightincm: updated.heightincm,
@@ -74,18 +74,18 @@ export const animalService = {
       timeofdeath: updated.timeofdeath,
       weightingram: updated.weightingram,
       animalgroupid: updated.fk_animalgroupid,
-      animaltypeid: updated.fk_animaltypeid
-    });
+      animaltypeid: updated.fk_animaltypeid,
+    };
   },
 
   async getById(id: number): Promise<AnimalsType> {
     const foundAnimal = await prisma.animals.findUnique({ where: { id } });
 
     if (!foundAnimal) {
-      throw new ResourceNotFoundError(`Animal not found with id: ${id}`, 'id', id);
+      throw new ResourceNotFoundError(`Animal not found with id: ${id}`, "id", id);
     }
 
-    return ({
+    return {
       dateofbirth: foundAnimal.dateofbirth,
       dateofbirthisexact: foundAnimal.dateofbirthisexact,
       heightincm: foundAnimal.heightincm,
@@ -97,44 +97,46 @@ export const animalService = {
       timeofdeath: foundAnimal.timeofdeath,
       weightingram: foundAnimal.weightingram,
       animalgroupid: foundAnimal.fk_animalgroupid,
-      animaltypeid: foundAnimal.fk_animaltypeid
-    });
+      animaltypeid: foundAnimal.fk_animaltypeid,
+    };
   },
 
   async getByPersonId(personId: number): Promise<AnimalsType[]> {
     const relations = await prisma.person_has_animal.findMany({
       where: {
-        fk_personid: personId
+        fk_personid: personId,
       },
       include: {
-        animals: true
-      }
+        animals: true,
+      },
     });
 
-    return relations.map(r => r.animals).flatMap(animal => ({
-      dateofbirth: animal.dateofbirth,
-      dateofbirthisexact: animal.dateofbirthisexact,
-      heightincm: animal.heightincm,
-      id: animal.id,
-      iscastrated: animal.iscastrated,
-      lifestyleisindoors: animal.lifestyleisindoors,
-      name: animal.name,
-      sex: animal.sex,
-      timeofdeath: animal.timeofdeath,
-      weightingram: animal.weightingram,
-      animalgroupid: animal.fk_animalgroupid,
-      animaltypeid: animal.fk_animaltypeid
-    }));
+    return relations
+      .map((r) => r.animals)
+      .flatMap((animal) => ({
+        dateofbirth: animal.dateofbirth,
+        dateofbirthisexact: animal.dateofbirthisexact,
+        heightincm: animal.heightincm,
+        id: animal.id,
+        iscastrated: animal.iscastrated,
+        lifestyleisindoors: animal.lifestyleisindoors,
+        name: animal.name,
+        sex: animal.sex,
+        timeofdeath: animal.timeofdeath,
+        weightingram: animal.weightingram,
+        animalgroupid: animal.fk_animalgroupid,
+        animaltypeid: animal.fk_animaltypeid,
+      }));
   },
 
   async getByName(name: string): Promise<AnimalsType> {
     const foundAnimal = await prisma.animals.findFirst({ where: { name } });
 
     if (!foundAnimal) {
-      throw new ResourceNotFoundError(`Animal not found with name: ${name}`, 'name', name);
+      throw new ResourceNotFoundError(`Animal not found with name: ${name}`, "name", name);
     }
 
-    return ({
+    return {
       dateofbirth: foundAnimal.dateofbirth,
       dateofbirthisexact: foundAnimal.dateofbirthisexact,
       heightincm: foundAnimal.heightincm,
@@ -146,13 +148,13 @@ export const animalService = {
       timeofdeath: foundAnimal.timeofdeath,
       weightingram: foundAnimal.weightingram,
       animalgroupid: foundAnimal.fk_animalgroupid,
-      animaltypeid: foundAnimal.fk_animaltypeid
-    });
+      animaltypeid: foundAnimal.fk_animaltypeid,
+    };
   },
 
   async getAll(): Promise<AnimalsType[]> {
     const foundAnimals = await prisma.animals.findMany();
-    return foundAnimals.map(foundAnimal => ({
+    return foundAnimals.map((foundAnimal) => ({
       dateofbirth: foundAnimal.dateofbirth,
       dateofbirthisexact: foundAnimal.dateofbirthisexact,
       heightincm: foundAnimal.heightincm,
@@ -164,7 +166,7 @@ export const animalService = {
       timeofdeath: foundAnimal.timeofdeath,
       weightingram: foundAnimal.weightingram,
       animalgroupid: foundAnimal.fk_animalgroupid,
-      animaltypeid: foundAnimal.fk_animaltypeid
+      animaltypeid: foundAnimal.fk_animaltypeid,
     }));
   },
 
@@ -173,19 +175,22 @@ export const animalService = {
       where: {
         fk_animalid: id,
         starttime: {
-          lt: new Date()
-        }
+          lt: new Date(),
+        },
       },
       select: {
-        id: true
-      }
+        id: true,
+      },
     });
-    
+
     if (openAppointments.length > 0) {
-      throw new ConstraintError("Animal has open appointments", openAppointments.map(x => ({
-        path: x.id.toString(),
-        value: x.id
-      })));
+      throw new ConstraintError(
+        "Animal has open appointments",
+        openAppointments.map((x) => ({
+          path: x.id.toString(),
+          value: x.id,
+        }))
+      );
     }
 
     await prisma.animals.delete({ where: { id } });
@@ -194,28 +199,28 @@ export const animalService = {
   async getPicturePath(animalId: number): Promise<string> {
     const found = await prisma.animals.findFirst({
       where: {
-        id: animalId
+        id: animalId,
       },
       select: {
-        picturepath: true
-      }
+        picturepath: true,
+      },
     });
 
-    const filepath = found?.picturepath ?? 'public/placeholders/animal.png';
+    const filepath = found?.picturepath ?? "public/placeholders/animal.png";
     return path.join(appRootDir, filepath);
   },
 
   async savePicture(animalId: number, fileOnDiskPath: string | null): Promise<void> {
     const old = await prisma.animals.findFirst({
       where: {
-        id: animalId
+        id: animalId,
       },
       select: {
-        picturepath: true
-      }
+        picturepath: true,
+      },
     });
     if (!old) {
-      throw new ConstraintError(`No animal with given id exists.`, [{ path: 'animalId', value: animalId }]);
+      throw new ConstraintError(`No animal with given id exists.`, [{ path: "animalId", value: animalId }]);
     }
 
     if (old.picturepath) {
@@ -223,17 +228,17 @@ export const animalService = {
         const oldImagePath = path.join(appRootDir, old.picturepath);
         fs.rm(oldImagePath);
       }
-    };
+    }
 
     await prisma.animals.update({
       where: {
-        id: animalId
+        id: animalId,
       },
       data: {
-        picturepath: fileOnDiskPath
+        picturepath: fileOnDiskPath,
       },
       select: {
-        picturepath: true
+        picturepath: true,
       },
     });
   },
@@ -242,13 +247,13 @@ export const animalService = {
     const relationExists = await prisma.person_has_animal.findFirst({
       where: {
         fk_animalid: animalId,
-        fk_personid: personId
-      }
+        fk_personid: personId,
+      },
     });
     if (relationExists) {
       return true;
     }
 
     return false;
-  }
+  },
 };

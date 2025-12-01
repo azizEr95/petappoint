@@ -4,7 +4,7 @@ import { AppointmentsType, BookAppointmentSchema, PostgresIdSchema } from "vetli
 import { optionalAuthentication, requiresAuthentication } from "./authentication";
 import { AuthorizationError } from "../exceptions/errors/AuthorizationError";
 import { animalService } from "../service/animalService";
-import { ConstraintError } from "../exceptions/errors/ContraintError";
+import { ConstraintError } from "../exceptions/errors/ConstraintError";
 import z from "zod";
 
 export const appointmentRouter = express.Router();

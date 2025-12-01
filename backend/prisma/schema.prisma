@@ -32,7 +32,7 @@ model animals {
   iscastrated            Boolean
   lifestyleisindoors     Boolean                  @default(true)
   picturepath            String?                  @db.VarChar(256)
-  sex                    sexes                    @default(notknown)
+  sex                    sexes                    @default(not_known)
   fk_animaltypeid        Int
   fk_animalgroupid       Int?
   animal_has_races       animal_has_races[]
@@ -256,10 +256,10 @@ model veterinary_has_service {
 }
 
 enum sexes {
-  notknown
+  not_known
   male
   female
-  notapplicable
+  not_applicable
 }
 
 enum paymentstatus {

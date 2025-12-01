@@ -6,16 +6,19 @@ DROP TABLE IF EXISTS animal_has_vaccination;
 DROP TABLE IF EXISTS vaccinations;
 DROP TABLE IF EXISTS appointment_has_review;
 DROP TABLE IF EXISTS reviews;
-DROP TABLE IF EXISTS services;
+DROP TABLE IF EXISTS appointment_has_service;
 DROP TABLE IF EXISTS appointments;
+DROP TABLE IF EXISTS veterinary_can_treat_animaltype;
+DROP TABLE IF EXISTS veterinary_has_service;
+DROP TABLE IF EXISTS services;
 DROP TABLE IF EXISTS veterinarians;
 DROP TABLE IF EXISTS veterinarypractices;
 DROP TABLE IF EXISTS person_has_animal;
 DROP TABLE IF EXISTS animal_has_races;
 DROP TABLE IF EXISTS animals;
-DROP TABLE IF EXISTS animalgroup;
-DROP TABLE IF EXISTS animalraces;
-DROP TABLE IF EXISTS animaltypes;
+DROP TABLE IF EXISTS animal_groups;
+DROP TABLE IF EXISTS animal_races;
+DROP TABLE IF EXISTS animal_types;
 DROP TABLE IF EXISTS persons;
 DROP TABLE IF EXISTS addresses;
 
@@ -30,7 +33,7 @@ CREATE TABLE IF NOT EXISTS addresses(
   latitude FLOAT NOT NULL
 );
 
-CREATE TYPE sexes AS ENUM ('notknown', 'male', 'female', 'notapplicable');
+CREATE TYPE sexes AS ENUM ('not_known', 'male', 'female', 'not_applicable');
 
 CREATE TABLE IF NOT EXISTS persons(
   id SERIAL PRIMARY KEY,
@@ -44,18 +47,18 @@ CREATE TABLE IF NOT EXISTS persons(
   password VARCHAR(255) NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS animaltypes(
+CREATE TABLE IF NOT EXISTS animal_types(
   id SERIAL PRIMARY KEY,
   name VARCHAR(100) NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS animalraces(
+CREATE TABLE IF NOT EXISTS animal_races(
   id SERIAL PRIMARY KEY,
   name VARCHAR(100) NOT NULL,
   fk_animalTypeId INTEGER NOT NULL REFERENCES animaltypes(id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS animalgroup(
+CREATE TABLE IF NOT EXISTS animal_groups(
   id SERIAL PRIMARY KEY,
   name VARCHAR(100) NOT NULL
 );
@@ -71,7 +74,7 @@ CREATE TABLE IF NOT EXISTS animals(
   isCastrated BOOLEAN NOT NULL,
   lifestyleIsIndoors BOOLEAN NOT NULL DEFAULT TRUE,
   picturePath VARCHAR(256) DEFAULT NULL,
-  sex sexes NOT NULL DEFAULT 'notknown',
+  sex sexes NOT NULL DEFAULT 'not_known',
   fk_animalTypeId INTEGER NOT NULL REFERENCES animaltypes(id) ON DELETE CASCADE,
   fk_animalGroupId INTEGER REFERENCES animalgroup(id) ON DELETE CASCADE
 );

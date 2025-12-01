@@ -168,7 +168,7 @@ function getRandomName(): { firstname: string; lastname: string } {
 }
 
 function getRandomSex(): sexes {
-  const sexValues: sexes[] = ["male", "female", "notknown"];
+  const sexValues: sexes[] = ["male", "female", "not_known"];
   return sexValues[Math.floor(Math.random() * sexValues.length)];
 }
 

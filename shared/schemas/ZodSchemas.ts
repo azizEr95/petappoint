@@ -50,7 +50,7 @@ export type AnimalTypeCreateType = z.infer<typeof AnimalTypeCreateSchema>;
 export type AnimalTypeType = z.infer<typeof AnimalTypeSchema>;
 
 //Animal:
-const sexes = z.enum(["notknown", "male", "female", "notapplicable"]);
+const sexes = z.enum(["not_known", "male", "female", "not_applicable"]);
 export type sexesType = z.infer<typeof sexes>;
 
 export const AnimalsSchema = z.object({
