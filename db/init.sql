@@ -8,7 +8,6 @@ DROP TABLE IF EXISTS appointment_has_review;
 DROP TABLE IF EXISTS reviews;
 DROP TABLE IF EXISTS services;
 DROP TABLE IF EXISTS appointments;
-DROP TABLE IF EXISTS veterinary_has_specialization;
 DROP TABLE IF EXISTS veterinarians;
 DROP TABLE IF EXISTS veterinarypractices;
 DROP TABLE IF EXISTS person_has_animal;
