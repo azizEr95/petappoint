@@ -77,7 +77,7 @@ async function seedAppointments() {
             fk_veterinaryid: vet.id,
             fk_veterinarypracticeid: practice.id,
             fk_serviceid: null,
-            notiz: null,
+            notes: null,
           });
         }
       }

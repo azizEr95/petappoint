@@ -15,7 +15,7 @@ describe("appointmentService", () => {
     fk_veterinaryid: 1,
     fk_veterinarypracticeid: 1,
     fk_serviceid: 1,
-    notiz: null,
+    notes: null,
   };
 
   const mockAppointmentWithRelations = {
@@ -299,38 +299,38 @@ describe("appointmentService", () => {
     });
   });
 
-  describe("updateNotiz", () => {
-    it("sollte die Notiz eines Termins aktualisieren", async () => {
+  describe("updateNotes", () => {
+    it("sollte die Notes eines Termins aktualisieren", async () => {
       const updatedAppointment = {
         ...mockAppointment,
-        notiz: "Wichtige Notiz für den Termin",
+        notes: "Wichtige Notes für den Termin",
       };
 
       prismaMock.appointments.update.mockResolvedValue(updatedAppointment);
 
-      const result = await appointmentService.updateNotiz(1, "Wichtige Notiz für den Termin");
+      const result = await appointmentService.updateNotes(1, "Wichtige Notes für den Termin");
 
       expect(result).toEqual(updatedAppointment);
       expect(prismaMock.appointments.update).toHaveBeenCalledWith({
         where: { id: 1 },
-        data: { notiz: "Wichtige Notiz für den Termin" },
+        data: { notes: "Wichtige Notes für den Termin" },
       });
     });
 
-    it("sollte die Notiz auf null setzen können", async () => {
+    it("sollte die Notes auf null setzen können", async () => {
       const updatedAppointment = {
         ...mockAppointment,
-        notiz: null,
+        notes: null,
       };
 
       prismaMock.appointments.update.mockResolvedValue(updatedAppointment);
 
-      const result = await appointmentService.updateNotiz(1, null);
+      const result = await appointmentService.updateNotes(1, null);
 
       expect(result).toEqual(updatedAppointment);
       expect(prismaMock.appointments.update).toHaveBeenCalledWith({
         where: { id: 1 },
-        data: { notiz: null },
+        data: { notes: null },
       });
     });
   });

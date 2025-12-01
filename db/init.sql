@@ -115,7 +115,7 @@ CREATE TABLE IF NOT EXISTS services(
 CREATE TABLE IF NOT EXISTS veterinary_has_service(
   fk_veterinaryId INTEGER NOT NULL REFERENCES veterinaries(id) ON DELETE CASCADE,
   fk_serviceId INTEGER NOT NULL REFERENCES services(id) ON DELETE CASCADE,
-  notiz TEXT,
+  notes TEXT,
   PRIMARY KEY (fk_veterinaryId, fk_serviceId)
 );
 
@@ -133,7 +133,7 @@ CREATE TABLE IF NOT EXISTS appointments(
   fk_veterinaryId INTEGER NOT NULL REFERENCES veterinaries(id) ON DELETE CASCADE,
   fk_veterinaryPracticeId INTEGER NOT NULL REFERENCES veterinarypractices(id) ON DELETE CASCADE,
   fk_serviceId INTEGER REFERENCES services(id) ON DELETE CASCADE DEFAULT NULL,
-  notiz TEXT
+  notes TEXT
 );
 
 CREATE TABLE IF NOT EXISTS appointment_has_service(
