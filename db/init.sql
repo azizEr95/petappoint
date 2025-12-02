@@ -106,7 +106,7 @@ CREATE TABLE IF NOT EXISTS veterinarypractices(
 CREATE TABLE IF NOT EXISTS veterinarians(
   id INTEGER PRIMARY KEY REFERENCES persons(id) ON DELETE CASCADE,
   infoEmail VARCHAR(100),
-  fk_veterinarypractice INTEGER REFERENCES veterinarypractices(id) ON DELETE CASCADE
+  fk_veterinaryPracticeId INTEGER REFERENCES veterinarypractices(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS services(
@@ -191,9 +191,9 @@ CREATE TABLE IF NOT EXISTS recipes(
 
 CREATE TABLE IF NOT EXISTS veterinary_has_invitation(
   fk_veterinaryId INTEGER NOT NULL REFERENCES veterinarians(id) ON DELETE CASCADE,
-  fk_veterinarypracticeId INTEGER NOT NULL REFERENCES veterinarypractices(id) ON DELETE CASCADE,
+  fk_veterinaryPracticeId INTEGER NOT NULL REFERENCES veterinarypractices(id) ON DELETE CASCADE,
   dateOfInvitation DATE NOT NULL,
-  PRIMARY KEY (fk_veterinaryId, fk_veterinarypracticeId)
+  PRIMARY KEY (fk_veterinaryId, fk_veterinaryPracticeId)
 );
 
 CREATE TABLE IF NOT EXISTS person_has_favorized_veterinarypractice(
