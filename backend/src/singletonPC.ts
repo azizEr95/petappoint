@@ -18,7 +18,7 @@ const prismaClientSingleton = () => {
   return new PrismaClient().$extends({
     query: {
       // Extension für persons-Tabelle (normale Nutzer)
-      persons: {
+      person: {
         // Hook: Wird vor jedem persons.create() Aufruf ausgeführt
         async create({ args, query }) {
           // Prüfen ob ein Passwort im data-Objekt vorhanden ist
@@ -41,7 +41,7 @@ const prismaClientSingleton = () => {
         },
       },
       // Extension für veterinarypractices-Tabelle (Tierarztpraxen)
-      veterinarypractices: {
+      veterinaryPractice: {
         // Hook: Wird vor jedem veterinarypractices.create() Aufruf ausgeführt
         async create({ args, query }) {
           if (args.data.password) {
