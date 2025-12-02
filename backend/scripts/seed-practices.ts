@@ -212,7 +212,7 @@ async function seedPractices() {
       select: { id: true },
     });
 
-    const animalTypes = await prisma.animaltypes.findMany({
+    const animalTypes = await prisma.animal_types.findMany({
       select: { id: true },
     });
 
