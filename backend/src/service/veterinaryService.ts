@@ -13,9 +13,10 @@ export const veterinaryService = {
         appointments: true,
         veterinarypractices: true,
         persons: true,
-        veterinary_has_specialization: {
+        veterinary_has_service: {
           include: {
-            specializations: true,
+            services: true,
+            veterinarians: true,
           },
         },
       },

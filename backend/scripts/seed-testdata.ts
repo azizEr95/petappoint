@@ -114,7 +114,7 @@ async function seedTestdata() {
       ],
     });
 
-    const createdAnimalTypes = await prisma.animaltypes.createMany({
+    const createdAnimalTypes = await prisma.animal_types.createMany({
       data: [
         { name: "Hund" },
         { name: "Katze" },
@@ -126,7 +126,7 @@ async function seedTestdata() {
       ],
     });
 
-    const createdAnimalRaces = await prisma.animalraces.createMany({
+    const createdAnimalRaces = await prisma.animal_races.createMany({
       data: [
         /* id */
         //  Hund
@@ -162,7 +162,7 @@ async function seedTestdata() {
       ],
     });
 
-    const createdAnimalGroups = await prisma.animalgroup.createMany({
+    const createdAnimalGroups = await prisma.animal_groups.createMany({
       data: [
         /* id */
         /* 01 */ { name: "Viecher" },
@@ -348,7 +348,7 @@ async function seedTestdata() {
       ],
     });
 
-    const createdveterinarians = await prisma.Veterinarians.createMany({
+    const createdveterinarians = await prisma.veterinarians.createMany({
       data: [
         { id: 4, infoemail: "maria@arzt.de", fk_veterinarypractice: 1 },
         { id: 2, infoemail: "daniel@arzt.de", fk_veterinarypractice: 2 },

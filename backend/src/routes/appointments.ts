@@ -103,7 +103,7 @@ appointmentRouter.patch("/:id/notes", requiresAuthentication, async (req, res) =
 
   ensureUserCanEditAppointment(req.userId!, appointmentId);
 
-  const updated = await appointmentService.updatenotes(appointmentId, notes || null);
+  const updated = await appointmentService.updateNotes(appointmentId, notes || null);
 
   res.status(200).send(updated);
 });

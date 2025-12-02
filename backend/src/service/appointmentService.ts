@@ -962,7 +962,7 @@ export const appointmentService = {
             name: updated.services.name,
           }
         : null,
-      availableservices: updated.services ? updated.appointment_has_service.flatMap((x) => x.services) : [],
+      availableServices: updated.services ? updated.appointment_has_service.flatMap((x) => x.services) : [],
       notes: updated.notes,
     };
   },
@@ -1056,7 +1056,7 @@ export const appointmentService = {
             name: updated.services.name,
           }
         : null,
-      availableservices: updated.services ? updated.appointment_has_service.flatMap((x) => x.services) : [],
+      availableServices: updated.services ? updated.appointment_has_service.flatMap((x) => x.services) : [],
       notes: updated.notes,
     };
   },
@@ -1133,7 +1133,7 @@ export const appointmentService = {
             name: updated.services.name,
           }
         : null,
-      availableservices: updated.services ? updated.appointment_has_service.flatMap((x) => x.services) : [],
+      availableServices: updated.services ? updated.appointment_has_service.flatMap((x) => x.services) : [],
       notes: updated.notes,
     };
   },
@@ -1203,7 +1203,7 @@ export const appointmentService = {
             name: updated.services.name,
           }
         : null,
-      availableservices: updated.services ? updated.appointment_has_service.flatMap((x) => x.services) : [],
+      availableServices: updated.services ? updated.appointment_has_service.flatMap((x) => x.services) : [],
       notes: updated.notes,
     };
   },
