@@ -10,6 +10,7 @@ import {
 import { addressService } from "./addressService";
 import { ResourceNotFoundError } from "../exceptions/errors/ResourceNotFoundError";
 import { ConstraintError } from "../exceptions/errors/ConstraintError";
+import { Prisma } from "../../generated/prisma";
 
 export const veterinaryPracticeService = {
   async create(veterinaryPracticeRe: VeterinaryPracticesCreateType): Promise<VeterinaryPracticesType> {
@@ -55,88 +56,88 @@ export const veterinaryPracticeService = {
     const pageSize = query.pageSize ?? 10;
     const skip = (page - 1) * pageSize;
 
-    const whereCondition = {
+    const whereCondition: Prisma.VeterinaryPracticeWhereInput = {
       AND: [
         !query.animalTypeIds || query.animalTypeIds.length <= 0
           ? {}
           : {
-              veterinarian: {
-                some: {
-                  veterinaryCanTreatAnimalTypes: {
-                    some: {
-                      animalTypeId: { in: query.animalTypeIds },
-                    },
+            veterinarians: {
+              some: {
+                veterinaryCanTreatAnimalTypes: {
+                  some: {
+                    animalTypeId: { in: query.animalTypeIds },
                   },
                 },
               },
             },
+          },
         !query.serviceTypeIds || query.serviceTypeIds.length <= 0
           ? {}
           : {
-              veterinarian: {
-                some: {
-                  veterinaryHasServices: {
-                    some: {
-                      serviceId: { in: query.serviceTypeIds },
-                    },
+            veterinarians: {
+              some: {
+                veterinaryHasServices: {
+                  some: {
+                    serviceId: { in: query.serviceTypeIds },
                   },
                 },
               },
             },
+          },
         query.name.length <= 0
           ? {}
           : {
-              name: {
-                contains: query.name,
-                mode: "insensitive" as const,
-              },
+            name: {
+              contains: query.name,
+              mode: "insensitive" as const,
             },
+          },
         query.address.length <= 0
           ? {}
           : {
-              address: {
-                OR: [
-                  {
-                    street: {
-                      contains: query.address,
-                      mode: "insensitive" as const,
-                    },
+            address: {
+              OR: [
+                {
+                  street: {
+                    contains: query.address,
+                    mode: "insensitive" as const,
                   },
-                  {
-                    city: {
-                      contains: query.address,
-                      mode: "insensitive" as const,
-                    },
+                },
+                {
+                  city: {
+                    contains: query.address,
+                    mode: "insensitive" as const,
                   },
-                  {
-                    cityCode: {
-                      contains: query.address,
-                      mode: "insensitive" as const,
-                    },
+                },
+                {
+                  cityCode: {
+                    contains: query.address,
+                    mode: "insensitive" as const,
                   },
-                  {
-                    country: {
-                      contains: query.address,
-                      mode: "insensitive" as const,
-                    },
+                },
+                {
+                  country: {
+                    contains: query.address,
+                    mode: "insensitive" as const,
                   },
-                ],
-              },
+                },
+              ],
             },
+          },
       ],
     } as const;
-
+    
     const [searchResults, total] = await Promise.all([
       prisma.veterinaryPractice.findMany({
         include: {
           address: true,
         },
-        where: whereCondition as any,
+        where: whereCondition,
         skip,
         take: pageSize,
       }),
       prisma.veterinaryPractice.count({
-        where: whereCondition as any,
+        where: whereCondition,
       }),
     ]);
 
