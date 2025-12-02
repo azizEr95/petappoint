@@ -84,7 +84,66 @@
 - **Base**: Plural noun → `/api/animals`, `/api/appointments`, `/api/veterinary-practices`
 - **ID Params**: `:id` or `:entityId` → `/api/animals/:id`, `/api/practices/:practiceId`
 
-## 6. Import/Export Naming
+## 6. Zod Schema Naming (shared/schemas/ZodSchemas.ts)
+
+**Location:** `/shared/schemas/ZodSchemas.ts` (used by both backend & frontend)
+
+### Schema Names
+- **Format:** PascalCase + "Schema" suffix
+- **Pattern:** `EntityNameSchema` for base, `EntityNameTypeSchema` for derived
+- **Examples:**
+  - `PersonSchema` → base person schema
+  - `AnimalsSchema` → base animal schema
+  - `AppointmentsSchema` → base appointment schema
+  - `ServiceSchema` → base service schema
+
+### Type Exports (from Zod schemas)
+- **Format:** PascalCase + "Type" suffix
+- **Pattern:** `z.infer<typeof SchemaName>`
+- **Examples:**
+  ```typescript
+  export const AnimalsSchema = z.object({ ... })
+  export type AnimalsType = z.infer<typeof AnimalsSchema>
+
+  export const AppointmentsSchema = z.object({
+    availableServices: z.array(ServiceSchema),  // camelCase!
+    ...
+  })
+  export type AppointmentsType = z.infer<typeof AppointmentsSchema>
+  ```
+
+### Field Naming in Schemas
+- **Must match backend service response format** (camelCase)
+- **Critical:** After backend changes, update Zod schemas to match!
+- **Example:**
+  ```typescript
+  // Backend service returns:
+  { availableServices: [...] }
+
+  // Zod schema MUST match:
+  availableServices: z.array(ServiceSchema)  // ✓
+  availableservices: z.array(ServiceSchema)  // ✗ (old, causes TS errors)
+  ```
+
+### Common Zod Schemas
+| Schema Name | Type Name | Used For | Location |
+|-------------|-----------|----------|----------|
+| PersonSchema | PersonType | Person data | ZodSchemas.ts:20 |
+| AnimalsSchema | AnimalsType | Animal data | ZodSchemas.ts:45 |
+| AppointmentsSchema | AppointmentsType | Appointment data | ZodSchemas.ts:231 |
+| ServiceSchema | ServiceType | Service/treatment type | ZodSchemas.ts:193 |
+| VeterinaryPracticeSchema | VeterinaryPracticesType | Practice data | ZodSchemas.ts:140 |
+| AnimalTypeSchema | AnimalTypeType | Animal type/species | ZodSchemas.ts:162 |
+
+### Validation Schemas (Create/Update)
+- **Pattern:** `EntityNameCreateSchema`, `EntityNameUpdateSchema`
+- **Examples:**
+  ```typescript
+  export const AppointmentsCreateSchema = z.object({ ... })
+  export const PersonUpdateSchema = PersonSchema.partial()
+  ```
+
+## 7. Import/Export Naming
 
 ### Named Exports (Preferred)
 ```typescript
@@ -94,27 +153,27 @@ export function calculateAge(dateOfBirth: Date): number { ... }
 
 // Bad
 export default AnimalService
-
+```
 
 ### Default Exports (Components Only)
 ```typescript
 // Acceptable for React components
 export default function AnimalCard({ animalId }: Props) { ... }
+```
 
+## 8. Common Entities - Naming Reference
 
-## 7. Common Entities - Naming Reference
+| Entity | DB Table | Prisma Model (Aktuell) | Prisma Model (Ziel Phase 3) | Zod Schema | Service File | API Client | Route |
+|--------|----------|------------------------|----------------------------|------------|--------------|------------|-------|
+| Person | persons | persons | Person @@map("persons") | PersonSchema | personService.ts | - | /persons |
+| Animal | animals | animals | Animal @@map("animals") | AnimalsSchema | animalService.ts | AnimalsAPI.ts | /animals |
+| Appointment | appointments | appointments | Appointment @@map("appointments") | AppointmentsSchema | appointmentService.ts | AppointmentsAPI.ts | /appointments |
+| Veterinary Practice | veterinarypractices | veterinarypractices | VeterinaryPractice @@map("veterinarypractices") | VeterinaryPracticeSchema | veterinaryPracticeService.ts | VeterinaryPracticeAPI.ts | /practices/:practiceId |
+| Veterinarian | veterinarians | veterinarians | Veterinarian @@map("veterinarians") | VeterinarySchema | veterinaryService.ts | - | - |
+| Animal Type | animal_types | animaltypes | AnimalType @@map("animal_types") | AnimalTypeSchema | animalTypeService.ts | AnimalTypeAPI.ts | /animaltypes |
+| Service | services | services | Service @@map("services") | ServiceSchema | serviceService.ts | ServicesAPI.ts | /services |
 
-| Entity | DB Table | Prisma Model (Aktuell) | Prisma Model (Ziel Phase 3) | Service File | API Client | Route |
-|--------|----------|------------------------|----------------------------|--------------|------------|-------|
-| Person | persons | persons | Person @@map("persons") | personService.ts | - | /persons |
-| Animal | animals | animals | Animal @@map("animals") | animalService.ts | AnimalsAPI.ts | /animals |
-| Appointment | appointments | appointments | Appointment @@map("appointments") | appointmentService.ts | AppointmentsAPI.ts | /appointments |
-| Veterinary Practice | veterinarypractices | veterinarypractices | VeterinaryPractice @@map("veterinarypractices") | veterinaryPracticeService.ts | VeterinaryPracticeAPI.ts | /practices/:practiceId |
-| Veterinarian | veterinarians | veterinarians | Veterinarian @@map("veterinarians") | veterinaryService.ts | - | - |
-| Animal Type | animal_types | animaltypes | AnimalType @@map("animal_types") | animalTypeService.ts | AnimalTypeAPI.ts | /animaltypes |
-| Service | services | services | Service @@map("services") | serviceService.ts | ServicesAPI.ts | /services |
-
-## 8. Migration Rules
+## 9. Migration Rules
 
 ### Safe Changes (No DB Impact)
 1. Rename backend service files
@@ -136,7 +195,7 @@ export default function AnimalCard({ animalId }: Props) { ... }
 - Edit generated Prisma client files
 - Rename DB tables without updating seed scripts
 
-## 9. Common Mistakes to Avoid
+## 10. Common Mistakes to Avoid
 
 ❌ German variable names in code:
 ```typescript
@@ -162,11 +221,12 @@ const dateOfBirth = new Date()  // Good
 // Always update init.sql → regenerate Prisma
 
 
-## 10. Cross-Reference: Where Is Each Entity Used?
+## 11. Cross-Reference: Where Is Each Entity Used?
 
 ### persons
 - **DB**: `persons` table (init.sql:38)
 - **Prisma**: `persons` model (schema.prisma:81)
+- **Zod**: `PersonSchema` (ZodSchemas.ts:20)
 - **Backend**: `personService.ts`, `/routes/persons.ts`
 - **Seed**: `seed-testdata.ts:52`
 - **Frontend**: Login, registration, dashboard
@@ -174,6 +234,7 @@ const dateOfBirth = new Date()  // Good
 ### animals
 - **DB**: `animals` table (init.sql:66)
 - **Prisma**: `animals` model (schema.prisma:24)
+- **Zod**: `AnimalsSchema` (ZodSchemas.ts:45)
 - **Backend**: `animalService.ts`, `/routes/animals.ts`
 - **Seed**: `seed-testdata.ts:176`
 - **Frontend**: `AnimalsAPI.ts`, `/routes/animals.tsx`, `AnimalCard.tsx`
@@ -181,6 +242,7 @@ const dateOfBirth = new Date()  // Good
 ### appointments
 - **DB**: `appointments` table (init.sql:130)
 - **Prisma**: `appointments` model (schema.prisma:55)
+- **Zod**: `AppointmentsSchema` (ZodSchemas.ts:231)
 - **Backend**: `appointmentService.ts`, `/routes/appointments.ts`
 - **Seed**: `seed-appointments.ts`
 - **Frontend**: `AppointmentsAPI.ts`, `/routes/appointments.tsx`, booking flow
@@ -213,23 +275,46 @@ const dateOfBirth = new Date()  // Good
 - **Seed**: `seed-testdata.ts:359`
 - **Frontend**: `ServicesAPI.ts`, appointment booking
 
-## 11. Checklist for Renaming
+## 12. Checklist for Renaming
 
-When renaming an entity:
-- [ ] Update init.sql (if DB change)
+When renaming an entity or field:
+
+### Database-Level Changes
+- [ ] Update init.sql (column/table names)
 - [ ] Update seed scripts (seed-*.ts)
-- [ ] Regenerate Prisma (`npm run prisma`)
-- [ ] Update backend service
+- [ ] Run `docker-compose down -v` (drop old DB)
+- [ ] Run `docker-compose up -d` (recreate DB)
+- [ ] Regenerate Prisma: `npm --prefix backend run prisma`
+
+### Schema Layer
+- [ ] **Update Zod schemas** in `shared/schemas/ZodSchemas.ts`
+- [ ] Verify field names match backend service responses
+- [ ] Update schema names if entity renamed
+
+### Backend Changes
+- [ ] Update backend service (response object field names)
 - [ ] Update backend routes
 - [ ] Update backend tests
-- [ ] Update frontend API client
-- [ ] Update frontend routes
+- [ ] Search backend for old names: `grep -r "oldName" backend/src`
+
+### Frontend Changes
+- [ ] Update frontend API clients
+- [ ] Update frontend routes (if route params changed)
 - [ ] Update frontend components using the entity
 - [ ] Update query keys (TanStack Query)
-- [ ] Search codebase for all references (`grep -r "oldName"`)
-- [ ] Run backend tests (`npm run test:backend`)
-- [ ] Run frontend tests (`npm run test:frontend`)
-- [ ] Manual smoke test
+- [ ] Search frontend for old names: `grep -r "oldName" frontend/src`
+
+### Testing
+- [ ] Run backend tests: `npm --prefix backend test`
+- [ ] Run frontend tests: `npm --prefix frontend test`
+- [ ] Build frontend: `npm --prefix frontend run build` (catches TS errors)
+- [ ] Manual smoke test (critical user flows)
+- [ ] Verify no TypeScript errors
+
+### Common Pitfalls
+- ⚠️ **Zod schema mismatch**: After changing backend service field names (e.g., `availableservices` → `availableServices`), MUST update Zod schema or frontend will have TS errors
+- ⚠️ **Query key cache**: Old query keys may persist in browser cache - clear if issues
+- ⚠️ **Route params**: Changing route params ($praxisId → $practiceId) requires updating ALL navigation links
 
 
 
