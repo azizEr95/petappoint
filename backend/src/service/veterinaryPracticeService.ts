@@ -208,7 +208,7 @@ export const veterinaryPracticeService = {
         },
       },
       where: {
-        veterinaryPracticeId: veterinaryPracticeId,
+        fk_veterinarypracticeid: veterinaryPracticeId,
       },
     });
 
