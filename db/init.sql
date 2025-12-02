@@ -55,7 +55,7 @@ CREATE TABLE IF NOT EXISTS animal_types(
 CREATE TABLE IF NOT EXISTS animal_races(
   id SERIAL PRIMARY KEY,
   name VARCHAR(100) NOT NULL,
-  fk_animalTypeId INTEGER NOT NULL REFERENCES animaltypes(id) ON DELETE CASCADE
+  fk_animalTypeId INTEGER NOT NULL REFERENCES animal_types(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS animal_groups(
@@ -75,13 +75,13 @@ CREATE TABLE IF NOT EXISTS animals(
   lifestyleIsIndoors BOOLEAN NOT NULL DEFAULT TRUE,
   picturePath VARCHAR(256) DEFAULT NULL,
   sex sexes NOT NULL DEFAULT 'not_known',
-  fk_animalTypeId INTEGER NOT NULL REFERENCES animaltypes(id) ON DELETE CASCADE,
-  fk_animalGroupId INTEGER REFERENCES animalgroup(id) ON DELETE CASCADE
+  fk_animalTypeId INTEGER NOT NULL REFERENCES animal_types(id) ON DELETE CASCADE,
+  fk_animalGroupId INTEGER REFERENCES animal_groups(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS animal_has_races(
   fk_animalId INTEGER NOT NULL REFERENCES animals(id) ON DELETE CASCADE,
-  fk_animalRaceId INTEGER NOT NULL REFERENCES animalraces(id) ON DELETE CASCADE,
+  fk_animalRaceId INTEGER NOT NULL REFERENCES animal_races(id) ON DELETE CASCADE,
   PRIMARY KEY (fk_animalId, fk_animalRaceId)
 );
 
@@ -123,7 +123,7 @@ CREATE TABLE IF NOT EXISTS veterinary_has_service(
 
 CREATE TABLE IF NOT EXISTS veterinary_can_treat_animaltype(
   fk_veterinaryId INTEGER NOT NULL REFERENCES veterinarians(id) ON DELETE CASCADE,
-  fk_animaltypeId INTEGER NOT NULL REFERENCES animaltypes(id) ON DELETE CASCADE,
+  fk_animaltypeId INTEGER NOT NULL REFERENCES animal_types(id) ON DELETE CASCADE,
   PRIMARY KEY (fk_veterinaryId, fk_animaltypeId)
 );
 
