@@ -373,16 +373,16 @@ function PersonRegistration() {
     }
 
     const person: PersonsCreateType = {
-      firstname: firstName,
-      lastname: lastName,
+      firstName: firstName,
+      lastName: lastName,
       email: email,
       password: password,
       phone: phone,
-      dateofbirth: new Date(dateOfBirth),
+      dateOfBirth: new Date(dateOfBirth),
       sex: sex ?? 'not_known',
-      addresses: {
+      address: {
         street: strasse + hausnr,
-        citycode: plz,
+        cityCode: plz,
         city: stadt,
         country: land,
         latitude: 0,
@@ -393,7 +393,7 @@ function PersonRegistration() {
     try {
       PersonsCreateSchema.parse({
         ...person,
-        dateOfBirth: person.dateofbirth.toISOString(),
+        dateOfBirth: person.dateOfBirth.toISOString(),
       })
     } catch (err) {
       console.log('Zod Error: personRegistration' + err)

@@ -397,12 +397,12 @@ function VeterinaryRegistration() {
       email: email,
       password: password,
       phone: phone,
-      infoemail: infoemail,
+      infoEmail: infoemail,
       website: website,
       info: info,
-      addresses: {
+      address: {
         street: strasse + hausnr,
-        citycode: plz,
+        cityCode: plz,
         city: stadt,
         country: land,
         longitude: 0,
