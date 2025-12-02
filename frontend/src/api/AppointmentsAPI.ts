@@ -58,8 +58,8 @@ export const bookAppointment = async (
 
   const requestBody = {
     id: appointmentID,
-    animalid: animalID,
-    serviceid: serviceID,
+    animalId: animalID,
+    serviceId: serviceID,
   }
 
   const requestOptions = {
