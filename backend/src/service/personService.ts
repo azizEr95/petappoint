@@ -6,16 +6,16 @@ import { ResourceNotFoundError } from "../exceptions/errors/ResourceNotFoundErro
 
 export const personService = {
   async create(dataRe: PersonsCreateType): Promise<PersonsType> {
-    const created = await prisma.persons.create({
+    const created = await prisma.person.create({
       include: {
-        addresses: true
+        address: true
       },
       data: {
-        firstname: dataRe.firstname,
-        lastname: dataRe.lastname,
+        firstName: dataRe.firstname,
+        lastName: dataRe.lastname,
         sex: dataRe.sex,
-        dateofbirth: dataRe.dateofbirth,
-        addresses: {
+        dateOfBirth: dataRe.dateofbirth,
+        address: {
           create: dataRe.addresses
         },
         phone: dataRe.phone,
@@ -26,11 +26,11 @@ export const personService = {
 
     return {
       id: created.id,
-      firstname: created.firstname,
-      lastname: created.lastname,
+      firstname: created.firstName,
+      lastname: created.lastName,
       sex: created.sex,
-      dateofbirth: created.dateofbirth,
-      addresses: created.addresses,
+      dateofbirth: created.dateOfBirth,
+      addresses: created.address,
       phone: created.phone,
       email: created.email,
     }
@@ -46,9 +46,9 @@ export const personService = {
   },
 
   async getById(id: number): Promise<PersonsType> {
-    const foundPerson = await prisma.persons.findUnique({
+    const foundPerson = await prisma.person.findUnique({
       include: {
-        addresses: true
+        address: true
       },
       where: { id }
     });
@@ -59,20 +59,20 @@ export const personService = {
 
     return {
       id: foundPerson.id,
-      firstname: foundPerson.firstname,
-      lastname: foundPerson.lastname,
+      firstname: foundPerson.firstName,
+      lastname: foundPerson.lastName,
       sex: foundPerson.sex,
-      dateofbirth: foundPerson.dateofbirth,
-      addresses: foundPerson.addresses,
+      dateofbirth: foundPerson.dateOfBirth,
+      addresses: foundPerson.address,
       phone: foundPerson.phone,
       email: foundPerson.email,
     };
   },
 
   async getByEmail(email: string): Promise<PersonsType> {
-    const foundPerson = await prisma.persons.findUnique({
+    const foundPerson = await prisma.person.findUnique({
       include: {
-        addresses: true
+        address: true
       },
       where: { email }
     });
@@ -83,30 +83,30 @@ export const personService = {
 
     return {
       id: foundPerson.id,
-      firstname: foundPerson.firstname,
-      lastname: foundPerson.lastname,
+      firstname: foundPerson.firstName,
+      lastname: foundPerson.lastName,
       sex: foundPerson.sex,
-      dateofbirth: foundPerson.dateofbirth,
-      addresses: foundPerson.addresses,
+      dateofbirth: foundPerson.dateOfBirth,
+      addresses: foundPerson.address,
       phone: foundPerson.phone,
       email: foundPerson.email,
     };
   },
 
   async getAll(): Promise<PersonsType[]> {
-    const found = await prisma.persons.findMany({
+    const found = await prisma.person.findMany({
       include: {
-        addresses: true
+        address: true
       }
     });
 
     return found.map(foundPerson => ({
       id: foundPerson.id,
-      firstname: foundPerson.firstname,
-      lastname: foundPerson.lastname,
+      firstname: foundPerson.firstName,
+      lastname: foundPerson.lastName,
       sex: foundPerson.sex,
-      dateofbirth: foundPerson.dateofbirth,
-      addresses: foundPerson.addresses,
+      dateofbirth: foundPerson.dateOfBirth,
+      addresses: foundPerson.address,
       phone: foundPerson.phone,
       email: foundPerson.email,
     }));
@@ -115,29 +115,29 @@ export const personService = {
   async update(dataRe: PersonsUpdateType): Promise<PersonsType> {
     await addressService.update(dataRe.addresses);
 
-    const updatedPerson = await prisma.persons.update({
+    const updatedPerson = await prisma.person.update({
       where: { id: dataRe.id },
       data: {
-        firstname: dataRe.firstname,
-        lastname: dataRe.lastname,
+        firstName: dataRe.firstname,
+        lastName: dataRe.lastname,
         sex: dataRe.sex,
-        dateofbirth: dataRe.dateofbirth,
+        dateOfBirth: dataRe.dateofbirth,
         phone: dataRe.phone,
         email: dataRe.email,
         password: dataRe.password,
       },
       include: {
-        addresses: true
+        address: true
       }
     });
 
     return {
       id: updatedPerson.id,
-      firstname: updatedPerson.firstname,
-      lastname: updatedPerson.lastname,
+      firstname: updatedPerson.firstName,
+      lastname: updatedPerson.lastName,
       sex: updatedPerson.sex,
-      dateofbirth: updatedPerson.dateofbirth,
-      addresses: updatedPerson.addresses,
+      dateofbirth: updatedPerson.dateOfBirth,
+      addresses: updatedPerson.address,
       phone: updatedPerson.phone,
       email: updatedPerson.email,
     };
@@ -211,6 +211,6 @@ export const personService = {
   },
 
   async delete(id: number): Promise<void> {
-    await prisma.persons.delete({ where: { id } });
+    await prisma.person.delete({ where: { id } });
   },
 };
