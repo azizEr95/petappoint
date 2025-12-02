@@ -9,18 +9,18 @@ async function seedAppointments() {
 
   try {
     // Delete all existing appointments
-    const deleted1 = await prisma.appointment_has_service.deleteMany({});
-    const deleted = await prisma.appointments.deleteMany({});
+    const deleted1 = await prisma.appointmentHasService.deleteMany({});
+    const deleted = await prisma.appointment.deleteMany({});
     console.log(`🗑️  Deleted ${deleted.count} old appointments`);
 
     // Get all practices, vets, services
-    const practices = await prisma.veterinarypractices.findMany({
+    const practices = await prisma.veterinaryPractice.findMany({
       select: { id: true },
     });
-    const vets = await prisma.veterinarians.findMany({
-      select: { id: true, fk_veterinarypractice: true },
+    const vets = await prisma.veterinarian.findMany({
+      select: { id: true, fk_veterinarypracticeid: true },
     });
-    const services = await prisma.services.findMany({
+    const services = await prisma.service.findMany({
       select: { id: true },
     });
 
@@ -37,7 +37,7 @@ async function seedAppointments() {
     // Even index (0,2,4...): appointments from tomorrow
     // Odd index (1,3,5...): appointments start in 2 weeks
     for (const [index, practice] of practices.entries()) {
-      const practiceVets = vets.filter((v) => v.fk_veterinarypractice === practice.id);
+      const practiceVets = vets.filter((v) => v.fk_veterinarypracticeid === practice.id);
       const practiceServices = services;
       const availableVets = practiceVets.length > 0 ? practiceVets : vets;
 
@@ -62,21 +62,21 @@ async function seedAppointments() {
           const hour = 8 + Math.floor(Math.random() * 10);
           const minute = Math.random() > 0.5 ? 0 : 30;
 
-          const starttime = new Date(date);
-          starttime.setHours(hour, minute, 0, 0);
+          const startTime = new Date(date);
+          startTime.setHours(hour, minute, 0, 0);
 
-          const endtime = new Date(starttime);
-          endtime.setMinutes(endtime.getMinutes() + 30 + Math.floor(Math.random() * 3) * 15);
+          const endTime = new Date(startTime);
+          endTime.setMinutes(endTime.getMinutes() + 30 + Math.floor(Math.random() * 3) * 15);
 
           const vet = availableVets[Math.floor(Math.random() * availableVets.length)];
 
           appointments.push({
-            starttime,
-            endtime,
-            fk_animalid: null,
-            fk_veterinaryid: vet.id,
-            fk_veterinarypracticeid: practice.id,
-            fk_serviceid: null,
+            startTime,
+            endTime,
+            animalId: null,
+            veterinaryId: vet.id,
+            veterinaryPracticeId: practice.id,
+            serviceId: null,
             notes: null,
           });
         }
@@ -84,27 +84,27 @@ async function seedAppointments() {
     }
 
     // Create appointments
-    const created = await prisma.appointments.createMany({
+    const created = await prisma.appointment.createMany({
       data: appointments,
     });
-    const appointmentIDs = await prisma.appointments.findMany({
+    const appointmentIDs = await prisma.appointment.findMany({
       select: { id: true },
     });
 
     appointmentIDs.forEach((x) => {
       appointmentHasService.push({
         // add service for every appointment
-        fk_appointmentid: x.id,
-        fk_serviceid: 1,
+        appointmentId: x.id,
+        serviceId: 1,
       });
     });
-    const created2 = await prisma.appointment_has_service.createMany({
+    const created2 = await prisma.appointmentHasService.createMany({
       data: appointmentHasService,
     });
 
     console.log(`✅ Created ${created.count} new appointments`);
     console.log(
-      `📅 Date range: ${appointments[0].starttime.toLocaleDateString()} - ${appointments[appointments.length - 1].starttime.toLocaleDateString()}`
+      `📅 Date range: ${appointments[0].startTime.toLocaleDateString()} - ${appointments[appointments.length - 1].startTime.toLocaleDateString()}`
     );
   } catch (error) {
     console.error("❌ Error seeding appointments:", error);

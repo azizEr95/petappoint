@@ -1,5 +1,5 @@
 import { prisma } from "../src/singletonPC";
-import { sexes } from "../generated/prisma";
+import { Sexes } from "../generated/prisma";
 
 // ============================
 // HELPER FUNCTIONS
@@ -160,15 +160,15 @@ function generatePracticeName(city: string): string {
   return `${type}${suffix}`;
 }
 
-function getRandomName(): { firstname: string; lastname: string } {
+function getRandomName(): { firstName: string; lastName: string } {
   return {
-    firstname: FIRST_NAMES[Math.floor(Math.random() * FIRST_NAMES.length)],
-    lastname: LAST_NAMES[Math.floor(Math.random() * LAST_NAMES.length)],
+    firstName: FIRST_NAMES[Math.floor(Math.random() * FIRST_NAMES.length)],
+    lastName: LAST_NAMES[Math.floor(Math.random() * LAST_NAMES.length)],
   };
 }
 
-function getRandomSex(): sexes {
-  const sexValues: sexes[] = ["male", "female", "not_known"];
+function getRandomSex(): Sexes {
+  const sexValues: Sexes[] = ["male", "female", "not_known"];
   return sexValues[Math.floor(Math.random() * sexValues.length)];
 }
 
@@ -208,11 +208,11 @@ async function seedPractices() {
     // ============================
     console.log("📋 Loading existing services and animal types...");
 
-    const services = await prisma.services.findMany({
+    const services = await prisma.service.findMany({
       select: { id: true },
     });
 
-    const animalTypes = await prisma.animal_types.findMany({
+    const animalTypes = await prisma.animalType.findMany({
       select: { id: true },
     });
 
@@ -235,19 +235,19 @@ async function seedPractices() {
       const city = generateRandomCity();
       const practiceName = generatePracticeName(city.name);
 
-      const practice = await prisma.veterinarypractices.create({
+      const practice = await prisma.veterinaryPractice.create({
         data: {
           name: practiceName,
           phone: generateRandomPhone(),
-          infoemail: generateRandomEmail(`info-${practiceName}`),
+          infoEmail: generateRandomEmail(`info-${practiceName}`),
           email: generateRandomEmail(`kontakt-${practiceName}`),
           password: "VetPractice123!",
           website: Math.random() > 0.5 ? `https://www.${practiceName.toLowerCase().replace(/\s/g, "")}.de` : null,
           info: Math.random() > 0.5 ? "Moderne Tierarztpraxis mit umfassendem Leistungsspektrum." : null,
-          addresses: {
+          address: {
             create: {
               street: generateRandomStreet(),
-              citycode: city.citycode,
+              cityCode: city.citycode,
               city: city.name,
               country: "Deutschland",
               longitude: city.longitude + (Math.random() - 0.5) * 0.1,
@@ -286,19 +286,19 @@ async function seedPractices() {
         const city = generateRandomCity();
 
         // Create person first
-        const person = await prisma.persons.create({
+        const person = await prisma.person.create({
           data: {
-            firstname: name.firstname,
-            lastname: name.lastname,
+            firstName: name.firstName,
+            lastName: name.lastName,
             sex: getRandomSex(),
-            dateofbirth: getRandomDateOfBirth(25, 65),
+            dateOfBirth: getRandomDateOfBirth(25, 65),
             phone: generateRandomPhone(),
-            email: generateRandomEmail(`${name.firstname}.${name.lastname}`),
+            email: generateRandomEmail(`${name.firstName}.${name.lastName}`),
             password: "Vet123!",
-            addresses: {
+            address: {
               create: {
                 street: generateRandomStreet(),
-                citycode: city.citycode,
+                cityCode: city.citycode,
                 city: city.name,
                 country: "Deutschland",
                 longitude: city.longitude + (Math.random() - 0.5) * 0.1,
@@ -309,11 +309,11 @@ async function seedPractices() {
         });
 
         // Create veterinary with person id
-        await prisma.veterinarians.create({
+        await prisma.veterinarian.create({
           data: {
             id: person.id,
-            infoemail: Math.random() > 0.5 ? generateRandomEmail(`dr.${name.lastname}`) : null,
-            fk_veterinarypractice: practice.id,
+            infoEmail: Math.random() > 0.5 ? generateRandomEmail(`dr.${name.lastName}`) : null,
+            fk_veterinarypracticeid: practice.id,
           },
         });
 
@@ -333,19 +333,19 @@ async function seedPractices() {
     console.log("🔗 Filling junction tables...");
 
     // veterinary_can_treat_animaltype
-    const treatableTypes: Array<{ fk_veterinaryid: number; fk_animaltypeid: number }> = [];
+    const treatableTypes: Array<{ veterinaryId: number; animalTypeId: number }> = [];
 
     for (const vet of allVeterinarians) {
       const randomTypes = getRandomSubset(animalTypes, 1, 4);
       randomTypes.forEach((type) => {
         treatableTypes.push({
-          fk_veterinaryid: vet.id,
-          fk_animaltypeid: type.id,
+          veterinaryId: vet.id,
+          animalTypeId: type.id,
         });
       });
     }
 
-    await prisma.veterinary_can_treat_animaltype.createMany({
+    await prisma.veterinaryCanTreatAnimalType.createMany({
       data: treatableTypes,
       skipDuplicates: true,
     });
@@ -353,19 +353,19 @@ async function seedPractices() {
     console.log(`✓ Added ${treatableTypes.length} animal type assignments`);
 
     // veterinary_has_service
-    const vetServices: Array<{ fk_veterinaryid: number; fk_serviceid: number }> = [];
+    const vetServices: Array<{ veterinaryId: number; serviceId: number }> = [];
 
     for (const vet of allVeterinarians) {
       const randomServices = getRandomSubset(services, 2, 6);
       randomServices.forEach((service) => {
         vetServices.push({
-          fk_veterinaryid: vet.id,
-          fk_serviceid: service.id,
+          veterinaryId: vet.id,
+          serviceId: service.id,
         });
       });
     }
 
-    await prisma.veterinary_has_service.createMany({
+    await prisma.veterinaryHasService.createMany({
       data: vetServices,
       skipDuplicates: true,
     });
@@ -374,9 +374,9 @@ async function seedPractices() {
 
     // veterinary_has_invitation (multi-practice)
     const invitations: Array<{
-      fk_veterinaryid: number;
-      fk_veterinarypracticeid: number;
-      dateofinvitation: Date;
+      veterinaryId: number;
+      veterinaryPracticeId: number;
+      dateOfInvitation: Date;
     }> = [];
 
     let multiPracticeCount = 0;
@@ -395,9 +395,9 @@ async function seedPractices() {
 
           additionalPractices.forEach((practiceId) => {
             invitations.push({
-              fk_veterinaryid: vet.id,
-              fk_veterinarypracticeid: practiceId,
-              dateofinvitation: getRandomDateInLastMonths(6),
+              veterinaryId: vet.id,
+              veterinaryPracticeId: practiceId,
+              dateOfInvitation: getRandomDateInLastMonths(6),
             });
           });
 
@@ -407,7 +407,7 @@ async function seedPractices() {
     }
 
     if (invitations.length > 0) {
-      await prisma.veterinary_has_invitation.createMany({
+      await prisma.veterinaryHasInvitation.createMany({
         data: invitations,
         skipDuplicates: true,
       });
