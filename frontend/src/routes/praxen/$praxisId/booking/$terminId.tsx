@@ -26,7 +26,7 @@ export const Route = createFileRoute('/praxen/$praxisId/booking/$terminId')({
 })
 
 enum StatusBooking {
-  selectTerminArt = 'SELECT_APPOINTMENT_TYPE',
+  selectAppointmentType = 'SELECT_APPOINTMENT_TYPE',
   selectAnimal = 'SELECT_ANIMAL',
   booked = 'BOOKED',
 }
@@ -43,7 +43,7 @@ function BookingComponent() {
     useState<ServiceType | null>(null)
   const [selectedAnimal, setSelectedAnimal] = useState<AnimalsType | null>(null) // aktuell ausgewaehltes Tier, bei null ist keins ausgewaehlt
   const [status, setStatus] = useState<StatusBooking>(
-    StatusBooking.selectTerminArt,
+    StatusBooking.selectAppointmentType,
   ) // State in the booking prozess, controls what is displayed
   const [foundFilteredServices, setFoundFilteredServices] =
     useState<Array<ServiceType> | null>(null) // if an filter was selected save which services have to been shown and available
@@ -57,7 +57,7 @@ function BookingComponent() {
     isPending: isPendingPractice,
     data: dataPractice,
   } = useQuery<VeterinaryPracticesType>({
-    queryKey: ['tierarztpraxen', praxisId],
+    queryKey: ['veterinaryPractices', praxisId],
     queryFn: () => getVeterinaryPracticesById(praxisId),
     retry: false,
   })
@@ -92,13 +92,13 @@ function BookingComponent() {
       isSuccessAppointment
     ) {
       const uniqueService = new Set(serviceType)
-      const foundService = dataAppointment.availableservices.filter(
+      const foundService = dataAppointment.availableServices.filter(
         (avaService) => {
           // all services that are filtered and for this appointment are available
           return uniqueService.has(avaService.id)
         },
       )
-      const notFoundService = dataAppointment.availableservices.filter(
+      const notFoundService = dataAppointment.availableServices.filter(
         (avaService) => {
           // all services that are filtered and for this appointment not available
           // should be from all services from the veterinary
@@ -154,21 +154,21 @@ function BookingComponent() {
   const handleClickBack = () => {
     // einmal auf der seite zurueck
     switch (status) {
-      case StatusBooking.selectTerminArt:
+      case StatusBooking.selectAppointmentType:
         setSelectedAppointmentType(null)
         window.history.back()
         break
       case StatusBooking.selectAnimal:
         setSelectedAppointmentType(null)
-        setStatus(StatusBooking.selectTerminArt)
+        setStatus(StatusBooking.selectAppointmentType)
         break
       default:
         setSelectedAppointmentType(null)
-        setStatus(StatusBooking.selectTerminArt)
+        setStatus(StatusBooking.selectAppointmentType)
     }
   }
 
-  const handleSelectTerminArt = (appointmentType: ServiceType) => {
+  const handleSelectAppointmentType = (appointmentType: ServiceType) => {
     setSelectedAppointmentType(appointmentType)
     setStatus(StatusBooking.selectAnimal)
   }
@@ -201,17 +201,17 @@ function BookingComponent() {
 
   const appointment: AppointmentsType = dataAppointment
   const practice: VeterinaryPracticesType | undefined = dataPractice
-  let aktuelleAnzeige
+  let currentDisplay
   let submitButton
   let currentStep: 1 | 2 | 3 = 1
 
   switch (status) {
-    case StatusBooking.selectTerminArt:
-      aktuelleAnzeige = (
+    case StatusBooking.selectAppointmentType:
+      currentDisplay = (
         <SelectAppointmentType
           practice={practice}
           appointment={appointment}
-          handleSelectTerminArt={handleSelectTerminArt}
+          handleSelectAppointmentType={handleSelectAppointmentType}
           foundFilterServices={foundFilteredServices}
           notFoundFilterServices={notFoundFilteredServices}
         />
@@ -220,7 +220,7 @@ function BookingComponent() {
       currentStep = 1
       break
     case StatusBooking.selectAnimal:
-      aktuelleAnzeige = (
+      currentDisplay = (
         <SelectAnimal
           handleChangeAnimal={handleChangeAnimal}
           filteredAnimalType={animalTypeId}
@@ -242,11 +242,11 @@ function BookingComponent() {
       currentStep = 2
       break
     default:
-      aktuelleAnzeige = (
+      currentDisplay = (
         <SelectAppointmentType
           practice={practice}
           appointment={appointment}
-          handleSelectTerminArt={handleSelectTerminArt}
+          handleSelectAppointmentType={handleSelectAppointmentType}
           foundFilterServices={null}
           notFoundFilterServices={null}
         />
@@ -270,7 +270,7 @@ function BookingComponent() {
 
       <div className="booking-layout">
         <div className="booking-main">
-          {aktuelleAnzeige}
+          {currentDisplay}
           {submitButton}
         </div>
 

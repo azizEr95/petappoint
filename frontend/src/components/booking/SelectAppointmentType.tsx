@@ -11,7 +11,7 @@ import type {
 type SelectAppointmentTypeProps = {
   practice: VeterinaryPracticesType
   appointment: AppointmentsType
-  handleSelectTerminArt: (appointmentType: ServiceType) => void
+  handleSelectAppointmentType: (appointmentType: ServiceType) => void
   foundFilterServices: Array<ServiceType> | null
   notFoundFilterServices: Array<ServiceType> | null
 }
@@ -19,7 +19,7 @@ type SelectAppointmentTypeProps = {
 export function SelectAppointmentType({
   practice,
   appointment,
-  handleSelectTerminArt,
+  handleSelectAppointmentType,
   foundFilterServices, // not all services are shown if an filter was selected before
   notFoundFilterServices,
 }: SelectAppointmentTypeProps) {
@@ -42,8 +42,8 @@ export function SelectAppointmentType({
 
   useEffect(() => {
     if (foundFilterServices === null || foundFilterServices.length === 0) {
-      if (appointment.availableservices.length !== 0) {
-        setAppointmentServices(appointment.availableservices)
+      if (appointment.availableServices.length !== 0) {
+        setAppointmentServices(appointment.availableServices)
       } else if (appointmentServices.length === 0) {
         // if availableServices is empty, this appointment have every servicetype from the practice
         if (isSuccessServices) {
@@ -79,7 +79,7 @@ export function SelectAppointmentType({
           <button
             key={appointmentType.id}
             className="service-item"
-            onClick={() => handleSelectTerminArt(appointmentType)}
+            onClick={() => handleSelectAppointmentType(appointmentType)}
           >
             {appointmentType.name}
           </button>

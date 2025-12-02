@@ -38,14 +38,14 @@ export function SearchFilter({ searchFilter, filterOptions, setFilterServiceType
 
     // get Animaltypes 
     const { isSuccess: isSuccessAnimalType, data: dataAnimalType } = useQuery<Array<AnimalTypeType>>({
-        queryKey: ['allAnimaltypes', practicePage?.id],
+        queryKey: ['allAnimalTypes', practicePage?.id],
         queryFn: () => getAllAnimalTypes(practicePage?.id.toString()), // if id is not undefined API calls animaltypes for practice, otherwise all animaltypes
         retry: false
     });
 
     // get ServiceType
     const { isSuccess: isSuccessAllAvailableServices, data: dataAllAvailableServices } = useQuery<Array<ServiceType>>({
-        queryKey: ['allAvailableServicetypes', practicePage?.id],
+        queryKey: ['allAvailableServiceTypes', practicePage?.id],
         queryFn: () => getAllAvailableServices(practicePage?.id.toString()), // if id is not undefined API calls servicetypes for practice, otherwise all servicetypes
         retry: false
     });

@@ -22,7 +22,7 @@ export function VeterinaryPracticeCard({
   const openPraxisPage = (e: MouseEvent<HTMLDivElement>) => {
     e.preventDefault();
     queryClient.invalidateQueries({ queryKey: ['AnimaltypesPractice'] });
-    queryClient.invalidateQueries({ queryKey: ['allAvailableServicetypes'] });
+    queryClient.invalidateQueries({ queryKey: ['allAvailableServiceTypes'] });
     navigate({
       to: '/praxen/$praxisId',
       params: {

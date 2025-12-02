@@ -33,7 +33,7 @@ function VeterinaryPractice() {
   // load VeterinaryPractices:
   const { isError, isSuccess, isPending, data } =
     useQuery<VeterinaryPracticesType>({
-      queryKey: ['tierarztpraxen', praxisId],
+      queryKey: ['veterinaryPractices', praxisId],
       queryFn: () => getVeterinaryPracticesById(praxisId),
       retry: false,
       enabled: practice === undefined
@@ -74,20 +74,20 @@ function VeterinaryPractice() {
     return;
   }
 
-  let animaltypesString = ""
+  let animalTypesString = ""
   if (isSuccessAnimaltypesPractice) {
-    for (const animaltype of dataAnimaltypesPractice) {
-      if (animaltypesString !== "") {
-          animaltypesString = animaltypesString + ", ";
+    for (const animalType of dataAnimaltypesPractice) {
+      if (animalTypesString !== "") {
+          animalTypesString = animalTypesString + ", ";
       }
-      animaltypesString = animaltypesString + animaltype.name;
+      animalTypesString = animalTypesString + animalType.name;
   }
-    if (animaltypesString === "") {
-      animaltypesString = "keine"
+    if (animalTypesString === "") {
+      animalTypesString = "keine"
     }
   }
 
-  const searchFilter: VeterinaryPracticeSearchQueryType = { // only for propagation to component SearchFilter, only are animalTypeIds and ServcieTypeIDs are used from this
+  const searchFilter: VeterinaryPracticeSearchQueryType = { // only for propagation to component SearchFilter, only are animalTypeIds and ServiceTypeIds are used from this
     name: '',
     address: '',
     animalTypeIds: filterOptions.animalTypeIds,
@@ -115,7 +115,7 @@ function VeterinaryPractice() {
             <div className="info-description">
               <p>{practice.info}</p>
               <br />
-              <p>Tierarten: {animaltypesString}</p>
+              <p>Tierarten: {animalTypesString}</p>
             </div>
           )}
 
@@ -168,7 +168,7 @@ function VeterinaryPractice() {
               <SearchFilter filterOptions={filterOptions} setFilterServiceType={setFilterServiceType} setFilterAnimalType={setFilterAnimalType} setFilterAnimal={setFilterAnimal} practicePage={practice} searchFilter={searchFilter} landingPage={false} />
             </div>
           </div>
-          <NextAvailableAppointments praxisID={practice.id.toString()} filterOptions={filterOptions} />
+          <NextAvailableAppointments practiceId={practice.id.toString()} filterOptions={filterOptions} />
         </div>
       </div>
     </div>
