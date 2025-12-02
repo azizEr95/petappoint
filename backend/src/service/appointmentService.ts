@@ -82,7 +82,7 @@ export const appointmentService = {
             name: created.services.name,
           }
         : null,
-      availableservices: created.services ? availableServices : [],
+      availableServices: created.services ? availableServices : [],
       notes: created.notes,
     };
   },
@@ -156,7 +156,7 @@ export const appointmentService = {
             name: foundAppointment.services.name,
           }
         : null,
-      availableservices: foundAppointment.services ? availableServices : [],
+      availableServices: foundAppointment.services ? availableServices : [],
       notes: foundAppointment.notes,
     };
   },
@@ -264,7 +264,7 @@ export const appointmentService = {
             name: foundAppointment.services.name,
           }
         : null,
-      availableservices: foundAppointment.services
+      availableServices: foundAppointment.services
         ? foundAppointment.appointment_has_service.flatMap((x) => x.services)
         : [],
       notes: foundAppointment.notes,
@@ -367,7 +367,7 @@ export const appointmentService = {
             name: foundAppointment.services.name,
           }
         : null,
-      availableservices: foundAppointment.services
+      availableServices: foundAppointment.services
         ? foundAppointment.appointment_has_service.flatMap((x) => x.services)
         : [],
       notes: foundAppointment.notes,
@@ -470,7 +470,7 @@ export const appointmentService = {
             name: foundAppointment.services.name,
           }
         : null,
-      availableservices: foundAppointment.services
+      availableServices: foundAppointment.services
         ? foundAppointment.appointment_has_service.flatMap((x) => x.services)
         : [],
       notes: foundAppointment.notes,
@@ -605,7 +605,7 @@ export const appointmentService = {
               name: foundAppointment.services.name,
             }
           : null,
-        availableservices: availableServices,
+        availableServices: availableServices,
         notes: foundAppointment.notes,
       };
     });
@@ -710,7 +710,7 @@ export const appointmentService = {
             name: foundAppointment.services.name,
           }
         : null,
-      availableservices: foundAppointment.services
+      availableServices: foundAppointment.services
         ? foundAppointment.appointment_has_service.flatMap((x) => x.services)
         : [],
       notes: foundAppointment.notes,
@@ -816,7 +816,7 @@ export const appointmentService = {
             name: foundAppointment.services.name,
           }
         : null,
-      availableservices: foundAppointment.services
+      availableServices: foundAppointment.services
         ? foundAppointment.appointment_has_service.flatMap((x) => x.services)
         : [],
       notes: foundAppointment.notes,
@@ -886,7 +886,7 @@ export const appointmentService = {
             name: foundAppointment.services.name,
           }
         : null,
-      availableservices: foundAppointment.services
+      availableServices: foundAppointment.services
         ? foundAppointment.appointment_has_service.flatMap((x) => x.services)
         : [],
       notes: foundAppointment.notes,
