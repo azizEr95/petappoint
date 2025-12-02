@@ -82,8 +82,8 @@ appointmentRouter.put("/:id", requiresAuthentication, async (req, res, next) => 
 
   const bookedAppointment = await appointmentService.updateAppointmentAsPerson(
     validatedData.id,
-    validatedData.animalid,
-    validatedData.serviceid
+    validatedData.animalId,
+    validatedData.serviceId
   );
   res.status(201).send(bookedAppointment);
 });

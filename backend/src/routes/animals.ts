@@ -116,15 +116,15 @@ animalsRouter.post("/:animalId/races", requiresAuthentication, async (req, res) 
   const animalId = PostgresIdSchema.parse(parseInt(req.params.animalId));
   const validatedBody = AddRacesToAnimalSchema.parse(req.body);
 
-  if (animalId !== validatedBody.animalid) {
-    res.status(400).send(`Mismatch in param id '${animalId}' and provided body id '${validatedBody.animalid}'.`);
+  if (animalId !== validatedBody.animalId) {
+    res.status(400).send(`Mismatch in param id '${animalId}' and provided body id '${validatedBody.animalId}'.`);
     return;
   }
 
   await ensureUserCanAccessAnimal(req.userId!, animalId);
 
   const animalRace = await animalHasRacesService.create({
-    animalid: validatedBody.animalid,
+    animalId: validatedBody.animalId,
     animalraceids: validatedBody.animalraceids,
   });
 
@@ -147,8 +147,8 @@ animalsRouter.delete("/:animalId/races/:raceId", requiresAuthentication, async (
   await ensureUserCanAccessAnimal(req.userId!, animalId);
 
   await animalHasRacesService.delete({
-    fk_animalid: animalId,
-    fk_animalraceid: raceId,
+    animalId: animalId,
+    animalRaceId: raceId,
   });
 
   res.sendStatus(204);
