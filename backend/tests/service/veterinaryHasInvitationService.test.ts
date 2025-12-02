@@ -3,7 +3,7 @@ import { prismaMock } from "../../testConfig/mockConfig";
 // Danach die Types importieren
 import { veterinary_has_invitation } from "../../generated/prisma";
 // Dann den Service importieren
-import { veterinaryHasInvitationService } from "../../src/service/veterinaryHasInivationService";
+import { veterinaryHasInvitationService } from "../../src/service/veterinaryHasInvitationService";
 
 describe("veterinaryHasInvitationService", () => {
   // Test-Datenvorbereitung
