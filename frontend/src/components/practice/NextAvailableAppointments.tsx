@@ -54,11 +54,11 @@ export function NextAvailableAppointments({
       endOfCurrentView.setDate(endOfCurrentView.getDate() + 5)
 
       const futureAppointments = data.filter(
-        (termin) => compareDates(termin.starttime, endOfCurrentView) >= 0,
+        (termin) => compareDates(termin.startTime, endOfCurrentView) >= 0,
       )
 
       return futureAppointments.length > 0
-        ? futureAppointments[0].starttime
+        ? futureAppointments[0].startTime
         : null
     } else {
       return null
@@ -112,7 +112,7 @@ export function NextAvailableAppointments({
       navigate({
         to: '/practices/$practiceId/booking/$appointmentId',
         params: {
-          practiceId: termin.veterinarypractice.id.toString(),
+          practiceId: termin.veterinaryPractice.id.toString(),
           appointmentId: termin.id.toString(),
         },
         state: {
@@ -149,7 +149,7 @@ export function NextAvailableAppointments({
 
   data.sort((zeitA, zeitB) => {
     // sortiert die Termine nach Anfangszeit
-    return zeitA.starttime.getTime() - zeitB.starttime.getTime()
+    return zeitA.startTime.getTime() - zeitB.startTime.getTime()
   })
 
   // speichert alle benoetigten Termine in Array, fuer die naechsten fuenf Tage
@@ -173,12 +173,13 @@ export function NextAvailableAppointments({
       )
     }
 
-    if (termin.starttime > comparisonDate) {
+    if (termin.startTime > comparisonDate) {
       // Termine vor angegebenem Starttermin werden nicht angezeigt
       while (i < 5) {
         // wenn Date String gleich ist dann ist richtige Pos im Array gefunden, dadurch wird sichergestellt das Tag Monat und Jahr uebereinstimmen
         if (
-          dateToDateString(termin.starttime) === dateToDateString(comparisonDate)
+          dateToDateString(termin.startTime) ===
+          dateToDateString(comparisonDate)
         ) {
           appointmentDays[i].push(termin)
           break
@@ -213,7 +214,9 @@ export function NextAvailableAppointments({
   }
 
   // Prüfe ob es Termine in der aktuellen Ansicht gibt
-  const hasAppointmentsInCurrentView = appointmentDays.some((day) => day.length > 0)
+  const hasAppointmentsInCurrentView = appointmentDays.some(
+    (day) => day.length > 0,
+  )
 
   const navigateToNextAppointment = () => {
     const nextDate = findNextAppointmentDate()
@@ -300,7 +303,7 @@ export function NextAvailableAppointments({
                         className="time-slot-btn available"
                         onClick={() => handleBookAppointment(termin)}
                       >
-                        {dateToTimeString(termin.starttime)}
+                        {dateToTimeString(termin.startTime)}
                       </button>
                     )
                   } else {

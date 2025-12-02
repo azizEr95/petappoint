@@ -1,4 +1,8 @@
-import { createFileRoute, useLocation, useNavigate } from '@tanstack/react-router'
+import {
+  createFileRoute,
+  useLocation,
+  useNavigate,
+} from '@tanstack/react-router'
 import '../../styles/routes/bookingPage.scss'
 import { useEffect, useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
@@ -29,15 +33,23 @@ function ConfirmationComponent() {
   const location = useLocation()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [stateLoaded, setStateLoaded] = useState(false)
-  const [bookingStatus, setBookingStatus] = useState<'pending' | 'success' | 'error'>('pending')
+  const [bookingStatus, setBookingStatus] = useState<
+    'pending' | 'success' | 'error'
+  >('pending')
   const [errorMessage, setErrorMessage] = useState<string>('')
 
   // Extract state safely
-  const state = (location.state as any) as LocationState | undefined
+  const state = location.state as any as LocationState | undefined
 
   // Validate state in useEffect to avoid navigation during render
   useEffect(() => {
-    if (!state || !state.appointment || !state.selectedAnimal || !state.selectedService || !state.practice) {
+    if (
+      !state ||
+      !state.appointment ||
+      !state.selectedAnimal ||
+      !state.selectedService ||
+      !state.practice
+    ) {
       console.error('Invalid state in confirmation page:', state)
       navigate({ to: '/' })
     } else {
@@ -55,7 +67,7 @@ function ConfirmationComponent() {
         const newAppointment = await bookAppointment(
           state.appointment.id,
           state.selectedAnimal.id,
-          state.selectedService.id
+          state.selectedService.id,
         )
 
         // Then cancel old appointment (don't throw if this fails)
@@ -72,7 +84,7 @@ function ConfirmationComponent() {
         return bookAppointment(
           state.appointment.id,
           state.selectedAnimal.id,
-          state.selectedService.id
+          state.selectedService.id,
         )
       }
     },
@@ -83,12 +95,19 @@ function ConfirmationComponent() {
 
       if (state?.isReschedule) {
         if (error?.message?.includes('already taken')) {
-          setErrorMessage('Dieser Termin wurde bereits gebucht. Bitte wählen Sie einen anderen.')
+          setErrorMessage(
+            'Dieser Termin wurde bereits gebucht. Bitte wählen Sie einen anderen.',
+          )
         } else {
-          setErrorMessage('Terminverschiebung fehlgeschlagen. Ihr alter Termin bleibt bestehen.')
+          setErrorMessage(
+            'Terminverschiebung fehlgeschlagen. Ihr alter Termin bleibt bestehen.',
+          )
         }
       } else {
-        setErrorMessage(error?.message || 'Die Terminbuchung ist fehlgeschlagen. Bitte versuchen Sie es erneut.')
+        setErrorMessage(
+          error?.message ||
+            'Die Terminbuchung ist fehlgeschlagen. Bitte versuchen Sie es erneut.',
+        )
       }
     },
     onSuccess: (bookedAppointment) => {
@@ -99,9 +118,9 @@ function ConfirmationComponent() {
         state: {
           appointment: bookedAppointment,
           justBooked: true,
-          wasRescheduled: state?.isReschedule
+          wasRescheduled: state?.isReschedule,
         } as any,
-        replace: true
+        replace: true,
       })
     },
   })
@@ -117,11 +136,14 @@ function ConfirmationComponent() {
         // Go back to reschedule page
         navigate({
           to: '/appointments/$appointmentId/reschedule',
-          params: { appointmentId: state.oldAppointmentId.toString() }
+          params: { appointmentId: state.oldAppointmentId.toString() },
         })
       } else {
         // Go back to booking page (previous step in flow)
-        navigate({ to: '/praxen/' + state.practice.id + '/booking/' + state.appointment.id })
+        navigate({
+          to:
+            '/praxen/' + state.practice.id + '/booking/' + state.appointment.id,
+        })
       }
     }
   }
@@ -135,7 +157,15 @@ function ConfirmationComponent() {
 
   const handleCancel = () => {
     // Go back to search results
-    navigate({ to: '/search' })
+    navigate({
+      to: '/search',
+      search: {
+        name: '',
+        address: '',
+        animalType: '',
+        serviceType: '',
+      },
+    })
   }
 
   const handleGoToAppointments = () => {
@@ -143,7 +173,7 @@ function ConfirmationComponent() {
       navigate({
         to: '/appointments',
         state: { appointment: state.appointment },
-        replace: true
+        replace: true,
       })
     }
   }
@@ -154,9 +184,9 @@ function ConfirmationComponent() {
   }
 
   const { appointment, selectedAnimal, selectedService, practice } = state
-  
-  if(practice === undefined){
-    return;
+
+  if (practice === undefined) {
+    return
   }
 
   // Show success message
@@ -171,7 +201,9 @@ function ConfirmationComponent() {
               </div>
             </div>
 
-            <h2 className="confirmation-title">Ihr Termin wurde erfolgreich gebucht!</h2>
+            <h2 className="confirmation-title">
+              Ihr Termin wurde erfolgreich gebucht!
+            </h2>
             <p className="confirmation-subtitle">
               Wir freuen uns, Sie bald in unserer Praxis begrüßen zu dürfen.
             </p>
@@ -183,7 +215,8 @@ function ConfirmationComponent() {
                   <div className="info-label">Praxis</div>
                   <div className="info-value">{practice.name}</div>
                   <div className="info-detail">
-                    {practice.addresses.street}, {practice.addresses.citycode} {practice.addresses.city}
+                    {practice.address.street}, {practice.address.cityCode}{' '}
+                    {practice.address.city}
                   </div>
                 </div>
               </div>
@@ -192,7 +225,9 @@ function ConfirmationComponent() {
                 <i className="bi bi-clock"></i>
                 <div className="info-content">
                   <div className="info-label">Termin</div>
-                  <div className="info-value">{dateToInfosString(appointment.starttime)}</div>
+                  <div className="info-value">
+                    {dateToInfosString(appointment.startTime)}
+                  </div>
                 </div>
               </div>
 
@@ -243,9 +278,7 @@ function ConfirmationComponent() {
             <h2 className="confirmation-title confirmation-title-error">
               Die Terminbuchung ist fehlgeschlagen
             </h2>
-            <p className="confirmation-subtitle">
-              {errorMessage}
-            </p>
+            <p className="confirmation-subtitle">{errorMessage}</p>
 
             <div className="confirmation-actions">
               <button
@@ -273,7 +306,9 @@ function ConfirmationComponent() {
             </div>
           </div>
 
-          <h2 className="confirmation-title">Bitte überprüfen Sie Ihre Buchung</h2>
+          <h2 className="confirmation-title">
+            Bitte überprüfen Sie Ihre Buchung
+          </h2>
           <p className="confirmation-subtitle">
             Überprüfen Sie die Details und bestätigen Sie Ihren Termin.
           </p>
@@ -285,7 +320,8 @@ function ConfirmationComponent() {
                 <div className="info-label">Praxis</div>
                 <div className="info-value">{practice.name}</div>
                 <div className="info-detail">
-                  {practice.addresses.street}, {practice.addresses.citycode} {practice.addresses.city}
+                  {practice.address.street}, {practice.address.cityCode}{' '}
+                  {practice.address.city}
                 </div>
               </div>
             </div>
@@ -294,7 +330,9 @@ function ConfirmationComponent() {
               <i className="bi bi-clock"></i>
               <div className="info-content">
                 <div className="info-label">Termin</div>
-                <div className="info-value">{dateToInfosString(appointment.starttime)}</div>
+                <div className="info-value">
+                  {dateToInfosString(appointment.startTime)}
+                </div>
               </div>
             </div>
 
@@ -323,13 +361,18 @@ function ConfirmationComponent() {
             >
               {isSubmitting ? (
                 <>
-                  <div className="spinner-border spinner-border-sm" style={{ marginRight: '0.5rem' }}></div>
+                  <div
+                    className="spinner-border spinner-border-sm"
+                    style={{ marginRight: '0.5rem' }}
+                  ></div>
                   Wird gebucht...
                 </>
               ) : (
                 <>
                   <i className="bi bi-check-circle"></i>
-                  {state?.isReschedule ? 'Termin jetzt verschieben' : 'Termin jetzt buchen'}
+                  {state?.isReschedule
+                    ? 'Termin jetzt verschieben'
+                    : 'Termin jetzt buchen'}
                 </>
               )}
             </button>

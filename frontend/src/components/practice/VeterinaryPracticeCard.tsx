@@ -4,8 +4,10 @@ import { useNavigate } from '@tanstack/react-router'
 import { NextAvailableAppointments } from './NextAvailableAppointments.tsx'
 import { FavoritePractice } from './FavoritePractice.tsx'
 import type { MouseEvent } from 'react'
-import type { AppointmentFilterType, VeterinaryPracticesType } from '../../../../shared/schemas/ZodSchemas'
-
+import type {
+  AppointmentFilterType,
+  VeterinaryPracticesType,
+} from '../../../../shared/schemas/ZodSchemas'
 
 type VeterinaryPracticeCardProps = {
   practice: VeterinaryPracticesType
@@ -14,15 +16,15 @@ type VeterinaryPracticeCardProps = {
 
 export function VeterinaryPracticeCard({
   practice,
-  filterOptions
+  filterOptions,
 }: VeterinaryPracticeCardProps) {
-  const queryClient = useQueryClient();
+  const queryClient = useQueryClient()
   const navigate = useNavigate()
 
   const openPraxisPage = (e: MouseEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    queryClient.invalidateQueries({ queryKey: ['AnimaltypesPractice'] });
-    queryClient.invalidateQueries({ queryKey: ['allAvailableServiceTypes'] });
+    e.preventDefault()
+    queryClient.invalidateQueries({ queryKey: ['AnimaltypesPractice'] })
+    queryClient.invalidateQueries({ queryKey: ['allAvailableServiceTypes'] })
     navigate({
       to: '/practices/$practiceId',
       params: {
@@ -30,7 +32,7 @@ export function VeterinaryPracticeCard({
       },
       state: {
         practice: practice,
-        filterOptions: filterOptions
+        filterOptions: filterOptions,
       },
     })
   }
@@ -41,18 +43,20 @@ export function VeterinaryPracticeCard({
         <div className="praxis-info-section">
           <div className="praxis-info-clickable" onClick={openPraxisPage}>
             <h3 className="praxis-name">
-              {practice.name} 
-              <FavoritePractice practice={practice}/>
-              </h3>
-            {practice.info && <p className="praxis-description">{practice.info}</p>}
-            
+              {practice.name}
+              <FavoritePractice practice={practice} />
+            </h3>
+            {practice.info && (
+              <p className="praxis-description">{practice.info}</p>
+            )}
+
             <div className="praxis-details">
               <div className="detail-item">
                 <i className="bi bi-geo-alt"></i>
                 <div>
-                  <div>{practice.addresses.street}</div>
+                  <div>{practice.address.street}</div>
                   <div>
-                    {practice.addresses.citycode} {practice.addresses.city}
+                    {practice.address.cityCode} {practice.address.city}
                   </div>
                 </div>
               </div>
@@ -64,7 +68,9 @@ export function VeterinaryPracticeCard({
 
               <div className="detail-item">
                 <i className="bi bi-envelope"></i>
-                <a href={`mailto:${practice.infoemail}`}>{practice.infoemail}</a>
+                <a href={`mailto:${practice.infoEmail}`}>
+                  {practice.infoEmail}
+                </a>
               </div>
 
               {practice.website && (
@@ -89,7 +95,10 @@ export function VeterinaryPracticeCard({
             Verfügbare Termine
           </h4>
           <div className="calendar-wrapper">
-            <NextAvailableAppointments practiceId={practice.id.toString()} filterOptions={filterOptions}/>
+            <NextAvailableAppointments
+              practiceId={practice.id.toString()}
+              filterOptions={filterOptions}
+            />
           </div>
         </div>
       </div>

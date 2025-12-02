@@ -48,7 +48,7 @@ export function AppointmentDetails({
     return
   }
 
-  const practiceID = appointment.veterinarypractice.id
+  const practiceID = appointment.veterinaryPractice.id
   const userID = login.id // TODO: get from auth context
 
   const { isSuccess, data } = useQuery<VeterinaryPracticesType>({
@@ -118,7 +118,7 @@ export function AppointmentDetails({
   })
 
   useEffect(() => {
-    if (appointment.endtime < new Date()) {
+    if (appointment.endTime < new Date()) {
       setFutureAppointment(false)
     } else {
       setFutureAppointment(true)
@@ -152,7 +152,7 @@ export function AppointmentDetails({
       const appointmentType = appointment.availableServices.find(
         (x) => x.id === appointment.service?.id,
       )
-      const address = `${practice.addresses.street}, ${practice.addresses.citycode} ${practice.addresses.city}`
+      const address = `${practice.address.street}, ${practice.address.cityCode} ${practice.address.city}`
 
       exportToCalendar(
         appointment,
@@ -165,7 +165,7 @@ export function AppointmentDetails({
 
   const handleMapsLink = () => {
     if (isSuccess) {
-      const address = `${data.addresses.street}, ${data.addresses.citycode} ${data.addresses.city}`
+      const address = `${data.address.street}, ${data.address.cityCode} ${data.address.city}`
       const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`
       window.open(mapsUrl, '_blank')
     }
@@ -254,10 +254,10 @@ export function AppointmentDetails({
           >
             {futureAppointment ? 'Bevorstehend' : 'Vergangen'}
           </div>
-          <h2>{formatDate(appointment.starttime)}</h2>
+          <h2>{formatDate(appointment.startTime)}</h2>
           <div className="datetime">
-            {formatTime(appointment.starttime)} -{' '}
-            {formatTime(appointment.endtime)}
+            {formatTime(appointment.startTime)} -{' '}
+            {formatTime(appointment.endTime)}
           </div>
         </div>
 
@@ -325,9 +325,9 @@ export function AppointmentDetails({
             <div className="info-content">
               <div className="label">Adresse</div>
               <div className="value">
-                {practice.addresses.street}
+                {practice.address.street}
                 <br />
-                {practice.addresses.citycode} {practice.addresses.city}
+                {practice.address.cityCode} {practice.address.city}
               </div>
             </div>
           </div>
@@ -337,12 +337,12 @@ export function AppointmentDetails({
               <a href={`tel:${practice.phone}`}>{practice.phone}</a>
             </div>
           </div>
-          {practice.infoemail && (
+          {practice.infoEmail && (
             <div className="info-item">
               <i className="bi bi-envelope"></i>
               <div className="info-content">
-                <a href={`mailto:${practice.infoemail}`}>
-                  {practice.infoemail}
+                <a href={`mailto:${practice.infoEmail}`}>
+                  {practice.infoEmail}
                 </a>
               </div>
             </div>

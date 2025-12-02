@@ -21,7 +21,9 @@ import type {
   VeterinaryPracticesType,
 } from '../../../../../../shared/schemas/ZodSchemas'
 
-export const Route = createFileRoute('/practices/$practiceId/booking/$appointmentId')({
+export const Route = createFileRoute(
+  '/practices/$practiceId/booking/$appointmentId',
+)({
   component: BookingComponent,
 })
 
@@ -290,8 +292,8 @@ function BookingComponent() {
             <div className="info-content">
               <div className="info-label">Adresse</div>
               <div className="info-value">
-                {practice.addresses.street}, {practice.addresses.citycode}{' '}
-                {practice.addresses.city}
+                {practice.address.street}, {practice.address.cityCode}{' '}
+                {practice.address.city}
               </div>
             </div>
           </div>
@@ -301,7 +303,7 @@ function BookingComponent() {
             <div className="info-content">
               <div className="info-label">Termin</div>
               <div className="info-value">
-                {dateToInfosString(appointment.starttime)}
+                {dateToInfosString(appointment.startTime)}
               </div>
             </div>
           </div>

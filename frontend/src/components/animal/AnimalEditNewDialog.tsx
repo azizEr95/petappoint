@@ -167,26 +167,26 @@ export function AnimalEditNewDialog({
     if (animalEdit !== undefined) {
       if (isSuccessAnimalType) {
         const typeEditAnimal = dataAnimalType.find((type) => {
-          if (type.id === animalEdit.animaltypeid) {
+          if (type.id === animalEdit.animalTypeId) {
             return type
           }
         })
         setAnimalTypeAnimal(typeEditAnimal)
       }
       setName(animalEdit.name)
-      if (animalEdit.dateofbirth !== null) {
-        if (animalEdit.dateofbirthisexact) {
+      if (animalEdit.dateOfBirth !== null) {
+        if (animalEdit.dateOfBirthIsExact) {
           ;(setDateOfBirthIsExact('Yes'),
-            setDateOfBirth(getDateStringFromDate(animalEdit.dateofbirth)))
+            setDateOfBirth(getDateStringFromDate(animalEdit.dateOfBirth)))
         } else {
           const now = new Date()
           setDateOfBirthIsExact('No')
           setDateOfBirthFromAgeInMonth(
-            getDateStringFromDate(animalEdit.dateofbirth),
+            getDateStringFromDate(animalEdit.dateOfBirth),
           )
           const yearDiff =
-            now.getFullYear() - animalEdit.dateofbirth.getFullYear()
-          const monthDiff = now.getMonth() - animalEdit.dateofbirth.getMonth()
+            now.getFullYear() - animalEdit.dateOfBirth.getFullYear()
+          const monthDiff = now.getMonth() - animalEdit.dateOfBirth.getMonth()
           const ageMonth = 12 * yearDiff + monthDiff
           if (ageMonth > 180) {
             // the cases have to be same as the value in the select
@@ -209,24 +209,24 @@ export function AnimalEditNewDialog({
         }
       }
       setSexes(animalEdit.sex)
-      if (animalEdit.weightingram !== null) {
-        setWeight(('' + animalEdit.weightingram / 1000).replace('.', ','))
+      if (animalEdit.weightInGram !== null) {
+        setWeight(('' + animalEdit.weightInGram / 1000).replace('.', ','))
       }
-      if (animalEdit.heightincm !== null) {
-        setHeight(('' + animalEdit.heightincm / 100).replace('.', ','))
+      if (animalEdit.heightInCm !== null) {
+        setHeight(('' + animalEdit.heightInCm / 100).replace('.', ','))
       }
-      if (animalEdit.iscastrated) {
+      if (animalEdit.isCastrated) {
         setCastrated('castrated')
       } else {
         setCastrated('notCastrated')
       }
-      if (animalEdit.lifestyleisindoors) {
+      if (animalEdit.lifestyleIsIndoors) {
         setLifestyle('lifestyleIsIndoor')
       } else {
         setLifestyle('lifestyleIsNotIndoor')
       }
-      if (animalEdit.timeofdeath !== null) {
-        setDateOfDeath(getDateStringFromDate(animalEdit.timeofdeath))
+      if (animalEdit.timeOfDeath !== null) {
+        setDateOfDeath(getDateStringFromDate(animalEdit.timeOfDeath))
       }
     }
   }, [isSuccessAnimalType])
@@ -323,7 +323,7 @@ export function AnimalEditNewDialog({
       // add races to the created animal
       setErrorText('')
       const addRaces: AddRacesToAnimalType = {
-        animalid: data.id,
+        animalId: data.id,
         animalraceids: racesIdNumbers,
       }
       mutateAddRacesToAnimal(addRaces)
@@ -353,7 +353,6 @@ export function AnimalEditNewDialog({
       if (animalEdit === undefined) {
         setErrorText('Fehler beim Erstellen des Tieres')
       } else {
-        not_known
         setErrorText('Fehler beim Bearbeiten des Tieres')
       }
     },
@@ -371,7 +370,7 @@ export function AnimalEditNewDialog({
       if (animalEdit !== undefined) {
         // is always not undefined because it is edit here
         const addRaces: AddRacesToAnimalType = {
-          animalid: animalEdit.id,
+          animalId: animalEdit.id,
           animalraceids: racesIdNumbers,
         }
         mutateAddRacesToAnimal(addRaces)
@@ -650,18 +649,18 @@ export function AnimalEditNewDialog({
       const animal: AnimalsCreateType = {
         name: name,
         sex: sex !== undefined ? sex : 'not_known',
-        dateofbirth:
+        dateOfBirth:
           dateOfBirthIsExact === 'Yes'
             ? new Date(dateOfBirth)
             : new Date(dateOfBirthFromAgeInMonth),
-        dateofbirthisexact: dateOfBirthIsExact === 'Yes' ? true : false,
-        weightingram: weightInGram,
-        heightincm: heightInCm,
-        timeofdeath: dateOfDeath !== '' ? new Date(dateOfDeath) : null,
-        iscastrated: castrated === 'castrated' ? true : false,
-        lifestyleisindoors: lifestyle === 'lifestyleIsIndoor' ? true : false,
-        animaltypeid: animalTypeAnimal !== undefined ? animalTypeAnimal.id : 1,
-        animalgroupid: null, // should be null, Backend Route has to be fixed
+        dateOfBirthIsExact: dateOfBirthIsExact === 'Yes' ? true : false,
+        weightInGram: weightInGram,
+        heightInCm: heightInCm,
+        timeOfDeath: dateOfDeath !== '' ? new Date(dateOfDeath) : null,
+        isCastrated: castrated === 'castrated' ? true : false,
+        lifestyleIsIndoors: lifestyle === 'lifestyleIsIndoor' ? true : false,
+        animalTypeId: animalTypeAnimal !== undefined ? animalTypeAnimal.id : 1,
+        animalGroupId: null, // should be null, Backend Route has to be fixed
       }
       selectedRaces.forEach((race) => {
         // save all ids from the selected races
