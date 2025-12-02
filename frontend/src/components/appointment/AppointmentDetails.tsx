@@ -149,7 +149,7 @@ export function AppointmentDetails({
   const handleExport = () => {
     if (isSuccess) {
       const practice = data
-      const appointmentType = appointment.availableservices.find(
+      const appointmentType = appointment.availableServices.find(
         (x) => x.id === appointment.service?.id,
       )
       const address = `${practice.addresses.street}, ${practice.addresses.citycode} ${practice.addresses.city}`

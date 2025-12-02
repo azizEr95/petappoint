@@ -118,7 +118,7 @@ function RescheduleAppointment() {
           <h2 className="section-title">Neuen Termin wählen</h2>
 
           <NextAvailableAppointments
-            praxisID={appointment.veterinarypractice.id.toString()}
+            practiceId={appointment.veterinarypractice.id.toString()}
             filterOptions={filterOptions}
             onSlotClick={handleSlotClick}
           />

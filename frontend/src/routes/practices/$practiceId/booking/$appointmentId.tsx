@@ -21,7 +21,7 @@ import type {
   VeterinaryPracticesType,
 } from '../../../../../../shared/schemas/ZodSchemas'
 
-export const Route = createFileRoute('/praxen/$praxisId/booking/$terminId')({
+export const Route = createFileRoute('/practices/$practiceId/booking/$appointmentId')({
   component: BookingComponent,
 })
 
@@ -38,7 +38,7 @@ function BookingComponent() {
   const serviceType = location.state.serviceType
   const animalId = location.state.filterAnimalId
   const animalTypeId = location.state.filterAnimalTypeId
-  const { praxisId, terminId } = Route.useParams()
+  const { practiceId, appointmentId } = Route.useParams()
   const [selectedAppointmentType, setSelectedAppointmentType] =
     useState<ServiceType | null>(null)
   const [selectedAnimal, setSelectedAnimal] = useState<AnimalsType | null>(null) // aktuell ausgewaehltes Tier, bei null ist keins ausgewaehlt
@@ -57,8 +57,8 @@ function BookingComponent() {
     isPending: isPendingPractice,
     data: dataPractice,
   } = useQuery<VeterinaryPracticesType>({
-    queryKey: ['veterinaryPractices', praxisId],
-    queryFn: () => getVeterinaryPracticesById(praxisId),
+    queryKey: ['veterinaryPractices', practiceId],
+    queryFn: () => getVeterinaryPracticesById(practiceId),
     retry: false,
   })
 
@@ -69,8 +69,8 @@ function BookingComponent() {
     isPending: isPendingAppointment,
     data: dataAppointment,
   } = useQuery<AppointmentsType>({
-    queryKey: ['appointment', terminId],
-    queryFn: () => getAppointmentsById(terminId),
+    queryKey: ['appointment', appointmentId],
+    queryFn: () => getAppointmentsById(appointmentId),
     retry: false,
   })
 
@@ -176,7 +176,7 @@ function BookingComponent() {
   const handleBookAppoinment = () => {
     if (selectedAnimal === null || selectedAppointmentType === null) {
       // no animal or appointmentType was selected, booking is not possible
-      navigate({ to: '/praxen/' + praxisId + '/booking/' + terminId })
+      navigate({ to: '/practices/' + practiceId + '/booking/' + appointmentId })
     } else {
       // Navigate to confirmation page with all booking data
       navigate({

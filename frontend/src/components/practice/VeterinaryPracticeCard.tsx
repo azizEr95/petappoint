@@ -24,9 +24,9 @@ export function VeterinaryPracticeCard({
     queryClient.invalidateQueries({ queryKey: ['AnimaltypesPractice'] });
     queryClient.invalidateQueries({ queryKey: ['allAvailableServiceTypes'] });
     navigate({
-      to: '/praxen/$praxisId',
+      to: '/practices/$practiceId',
       params: {
-        praxisId: practice.id.toString(),
+        practiceId: practice.id.toString(),
       },
       state: {
         practice: practice,
@@ -89,7 +89,7 @@ export function VeterinaryPracticeCard({
             Verfügbare Termine
           </h4>
           <div className="calendar-wrapper">
-            <NextAvailableAppointments praxisID={practice.id.toString()} filterOptions={filterOptions}/>
+            <NextAvailableAppointments practiceId={practice.id.toString()} filterOptions={filterOptions}/>
           </div>
         </div>
       </div>

@@ -236,7 +236,7 @@ export const AppointmentsSchema = z.object({
   veterinary: VeterinariansSchema,
   veterinarypractice: VeterinaryPracticeSchema,
   service: ServiceSchema.nullable(),
-  availableservices: z.array(ServiceSchema),
+  availableServices: z.array(ServiceSchema),
   notes: z.string().nullable().optional(),
 });
 

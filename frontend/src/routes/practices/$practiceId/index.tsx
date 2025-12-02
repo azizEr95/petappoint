@@ -10,14 +10,14 @@ import { FavoritePractice } from '../../../components/practice/FavoritePractice'
 import type { AnimalTypeType, VeterinaryPracticeSearchQueryType, VeterinaryPracticesType } from '../../../../../shared/schemas/ZodSchemas'
 
 
-export const Route = createFileRoute('/praxen/$praxisId/')({
+export const Route = createFileRoute('/practices/$practiceId/')({
   component: VeterinaryPractice,
 })
 
 function VeterinaryPractice() {
   const navigate = useNavigate()
   const location = useLocation();
-  const { praxisId } = Route.useParams()
+  const { practiceId } = Route.useParams()
   let practice = location.state.practice
   let filterOptions = location.state.filterOptions
   const [filterServiceType, setFilterServiceType] = useState<Array<number>>(filterOptions?.serviceTypeIds !== undefined ? filterOptions.serviceTypeIds : []);
@@ -33,8 +33,8 @@ function VeterinaryPractice() {
   // load VeterinaryPractices:
   const { isError, isSuccess, isPending, data } =
     useQuery<VeterinaryPracticesType>({
-      queryKey: ['veterinaryPractices', praxisId],
-      queryFn: () => getVeterinaryPracticesById(praxisId),
+      queryKey: ['veterinaryPractices', practiceId],
+      queryFn: () => getVeterinaryPracticesById(practiceId),
       retry: false,
       enabled: practice === undefined
     })

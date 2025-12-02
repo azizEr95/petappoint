@@ -73,8 +73,8 @@ export function DashboardRecommendations({ userId }: DashboardRecommendationsPro
         {recommendedPractices.map((practice) => (
           <Link
             key={practice.id}
-            to="/praxen/$praxisId"
-            params={{ praxisId: practice.id.toString() }}
+            to="/practices/$practiceId"
+            params={{ practiceId: practice.id.toString() }}
             className="recommendation-card"
           >
             <div className="recommendation-header">
