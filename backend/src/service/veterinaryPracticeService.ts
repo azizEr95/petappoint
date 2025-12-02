@@ -13,30 +13,30 @@ import { ConstraintError } from "../exceptions/errors/ConstraintError";
 
 export const veterinaryPracticeService = {
   async create(veterinaryPracticeRe: VeterinaryPracticesCreateType): Promise<VeterinaryPracticesType> {
-    return await prisma.veterinarypractices.create({
+    return await prisma.veterinaryPractice.create({
       include: {
-        addresses: true,
+        address: true,
       },
       data: {
         name: veterinaryPracticeRe.name,
         phone: veterinaryPracticeRe.phone,
-        infoemail: veterinaryPracticeRe.infoemail,
+        infoEmail: veterinaryPracticeRe.infoEmail,
         email: veterinaryPracticeRe.email,
         password: veterinaryPracticeRe.password,
-        addresses: {
-          create: veterinaryPracticeRe.addresses,
+        address: {
+          create: veterinaryPracticeRe.address,
         },
       },
     });
   },
 
   async getById(id: number): Promise<VeterinaryPracticesType> {
-    const foundPractice = await prisma.veterinarypractices.findUnique({
+    const foundPractice = await prisma.veterinaryPractice.findUnique({
       include: {
-        addresses: true,
+        address: true,
       },
       omit: {
-        fk_addressid: true,
+        addressId: true,
       },
       where: {
         id: id,
@@ -60,11 +60,11 @@ export const veterinaryPracticeService = {
         !query.animalTypeIds || query.animalTypeIds.length <= 0
           ? {}
           : {
-              veterinarians: {
+              veterinarian: {
                 some: {
-                  veterinary_can_treat_animaltype: {
+                  veterinaryCanTreatAnimalTypes: {
                     some: {
-                      fk_animaltypeid: { in: query.animalTypeIds },
+                      animalTypeId: { in: query.animalTypeIds },
                     },
                   },
                 },
@@ -73,11 +73,11 @@ export const veterinaryPracticeService = {
         !query.serviceTypeIds || query.serviceTypeIds.length <= 0
           ? {}
           : {
-              veterinarians: {
+              veterinarian: {
                 some: {
-                  veterinary_has_service: {
+                  veterinaryHasServices: {
                     some: {
-                      fk_serviceid: { in: query.serviceTypeIds },
+                      serviceId: { in: query.serviceTypeIds },
                     },
                   },
                 },
@@ -94,7 +94,7 @@ export const veterinaryPracticeService = {
         query.address.length <= 0
           ? {}
           : {
-              addresses: {
+              address: {
                 OR: [
                   {
                     street: {
@@ -109,7 +109,7 @@ export const veterinaryPracticeService = {
                     },
                   },
                   {
-                    citycode: {
+                    cityCode: {
                       contains: query.address,
                       mode: "insensitive" as const,
                     },
@@ -127,15 +127,15 @@ export const veterinaryPracticeService = {
     } as const;
 
     const [searchResults, total] = await Promise.all([
-      prisma.veterinarypractices.findMany({
+      prisma.veterinaryPractice.findMany({
         include: {
-          addresses: true,
+          address: true,
         },
         where: whereCondition as any,
         skip,
         take: pageSize,
       }),
-      prisma.veterinarypractices.count({
+      prisma.veterinaryPractice.count({
         where: whereCondition as any,
       }),
     ]);
@@ -149,9 +149,9 @@ export const veterinaryPracticeService = {
   },
 
   async getByEmail(email: string): Promise<VeterinaryPracticesType | null> {
-    return await prisma.veterinarypractices.findFirst({
+    return await prisma.veterinaryPractice.findFirst({
       include: {
-        addresses: true,
+        address: true,
       },
 
       where: {
@@ -161,9 +161,9 @@ export const veterinaryPracticeService = {
   },
 
   async getAll(): Promise<VeterinaryPracticesType[]> {
-    return await prisma.veterinarypractices.findMany({
+    return await prisma.veterinaryPractice.findMany({
       include: {
-        addresses: true,
+        address: true,
       },
     });
   },
@@ -173,46 +173,46 @@ export const veterinaryPracticeService = {
       throw new ConstraintError("ID is required for update", [{ path: "veterinarypractice.id", value: data.id }]);
     }
 
-    await addressService.update(data.addresses);
+    await addressService.update(data.address);
 
-    const updatedPractice = await prisma.veterinarypractices.update({
+    const updatedPractice = await prisma.veterinaryPractice.update({
       where: { id: data.id },
       data: {
         name: data.name,
         phone: data.phone,
         email: data.email,
         //password: data.password,
-        infoemail: data.infoemail,
+        infoEmail: data.infoEmail,
         info: data.info,
         website: data.website,
       },
-      include: { addresses: true },
+      include: { address: true },
     });
 
     return updatedPractice;
   },
 
   async delete(id: number): Promise<void> {
-    await prisma.veterinarypractices.delete({
+    await prisma.veterinaryPractice.delete({
       where: { id },
     });
   },
 
   async getServicesForPractice(veterinaryPracticeId: number): Promise<ServiceType[]> {
-    const services = await prisma.veterinarians.findMany({
+    const services = await prisma.veterinarian.findMany({
       select: {
-        veterinary_has_service: {
+        veterinaryHasServices: {
           select: {
-            services: true,
+            service: true,
           },
         },
       },
       where: {
-        fk_veterinarypractice: veterinaryPracticeId,
+        veterinaryPracticeId: veterinaryPracticeId,
       },
     });
 
-    const flatServices = services.flatMap((x) => x.veterinary_has_service).flatMap((x) => x.services);
+    const flatServices = services.flatMap((x) => x.veterinaryHasServices).flatMap((x) => x.service);
 
     // check that every service ist only one time in the array
     const uniqueServicesMap = new Map<number, ServiceType>();
@@ -228,13 +228,13 @@ export const veterinaryPracticeService = {
   },
 
   async getAllAnimalTypes(praxisId: number): Promise<AnimalTypeType[]> {
-    const found = await prisma.veterinarypractices.findMany({
+    const found = await prisma.veterinaryPractice.findMany({
       select: {
         veterinarians: {
           select: {
-            veterinary_can_treat_animaltype: {
+            veterinaryCanTreatAnimalTypes: {
               include: {
-                animaltypes: true,
+                animalType: true,
               },
             },
           },
@@ -245,8 +245,8 @@ export const veterinaryPracticeService = {
 
     const curableAnimalTypes = found
       .flatMap((x) => x.veterinarians)
-      .flatMap((x) => x.veterinary_can_treat_animaltype)
-      .flatMap((x) => x.animaltypes);
+      .flatMap((x) => x.veterinaryCanTreatAnimalTypes)
+      .flatMap((x) => x.animalType);
 
     const uniqueAnimalTypes = curableAnimalTypes.filter(
       (item, index, self) => index === self.findIndex((o) => o.id === item.id)

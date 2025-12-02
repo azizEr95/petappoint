@@ -1,17 +1,17 @@
 import { prisma } from "../singletonPC";
-import { veterinary_has_invitation } from "../../generated/prisma";
+import { VeterinaryHasInvitation } from "../../generated/prisma";
 
 export const veterinaryHasInvitationService = {
-  async create(data: veterinary_has_invitation): Promise<veterinary_has_invitation> {
-    return await prisma.veterinary_has_invitation.create({ data: data });
+  async create(data: VeterinaryHasInvitation): Promise<VeterinaryHasInvitation> {
+    return await prisma.veterinaryHasInvitation.create({ data: data });
   },
 
-  async getById(veterinaryId: number, practiceId: number): Promise<veterinary_has_invitation> {
-    const found = await prisma.veterinary_has_invitation.findUnique({
+  async getById(veterinaryId: number, practiceId: number): Promise<VeterinaryHasInvitation> {
+    const found = await prisma.veterinaryHasInvitation.findUnique({
       where: {
-        fk_veterinaryid_fk_veterinarypracticeid: {
-          fk_veterinaryid: veterinaryId,
-          fk_veterinarypracticeid: practiceId,
+        veterinaryId_veterinaryPracticeId: {
+          veterinaryId: veterinaryId,
+          veterinaryPracticeId: practiceId,
         },
       },
     });
@@ -21,16 +21,16 @@ export const veterinaryHasInvitationService = {
     return found;
   },
 
-  async getAll(): Promise<veterinary_has_invitation[]> {
-    return await prisma.veterinary_has_invitation.findMany();
+  async getAll(): Promise<VeterinaryHasInvitation[]> {
+    return await prisma.veterinaryHasInvitation.findMany();
   },
 
   async delete(veterinaryId: number, practiceId: number): Promise<void> {
-    await prisma.veterinary_has_invitation.delete({
+    await prisma.veterinaryHasInvitation.delete({
       where: {
-        fk_veterinaryid_fk_veterinarypracticeid: {
-          fk_veterinaryid: veterinaryId,
-          fk_veterinarypracticeid: practiceId,
+        veterinaryId_veterinaryPracticeId: {
+          veterinaryId: veterinaryId,
+          veterinaryPracticeId: practiceId,
         },
       },
     });

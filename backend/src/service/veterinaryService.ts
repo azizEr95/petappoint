@@ -1,22 +1,22 @@
 import { prisma } from "../singletonPC";
-import { veterinarians } from "../../generated/prisma";
+import { Veterinarian } from "../../generated/prisma";
 
 export const veterinaryService = {
-  async create(data: veterinarians): Promise<veterinarians> {
-    return await prisma.veterinarians.create({ data: data });
+  async create(data: Veterinarian): Promise<Veterinarian> {
+    return await prisma.veterinarian.create({ data: data });
   },
 
-  async getById(id: number): Promise<veterinarians> {
-    const foundVeterinary = await prisma.veterinarians.findUnique({
+  async getById(id: number): Promise<Veterinarian> {
+    const foundVeterinary = await prisma.veterinarian.findUnique({
       where: { id },
       include: {
         appointments: true,
-        veterinarypractices: true,
-        persons: true,
-        veterinary_has_service: {
+        veterinaryPractice: true,
+        person: true,
+        veterinaryHasServices: {
           include: {
-            services: true,
-            veterinarians: true,
+            service: true,
+            veterinarian: true,
           },
         },
       },
@@ -27,21 +27,21 @@ export const veterinaryService = {
     return foundVeterinary;
   },
 
-  async getByPractice(practiceId: number): Promise<veterinarians[]> {
-    return await prisma.veterinarians.findMany({
-      where: { fk_veterinarypractice: practiceId },
+  async getByPractice(practiceId: number): Promise<Veterinarian[]> {
+    return await prisma.veterinarian.findMany({
+      where: { veterinaryPracticeId: practiceId },
     });
   },
 
-  async getAll(): Promise<veterinarians[]> {
-    return await prisma.veterinarians.findMany();
+  async getAll(): Promise<Veterinarian[]> {
+    return await prisma.veterinarian.findMany();
   },
 
-  async update(data: veterinarians): Promise<veterinarians> {
-    return await prisma.veterinarians.update({ where: { id: data.id }, data: data });
+  async update(data: Veterinarian): Promise<Veterinarian> {
+    return await prisma.veterinarian.update({ where: { id: data.id }, data: data });
   },
 
   async delete(id: number): Promise<void> {
-    await prisma.veterinarians.delete({ where: { id } });
+    await prisma.veterinarian.delete({ where: { id } });
   },
 };

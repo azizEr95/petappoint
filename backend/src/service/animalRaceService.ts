@@ -1,11 +1,11 @@
 import { prisma } from "../singletonPC";
-import { animal_has_races, animal_races } from "../../generated/prisma";
+import { AnimalHasRace, AnimalRace } from "../../generated/prisma";
 import { AnimalracesCreateType, AnimalracesType } from "vetlib-shared/schemas/ZodSchemas";
 import { ResourceNotFoundError } from "../exceptions/errors/ResourceNotFoundError";
 
 export const animalRaceService = {
   async create(data: AnimalracesCreateType): Promise<AnimalracesType> {
-    let created = await prisma.animal_races.create({
+    let created = await prisma.animalRace.create({
       data: {
         name: data.name,
         // relation zu animaltypes
@@ -13,19 +13,19 @@ export const animalRaceService = {
         // Kann er sich ein spaß erlauben und sagen mein race hat den type ugga-buuga
         // wäre doch besser, wenn er nur welche auswählen kann die wir vorgeben
         // https://www.prisma.io/docs/orm/prisma-client/queries/relation-queries#nested-writes
-        animal_types: { connect: { id: data.animaltypeid } },
+        animalType: { connect: { id: data.animalTypeId } },
       },
     });
 
     return {
       id: created.id,
       name: created.name,
-      animaltypeid: created.fk_animaltypeid,
+      animalTypeId: created.animalTypeId,
     };
   },
 
   async getById(id: number): Promise<AnimalracesType> {
-    const foundAnimalRace = await prisma.animal_races.findUnique({ where: { id } });
+    const foundAnimalRace = await prisma.animalRace.findUnique({ where: { id } });
 
     if (!foundAnimalRace) {
       throw new ResourceNotFoundError(`Animal Kind not found with id: ${id}`, "id", id);
@@ -34,12 +34,12 @@ export const animalRaceService = {
     return {
       id: foundAnimalRace.id,
       name: foundAnimalRace.name,
-      animaltypeid: foundAnimalRace.fk_animaltypeid,
+      animalTypeId: foundAnimalRace.animalTypeId,
     };
   },
 
   async getByName(name: string): Promise<AnimalracesType> {
-    const foundAnimalRace = await prisma.animal_races.findFirst({ where: { name } });
+    const foundAnimalRace = await prisma.animalRace.findFirst({ where: { name } });
 
     if (!foundAnimalRace) {
       throw new ResourceNotFoundError(`Animal Race not found with name: ${name}`, "name", name);
@@ -48,59 +48,59 @@ export const animalRaceService = {
     return {
       id: foundAnimalRace.id,
       name: foundAnimalRace.name,
-      animaltypeid: foundAnimalRace.fk_animaltypeid,
+      animalTypeId: foundAnimalRace.animalTypeId,
     };
   },
 
   async getAll(): Promise<AnimalracesType[]> {
-    return (await prisma.animal_races.findMany()).map((x) => ({
+    return (await prisma.animalRace.findMany()).map((x) => ({
       id: x.id,
       name: x.name,
-      animaltypeid: x.fk_animaltypeid,
+      animalTypeId: x.animalTypeId,
     }));
   },
 
   async getAllForAnimalType(animalTypeId: number): Promise<AnimalracesType[]> {
     return (
-      await prisma.animal_races.findMany({
+      await prisma.animalRace.findMany({
         where: {
-          fk_animaltypeid: animalTypeId,
+          animalTypeId: animalTypeId,
         },
       })
     ).map((x) => ({
       id: x.id,
       name: x.name,
-      animaltypeid: x.fk_animaltypeid,
+      animalTypeId: x.animalTypeId,
     }));
   },
 
   async getAnimalRaces(animalId: number): Promise<AnimalracesType[]> {
     return (
-      await prisma.animal_has_races.findMany({
+      await prisma.animalHasRace.findMany({
         where: {
-          fk_animalid: animalId,
+          animalId: animalId,
         },
         include: {
-          animalraces: true,
+          animalRace: true,
         },
       })
     ).map((x) => ({
-      id: x.animalraces.id,
-      name: x.animalraces.name,
-      animaltypeid: x.animalraces.fk_animaltypeid,
+      id: x.animalRace.id,
+      name: x.animalRace.name,
+      animalTypeId: x.animalRace.animalTypeId,
     }));
   },
 
   async update(data: AnimalracesType): Promise<AnimalracesType> {
-    const updated = await prisma.animal_races.update({ where: { id: data.id }, data: data });
+    const updated = await prisma.animalRace.update({ where: { id: data.id }, data: data });
     return {
       id: updated.id,
       name: updated.name,
-      animaltypeid: updated.fk_animaltypeid,
+      animalTypeId: updated.animalTypeId,
     };
   },
 
   async delete(id: number): Promise<void> {
-    await prisma.animal_races.delete({ where: { id } });
+    await prisma.animalRace.delete({ where: { id } });
   },
 };

@@ -1,14 +1,14 @@
 import { prisma } from "../singletonPC";
-import { services } from "../../generated/prisma";
+import { Service } from "../../generated/prisma";
 import { ServiceType } from "vetlib-shared/schemas/ZodSchemas";
 
 export const serviceService = {
-  async create(data: services): Promise<services> {
-    return await prisma.services.create({ data: data });
+  async create(data: Service): Promise<Service> {
+    return await prisma.service.create({ data: data });
   },
 
-  async getById(id: number): Promise<services> {
-    const found = await prisma.services.findUnique({ where: { id } });
+  async getById(id: number): Promise<Service> {
+    const found = await prisma.service.findUnique({ where: { id } });
 
     if (!found) throw new Error(`Service does not exist with id ${id} `);
 
@@ -16,17 +16,17 @@ export const serviceService = {
   },
 
   async getAll(): Promise<ServiceType[]> {
-    return await prisma.services.findMany();
+    return await prisma.service.findMany();
   },
 
   async getAllAvailable(): Promise<ServiceType[]> {
-    const found = await prisma.veterinarypractices.findMany({
+    const found = await prisma.veterinaryPractice.findMany({
       select: {
         veterinarians: {
           select: {
-            veterinary_has_service: {
+            veterinaryHasServices: {
               include: {
-                services: true,
+                service: true,
               },
             },
           },
@@ -36,8 +36,8 @@ export const serviceService = {
 
     const availableServices = found
       .flatMap((x) => x.veterinarians)
-      .flatMap((x) => x.veterinary_has_service)
-      .flatMap((x) => x.services);
+      .flatMap((x) => x.veterinaryHasServices)
+      .flatMap((x) => x.service);
 
     const uniqueServices = availableServices.filter(
       (item, index, self) => index === self.findIndex((o) => o.id === item.id)
@@ -46,13 +46,13 @@ export const serviceService = {
     return uniqueServices;
   },
 
-  async update(data: services): Promise<services> {
+  async update(data: Service): Promise<Service> {
     if (!data.id) throw new Error("ID is required for update");
 
-    return await prisma.services.update({ where: { id: data.id }, data: data });
+    return await prisma.service.update({ where: { id: data.id }, data: data });
   },
 
   async delete(id: number): Promise<void> {
-    await prisma.services.delete({ where: { id } });
+    await prisma.service.delete({ where: { id } });
   },
 };

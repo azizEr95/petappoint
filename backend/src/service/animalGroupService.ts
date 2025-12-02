@@ -1,16 +1,16 @@
 import { prisma } from "../singletonPC";
-import { animal_groups } from "../../generated/prisma";
+import { AnimalGroup } from "../../generated/prisma";
 import { ResourceNotFoundError } from "../exceptions/errors/ResourceNotFoundError";
 import { AnimalGroupCreateType, AnimalGroupType } from "vetlib-shared/schemas/ZodSchemas";
 
 export const animalGroupService = {
   async create(data: AnimalGroupCreateType): Promise<AnimalGroupType> {
-    const created = await prisma.animal_groups.create({ data: data });
+    const created = await prisma.animalGroup.create({ data: data });
     return created;
   },
 
   async getById(id: number): Promise<AnimalGroupType> {
-    const foundGroup = await prisma.animal_groups.findUnique({ where: { id } });
+    const foundGroup = await prisma.animalGroup.findUnique({ where: { id } });
 
     if (!foundGroup) {
       throw new ResourceNotFoundError(`Animal group with ID ${id} does not exist`, "id", id);
@@ -20,7 +20,7 @@ export const animalGroupService = {
   },
 
   async getAll(): Promise<AnimalGroupType[]> {
-    return await prisma.animal_groups.findMany();
+    return await prisma.animalGroup.findMany();
   },
 
   async update(data: AnimalGroupType): Promise<AnimalGroupType> {
@@ -28,12 +28,12 @@ export const animalGroupService = {
       throw new ResourceNotFoundError("ID is required for update", "id", data.id);
     }
 
-    const updatedGroup = await prisma.animal_groups.update({ where: { id: data.id }, data: data });
+    const updatedGroup = await prisma.animalGroup.update({ where: { id: data.id }, data: data });
 
     return updatedGroup;
   },
 
   async delete(id: number): Promise<void> {
-    await prisma.animal_groups.delete({ where: { id } });
+    await prisma.animalGroup.delete({ where: { id } });
   },
 };

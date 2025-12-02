@@ -1,5 +1,5 @@
 import { prisma } from "../singletonPC";
-import { animals, Prisma } from "../../generated/prisma";
+import { Animal, Prisma } from "../../generated/prisma";
 import { AnimalsCreateType, AnimalsType, AnimalUpdateType } from "vetlib-shared/schemas/ZodSchemas";
 import fs from "node:fs/promises";
 import path from "node:path";
@@ -8,173 +8,173 @@ import { ConstraintError } from "../exceptions/errors/ConstraintError";
 
 export const animalService = {
   async create(data: AnimalsCreateType): Promise<AnimalsType> {
-    const created = await prisma.animals.create({
+    const created = await prisma.animal.create({
       data: {
         name: data.name,
-        dateofbirth: data.dateofbirth,
-        dateofbirthisexact: data.dateofbirthisexact,
-        weightingram: data.weightingram,
-        heightincm: data.heightincm,
-        timeofdeath: data.timeofdeath,
-        iscastrated: data.iscastrated,
+        dateOfBirth: data.dateOfBirth,
+        dateOfBirthIsExact: data.dateOfBirthIsExact,
+        weightInGram: data.weightInGram,
+        heightInCm: data.heightInCm,
+        timeOfDeath: data.timeOfDeath,
+        isCastrated: data.isCastrated,
         sex: data.sex,
-        lifestyleisindoors: data.lifestyleisindoors,
-        animalgroup: data.animalgroupid ? { connect: { id: data.animalgroupid } } : undefined,
-        animaltypes: {
+        lifestyleIsIndoors: data.lifestyleIsIndoors,
+        animalGroup: data.animalGroupId ? { connect: { id: data.animalGroupId } } : undefined,
+        animalType: {
           connect: {
-            id: data.animaltypeid,
+            id: data.animalTypeId,
           },
         },
       },
     });
 
     return {
-      dateofbirth: created.dateofbirth,
-      dateofbirthisexact: created.dateofbirthisexact,
-      heightincm: created.heightincm,
+      dateOfBirth: created.dateOfBirth,
+      dateOfBirthIsExact: created.dateOfBirthIsExact,
+      heightInCm: created.heightInCm,
       id: created.id,
-      iscastrated: created.iscastrated,
-      lifestyleisindoors: created.lifestyleisindoors,
+      isCastrated: created.isCastrated,
+      lifestyleIsIndoors: created.lifestyleIsIndoors,
       name: created.name,
       sex: created.sex,
-      timeofdeath: created.timeofdeath,
-      weightingram: created.weightingram,
-      animalgroupid: created.fk_animalgroupid,
-      animaltypeid: created.fk_animaltypeid,
+      timeOfDeath: created.timeOfDeath,
+      weightInGram: created.weightInGram,
+      animalGroupId: created.animalGroupId,
+      animalTypeId: created.animalTypeId,
     };
   },
 
   async update(data: AnimalUpdateType): Promise<AnimalsType> {
-    const updated = await prisma.animals.update({
+    const updated = await prisma.animal.update({
       where: {
         id: data.id,
       },
       data: {
         name: data.name,
-        dateofbirth: data.dateofbirth,
-        dateofbirthisexact: data.dateofbirthisexact,
-        weightingram: data.weightingram,
-        heightincm: data.heightincm,
-        timeofdeath: data.timeofdeath,
-        iscastrated: data.iscastrated,
+        dateOfBirth: data.dateOfBirth,
+        dateOfBirthIsExact: data.dateOfBirthIsExact,
+        weightInGram: data.weightInGram,
+        heightInCm: data.heightInCm,
+        timeOfDeath: data.timeOfDeath,
+        isCastrated: data.isCastrated,
         sex: data.sex,
-        lifestyleisindoors: data.lifestyleisindoors,
+        lifestyleIsIndoors: data.lifestyleIsIndoors,
       },
     });
 
     return {
-      dateofbirth: updated.dateofbirth,
-      dateofbirthisexact: updated.dateofbirthisexact,
-      heightincm: updated.heightincm,
+      dateOfBirth: updated.dateOfBirth,
+      dateOfBirthIsExact: updated.dateOfBirthIsExact,
+      heightInCm: updated.heightInCm,
       id: updated.id,
-      iscastrated: updated.iscastrated,
-      lifestyleisindoors: updated.lifestyleisindoors,
+      isCastrated: updated.isCastrated,
+      lifestyleIsIndoors: updated.lifestyleIsIndoors,
       name: updated.name,
       sex: updated.sex,
-      timeofdeath: updated.timeofdeath,
-      weightingram: updated.weightingram,
-      animalgroupid: updated.fk_animalgroupid,
-      animaltypeid: updated.fk_animaltypeid,
+      timeOfDeath: updated.timeOfDeath,
+      weightInGram: updated.weightInGram,
+      animalGroupId: updated.animalGroupId,
+      animalTypeId: updated.animalTypeId,
     };
   },
 
   async getById(id: number): Promise<AnimalsType> {
-    const foundAnimal = await prisma.animals.findUnique({ where: { id } });
+    const foundAnimal = await prisma.animal.findUnique({ where: { id } });
 
     if (!foundAnimal) {
       throw new ResourceNotFoundError(`Animal not found with id: ${id}`, "id", id);
     }
 
     return {
-      dateofbirth: foundAnimal.dateofbirth,
-      dateofbirthisexact: foundAnimal.dateofbirthisexact,
-      heightincm: foundAnimal.heightincm,
+      dateOfBirth: foundAnimal.dateOfBirth,
+      dateOfBirthIsExact: foundAnimal.dateOfBirthIsExact,
+      heightInCm: foundAnimal.heightInCm,
       id: foundAnimal.id,
-      iscastrated: foundAnimal.iscastrated,
-      lifestyleisindoors: foundAnimal.lifestyleisindoors,
+      isCastrated: foundAnimal.isCastrated,
+      lifestyleIsIndoors: foundAnimal.lifestyleIsIndoors,
       name: foundAnimal.name,
       sex: foundAnimal.sex,
-      timeofdeath: foundAnimal.timeofdeath,
-      weightingram: foundAnimal.weightingram,
-      animalgroupid: foundAnimal.fk_animalgroupid,
-      animaltypeid: foundAnimal.fk_animaltypeid,
+      timeOfDeath: foundAnimal.timeOfDeath,
+      weightInGram: foundAnimal.weightInGram,
+      animalGroupId: foundAnimal.animalGroupId,
+      animalTypeId: foundAnimal.animalTypeId,
     };
   },
 
   async getByPersonId(personId: number): Promise<AnimalsType[]> {
-    const relations = await prisma.person_has_animal.findMany({
+    const relations = await prisma.personHasAnimal.findMany({
       where: {
-        fk_personid: personId,
+        personId: personId,
       },
       include: {
-        animals: true,
+        animal: true,
       },
     });
 
     return relations
-      .map((r) => r.animals)
+      .map((r) => r.animal)
       .flatMap((animal) => ({
-        dateofbirth: animal.dateofbirth,
-        dateofbirthisexact: animal.dateofbirthisexact,
-        heightincm: animal.heightincm,
+        dateOfBirth: animal.dateOfBirth,
+        dateOfBirthIsExact: animal.dateOfBirthIsExact,
+        heightInCm: animal.heightInCm,
         id: animal.id,
-        iscastrated: animal.iscastrated,
-        lifestyleisindoors: animal.lifestyleisindoors,
+        isCastrated: animal.isCastrated,
+        lifestyleIsIndoors: animal.lifestyleIsIndoors,
         name: animal.name,
         sex: animal.sex,
-        timeofdeath: animal.timeofdeath,
-        weightingram: animal.weightingram,
-        animalgroupid: animal.fk_animalgroupid,
-        animaltypeid: animal.fk_animaltypeid,
+        timeOfDeath: animal.timeOfDeath,
+        weightInGram: animal.weightInGram,
+        animalGroupId: animal.animalGroupId,
+        animalTypeId: animal.animalTypeId,
       }));
   },
 
   async getByName(name: string): Promise<AnimalsType> {
-    const foundAnimal = await prisma.animals.findFirst({ where: { name } });
+    const foundAnimal = await prisma.animal.findFirst({ where: { name } });
 
     if (!foundAnimal) {
       throw new ResourceNotFoundError(`Animal not found with name: ${name}`, "name", name);
     }
 
     return {
-      dateofbirth: foundAnimal.dateofbirth,
-      dateofbirthisexact: foundAnimal.dateofbirthisexact,
-      heightincm: foundAnimal.heightincm,
+      dateOfBirth: foundAnimal.dateOfBirth,
+      dateOfBirthIsExact: foundAnimal.dateOfBirthIsExact,
+      heightInCm: foundAnimal.heightInCm,
       id: foundAnimal.id,
-      iscastrated: foundAnimal.iscastrated,
-      lifestyleisindoors: foundAnimal.lifestyleisindoors,
+      isCastrated: foundAnimal.isCastrated,
+      lifestyleIsIndoors: foundAnimal.lifestyleIsIndoors,
       name: foundAnimal.name,
       sex: foundAnimal.sex,
-      timeofdeath: foundAnimal.timeofdeath,
-      weightingram: foundAnimal.weightingram,
-      animalgroupid: foundAnimal.fk_animalgroupid,
-      animaltypeid: foundAnimal.fk_animaltypeid,
+      timeOfDeath: foundAnimal.timeOfDeath,
+      weightInGram: foundAnimal.weightInGram,
+      animalGroupId: foundAnimal.animalGroupId,
+      animalTypeId: foundAnimal.animalTypeId,
     };
   },
 
   async getAll(): Promise<AnimalsType[]> {
-    const foundAnimals = await prisma.animals.findMany();
+    const foundAnimals = await prisma.animal.findMany();
     return foundAnimals.map((foundAnimal) => ({
-      dateofbirth: foundAnimal.dateofbirth,
-      dateofbirthisexact: foundAnimal.dateofbirthisexact,
-      heightincm: foundAnimal.heightincm,
+      dateOfBirth: foundAnimal.dateOfBirth,
+      dateOfBirthIsExact: foundAnimal.dateOfBirthIsExact,
+      heightInCm: foundAnimal.heightInCm,
       id: foundAnimal.id,
-      iscastrated: foundAnimal.iscastrated,
-      lifestyleisindoors: foundAnimal.lifestyleisindoors,
+      isCastrated: foundAnimal.isCastrated,
+      lifestyleIsIndoors: foundAnimal.lifestyleIsIndoors,
       name: foundAnimal.name,
       sex: foundAnimal.sex,
-      timeofdeath: foundAnimal.timeofdeath,
-      weightingram: foundAnimal.weightingram,
-      animalgroupid: foundAnimal.fk_animalgroupid,
-      animaltypeid: foundAnimal.fk_animaltypeid,
+      timeOfDeath: foundAnimal.timeOfDeath,
+      weightInGram: foundAnimal.weightInGram,
+      animalGroupId: foundAnimal.animalGroupId,
+      animalTypeId: foundAnimal.animalTypeId,
     }));
   },
 
   async delete(id: number): Promise<void> {
-    const openAppointments = await prisma.appointments.findMany({
+    const openAppointments = await prisma.appointment.findMany({
       where: {
-        fk_animalid: id,
-        starttime: {
+        animalId: id,
+        startTime: {
           lt: new Date(),
         },
       },
@@ -193,61 +193,61 @@ export const animalService = {
       );
     }
 
-    await prisma.animals.delete({ where: { id } });
+    await prisma.animal.delete({ where: { id } });
   },
 
   async getPicturePath(animalId: number): Promise<string> {
-    const found = await prisma.animals.findFirst({
+    const found = await prisma.animal.findFirst({
       where: {
         id: animalId,
       },
       select: {
-        picturepath: true,
+        picturePath: true,
       },
     });
 
-    const filepath = found?.picturepath ?? "public/placeholders/animal.png";
+    const filepath = found?.picturePath ?? "public/placeholders/animal.png";
     return path.join(appRootDir, filepath);
   },
 
   async savePicture(animalId: number, fileOnDiskPath: string | null): Promise<void> {
-    const old = await prisma.animals.findFirst({
+    const old = await prisma.animal.findFirst({
       where: {
         id: animalId,
       },
       select: {
-        picturepath: true,
+        picturePath: true,
       },
     });
     if (!old) {
       throw new ConstraintError(`No animal with given id exists.`, [{ path: "animalId", value: animalId }]);
     }
 
-    if (old.picturepath) {
-      if (old.picturepath) {
-        const oldImagePath = path.join(appRootDir, old.picturepath);
+    if (old.picturePath) {
+      if (old.picturePath) {
+        const oldImagePath = path.join(appRootDir, old.picturePath);
         fs.rm(oldImagePath);
       }
     }
 
-    await prisma.animals.update({
+    await prisma.animal.update({
       where: {
         id: animalId,
       },
       data: {
-        picturepath: fileOnDiskPath,
+        picturePath: fileOnDiskPath,
       },
       select: {
-        picturepath: true,
+        picturePath: true,
       },
     });
   },
 
   async canPersonAccessAnimal(personId: number, animalId: number): Promise<boolean> {
-    const relationExists = await prisma.person_has_animal.findFirst({
+    const relationExists = await prisma.personHasAnimal.findFirst({
       where: {
-        fk_animalid: animalId,
-        fk_personid: personId,
+        animalId: animalId,
+        personId: personId,
       },
     });
     if (relationExists) {

@@ -1,75 +1,75 @@
 import { AddRacesToAnimalType, Animal_has_RacesType, AnimalracesType } from "vetlib-shared/schemas/ZodSchemas";
-import { animal_has_races } from "../../generated/prisma";
+import { AnimalHasRace } from "../../generated/prisma";
 import { prisma } from "../singletonPC";
 
 export const animalHasRacesService = {
   async create(data: AddRacesToAnimalType): Promise<AddRacesToAnimalType> {
-    const created = await prisma.animal_has_races.createMany({
-      data: data.animalraceids.map(x => ({
-        fk_animalid: data.animalid,
-        fk_animalraceid: x
+    const created = await prisma.animalHasRace.createMany({
+      data: data.animalraceids.map((x) => ({
+        animalId: data.animalId,
+        animalRaceId: x,
       })),
-      skipDuplicates: true
+      skipDuplicates: true,
     });
 
     return data;
   },
 
   async getAnimalByRacesId(racesId: number) {
-    const animalAndRaces = await prisma.animal_has_races.findMany({
-      where: { fk_animalraceid: racesId },
+    const animalAndRaces = await prisma.animalHasRace.findMany({
+      where: { animalRaceId: racesId },
       include: {
-        animals: true,
-        animalraces: true,
+        animal: true,
+        animalRace: true,
       },
     });
 
     return animalAndRaces.map((pa) => ({
-      animal: pa.animals,
-      animalraces: pa.animalraces,
+      animal: pa.animal,
+      animalRace: pa.animalRace,
     }));
   },
 
   async getRacesByAnimalId(animalId: number) {
-    const racesAndAnimal = await prisma.animal_has_races.findMany({
-      where: { fk_animalid: animalId },
+    const racesAndAnimal = await prisma.animalHasRace.findMany({
+      where: { animalId: animalId },
       include: {
-        animals: true,
-        animalraces: true,
+        animal: true,
+        animalRace: true,
       },
     });
 
     return racesAndAnimal.map((pa) => ({
-      animal: pa.animals,
-      animalraces: pa.animalraces,
+      animal: pa.animal,
+      animalRace: pa.animalRace,
     }));
   },
 
-  async delete(data: animal_has_races): Promise<void> {
-    await prisma.animal_has_races.delete({
+  async delete(data: AnimalHasRace): Promise<void> {
+    await prisma.animalHasRace.delete({
       where: {
-        fk_animalid_fk_animalraceid: {
-          fk_animalid: data.fk_animalid,
-          fk_animalraceid: data.fk_animalraceid,
+        animalId_animalRaceId: {
+          animalId: data.animalId,
+          animalRaceId: data.animalRaceId,
         },
       },
     });
   },
 
   async deleteAllRacesFromAnimal(animalId: number): Promise<void> {
-    await prisma.animal_has_races.deleteMany({
+    await prisma.animalHasRace.deleteMany({
       where: {
-        fk_animalid: animalId
+        animalId: animalId,
       },
     });
   },
 
-  async exists(data: animal_has_races): Promise<boolean> {
-    const association = await prisma.animal_has_races.findUnique({
+  async exists(data: AnimalHasRace): Promise<boolean> {
+    const association = await prisma.animalHasRace.findUnique({
       where: {
-        fk_animalid_fk_animalraceid: {
-          fk_animalid: data.fk_animalid,
-          fk_animalraceid: data.fk_animalraceid,
+        animalId_animalRaceId: {
+          animalId: data.animalId,
+          animalRaceId: data.animalRaceId,
         },
       },
     });

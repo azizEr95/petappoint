@@ -1,58 +1,58 @@
 import { prisma } from "../singletonPC";
-import { animals, persons, person_has_animal } from "../../generated/prisma";
+import { Animal, Person, PersonHasAnimal } from "../../generated/prisma";
 
 export const personHasAnimalService = {
-  async create(data: person_has_animal): Promise<person_has_animal> {
-    return await prisma.person_has_animal.create({ data: data });
+  async create(data: PersonHasAnimal): Promise<PersonHasAnimal> {
+    return await prisma.personHasAnimal.create({ data: data });
   },
 
   async getAnimalsByPersonId(personId: number) {
-    const personAndAnimals = await prisma.person_has_animal.findMany({
-      where: { fk_personid: personId },
+    const personAndAnimals = await prisma.personHasAnimal.findMany({
+      where: { personId: personId },
       include: {
-        animals: true,
-        persons: true,
+        animal: true,
+        person: true,
       },
     });
 
     return personAndAnimals.map((pa) => ({
-      animal: pa.animals,
-      person: pa.persons,
+      animal: pa.animal,
+      person: pa.person,
     }));
   },
 
   async getPersonsByAnimalId(animalId: number) {
-    const animalAndPersons = await prisma.person_has_animal.findMany({
-      where: { fk_animalid: animalId },
+    const animalAndPersons = await prisma.personHasAnimal.findMany({
+      where: { animalId: animalId },
       include: {
-        animals: true,
-        persons: true,
+        animal: true,
+        person: true,
       },
     });
 
     return animalAndPersons.map((pa) => ({
-      animal: pa.animals,
-      person: pa.persons,
+      animal: pa.animal,
+      person: pa.person,
     }));
   },
 
-  async delete(data: person_has_animal): Promise<void> {
-    await prisma.person_has_animal.delete({
+  async delete(data: PersonHasAnimal): Promise<void> {
+    await prisma.personHasAnimal.delete({
       where: {
-        fk_personid_fk_animalid: {
-          fk_personid: data.fk_personid,
-          fk_animalid: data.fk_animalid,
+        personId_animalId: {
+          personId: data.personId,
+          animalId: data.animalId,
         },
       },
     });
   },
 
-  async exists(data: person_has_animal): Promise<boolean> {
-    const association = await prisma.person_has_animal.findUnique({
+  async exists(data: PersonHasAnimal): Promise<boolean> {
+    const association = await prisma.personHasAnimal.findUnique({
       where: {
-        fk_personid_fk_animalid: {
-          fk_personid: data.fk_personid,
-          fk_animalid: data.fk_animalid,
+        personId_animalId: {
+          personId: data.personId,
+          animalId: data.animalId,
         },
       },
     });
