@@ -9,261 +9,303 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model addresses {
+model Address {
   id                  Int                   @id @default(autoincrement())
   street              String                @db.VarChar(80)
-  citycode            String                @db.VarChar(12)
+  cityCode            String                @map("citycode") @db.VarChar(12)
   city                String                @db.VarChar(60)
   country             String                @db.VarChar(150)
   longitude           Float
   latitude            Float
-  persons             persons[]
-  veterinarypractices veterinarypractices[]
+  persons             Person[]
+  veterinaryPractices VeterinaryPractice[]
+
+  @@map("addresses")
 }
 
-model animals {
+model Animal {
   id                     Int                      @id @default(autoincrement())
   name                   String                   @db.VarChar(100)
-  dateofbirth            DateTime?                @db.Date
-  dateofbirthisexact     Boolean?
-  weightingram           Int?
-  heightincm             Int?
-  timeofdeath            DateTime?                @db.Date
-  iscastrated            Boolean
-  lifestyleisindoors     Boolean                  @default(true)
-  picturepath            String?                  @db.VarChar(256)
-  sex                    sexes                    @default(not_known)
-  fk_animaltypeid        Int
-  fk_animalgroupid       Int?
-  animal_has_races       animal_has_races[]
-  animal_has_vaccination animal_has_vaccination[]
-  animalgroup            animal_groups?           @relation(fields: [fk_animalgroupid], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  animaltypes            animal_types             @relation(fields: [fk_animaltypeid], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  appointments           appointments[]
-  person_has_animal      person_has_animal[]
-  recipes                recipes[]
+  dateOfBirth            DateTime?                @map("dateofbirth") @db.Date
+  dateOfBirthIsExact     Boolean?                 @map("dateofbirthisexact")
+  weightInGram           Int?                     @map("weightingram")
+  heightInCm             Int?                     @map("heightincm")
+  timeOfDeath            DateTime?                @map("timeofdeath") @db.Date
+  isCastrated            Boolean                  @map("iscastrated")
+  lifestyleIsIndoors     Boolean                  @default(true) @map("lifestyleisindoors")
+  picturePath            String?                  @map("picturepath") @db.VarChar(256)
+  sex                    Sexes                    @default(not_known)
+  animalTypeId           Int                      @map("fk_animaltypeid")
+  animalGroupId          Int?                     @map("fk_animalgroupid")
+  animalHasRaces         AnimalHasRace[]          @relation("AnimalToRaces")
+  animalHasVaccinations  AnimalHasVaccination[]
+  animalGroup            AnimalGroup?             @relation(fields: [animalGroupId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  animalType             AnimalType               @relation(fields: [animalTypeId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  appointments           Appointment[]
+  personHasAnimals       PersonHasAnimal[]
+  recipes                Recipe[]
+
+  @@map("animals")
 }
 
-model appointments {
+model Appointment {
   id                      Int                       @id @default(autoincrement())
-  starttime               DateTime                  @db.Timestamp(6)
-  endtime                 DateTime                  @db.Timestamp(6)
-  fk_animalid             Int?
-  fk_veterinaryid         Int
-  fk_veterinarypracticeid Int
-  fk_serviceid            Int?
+  startTime               DateTime                  @map("starttime") @db.Timestamp(6)
+  endTime                 DateTime                  @map("endtime") @db.Timestamp(6)
+  animalId                Int?                      @map("fk_animalid")
+  veterinaryId            Int                       @map("fk_veterinaryid")
+  veterinaryPracticeId    Int                       @map("fk_veterinarypracticeid")
+  serviceId               Int?                      @map("fk_serviceid")
   notes                   String?
-  appointment_has_review  appointment_has_review[]
-  appointment_has_service appointment_has_service[]
-  animals                 animals?                  @relation(fields: [fk_animalid], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  services                services?                 @relation(fields: [fk_serviceid], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  veterinarians           veterinarians             @relation(fields: [fk_veterinaryid], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  veterinarypractices     veterinarypractices       @relation(fields: [fk_veterinarypracticeid], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  appointmentHasReviews   AppointmentHasReview[]
+  appointmentHasServices  AppointmentHasService[]
+  animal                  Animal?                   @relation(fields: [animalId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  service                 Service?                  @relation(fields: [serviceId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  veterinarian            Veterinarian              @relation(fields: [veterinaryId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  veterinaryPractice      VeterinaryPractice        @relation(fields: [veterinaryPracticeId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@map("appointments")
 }
 
-model person_has_animal {
-  fk_personid Int
-  fk_animalid Int
-  animals     animals @relation(fields: [fk_animalid], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  persons     persons @relation(fields: [fk_personid], references: [id], onDelete: Cascade, onUpdate: NoAction)
+model PersonHasAnimal {
+  personId Int
+  animalId Int     @map("fk_animalid")
+  animal   Animal  @relation(fields: [animalId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  person   Person  @relation(fields: [personId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
-  @@id([fk_personid, fk_animalid])
+  @@id([personId, animalId])
+  @@map("person_has_animal")
 }
 
-model persons {
+model Person {
   id                                      Int                                       @id @default(autoincrement())
-  firstname                               String                                    @db.VarChar(60)
-  lastname                                String                                    @db.VarChar(60)
-  sex                                     sexes
-  dateofbirth                             DateTime                                  @db.Date
-  fk_address                              Int
+  firstName                               String                                    @map("firstname") @db.VarChar(60)
+  lastName                                String                                    @map("lastname") @db.VarChar(60)
+  sex                                     Sexes
+  dateOfBirth                             DateTime                                  @map("dateofbirth") @db.Date
+  addressId                               Int                                       @map("fk_address")
   phone                                   String                                    @db.VarChar(20)
   email                                   String                                    @unique @db.VarChar(100)
   password                                String                                    @db.VarChar(255)
-  person_has_animal                       person_has_animal[]
-  person_has_favorized_veterinarypractice person_has_favorized_veterinarypractice[]
-  addresses                               addresses                                 @relation(fields: [fk_address], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  veterinarians                           veterinarians?
+  personHasAnimals                        PersonHasAnimal[]
+  personHasFavorizedVeterinaryPractices   PersonHasFavorizedVeterinaryPractice[]
+  address                                 Address                                   @relation(fields: [addressId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  veterinarian                            Veterinarian?
+
+  @@map("persons")
 }
 
-model veterinarians {
+model Veterinarian {
   id                              Int                               @id
-  infoemail                       String?                           @db.VarChar(100)
-  fk_veterinarypractice           Int?
-  appointments                    appointments[]
-  veterinarypractices             veterinarypractices?              @relation(fields: [fk_veterinarypractice], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  persons                         persons                           @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  veterinary_can_treat_animaltype veterinary_can_treat_animaltype[]
-  veterinary_has_invitation       veterinary_has_invitation[]
-  veterinary_has_service          veterinary_has_service[]
+  infoEmail                       String?                           @map("infoemail") @db.VarChar(100)
+  veterinaryPracticeId            Int?                              @map("fk_veterinarypractice")
+  appointments                    Appointment[]
+  veterinaryPractice              VeterinaryPractice?               @relation(fields: [veterinaryPracticeId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  person                          Person                            @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  veterinaryCanTreatAnimalTypes   VeterinaryCanTreatAnimalType[]
+  veterinaryHasInvitations        VeterinaryHasInvitation[]
+  veterinaryHasServices           VeterinaryHasService[]
+
+  @@map("veterinarians")
 }
 
-model veterinarypractices {
+model VeterinaryPractice {
   id                                      Int                                       @id @default(autoincrement())
   name                                    String                                    @db.VarChar(200)
   phone                                   String                                    @db.VarChar(20)
-  infoemail                               String                                    @db.VarChar(100)
+  infoEmail                               String                                    @map("infoemail") @db.VarChar(100)
   email                                   String                                    @unique @db.VarChar(100)
   password                                String                                    @db.VarChar(255)
   website                                 String?                                   @db.VarChar(150)
   info                                    String?
-  fk_addressid                            Int
-  appointments                            appointments[]
-  person_has_favorized_veterinarypractice person_has_favorized_veterinarypractice[]
-  veterinarians                           veterinarians[]
-  veterinary_has_invitation               veterinary_has_invitation[]
-  addresses                               addresses                                 @relation(fields: [fk_addressid], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  addressId                               Int                                       @map("fk_addressid")
+  appointments                            Appointment[]
+  personHasFavorizedVeterinaryPractices   PersonHasFavorizedVeterinaryPractice[]
+  veterinarians                           Veterinarian[]
+  veterinaryHasInvitations                VeterinaryHasInvitation[]
+  address                                 Address                                   @relation(fields: [addressId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@map("veterinarypractices")
 }
 
-model animal_has_races {
-  fk_animalid     Int
-  fk_animalraceid Int
-  animals         animals      @relation(fields: [fk_animalid], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  animalraces     animal_races @relation(fields: [fk_animalraceid], references: [id], onDelete: Cascade, onUpdate: NoAction)
+model AnimalHasRace {
+  animalId      Int         @map("fk_animalid")
+  animalRaceId  Int         @map("fk_animalraceid")
+  animal        Animal      @relation("AnimalToRaces", fields: [animalId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  animalRace    AnimalRace  @relation(fields: [animalRaceId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
-  @@id([fk_animalid, fk_animalraceid])
+  @@id([animalId, animalRaceId])
+  @@map("animal_has_races")
 }
 
-model animal_has_vaccination {
+model AnimalHasVaccination {
   id                Int          @id @default(autoincrement())
-  dateofvaccination DateTime     @db.Date
-  fk_animalid       Int
-  fk_vaccinationid  Int
-  animals           animals      @relation(fields: [fk_animalid], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  vaccinations      vaccinations @relation(fields: [fk_vaccinationid], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  dateOfVaccination DateTime     @map("dateofvaccination") @db.Date
+  animalId          Int          @map("fk_animalid")
+  vaccinationId     Int          @map("fk_vaccinationid")
+  animal            Animal       @relation(fields: [animalId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  vaccination       Vaccination  @relation(fields: [vaccinationId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@map("animal_has_vaccination")
 }
 
-model appointment_has_review {
-  fk_appointmentid Int
-  fk_reviewid      Int
-  appointments     appointments @relation(fields: [fk_appointmentid], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  reviews          reviews      @relation(fields: [fk_reviewid], references: [id], onDelete: Cascade, onUpdate: NoAction)
+model AppointmentHasReview {
+  appointmentId Int         @map("fk_appointmentid")
+  reviewId      Int         @map("fk_reviewid")
+  appointment   Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  review        Review      @relation(fields: [reviewId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
-  @@id([fk_appointmentid, fk_reviewid])
+  @@id([appointmentId, reviewId])
+  @@map("appointment_has_review")
 }
 
-model medications {
+model Medication {
   id      Int       @id @default(autoincrement())
   name    String    @unique @db.VarChar(100)
-  recipes recipes[]
+  recipes Recipe[]
+
+  @@map("medications")
 }
 
-model recipes {
+model Recipe {
   id              Int         @id @default(autoincrement())
-  fk_animalid     Int
-  fk_medicationid Int
+  animalId        Int         @map("fk_animalid")
+  medicationId    Int         @map("fk_medicationid")
   starting        DateTime    @db.Date
-  enddate         DateTime    @db.Date
+  endDate         DateTime    @map("enddate") @db.Date
   instructions    String?
-  animals         animals     @relation(fields: [fk_animalid], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  medications     medications @relation(fields: [fk_medicationid], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  animal          Animal      @relation(fields: [animalId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  medication      Medication  @relation(fields: [medicationId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@map("recipes")
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
-model reviews {
+model Review {
   id                     Int                      @id @default(autoincrement())
   contentment            Int                      @db.SmallInt
-  waitingtime            Int                      @db.SmallInt
+  waitingTime            Int                      @map("waitingtime") @db.SmallInt
   kindness               Int                      @db.SmallInt
-  servicequality         Int                      @db.SmallInt
+  serviceQuality         Int                      @map("servicequality") @db.SmallInt
   price                  Int                      @db.SmallInt
   comment                String?
-  appointment_has_review appointment_has_review[]
+  appointmentHasReviews  AppointmentHasReview[]
+
+  @@map("reviews")
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
-model services {
+model Service {
   id                      Int                       @id @default(autoincrement())
   name                    String                    @unique @db.VarChar(100)
-  appointment_has_service appointment_has_service[]
-  appointments            appointments[]
-  veterinary_has_service  veterinary_has_service[]
+  appointmentHasServices  AppointmentHasService[]
+  appointments            Appointment[]
+  veterinaryHasServices   VeterinaryHasService[]
+
+  @@map("services")
 }
 
-model vaccinations {
+model Vaccination {
   id                     Int                      @id @default(autoincrement())
   name                   String                   @unique @db.VarChar(100)
-  animal_has_vaccination animal_has_vaccination[]
+  animalHasVaccinations  AnimalHasVaccination[]
+
+  @@map("vaccinations")
 }
 
-model veterinary_has_invitation {
-  fk_veterinaryid         Int
-  fk_veterinarypracticeid Int
-  dateofinvitation        DateTime            @db.Date
-  veterinarians           veterinarians       @relation(fields: [fk_veterinaryid], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  veterinarypractices     veterinarypractices @relation(fields: [fk_veterinarypracticeid], references: [id], onDelete: Cascade, onUpdate: NoAction)
+model VeterinaryHasInvitation {
+  veterinaryId         Int                 @map("fk_veterinaryid")
+  veterinaryPracticeId Int                 @map("fk_veterinarypracticeid")
+  dateOfInvitation     DateTime            @map("dateofinvitation") @db.Date
+  veterinarian         Veterinarian        @relation(fields: [veterinaryId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  veterinaryPractice   VeterinaryPractice  @relation(fields: [veterinaryPracticeId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
-  @@id([fk_veterinaryid, fk_veterinarypracticeid])
+  @@id([veterinaryId, veterinaryPracticeId])
+  @@map("veterinary_has_invitation")
 }
 
-model person_has_favorized_veterinarypractice {
-  fk_personid             Int
-  fk_veterinarypracticeid Int
-  veterinarypractices     veterinarypractices @relation(fields: [fk_veterinarypracticeid], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "person_has_favorized_veterinarypra_fk_veterinarypracticeid_fkey")
-  persons                 persons             @relation(fields: [fk_personid], references: [id], onDelete: Cascade, onUpdate: NoAction)
+model PersonHasFavorizedVeterinaryPractice {
+  personId             Int                 @map("fk_personid")
+  veterinaryPracticeId Int                 @map("fk_veterinarypracticeid")
+  veterinaryPractice   VeterinaryPractice  @relation(fields: [veterinaryPracticeId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "person_has_favorized_veterinarypra_fk_veterinarypracticeid_fkey")
+  person               Person              @relation(fields: [personId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
-  @@id([fk_personid, fk_veterinarypracticeid])
+  @@id([personId, veterinaryPracticeId])
+  @@map("person_has_favorized_veterinarypractice")
 }
 
-model appointment_has_service {
-  fk_appointmentid Int
-  fk_serviceid     Int
-  appointments     appointments @relation(fields: [fk_appointmentid], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  services         services     @relation(fields: [fk_serviceid], references: [id], onDelete: Cascade, onUpdate: NoAction)
+model AppointmentHasService {
+  appointmentId Int         @map("fk_appointmentid")
+  serviceId     Int         @map("fk_serviceid")
+  appointment   Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  service       Service     @relation(fields: [serviceId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
-  @@id([fk_appointmentid, fk_serviceid])
+  @@id([appointmentId, serviceId])
+  @@map("appointment_has_service")
 }
 
-model veterinary_can_treat_animaltype {
-  fk_veterinaryid Int
-  fk_animaltypeid Int
-  animaltypes     animal_types  @relation(fields: [fk_animaltypeid], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  veterinarians   veterinarians @relation(fields: [fk_veterinaryid], references: [id], onDelete: Cascade, onUpdate: NoAction)
+model VeterinaryCanTreatAnimalType {
+  veterinaryId  Int         @map("fk_veterinaryid")
+  animalTypeId  Int         @map("fk_animaltypeid")
+  animalType    AnimalType  @relation(fields: [animalTypeId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  veterinarian  Veterinarian @relation(fields: [veterinaryId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
-  @@id([fk_veterinaryid, fk_animaltypeid])
+  @@id([veterinaryId, animalTypeId])
+  @@map("veterinary_can_treat_animaltype")
 }
 
-model veterinary_has_service {
-  fk_veterinaryid Int
-  fk_serviceid    Int
-  notes           String?
-  services        services      @relation(fields: [fk_serviceid], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  veterinarians   veterinarians @relation(fields: [fk_veterinaryid], references: [id], onDelete: Cascade, onUpdate: NoAction)
+model VeterinaryHasService {
+  veterinaryId Int          @map("fk_veterinaryid")
+  serviceId    Int          @map("fk_serviceid")
+  notes        String?
+  service      Service      @relation(fields: [serviceId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  veterinarian Veterinarian @relation(fields: [veterinaryId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
-  @@id([fk_veterinaryid, fk_serviceid])
+  @@id([veterinaryId, serviceId])
+  @@map("veterinary_has_service")
 }
 
-model animal_groups {
-  id      Int       @id @default(autoincrement())
-  name    String    @db.VarChar(100)
-  animals animals[]
+model AnimalGroup {
+  id      Int      @id @default(autoincrement())
+  name    String   @db.VarChar(100)
+  animals Animal[]
+
+  @@map("animal_groups")
 }
 
-model animal_races {
+model AnimalRace {
   id               Int                @id @default(autoincrement())
   name             String             @db.VarChar(100)
-  fk_animaltypeid  Int
-  animal_has_races animal_has_races[]
-  animal_types     animal_types       @relation(fields: [fk_animaltypeid], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  animalTypeId     Int                @map("fk_animaltypeid")
+  animalHasRaces   AnimalHasRace[]
+  animalType       AnimalType         @relation(fields: [animalTypeId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@map("animal_races")
 }
 
-model animal_types {
+model AnimalType {
   id                              Int                               @id @default(autoincrement())
   name                            String                            @db.VarChar(100)
-  animal_races                    animal_races[]
-  animals                         animals[]
-  veterinary_can_treat_animaltype veterinary_can_treat_animaltype[]
+  animalRaces                     AnimalRace[]
+  animals                         Animal[]
+  veterinaryCanTreatAnimalTypes   VeterinaryCanTreatAnimalType[]
+
+  @@map("animal_types")
 }
 
-enum sexes {
+enum Sexes {
   not_known
   male
   female
   not_applicable
+
+  @@map("sexes")
 }
 
-enum paymentstatus {
+enum PaymentStatus {
   unpaid
   paid
   cancelled
+
+  @@map("paymentstatus")
 }
