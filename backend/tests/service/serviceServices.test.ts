@@ -3,7 +3,7 @@ import { prismaMock } from "../../testConfig/mockConfig";
 // Danach die Types importieren
 import { services } from "../../generated/prisma";
 // Dann den Service importieren
-import { serviceService } from "../../src/service/serviceServices";
+import { serviceService } from "../../src/service/serviceService";
 
 describe("serviceService", () => {
   // Test-Datenvorbereitung

@@ -15,7 +15,7 @@ describe("appointmentService", () => {
     fk_veterinaryid: 1,
     fk_veterinarypracticeid: 1,
     fk_serviceid: 1,
-    notiz: null,
+    notes: null,
   };
 
   const mockAppointmentWithRelations = {
@@ -31,7 +31,7 @@ describe("appointmentService", () => {
       dateofbirth: new Date("2020-05-10"),
       fk_animaltypeid: 1,
     },
-    veterinaries: {
+    veterinarians: {
       id: 1,
       infoemail: "tierarzt@praxis.de",
       fk_veterinarypractice: 1,
@@ -50,7 +50,7 @@ describe("appointmentService", () => {
           starttime: mockAppointment.starttime,
           endtime: mockAppointment.endtime,
           animals: { connect: { id: mockAppointment.fk_animalid } },
-          veterinaries: { connect: { id: mockAppointment.fk_veterinaryid } },
+          veterinarians: { connect: { id: mockAppointment.fk_veterinaryid } },
           veterinarypractices: { connect: { id: mockAppointment.fk_veterinarypracticeid } },
         },
       });
@@ -153,7 +153,7 @@ describe("appointmentService", () => {
             dateofbirth: new Date("2019-03-15"),
             fk_animaltypeid: 2,
           },
-          veterinaries: {
+          veterinarians: {
             id: 1,
             infoemail: "tierarzt@praxis.de",
             fk_veterinarypractice: 1,
@@ -199,7 +199,7 @@ describe("appointmentService", () => {
             dateofbirth: new Date("2019-03-15"),
             fk_animaltypeid: 2,
           },
-          veterinaries: {
+          veterinarians: {
             id: 1,
             infoemail: "tierarzt@praxis.de",
             fk_veterinarypractice: 1,
@@ -299,38 +299,38 @@ describe("appointmentService", () => {
     });
   });
 
-  describe("updateNotiz", () => {
-    it("sollte die Notiz eines Termins aktualisieren", async () => {
+  describe("updateNotes", () => {
+    it("sollte die Notes eines Termins aktualisieren", async () => {
       const updatedAppointment = {
         ...mockAppointment,
-        notiz: "Wichtige Notiz für den Termin",
+        notes: "Wichtige Notes für den Termin",
       };
 
       prismaMock.appointments.update.mockResolvedValue(updatedAppointment);
 
-      const result = await appointmentService.updateNotiz(1, "Wichtige Notiz für den Termin");
+      const result = await appointmentService.updateNotes(1, "Wichtige Notes für den Termin");
 
       expect(result).toEqual(updatedAppointment);
       expect(prismaMock.appointments.update).toHaveBeenCalledWith({
         where: { id: 1 },
-        data: { notiz: "Wichtige Notiz für den Termin" },
+        data: { notes: "Wichtige Notes für den Termin" },
       });
     });
 
-    it("sollte die Notiz auf null setzen können", async () => {
+    it("sollte die Notes auf null setzen können", async () => {
       const updatedAppointment = {
         ...mockAppointment,
-        notiz: null,
+        notes: null,
       };
 
       prismaMock.appointments.update.mockResolvedValue(updatedAppointment);
 
-      const result = await appointmentService.updateNotiz(1, null);
+      const result = await appointmentService.updateNotes(1, null);
 
       expect(result).toEqual(updatedAppointment);
       expect(prismaMock.appointments.update).toHaveBeenCalledWith({
         where: { id: 1 },
-        data: { notiz: null },
+        data: { notes: null },
       });
     });
   });

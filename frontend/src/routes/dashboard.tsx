@@ -14,30 +14,30 @@ export const Route = createFileRoute('/dashboard')({
 })
 
 function Dashboard() {
-  const {login} = useLoginContext();
+  const { login } = useLoginContext()
   if (!login) {
-    return;
+    return
   }
 
-  const userId = login.id;
+  const userId = login.id
 
   // Dummy user data - will be replaced with real API call in Phase 10
   const dummyUser: PersonsType = {
     id: userId,
-    firstname: 'Max',
-    lastname: 'Mustermann',
+    firstName: 'Max',
+    lastName: 'Mustermann',
     email: 'max.mustermann@example.com',
     phone: '+49 30 12345678',
-    dateofbirth: new Date('1990-01-15'),
+    dateOfBirth: new Date('1990-01-15'),
     sex: 'male',
-    addresses: {
+    address: {
       id: 1,
       street: 'Musterstraße 123',
       city: 'Berlin',
-      citycode: '10115',
+      cityCode: '10115',
       country: 'Deutschland',
-      latitude: 52.5200,
-      longitude: 13.4050,
+      latitude: 52.52,
+      longitude: 13.405,
     },
   }
 
@@ -56,14 +56,19 @@ function Dashboard() {
     <div className="dashboard-page">
       <div className="dashboard-header">
         <h1>Mein Dashboard</h1>
-        <p className="dashboard-subtitle">Willkommen zurück! Hier ist eine Übersicht über Ihre Tiere und Termine.</p>
+        <p className="dashboard-subtitle">
+          Willkommen zurück! Hier ist eine Übersicht über Ihre Tiere und
+          Termine.
+        </p>
       </div>
 
       <div className="dashboard-grid">
         {/* Profile Section */}
         <div className="dashboard-section">
           <div className="section-header">
-            <h2><i className="bi bi-person-circle"></i> Profil</h2>
+            <h2>
+              <i className="bi bi-person-circle"></i> Profil
+            </h2>
           </div>
           <div className="section-content">
             <DashboardProfileCard user={dummyUser} onEdit={handleEditProfile} />
@@ -73,7 +78,9 @@ function Dashboard() {
         {/* Quick Actions Section */}
         <div className="dashboard-section">
           <div className="section-header">
-            <h2><i className="bi bi-lightning-charge"></i> Schnellzugriff</h2>
+            <h2>
+              <i className="bi bi-lightning-charge"></i> Schnellzugriff
+            </h2>
           </div>
           <div className="section-content">
             <QuickActions onAddPet={handleAddPet} />
@@ -83,7 +90,9 @@ function Dashboard() {
         {/* Pets Section */}
         <div className="dashboard-section dashboard-section-full">
           <div className="section-header">
-            <h2><i className="bi bi-heart"></i> Meine Tiere</h2>
+            <h2>
+              <i className="bi bi-heart"></i> Meine Tiere
+            </h2>
           </div>
           <div className="section-content">
             <DashboardPetsSection userId={userId} />
@@ -93,7 +102,9 @@ function Dashboard() {
         {/* Appointments Section */}
         <div className="dashboard-section dashboard-section-full">
           <div className="section-header">
-            <h2><i className="bi bi-calendar-check"></i> Termine</h2>
+            <h2>
+              <i className="bi bi-calendar-check"></i> Termine
+            </h2>
           </div>
           <div className="section-content">
             <DashboardAppointmentsSection userId={userId} />

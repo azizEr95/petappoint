@@ -1,11 +1,20 @@
-import { VeterinaryPracticeSchema, VeterinaryPracticeSearchResultSchema } from '../../../shared/schemas/ZodSchemas'
-import type { VeterinaryPracticeSearchQueryType, VeterinaryPracticesCreateType, VeterinaryPracticesType, VeterinaryPracticeSearchResultType } from '../../../shared/schemas/ZodSchemas'
+import {
+  VeterinaryPracticeSchema,
+  VeterinaryPracticeSearchResultSchema,
+} from '../../../shared/schemas/ZodSchemas'
+import type {
+  VeterinaryPracticeSearchQueryType,
+  VeterinaryPracticesCreateType,
+  VeterinaryPracticesType,
+  VeterinaryPracticeSearchResultType,
+} from '../../../shared/schemas/ZodSchemas'
 
 export const getVeterinaryPracticesByNameAddress = async (
-  searchParams: VeterinaryPracticeSearchQueryType
+  searchParams: VeterinaryPracticeSearchQueryType,
 ): Promise<VeterinaryPracticeSearchResultType> => {
-  const targetURL = import.meta.env.VITE_API_URL + '/veterinary-practice/search?';
-  let query = '';
+  const targetURL =
+    import.meta.env.VITE_API_URL + '/veterinary-practice/search?'
+  let query = ''
   if (searchParams.name) {
     query += `${query.length > 0 ? '&' : ''}name=${searchParams.name}`
   }
@@ -24,15 +33,16 @@ export const getVeterinaryPracticesByNameAddress = async (
   if (searchParams.pageSize) {
     query += `${query.length > 0 ? '&' : ''}pageSize=${searchParams.pageSize}`
   }
-  const res = await fetch(targetURL + query, {credentials: 'include'});
+  const res = await fetch(targetURL + query, { credentials: 'include' })
   if (!res.ok) {
     throw new Error('Failed to fetch getVeterinaryPracticesByNameAddress')
   }
 
-  const data = await res.json();
-  const parsed = VeterinaryPracticeSearchResultSchema.safeParse(data);
-  if (parsed.error !== undefined) { // if Zod throws an Error print them
-    console.log(parsed.error);
+  const data = await res.json()
+  const parsed = VeterinaryPracticeSearchResultSchema.safeParse(data)
+  if (parsed.error !== undefined) {
+    // if Zod throws an Error print them
+    console.log(parsed.error)
   }
   if (!parsed.success) {
     throw new Error(parsed.error.toString())
@@ -44,16 +54,18 @@ export const getVeterinaryPracticesById = async (
   id: string,
 ): Promise<VeterinaryPracticesType> => {
   const res = await fetch(
-    import.meta.env.VITE_API_URL + '/veterinary-practice/' + id, {credentials: 'include'}
+    import.meta.env.VITE_API_URL + '/veterinary-practice/' + id,
+    { credentials: 'include' },
   )
   if (!res.ok) {
     throw new Error('Failed to fetch getVeterinaryPracticesById')
   }
 
-  const data = await res.json();
-  const parsed = VeterinaryPracticeSchema.safeParse(data);
-  if (parsed.error !== undefined) { // if Zod throws an Error print them
-    console.log(parsed.error);
+  const data = await res.json()
+  const parsed = VeterinaryPracticeSchema.safeParse(data)
+  if (parsed.error !== undefined) {
+    // if Zod throws an Error print them
+    console.log(parsed.error)
   }
   if (!parsed.success) {
     throw new Error(parsed.error.toString())
@@ -65,14 +77,15 @@ export const getFavoritesVeterinaryPractices = async (
   userId: string,
 ): Promise<number[]> => {
   const res = await fetch(
-    import.meta.env.VITE_API_URL + '/persons/' + userId + '/favorites', {credentials: 'include'}
+    import.meta.env.VITE_API_URL + '/persons/' + userId + '/favorites',
+    { credentials: 'include' },
   )
   if (!res.ok) {
     throw new Error('Failed to fetch getFavoritesVeterinaryPractices')
   }
 
-  const data = await res.json();
-  return data;
+  const data = await res.json()
+  return data
 }
 
 export const addFavoritesVeterinaryPractices = async (
@@ -82,19 +95,24 @@ export const addFavoritesVeterinaryPractices = async (
   const requestOptions = {
     method: 'POST',
     headers: {
-        'Content-Type': 'application/json',
+      'Content-Type': 'application/json',
     },
-    credentials: 'include'  as RequestCredentials
-}
+    credentials: 'include' as RequestCredentials,
+  }
 
   const res = await fetch(
-    import.meta.env.VITE_API_URL + '/persons/' + userId + '/favorites/' + practiceId, requestOptions
+    import.meta.env.VITE_API_URL +
+      '/persons/' +
+      userId +
+      '/favorites/' +
+      practiceId,
+    requestOptions,
   )
   if (!res.ok) {
     throw new Error('Failed to fetch addFavoritesVeterinaryPractices')
   }
 
-  return;
+  return
 }
 
 export const deleteFavoritesVeterinaryPractices = async (
@@ -104,53 +122,62 @@ export const deleteFavoritesVeterinaryPractices = async (
   const requestOptions = {
     method: 'DELETE',
     headers: {
-        'Content-Type': 'application/json',
+      'Content-Type': 'application/json',
     },
-    credentials: 'include' as RequestCredentials
-}
+    credentials: 'include' as RequestCredentials,
+  }
 
   const res = await fetch(
-    import.meta.env.VITE_API_URL + '/persons/' + userId + '/favorites/' + practiceId, requestOptions
+    import.meta.env.VITE_API_URL +
+      '/persons/' +
+      userId +
+      '/favorites/' +
+      practiceId,
+    requestOptions,
   )
   if (!res.ok) {
     throw new Error('Failed to fetch deleteFavoritesVeterinaryPractices')
   }
-  
-  return;
+
+  return
 }
 
-export const creatVeterinaryPractice = async (practice: VeterinaryPracticesCreateType): Promise<VeterinaryPracticesType> => {
-
+export const createVeterinaryPractice = async (
+  practice: VeterinaryPracticesCreateType,
+): Promise<VeterinaryPracticesType> => {
   const requestOptions = {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(practice),
-    credentials: 'include'  as RequestCredentials
+    credentials: 'include' as RequestCredentials,
   }
   const res = await fetch(
-    import.meta.env.VITE_API_URL + '/veterinary-practice/', requestOptions
+    import.meta.env.VITE_API_URL + '/veterinary-practice/',
+    requestOptions,
   )
   if (!res.ok) {
     throw new Error('Failed to fetch getVeterinaryPracticesById')
   }
-  const data = await res.json();
-  return parsedVeterinaryPractice(data);
+  const data = await res.json()
+  return parsedVeterinaryPractice(data)
 }
 
 /*
  * change the date from the Appointment to Date Object and safeParse the object
  */
-const parsedVeterinaryPractice = (unsafeAppointment: VeterinaryPracticesType): VeterinaryPracticesType => {
-
-  const parsed = VeterinaryPracticeSchema.safeParse(unsafeAppointment);
-  if (parsed.error !== undefined) { // if Zod throws an Error print them
-    console.log(parsed.error);
+const parsedVeterinaryPractice = (
+  unsafeAppointment: VeterinaryPracticesType,
+): VeterinaryPracticesType => {
+  const parsed = VeterinaryPracticeSchema.safeParse(unsafeAppointment)
+  if (parsed.error !== undefined) {
+    // if Zod throws an Error print them
+    console.log(parsed.error)
   }
   if (!parsed.success) {
-    throw new Error(parsed.error.toString());
+    throw new Error(parsed.error.toString())
   }
-  console.log("parse erfolgreich")
-  return parsed.data;
+  console.log('parse erfolgreich')
+  return parsed.data
 }

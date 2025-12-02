@@ -1,6 +1,10 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useState, type ChangeEvent, type FormEvent } from 'react'
-import { PersonsCreateSchema, type PersonsCreateType, type sexesType } from '../../../../shared/schemas/ZodSchemas'
+import {
+  PersonsCreateSchema,
+  type PersonsCreateType,
+  type sexesType,
+} from '../../../../shared/schemas/ZodSchemas'
 import '../../styles/routes/personRegistration.scss'
 import { Form, FormGroup } from 'react-bootstrap'
 import { useMutation } from '@tanstack/react-query'
@@ -12,8 +16,8 @@ export const Route = createFileRoute('/registration/person')({
 })
 
 function PersonRegistration() {
-  const { setLogin } = useAuthStore();
-  const navigate = useNavigate();
+  const { setLogin } = useAuthStore()
+  const navigate = useNavigate()
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
   const [strasse, setStrasse] = useState('')
@@ -29,14 +33,13 @@ function PersonRegistration() {
   const [errors, setErrors] = useState<{ [key: string]: string }>({})
 
   const { mutate: mutateRegistration } = useMutation({
-    mutationFn: (person: PersonsCreateType) =>
-      personRegistration(person),
+    mutationFn: (person: PersonsCreateType) => personRegistration(person),
     onError: () => {
-      console.log("Email oder Password falsch");
+      console.log('Email oder Password falsch')
     },
     onSuccess: () => {
-      setLogin(true);
-      navigate({ to: '/dashboard' });
+      setLogin(true)
+      navigate({ to: '/dashboard' })
     },
   })
 
@@ -66,8 +69,11 @@ function PersonRegistration() {
     if (name === 'strasse') {
       if (!value.trim()) {
         error = 'Straße ist erforderlich'
-      } else if (!/^(?=.*[a-zA-ZäöüÄÖÜß0-9])[a-zA-ZäöüÄÖÜß0-9 '`.-]+$/.test(value)) {
-        error = 'Straße muss mindestens einen Buchstaben oder eine Zahl enthalten'
+      } else if (
+        !/^(?=.*[a-zA-ZäöüÄÖÜß0-9])[a-zA-ZäöüÄÖÜß0-9 '`.-]+$/.test(value)
+      ) {
+        error =
+          'Straße muss mindestens einen Buchstaben oder eine Zahl enthalten'
       } else if (value.length < 3) {
         error = 'Straße muss mindestens aus 3 Zeichen bestehen'
       }
@@ -120,7 +126,9 @@ function PersonRegistration() {
         const beforeAt = value.split('@')[0]
         if (!/[a-zA-Z]/.test(beforeAt)) {
           error = 'E-Mail muss vor dem @ mindestens einen Buchstaben enthalten'
-        } else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value)) {
+        } else if (
+          !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value)
+        ) {
           error = 'E-Mail enthält ungültige Zeichen'
         }
       }
@@ -160,7 +168,11 @@ function PersonRegistration() {
     return error
   }
 
-  const handleBlur = (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const handleBlur = (
+    e: React.FocusEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >,
+  ) => {
     const name = e.target.name
     const value = e.target.value
 
@@ -181,7 +193,8 @@ function PersonRegistration() {
     if (!firstName.trim()) {
       newErrors.firstName = 'Vorname ist erforderlich'
     } else if (!/^[a-zA-ZäöüÄÖÜß '`-]+$/.test(firstName)) {
-      newErrors.firstName = 'Diese Zeichen sind in diesem Feld nicht erlaubt (Zahlen,/,.)'
+      newErrors.firstName =
+        'Diese Zeichen sind in diesem Feld nicht erlaubt (Zahlen,/,.)'
     } else if (firstName.length < 3) {
       newErrors.firstName = 'Vorname muss mindestens aus 3 Zeichen bestehen'
     }
@@ -189,15 +202,19 @@ function PersonRegistration() {
     if (!lastName.trim()) {
       newErrors.lastName = 'Nachname ist erforderlich'
     } else if (!/^[a-zA-ZäöüÄÖÜß '`-]+$/.test(lastName)) {
-      newErrors.lastName = 'Diese Zeichen sind in diesem Feld nicht erlaubt (Zahlen,/,.)'
+      newErrors.lastName =
+        'Diese Zeichen sind in diesem Feld nicht erlaubt (Zahlen,/,.)'
     } else if (lastName.length < 3) {
       newErrors.lastName = 'Nachname muss mindestens aus 3 Zeichen bestehen'
     }
 
     if (!strasse.trim()) {
       newErrors.strasse = 'Straße ist erforderlich'
-    } else if (!/^(?=.*[a-zA-ZäöüÄÖÜß0-9])[a-zA-ZäöüÄÖÜß0-9 '`.-]+$/.test(strasse)) {
-      newErrors.strasse = 'Straße muss mindestens einen Buchstaben oder eine Zahl enthalten'
+    } else if (
+      !/^(?=.*[a-zA-ZäöüÄÖÜß0-9])[a-zA-ZäöüÄÖÜß0-9 '`.-]+$/.test(strasse)
+    ) {
+      newErrors.strasse =
+        'Straße muss mindestens einen Buchstaben oder eine Zahl enthalten'
     } else if (strasse.length < 3) {
       newErrors.strasse = 'Straße muss mindestens aus 3 Zeichen bestehen'
     }
@@ -217,7 +234,8 @@ function PersonRegistration() {
     if (!stadt.trim()) {
       newErrors.stadt = 'Stadt ist erforderlich'
     } else if (!/^[a-zA-ZäöüÄÖÜß '`-]+$/.test(stadt)) {
-      newErrors.stadt = 'Diese Zeichen sind in diesem Feld nicht erlaubt (Zahlen,/,.)'
+      newErrors.stadt =
+        'Diese Zeichen sind in diesem Feld nicht erlaubt (Zahlen,/,.)'
     } else if (stadt.length < 3) {
       newErrors.stadt = 'Stadt muss mindestens aus 3 Zeichen bestehen'
     }
@@ -225,7 +243,8 @@ function PersonRegistration() {
     if (!land.trim()) {
       newErrors.land = 'Land ist erforderlich'
     } else if (!/^[a-zA-ZäöüÄÖÜß '`-]+$/.test(land)) {
-      newErrors.land = 'Diese Zeichen sind in diesem Feld nicht erlaubt (Zahlen,/,.)'
+      newErrors.land =
+        'Diese Zeichen sind in diesem Feld nicht erlaubt (Zahlen,/,.)'
     } else if (land.length < 3) {
       newErrors.land = 'Land muss mindestens aus 3 Zeichen bestehen'
     }
@@ -239,8 +258,11 @@ function PersonRegistration() {
     } else {
       const beforeAt = email.split('@')[0]
       if (!/[a-zA-Z]/.test(beforeAt)) {
-        newErrors.email = 'E-Mail muss vor dem @ mindestens einen Buchstaben enthalten'
-      } else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
+        newErrors.email =
+          'E-Mail muss vor dem @ mindestens einen Buchstaben enthalten'
+      } else if (
+        !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)
+      ) {
         newErrors.email = 'E-Mail enthält ungültige Zeichen'
       }
     }
@@ -249,30 +271,36 @@ function PersonRegistration() {
     } else if (password.length < 6) {
       newErrors.password = 'Passwort muss mindestens aus 6 Zeichen bestehen'
     } else if (!/[A-Z]/.test(password)) {
-      newErrors.password = 'Passwort muss mindestens einen Großbuchstaben enthalten'
+      newErrors.password =
+        'Passwort muss mindestens einen Großbuchstaben enthalten'
     } else if (!/[0-9]/.test(password)) {
       newErrors.password = 'Passwort muss mindestens eine Zahl enthalten'
     } else if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
-      newErrors.password = 'Passwort muss mindestens ein Sonderzeichen enthalten'
+      newErrors.password =
+        'Passwort muss mindestens ein Sonderzeichen enthalten'
     }
     if (!phone.trim()) {
       newErrors.phone = 'Telefon ist erforderlich'
     } else if (!/^[+]?[0-9]+$/.test(phone)) {
-      newErrors.phone = 'Telefon darf nur Zahlen und optional ein + am Anfang enthalten'
+      newErrors.phone =
+        'Telefon darf nur Zahlen und optional ein + am Anfang enthalten'
     } else {
       const numbers = phone.replace('+', '')
       if (numbers.length < 6) {
         newErrors.phone = 'Telefon muss mindestens aus 6 Zahlen bestehen'
       }
     }
-    if (!dateOfBirth.trim()) newErrors.dateOfBirth = 'Geburtsdatum ist erforderlich'
+    if (!dateOfBirth.trim())
+      newErrors.dateOfBirth = 'Geburtsdatum ist erforderlich'
     if (!sex) newErrors.sex = 'Geschlecht ist erforderlich'
 
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
+  ) => {
     const t = e.target
     const name = t.name
     const value = t.value
@@ -318,19 +346,21 @@ function PersonRegistration() {
         setDateOfBirth(value)
         break
       case 'sex':
-        if (value === "") {
-          setSex("notknown")
-        } else if (value === "male") {
-          setSex("male")
-        } else if (value === "female") {
+        if (value === '') {
+          setSex('not_known')
+        } else if (value === 'male') {
+          setSex('male')
+        } else if (value === 'female') {
           setSex(value)
-        } else if (value === "notapplicable") {
+        } else if (value === 'not_applicable') {
           setSex(value)
         }
 
         break
       default:
-        console.log('Error: Fehler beim Aendern von personRegistration State in handleChange')
+        console.log(
+          'Error: Fehler beim Aendern von personRegistration State in handleChange',
+        )
     }
   }
 
@@ -349,23 +379,26 @@ function PersonRegistration() {
       password: password,
       phone: phone,
       dateofbirth: new Date(dateOfBirth),
-      sex: sex ?? "notknown",
+      sex: sex ?? 'not_known',
       addresses: {
         street: strasse + hausnr,
         citycode: plz,
         city: stadt,
         country: land,
         latitude: 0,
-        longitude: 0
+        longitude: 0,
       },
     }
 
     try {
-      PersonsCreateSchema.parse({ ...person, dateOfBirth: person.dateofbirth.toISOString() });
+      PersonsCreateSchema.parse({
+        ...person,
+        dateOfBirth: person.dateofbirth.toISOString(),
+      })
     } catch (err) {
       console.log('Zod Error: personRegistration' + err)
     }
-    mutateRegistration(person);
+    mutateRegistration(person)
   }
   return (
     <div className="auth-page">
@@ -379,7 +412,9 @@ function PersonRegistration() {
 
               <div className="form-row equal-col">
                 <FormGroup className="form-group">
-                  <Form.Label htmlFor="firstName" className="form-label">Vorname *</Form.Label>
+                  <Form.Label htmlFor="firstName" className="form-label">
+                    Vorname *
+                  </Form.Label>
                   <Form.Control
                     id="CreatePersonFirstName"
                     type="text"
@@ -396,7 +431,9 @@ function PersonRegistration() {
                 </FormGroup>
 
                 <FormGroup className="form-group">
-                  <Form.Label htmlFor="lastName" className="form-label">Nachname *</Form.Label>
+                  <Form.Label htmlFor="lastName" className="form-label">
+                    Nachname *
+                  </Form.Label>
                   <Form.Control
                     id="CreatePersonLastName"
                     type="text"
@@ -415,7 +452,9 @@ function PersonRegistration() {
 
               <div className="form-row equal-col">
                 <FormGroup className="form-group">
-                  <Form.Label htmlFor="dateOfBirth" className="form-label">Geburtsdatum *</Form.Label>
+                  <Form.Label htmlFor="dateOfBirth" className="form-label">
+                    Geburtsdatum *
+                  </Form.Label>
                   <Form.Control
                     id="CreatePersonDateOfBirth"
                     type="date"
@@ -431,7 +470,9 @@ function PersonRegistration() {
                 </FormGroup>
 
                 <FormGroup className="form-group">
-                  <Form.Label htmlFor="sex" className="form-label">Geschlecht *</Form.Label>
+                  <Form.Label htmlFor="sex" className="form-label">
+                    Geschlecht *
+                  </Form.Label>
                   <Form.Select
                     id="CreatePersonSex"
                     name="sex"
@@ -441,9 +482,9 @@ function PersonRegistration() {
                     isInvalid={!!errors.sex}
                   >
                     <option value="">Bitte wählen</option>
-                    <option value={"male"}>Männlich</option>
-                    <option value={"female"}>Weiblich</option>
-                    <option value={"notapplicable"}>Divers</option>
+                    <option value={'male'}>Männlich</option>
+                    <option value={'female'}>Weiblich</option>
+                    <option value={'not_applicable'}>Divers</option>
                   </Form.Select>
                   <Form.Control.Feedback type="invalid">
                     {errors.sex}
@@ -456,7 +497,9 @@ function PersonRegistration() {
               <h2 className="form-section-title">Kontaktdaten</h2>
 
               <FormGroup className="form-group">
-                <Form.Label htmlFor="email" className="form-label">E-Mail *</Form.Label>
+                <Form.Label htmlFor="email" className="form-label">
+                  E-Mail *
+                </Form.Label>
                 <Form.Control
                   id="CreatePersonEmail"
                   type="email"
@@ -473,7 +516,9 @@ function PersonRegistration() {
               </FormGroup>
 
               <FormGroup className="form-group">
-                <Form.Label htmlFor="phone" className="form-label">Telefon *</Form.Label>
+                <Form.Label htmlFor="phone" className="form-label">
+                  Telefon *
+                </Form.Label>
                 <Form.Control
                   id="CreatePersonPhone"
                   type="tel"
@@ -490,7 +535,9 @@ function PersonRegistration() {
               </FormGroup>
 
               <FormGroup className="form-group">
-                <Form.Label htmlFor="password" className="form-label">Passwort *</Form.Label>
+                <Form.Label htmlFor="password" className="form-label">
+                  Passwort *
+                </Form.Label>
                 <Form.Control
                   id="CreatePersonPassword"
                   type="password"
@@ -512,7 +559,9 @@ function PersonRegistration() {
 
               <div className="form-row two-col">
                 <FormGroup className="form-group">
-                  <Form.Label htmlFor="strasse" className="form-label">Straße *</Form.Label>
+                  <Form.Label htmlFor="strasse" className="form-label">
+                    Straße *
+                  </Form.Label>
                   <Form.Control
                     id="CreatePersonStrasse"
                     type="text"
@@ -529,7 +578,9 @@ function PersonRegistration() {
                 </FormGroup>
 
                 <FormGroup className="form-group">
-                  <Form.Label htmlFor="hausnr" className="form-label">Nr. *</Form.Label>
+                  <Form.Label htmlFor="hausnr" className="form-label">
+                    Nr. *
+                  </Form.Label>
                   <Form.Control
                     id="CreatePersonHausnr"
                     type="text"
@@ -548,7 +599,9 @@ function PersonRegistration() {
 
               <div className="form-row equal-col">
                 <FormGroup className="form-group">
-                  <Form.Label htmlFor="plz" className="form-label">PLZ *</Form.Label>
+                  <Form.Label htmlFor="plz" className="form-label">
+                    PLZ *
+                  </Form.Label>
                   <Form.Control
                     id="CreatePersonPlz"
                     type="text"
@@ -565,7 +618,9 @@ function PersonRegistration() {
                 </FormGroup>
 
                 <FormGroup className="form-group">
-                  <Form.Label htmlFor="stadt" className="form-label">Stadt *</Form.Label>
+                  <Form.Label htmlFor="stadt" className="form-label">
+                    Stadt *
+                  </Form.Label>
                   <Form.Control
                     id="CreatePersonStadt"
                     type="text"
@@ -583,7 +638,9 @@ function PersonRegistration() {
               </div>
 
               <FormGroup className="form-group">
-                <Form.Label htmlFor="land" className="form-label">Land *</Form.Label>
+                <Form.Label htmlFor="land" className="form-label">
+                  Land *
+                </Form.Label>
                 <Form.Control
                   id="CreatePersonLand"
                   type="text"

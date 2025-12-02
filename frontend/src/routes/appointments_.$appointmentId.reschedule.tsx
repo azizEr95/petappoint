@@ -10,7 +10,9 @@ import type {
 } from '../../../shared/schemas/ZodSchemas'
 import { dateToInfosString } from '../utils/DateToStringFormat'
 
-export const Route = createFileRoute('/appointments_/$appointmentId/reschedule')({
+export const Route = createFileRoute(
+  '/appointments_/$appointmentId/reschedule',
+)({
   component: RescheduleAppointment,
 })
 
@@ -44,15 +46,15 @@ function RescheduleAppointment() {
   }
 
   // Check if appointment is in the future
-  if (appointment.endtime < new Date()) {
+  if (appointment.endTime < new Date()) {
     navigate({ to: '/appointments' })
     return <></>
   }
 
   // Build filter options from current appointment
   const filterOptions: AppointmentFilterType = {
-    animalTypeIds: appointment.animal?.animaltypeid
-      ? [appointment.animal.animaltypeid]
+    animalTypeIds: appointment.animal?.animalTypeId
+      ? [appointment.animal.animalTypeId]
       : undefined,
     serviceTypeIds: appointment.service?.id
       ? [appointment.service.id]
@@ -76,7 +78,7 @@ function RescheduleAppointment() {
         appointment: newAppointment,
         selectedAnimal: appointment.animal,
         selectedService: appointment.service,
-        practice: appointment.veterinarypractice,
+        practice: appointment.veterinaryPractice,
         isReschedule: true,
         oldAppointmentId: appointment.id,
       } as any,
@@ -98,7 +100,8 @@ function RescheduleAppointment() {
           <div className="reschedule-info-banner">
             <i className="bi bi-info-circle"></i>
             <div>
-              <strong>Aktueller Termin:</strong> {dateToInfosString(appointment.starttime)}
+              <strong>Aktueller Termin:</strong>{' '}
+              {dateToInfosString(appointment.startTime)}
             </div>
           </div>
 
@@ -118,7 +121,7 @@ function RescheduleAppointment() {
           <h2 className="section-title">Neuen Termin wählen</h2>
 
           <NextAvailableAppointments
-            praxisID={appointment.veterinarypractice.id.toString()}
+            practiceId={appointment.veterinaryPractice.id.toString()}
             filterOptions={filterOptions}
             onSlotClick={handleSlotClick}
           />
@@ -131,7 +134,9 @@ function RescheduleAppointment() {
             <i className="bi bi-hospital"></i>
             <div className="info-content">
               <div className="info-label">Praxis</div>
-              <div className="info-value">{appointment.veterinarypractice.name}</div>
+              <div className="info-value">
+                {appointment.veterinaryPractice.name}
+              </div>
             </div>
           </div>
 
@@ -139,7 +144,9 @@ function RescheduleAppointment() {
             <i className="bi bi-calendar-x"></i>
             <div className="info-content">
               <div className="info-label">Alter Termin</div>
-              <div className="info-value">{dateToInfosString(appointment.starttime)}</div>
+              <div className="info-value">
+                {dateToInfosString(appointment.startTime)}
+              </div>
             </div>
           </div>
 
@@ -147,7 +154,9 @@ function RescheduleAppointment() {
             <i className="bi bi-paw"></i>
             <div className="info-content">
               <div className="info-label">Tier</div>
-              <div className="info-value">{appointment.animal?.name || '-'}</div>
+              <div className="info-value">
+                {appointment.animal?.name || '-'}
+              </div>
             </div>
           </div>
 
@@ -164,8 +173,8 @@ function RescheduleAppointment() {
           <div className="sidebar-note">
             <i className="bi bi-exclamation-circle"></i>
             <p>
-              Wählen Sie einen neuen Termin aus. Der alte Termin wird automatisch
-              nach Bestätigung abgesagt.
+              Wählen Sie einen neuen Termin aus. Der alte Termin wird
+              automatisch nach Bestätigung abgesagt.
             </p>
           </div>
         </div>

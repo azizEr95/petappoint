@@ -32,7 +32,7 @@ export function FavoritePracticeCard({ practiceId, onRemove }: FavoritePracticeC
   }
 
   return (
-    <Link to="/praxen/$praxisId" params={{ praxisId: practiceId.toString() }} className="favorite-practice-card">
+    <Link to="/practices/$practiceId" params={{ practiceId: practiceId.toString() }} className="favorite-practice-card">
       <div className="practice-header">
         <div className="practice-logo">
           <i className="bi bi-hospital"></i>

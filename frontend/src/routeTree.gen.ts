@@ -18,9 +18,9 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as RegistrationVeterinaryRouteImport } from './routes/registration/veterinary'
 import { Route as RegistrationPersonRouteImport } from './routes/registration/person'
 import { Route as BookingConfirmationRouteImport } from './routes/booking/confirmation'
-import { Route as PraxenPraxisIdIndexRouteImport } from './routes/praxen/$praxisId/index'
+import { Route as PracticesPracticeIdIndexRouteImport } from './routes/practices/$practiceId/index'
 import { Route as AppointmentsAppointmentIdRescheduleRouteImport } from './routes/appointments_.$appointmentId.reschedule'
-import { Route as PraxenPraxisIdBookingTerminIdRouteImport } from './routes/praxen/$praxisId/booking/$terminId'
+import { Route as PracticesPracticeIdBookingAppointmentIdRouteImport } from './routes/practices/$practiceId/booking/$appointmentId'
 
 const SearchRoute = SearchRouteImport.update({
   id: '/search',
@@ -67,21 +67,22 @@ const BookingConfirmationRoute = BookingConfirmationRouteImport.update({
   path: '/booking/confirmation',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PraxenPraxisIdIndexRoute = PraxenPraxisIdIndexRouteImport.update({
-  id: '/praxen/$praxisId/',
-  path: '/praxen/$praxisId/',
-  getParentRoute: () => rootRouteImport,
-} as any)
+const PracticesPracticeIdIndexRoute =
+  PracticesPracticeIdIndexRouteImport.update({
+    id: '/practices/$practiceId/',
+    path: '/practices/$practiceId/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AppointmentsAppointmentIdRescheduleRoute =
   AppointmentsAppointmentIdRescheduleRouteImport.update({
     id: '/appointments_/$appointmentId/reschedule',
     path: '/appointments/$appointmentId/reschedule',
     getParentRoute: () => rootRouteImport,
   } as any)
-const PraxenPraxisIdBookingTerminIdRoute =
-  PraxenPraxisIdBookingTerminIdRouteImport.update({
-    id: '/praxen/$praxisId/booking/$terminId',
-    path: '/praxen/$praxisId/booking/$terminId',
+const PracticesPracticeIdBookingAppointmentIdRoute =
+  PracticesPracticeIdBookingAppointmentIdRouteImport.update({
+    id: '/practices/$practiceId/booking/$appointmentId',
+    path: '/practices/$practiceId/booking/$appointmentId',
     getParentRoute: () => rootRouteImport,
   } as any)
 
@@ -96,8 +97,8 @@ export interface FileRoutesByFullPath {
   '/registration/person': typeof RegistrationPersonRoute
   '/registration/veterinary': typeof RegistrationVeterinaryRoute
   '/appointments/$appointmentId/reschedule': typeof AppointmentsAppointmentIdRescheduleRoute
-  '/praxen/$praxisId': typeof PraxenPraxisIdIndexRoute
-  '/praxen/$praxisId/booking/$terminId': typeof PraxenPraxisIdBookingTerminIdRoute
+  '/practices/$practiceId': typeof PracticesPracticeIdIndexRoute
+  '/practices/$practiceId/booking/$appointmentId': typeof PracticesPracticeIdBookingAppointmentIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -110,8 +111,8 @@ export interface FileRoutesByTo {
   '/registration/person': typeof RegistrationPersonRoute
   '/registration/veterinary': typeof RegistrationVeterinaryRoute
   '/appointments/$appointmentId/reschedule': typeof AppointmentsAppointmentIdRescheduleRoute
-  '/praxen/$praxisId': typeof PraxenPraxisIdIndexRoute
-  '/praxen/$praxisId/booking/$terminId': typeof PraxenPraxisIdBookingTerminIdRoute
+  '/practices/$practiceId': typeof PracticesPracticeIdIndexRoute
+  '/practices/$practiceId/booking/$appointmentId': typeof PracticesPracticeIdBookingAppointmentIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -125,8 +126,8 @@ export interface FileRoutesById {
   '/registration/person': typeof RegistrationPersonRoute
   '/registration/veterinary': typeof RegistrationVeterinaryRoute
   '/appointments_/$appointmentId/reschedule': typeof AppointmentsAppointmentIdRescheduleRoute
-  '/praxen/$praxisId/': typeof PraxenPraxisIdIndexRoute
-  '/praxen/$praxisId/booking/$terminId': typeof PraxenPraxisIdBookingTerminIdRoute
+  '/practices/$practiceId/': typeof PracticesPracticeIdIndexRoute
+  '/practices/$practiceId/booking/$appointmentId': typeof PracticesPracticeIdBookingAppointmentIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -141,8 +142,8 @@ export interface FileRouteTypes {
     | '/registration/person'
     | '/registration/veterinary'
     | '/appointments/$appointmentId/reschedule'
-    | '/praxen/$praxisId'
-    | '/praxen/$praxisId/booking/$terminId'
+    | '/practices/$practiceId'
+    | '/practices/$practiceId/booking/$appointmentId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -155,8 +156,8 @@ export interface FileRouteTypes {
     | '/registration/person'
     | '/registration/veterinary'
     | '/appointments/$appointmentId/reschedule'
-    | '/praxen/$praxisId'
-    | '/praxen/$praxisId/booking/$terminId'
+    | '/practices/$practiceId'
+    | '/practices/$practiceId/booking/$appointmentId'
   id:
     | '__root__'
     | '/'
@@ -169,8 +170,8 @@ export interface FileRouteTypes {
     | '/registration/person'
     | '/registration/veterinary'
     | '/appointments_/$appointmentId/reschedule'
-    | '/praxen/$praxisId/'
-    | '/praxen/$praxisId/booking/$terminId'
+    | '/practices/$practiceId/'
+    | '/practices/$practiceId/booking/$appointmentId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -184,8 +185,8 @@ export interface RootRouteChildren {
   RegistrationPersonRoute: typeof RegistrationPersonRoute
   RegistrationVeterinaryRoute: typeof RegistrationVeterinaryRoute
   AppointmentsAppointmentIdRescheduleRoute: typeof AppointmentsAppointmentIdRescheduleRoute
-  PraxenPraxisIdIndexRoute: typeof PraxenPraxisIdIndexRoute
-  PraxenPraxisIdBookingTerminIdRoute: typeof PraxenPraxisIdBookingTerminIdRoute
+  PracticesPracticeIdIndexRoute: typeof PracticesPracticeIdIndexRoute
+  PracticesPracticeIdBookingAppointmentIdRoute: typeof PracticesPracticeIdBookingAppointmentIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -253,11 +254,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BookingConfirmationRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/praxen/$praxisId/': {
-      id: '/praxen/$praxisId/'
-      path: '/praxen/$praxisId'
-      fullPath: '/praxen/$praxisId'
-      preLoaderRoute: typeof PraxenPraxisIdIndexRouteImport
+    '/practices/$practiceId/': {
+      id: '/practices/$practiceId/'
+      path: '/practices/$practiceId'
+      fullPath: '/practices/$practiceId'
+      preLoaderRoute: typeof PracticesPracticeIdIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/appointments_/$appointmentId/reschedule': {
@@ -267,11 +268,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppointmentsAppointmentIdRescheduleRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/praxen/$praxisId/booking/$terminId': {
-      id: '/praxen/$praxisId/booking/$terminId'
-      path: '/praxen/$praxisId/booking/$terminId'
-      fullPath: '/praxen/$praxisId/booking/$terminId'
-      preLoaderRoute: typeof PraxenPraxisIdBookingTerminIdRouteImport
+    '/practices/$practiceId/booking/$appointmentId': {
+      id: '/practices/$practiceId/booking/$appointmentId'
+      path: '/practices/$practiceId/booking/$appointmentId'
+      fullPath: '/practices/$practiceId/booking/$appointmentId'
+      preLoaderRoute: typeof PracticesPracticeIdBookingAppointmentIdRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -289,8 +290,9 @@ const rootRouteChildren: RootRouteChildren = {
   RegistrationVeterinaryRoute: RegistrationVeterinaryRoute,
   AppointmentsAppointmentIdRescheduleRoute:
     AppointmentsAppointmentIdRescheduleRoute,
-  PraxenPraxisIdIndexRoute: PraxenPraxisIdIndexRoute,
-  PraxenPraxisIdBookingTerminIdRoute: PraxenPraxisIdBookingTerminIdRoute,
+  PracticesPracticeIdIndexRoute: PracticesPracticeIdIndexRoute,
+  PracticesPracticeIdBookingAppointmentIdRoute:
+    PracticesPracticeIdBookingAppointmentIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
