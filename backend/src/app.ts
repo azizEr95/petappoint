@@ -8,6 +8,7 @@ import { animalsRouter } from './routes/animals';
 import { animaltypeRouter } from './routes/animaltypes';
 import { serviceRouter } from './routes/services';
 import { loginRouter } from './routes/login';
+import { emailverificationRouter } from './routes/emailverification';
 
 export const app = express();
 
@@ -22,3 +23,4 @@ app.use("/api/persons", personsRouter);
 app.use("/api/animals", animalsRouter);
 app.use("/api/animaltypes", animaltypeRouter);
 app.use("/api/services", serviceRouter);
+app.use("api/email-confirmation", emailverificationRouter);
