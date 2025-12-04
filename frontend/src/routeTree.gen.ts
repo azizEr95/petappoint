@@ -17,6 +17,7 @@ import { Route as AnimalsRouteImport } from './routes/animals'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as RegistrationVeterinaryRouteImport } from './routes/registration/veterinary'
 import { Route as RegistrationPersonRouteImport } from './routes/registration/person'
+import { Route as PracticesFavoritesRouteImport } from './routes/practices/favorites'
 import { Route as BookingConfirmationRouteImport } from './routes/booking/confirmation'
 import { Route as PracticesPracticeIdIndexRouteImport } from './routes/practices/$practiceId/index'
 import { Route as AppointmentsAppointmentIdRescheduleRouteImport } from './routes/appointments_.$appointmentId.reschedule'
@@ -62,6 +63,11 @@ const RegistrationPersonRoute = RegistrationPersonRouteImport.update({
   path: '/registration/person',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PracticesFavoritesRoute = PracticesFavoritesRouteImport.update({
+  id: '/practices/favorites',
+  path: '/practices/favorites',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BookingConfirmationRoute = BookingConfirmationRouteImport.update({
   id: '/booking/confirmation',
   path: '/booking/confirmation',
@@ -94,6 +100,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/search': typeof SearchRoute
   '/booking/confirmation': typeof BookingConfirmationRoute
+  '/practices/favorites': typeof PracticesFavoritesRoute
   '/registration/person': typeof RegistrationPersonRoute
   '/registration/veterinary': typeof RegistrationVeterinaryRoute
   '/appointments/$appointmentId/reschedule': typeof AppointmentsAppointmentIdRescheduleRoute
@@ -108,6 +115,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/search': typeof SearchRoute
   '/booking/confirmation': typeof BookingConfirmationRoute
+  '/practices/favorites': typeof PracticesFavoritesRoute
   '/registration/person': typeof RegistrationPersonRoute
   '/registration/veterinary': typeof RegistrationVeterinaryRoute
   '/appointments/$appointmentId/reschedule': typeof AppointmentsAppointmentIdRescheduleRoute
@@ -123,6 +131,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/search': typeof SearchRoute
   '/booking/confirmation': typeof BookingConfirmationRoute
+  '/practices/favorites': typeof PracticesFavoritesRoute
   '/registration/person': typeof RegistrationPersonRoute
   '/registration/veterinary': typeof RegistrationVeterinaryRoute
   '/appointments_/$appointmentId/reschedule': typeof AppointmentsAppointmentIdRescheduleRoute
@@ -139,6 +148,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/search'
     | '/booking/confirmation'
+    | '/practices/favorites'
     | '/registration/person'
     | '/registration/veterinary'
     | '/appointments/$appointmentId/reschedule'
@@ -153,6 +163,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/search'
     | '/booking/confirmation'
+    | '/practices/favorites'
     | '/registration/person'
     | '/registration/veterinary'
     | '/appointments/$appointmentId/reschedule'
@@ -167,6 +178,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/search'
     | '/booking/confirmation'
+    | '/practices/favorites'
     | '/registration/person'
     | '/registration/veterinary'
     | '/appointments_/$appointmentId/reschedule'
@@ -182,6 +194,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   SearchRoute: typeof SearchRoute
   BookingConfirmationRoute: typeof BookingConfirmationRoute
+  PracticesFavoritesRoute: typeof PracticesFavoritesRoute
   RegistrationPersonRoute: typeof RegistrationPersonRoute
   RegistrationVeterinaryRoute: typeof RegistrationVeterinaryRoute
   AppointmentsAppointmentIdRescheduleRoute: typeof AppointmentsAppointmentIdRescheduleRoute
@@ -247,6 +260,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RegistrationPersonRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/practices/favorites': {
+      id: '/practices/favorites'
+      path: '/practices/favorites'
+      fullPath: '/practices/favorites'
+      preLoaderRoute: typeof PracticesFavoritesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/booking/confirmation': {
       id: '/booking/confirmation'
       path: '/booking/confirmation'
@@ -286,6 +306,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   SearchRoute: SearchRoute,
   BookingConfirmationRoute: BookingConfirmationRoute,
+  PracticesFavoritesRoute: PracticesFavoritesRoute,
   RegistrationPersonRoute: RegistrationPersonRoute,
   RegistrationVeterinaryRoute: RegistrationVeterinaryRoute,
   AppointmentsAppointmentIdRescheduleRoute:

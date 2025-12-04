@@ -164,6 +164,33 @@ export const createVeterinaryPractice = async (
   return parsedVeterinaryPractice(data)
 }
 
+// NEUE FUNKTION FÜR FAVORITEN MIT DETAILS
+export const getFavoritesVeterinaryPracticesDetails = async (
+  userId: string,
+): Promise<VeterinaryPracticesType[]> => {
+  // 1. Hole die IDs der favorisierten Praxen
+  const favoriteIds = await getFavoritesVeterinaryPractices(userId);
+  
+  if (favoriteIds.length === 0) {
+    return [];
+  }
+
+  // 2. Hole die Details für jede Praxis
+  const practicesPromises = favoriteIds.map(async (id) => {
+    try {
+      return await getVeterinaryPracticesById(id.toString());
+    } catch (error) {
+      console.error(`Fehler beim Laden der Praxis ${id}:`, error);
+      return null;
+    }
+  });
+
+  const practices = await Promise.all(practicesPromises);
+  
+  // 3. Filtere null-Werte heraus (falls eine Praxis nicht geladen werden konnte)
+  return practices.filter((p): p is VeterinaryPracticesType => p !== null);
+}
+
 /*
  * change the date from the Appointment to Date Object and safeParse the object
  */
