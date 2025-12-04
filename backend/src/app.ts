@@ -25,5 +25,5 @@ app.use("/api/persons", personsRouter);
 app.use("/api/animals", animalsRouter);
 app.use("/api/animaltypes", animaltypeRouter);
 app.use("/api/services", serviceRouter);
-app.use("api/email-confirmation", emailverificationRouter);
+app.use("api/registration", emailverificationRouter);
 app.use(routerExceptionHandler);

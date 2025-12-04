@@ -60,15 +60,7 @@ personsRouter.post("/",
         // confirmation email 
         await sendConfirmationEmail(person, jwt);
 
-        const loginResource = verifyJWT(jwt);
-        res.cookie('access_token', jwt, {
-            httpOnly: true,
-            expires: new Date(loginResource.exp * 1000),
-            secure: true,
-            sameSite: "none"
-        });
-
-        res.status(201).send(loginResource);
+        res.status(201).send(person);
     }
 );
 

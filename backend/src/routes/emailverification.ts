@@ -9,7 +9,14 @@ export const emailverificationRouter = express.Router();
 emailverificationRouter.get("/:jwtToken", 
     async (req, res) => {
         try {
-            const userData = verifyJWT(req.params.jwtToken);
+            const jwt = req.params.jwtToken;
+            const userData = verifyJWT(jwt);
+            res.cookie('access_token', jwt, {
+            httpOnly: true,
+            expires: new Date(userData.exp * 1000),
+            secure: true,
+            sameSite: "none"
+        });
             res.send(userData);
         } catch (error) {
             res.sendStatus(500);

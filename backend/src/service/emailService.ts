@@ -8,7 +8,7 @@ import { PersonsType } from 'vetlib-shared/schemas/ZodSchemas';
 
 // types 
 const sender = {
-    name: "Aziz",
+    name: "Vetlib",
     email: "aziz.erol@outlook.de"
 }
 
@@ -30,11 +30,12 @@ export async function sendConfirmationEmail(user: PersonsType,jwtToken: string |
     // injecting Data confirmation link is route to endpoint with jwtToken 
     // using jwttoken to verify through link/button click and a random 6 digit code as one time password for every user 
     const data = {
-        firstname: user.firstName,
-        confirmationLink : `localhost:3001/email-confirmation/${jwtToken}`,
+        firstName: user.firstName,
+        confirmationLink : `localhost:3001/registration/${jwtToken}`,
         confirmationCode: '2222',
         year: new Date().getFullYear()
     };
+    console.log(user.firstName);
 
     // render template
     const htmlContent = template(data);
