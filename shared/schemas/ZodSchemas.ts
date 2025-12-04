@@ -21,6 +21,8 @@ const ArrayOfIDs = z
 
 const DateTimeSchema = z.iso.datetime().transform((str) => new Date(str));
 
+const lifestyles = z.enum(["indoor", "outdoor", "mixed"]);
+
 //Animalgroup:
 export const AnimalGroupSchema = z.object({
   id: PostgresIdSchema,
@@ -62,7 +64,7 @@ export const AnimalsSchema = z.object({
   heightInCm: z.number().int().nullable(),
   timeOfDeath: DateTimeSchema.nullable(),
   isCastrated: z.boolean(),
-  lifestyleIsIndoors: z.boolean(),
+  lifestyle: lifestyles,
   sex: sexes,
   animalTypeId: z.int(),
   animalGroupId: z.int().nullable(),

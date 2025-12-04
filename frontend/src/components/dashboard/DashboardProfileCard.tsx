@@ -1,7 +1,11 @@
 import type { DashboardProfileCardProps } from '../../types/dashboard'
 import '../../styles/components/dashboard/DashboardProfileCard.scss'
 
-export function DashboardProfileCard({ user, avatarUrl, onEdit }: DashboardProfileCardProps) {
+export function DashboardProfileCard({
+  user,
+  avatarUrl,
+  onEdit,
+}: DashboardProfileCardProps) {
   // Generate initials from first and last name
   const getInitials = () => {
     const firstInitial = user.firstName?.charAt(0)?.toUpperCase() || ''
@@ -13,7 +17,11 @@ export function DashboardProfileCard({ user, avatarUrl, onEdit }: DashboardProfi
     <div className="profile-card">
       <div className="profile-avatar-section">
         {avatarUrl ? (
-          <img src={avatarUrl} alt={`${user.firstName} ${user.lastName}`} className="profile-avatar" />
+          <img
+            src={avatarUrl}
+            alt={`${user.firstName} ${user.lastName}`}
+            className="profile-avatar"
+          />
         ) : (
           <div className="profile-avatar profile-avatar-initials">
             {getInitials()}
@@ -43,7 +51,8 @@ export function DashboardProfileCard({ user, avatarUrl, onEdit }: DashboardProfi
             <div className="profile-detail-item">
               <i className="bi bi-geo-alt"></i>
               <span>
-                {user.address.street}, {user.address.cityCode} {user.address.city}
+                {user.address.street}, {user.address.cityCode}{' '}
+                {user.address.city}
               </span>
             </div>
           )}

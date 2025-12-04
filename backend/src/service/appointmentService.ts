@@ -54,7 +54,7 @@ export const appointmentService = {
             heightInCm: created.animal.heightInCm,
             weightInGram: created.animal.weightInGram,
             isCastrated: created.animal.isCastrated,
-            lifestyleIsIndoors: created.animal.lifestyleIsIndoors,
+            lifestyle: created.animal.lifestyle,
             sex: created.animal.sex,
             timeOfDeath: created.animal.timeOfDeath,
             animalGroupId: created.animal.animalGroupId,
@@ -103,9 +103,9 @@ export const appointmentService = {
             veterinaryHasServices: {
               include: {
                 service: true,
-              }
-            }
-          }
+              },
+            },
+          },
         },
         veterinaryPractice: {
           include: {
@@ -123,9 +123,9 @@ export const appointmentService = {
     }
 
     const availableServices: ServiceType[] =
-        foundAppointment.appointmentHasServices.length > 0
-          ? foundAppointment.appointmentHasServices.map((x) => x.service)
-          : foundAppointment.veterinarian.veterinaryHasServices.map((x) => x.service);
+      foundAppointment.appointmentHasServices.length > 0
+        ? foundAppointment.appointmentHasServices.map((x) => x.service)
+        : foundAppointment.veterinarian.veterinaryHasServices.map((x) => x.service);
     return {
       id: foundAppointment.id,
       startTime: foundAppointment.startTime,
@@ -139,7 +139,7 @@ export const appointmentService = {
             heightInCm: foundAppointment.animal.heightInCm,
             weightInGram: foundAppointment.animal.weightInGram,
             isCastrated: foundAppointment.animal.isCastrated,
-            lifestyleIsIndoors: foundAppointment.animal.lifestyleIsIndoors,
+            lifestyle: foundAppointment.animal.lifestyle,
             sex: foundAppointment.animal.sex,
             timeOfDeath: foundAppointment.animal.timeOfDeath,
             animalGroupId: foundAppointment.animal.animalGroupId,
@@ -247,7 +247,7 @@ export const appointmentService = {
             heightInCm: foundAppointment.animal.heightInCm,
             weightInGram: foundAppointment.animal.weightInGram,
             isCastrated: foundAppointment.animal.isCastrated,
-            lifestyleIsIndoors: foundAppointment.animal.lifestyleIsIndoors,
+            lifestyle: foundAppointment.animal.lifestyle,
             sex: foundAppointment.animal.sex,
             timeOfDeath: foundAppointment.animal.timeOfDeath,
             animalGroupId: foundAppointment.animal.animalGroupId,
@@ -350,7 +350,7 @@ export const appointmentService = {
             heightInCm: foundAppointment.animal.heightInCm,
             weightInGram: foundAppointment.animal.weightInGram,
             isCastrated: foundAppointment.animal.isCastrated,
-            lifestyleIsIndoors: foundAppointment.animal.lifestyleIsIndoors,
+            lifestyle: foundAppointment.animal.lifestyle,
             sex: foundAppointment.animal.sex,
             timeOfDeath: foundAppointment.animal.timeOfDeath,
             animalGroupId: foundAppointment.animal.animalGroupId,
@@ -453,7 +453,7 @@ export const appointmentService = {
             heightInCm: foundAppointment.animal.heightInCm,
             weightInGram: foundAppointment.animal.weightInGram,
             isCastrated: foundAppointment.animal.isCastrated,
-            lifestyleIsIndoors: foundAppointment.animal.lifestyleIsIndoors,
+            lifestyle: foundAppointment.animal.lifestyle,
             sex: foundAppointment.animal.sex,
             timeOfDeath: foundAppointment.animal.timeOfDeath,
             animalGroupId: foundAppointment.animal.animalGroupId,
@@ -588,7 +588,7 @@ export const appointmentService = {
               heightInCm: foundAppointment.animal.heightInCm,
               weightInGram: foundAppointment.animal.weightInGram,
               isCastrated: foundAppointment.animal.isCastrated,
-              lifestyleIsIndoors: foundAppointment.animal.lifestyleIsIndoors,
+              lifestyle: foundAppointment.animal.lifestyle,
               sex: foundAppointment.animal.sex,
               timeOfDeath: foundAppointment.animal.timeOfDeath,
               animalGroupId: foundAppointment.animal.animalGroupId,
@@ -693,7 +693,7 @@ export const appointmentService = {
             heightInCm: foundAppointment.animal.heightInCm,
             weightInGram: foundAppointment.animal.weightInGram,
             isCastrated: foundAppointment.animal.isCastrated,
-            lifestyleIsIndoors: foundAppointment.animal.lifestyleIsIndoors,
+            lifestyle: foundAppointment.animal.lifestyle,
             sex: foundAppointment.animal.sex,
             timeOfDeath: foundAppointment.animal.timeOfDeath,
             animalGroupId: foundAppointment.animal.animalGroupId,
@@ -799,7 +799,7 @@ export const appointmentService = {
             heightInCm: foundAppointment.animal.heightInCm,
             weightInGram: foundAppointment.animal.weightInGram,
             isCastrated: foundAppointment.animal.isCastrated,
-            lifestyleIsIndoors: foundAppointment.animal.lifestyleIsIndoors,
+            lifestyle: foundAppointment.animal.lifestyle,
             sex: foundAppointment.animal.sex,
             timeOfDeath: foundAppointment.animal.timeOfDeath,
             animalGroupId: foundAppointment.animal.animalGroupId,
@@ -869,7 +869,7 @@ export const appointmentService = {
             heightInCm: foundAppointment.animal.heightInCm,
             weightInGram: foundAppointment.animal.weightInGram,
             isCastrated: foundAppointment.animal.isCastrated,
-            lifestyleIsIndoors: foundAppointment.animal.lifestyleIsIndoors,
+            lifestyle: foundAppointment.animal.lifestyle,
             sex: foundAppointment.animal.sex,
             timeOfDeath: foundAppointment.animal.timeOfDeath,
             animalGroupId: foundAppointment.animal.animalGroupId,
@@ -945,7 +945,7 @@ export const appointmentService = {
             heightInCm: updated.animal.heightInCm,
             weightInGram: updated.animal.weightInGram,
             isCastrated: updated.animal.isCastrated,
-            lifestyleIsIndoors: updated.animal.lifestyleIsIndoors,
+            lifestyle: updated.animal.lifestyle,
             sex: updated.animal.sex,
             timeOfDeath: updated.animal.timeOfDeath,
             animalGroupId: updated.animal.animalGroupId,
@@ -1039,7 +1039,7 @@ export const appointmentService = {
             heightInCm: updated.animal.heightInCm,
             weightInGram: updated.animal.weightInGram,
             isCastrated: updated.animal.isCastrated,
-            lifestyleIsIndoors: updated.animal.lifestyleIsIndoors,
+            lifestyle: updated.animal.lifestyle,
             sex: updated.animal.sex,
             timeOfDeath: updated.animal.timeOfDeath,
             animalGroupId: updated.animal.animalGroupId,
@@ -1116,7 +1116,7 @@ export const appointmentService = {
             heightInCm: updated.animal.heightInCm,
             weightInGram: updated.animal.weightInGram,
             isCastrated: updated.animal.isCastrated,
-            lifestyleIsIndoors: updated.animal.lifestyleIsIndoors,
+            lifestyle: updated.animal.lifestyle,
             sex: updated.animal.sex,
             timeOfDeath: updated.animal.timeOfDeath,
             animalGroupId: updated.animal.animalGroupId,
@@ -1186,7 +1186,7 @@ export const appointmentService = {
             heightInCm: updated.animal.heightInCm,
             weightInGram: updated.animal.weightInGram,
             isCastrated: updated.animal.isCastrated,
-            lifestyleIsIndoors: updated.animal.lifestyleIsIndoors,
+            lifestyle: updated.animal.lifestyle,
             sex: updated.animal.sex,
             timeOfDeath: updated.animal.timeOfDeath,
             animalGroupId: updated.animal.animalGroupId,

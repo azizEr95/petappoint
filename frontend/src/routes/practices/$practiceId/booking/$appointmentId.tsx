@@ -54,7 +54,7 @@ function BookingComponent() {
     useState<Array<ServiceType> | null>(null) // if an filter was selected save which services have to been shown and available
   const [notFoundFilteredServices, setNotFoundFilteredServices] =
     useState<Array<ServiceType> | null>(null) // if filter was selected all services from the filter that are not available
-  const [userId, setUserId] = useState(login ? login.id : undefined);
+  const [userId, setUserId] = useState(login ? login.id : undefined)
 
   // load VeterinaryPractice:
   const {
@@ -91,12 +91,12 @@ function BookingComponent() {
   })
 
   useEffect(() => {
-    setUserId(login ? login.id : undefined);
+    setUserId(login ? login.id : undefined)
   }, [login])
 
   useEffect(() => {
     if (userId === undefined && status === StatusBooking.selectAnimal) {
-      setStatus(StatusBooking.login);
+      setStatus(StatusBooking.login)
     }
   }, [userId])
 
@@ -132,9 +132,9 @@ function BookingComponent() {
         setFoundFilteredServices(null)
         setSelectedAppointmentType(foundService[0])
         if (login !== undefined && login !== false) {
-          setStatus(StatusBooking.selectAnimal);
+          setStatus(StatusBooking.selectAnimal)
         } else {
-          setStatus(StatusBooking.login);
+          setStatus(StatusBooking.login)
         }
       }
       setNotFoundFilteredServices(notFoundService)
@@ -196,16 +196,17 @@ function BookingComponent() {
   const handleSelectAppointmentType = (appointmentType: ServiceType) => {
     setSelectedAppointmentType(appointmentType)
 
-    navigate({ // save the current selected service in the state, to get this service after registration
+    navigate({
+      // save the current selected service in the state, to get this service after registration
       state: {
         selectedService: appointmentType,
-      }
+      },
     })
 
     if (login !== undefined && login !== false) {
-      setStatus(StatusBooking.selectAnimal);
+      setStatus(StatusBooking.selectAnimal)
     } else {
-      setStatus(StatusBooking.login);
+      setStatus(StatusBooking.login)
     }
   }
 
@@ -256,8 +257,13 @@ function BookingComponent() {
       currentStep = 1
       break
     case StatusBooking.login:
-      currentDisplay = <LoginForm setStatusBookingProcess={setStatus} appointment={appointment} />
-      break;
+      currentDisplay = (
+        <LoginForm
+          setStatusBookingProcess={setStatus}
+          appointment={appointment}
+        />
+      )
+      break
     case StatusBooking.selectAnimal:
       currentDisplay = (
         <SelectAnimal
@@ -305,7 +311,9 @@ function BookingComponent() {
         <h1>Termin buchen</h1>
       </div>
 
-      {status !== StatusBooking.login && <BookingStepper currentStep={currentStep} />}
+      {status !== StatusBooking.login && (
+        <BookingStepper currentStep={currentStep} />
+      )}
 
       <div className="booking-layout">
         <div className="booking-main">

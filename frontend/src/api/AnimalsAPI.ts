@@ -23,6 +23,22 @@ export const getPictureURLForAnimalId = (animalId: number): string => {
   return import.meta.env.VITE_API_URL + '/animals/' + animalId + '/picture'
 }
 
+export const fetchAnimalPicture = async (
+  animalId: number,
+): Promise<string | null> => {
+  const url = getPictureURLForAnimalId(animalId)
+  const response = await fetch(url, {
+    credentials: 'include',
+  })
+
+  if (!response.ok) {
+    return null // No picture available
+  }
+
+  // Return the URL if the image exists
+  return url
+}
+
 export const uploadPictureForAnimalId = async (
   animalId: number,
   file: File,

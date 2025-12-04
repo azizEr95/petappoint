@@ -32,7 +32,7 @@ export type DashboardProfileCardProps = {
 }
 
 export type DashboardNotificationsProps = {
-  notifications: NotificationType[]
+  notifications: Array<NotificationType>
 }
 
 export type QuickActionsProps = {

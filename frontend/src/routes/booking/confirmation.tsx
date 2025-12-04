@@ -7,13 +7,13 @@ import '../../styles/routes/bookingPage.scss'
 import { useEffect, useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { bookAppointment, cancelAppointment } from '../../api/AppointmentsAPI'
+import { dateToInfosString } from '../../utils/DateToStringFormat'
 import type {
   AnimalsType,
   AppointmentsType,
   ServiceType,
   VeterinaryPracticesType,
 } from '../../../../shared/schemas/ZodSchemas'
-import { dateToInfosString } from '../../utils/DateToStringFormat'
 
 export const Route = createFileRoute('/booking/confirmation')({
   component: ConfirmationComponent,

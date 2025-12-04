@@ -1,22 +1,21 @@
 import { Link } from '@tanstack/react-router'
 import '../../styles/components/common/Header.scss'
-import { useMutation } from '@tanstack/react-query';
-import { useLoginContext } from '../../LoginContext';
-import { logoutUser } from '../../api/LoginAPI';
+import { useMutation } from '@tanstack/react-query'
+import { useLoginContext } from '../../LoginContext'
+import { logoutUser } from '../../api/LoginAPI'
 
 export default function Header() {
-  const { login, setLogin } = useLoginContext();
+  const { login, setLogin } = useLoginContext()
 
   const { mutate: mutateLogout } = useMutation({
-    mutationFn: () =>
-        logoutUser(),
+    mutationFn: () => logoutUser(),
     onError: () => {
-        console.log("Ausloggen gescheitert")
+      console.log('Ausloggen gescheitert')
     },
     onSuccess: () => {
-        setLogin(false);
+      setLogin(false)
     },
-})
+  })
 
   return (
     <header className="header-clean">

@@ -1,5 +1,9 @@
 import { useEffect, useState } from 'react'
-import { createFileRoute, useLocation, useNavigate } from '@tanstack/react-router'
+import {
+  createFileRoute,
+  useLocation,
+  useNavigate,
+} from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
 import { NextAvailableAppointments } from '../../../components/practice/NextAvailableAppointments'
 import '../../../styles/routes/praxisPage.scss'
@@ -7,8 +11,11 @@ import { getVeterinaryPracticesById } from '../../../api/VeterinaryPracticeAPI'
 import { SearchFilter } from '../../../components/common/SearchFilter'
 import { getAnimaltypesFromPractice } from '../../../api/AnimalTypeAPI'
 import { FavoritePractice } from '../../../components/practice/FavoritePractice'
-import type { AnimalTypeType, VeterinaryPracticeSearchQueryType, VeterinaryPracticesType } from '../../../../../shared/schemas/ZodSchemas'
-
+import type {
+  AnimalTypeType,
+  VeterinaryPracticeSearchQueryType,
+  VeterinaryPracticesType,
+} from '../../../../../shared/schemas/ZodSchemas'
 
 export const Route = createFileRoute('/practices/$practiceId/')({
   component: VeterinaryPractice,
@@ -16,18 +23,28 @@ export const Route = createFileRoute('/practices/$practiceId/')({
 
 function VeterinaryPractice() {
   const navigate = useNavigate()
-  const location = useLocation();
+  const location = useLocation()
   const { practiceId } = Route.useParams()
   let practice = location.state.practice
   let filterOptions = location.state.filterOptions
-  const [filterServiceType, setFilterServiceType] = useState<Array<number>>(filterOptions?.serviceTypeIds !== undefined ? filterOptions.serviceTypeIds : []);
-  const [filterAnimalType, setFilterAnimalType] = useState<Array<number>>(filterOptions?.animalTypeIds !== undefined ? filterOptions.animalTypeIds : []);
-  const [filterAnimal, setFilterAnimal] = useState<number | undefined>(filterOptions?.animal);
+  const [filterServiceType, setFilterServiceType] = useState<Array<number>>(
+    filterOptions?.serviceTypeIds !== undefined
+      ? filterOptions.serviceTypeIds
+      : [],
+  )
+  const [filterAnimalType, setFilterAnimalType] = useState<Array<number>>(
+    filterOptions?.animalTypeIds !== undefined
+      ? filterOptions.animalTypeIds
+      : [],
+  )
+  const [filterAnimal, setFilterAnimal] = useState<number | undefined>(
+    filterOptions?.animal,
+  )
 
   filterOptions = {
     animalTypeIds: filterAnimalType,
     serviceTypeIds: filterServiceType,
-    animal: filterAnimal
+    animal: filterAnimal,
   }
 
   // load VeterinaryPractices:
@@ -36,24 +53,27 @@ function VeterinaryPractice() {
       queryKey: ['veterinaryPractices', practiceId],
       queryFn: () => getVeterinaryPracticesById(practiceId),
       retry: false,
-      enabled: practice === undefined
+      enabled: practice === undefined,
     })
 
   // get all AnimalTypes from practice
-  const { isSuccess: isSuccessAnimaltypesPractice, data: dataAnimaltypesPractice } = useQuery<Array<AnimalTypeType>>({
+  const {
+    isSuccess: isSuccessAnimaltypesPractice,
+    data: dataAnimaltypesPractice,
+  } = useQuery<Array<AnimalTypeType>>({
     queryKey: ['AnimaltypesPractice', practice?.id],
-    queryFn: () => getAnimaltypesFromPractice(practice?.id.toString() ?? ""),
+    queryFn: () => getAnimaltypesFromPractice(practice?.id.toString() ?? ''),
     retry: false,
-    enabled: practice?.id !== undefined
-  });
+    enabled: practice?.id !== undefined,
+  })
 
   useEffect(() => {
     if (isPending) {
-      return;
+      return
     }
 
     if (isError) {
-      navigate({ to: '/' });
+      navigate({ to: '/' })
     }
   }, [isError, isSuccess, isPending])
 
@@ -62,38 +82,39 @@ function VeterinaryPractice() {
   }
 
   if (!isSuccess && !isPending && practice !== undefined) {
-    return;
+    return
   }
 
   if (isSuccess) {
-    practice = data;
+    practice = data
   }
 
   // practice is here always defined, because of the state or useQuery is success
   if (practice === undefined) {
-    return;
+    return
   }
 
-  let animalTypesString = ""
+  let animalTypesString = ''
   if (isSuccessAnimaltypesPractice) {
     for (const animalType of dataAnimaltypesPractice) {
-      if (animalTypesString !== "") {
-          animalTypesString = animalTypesString + ", ";
+      if (animalTypesString !== '') {
+        animalTypesString = animalTypesString + ', '
       }
-      animalTypesString = animalTypesString + animalType.name;
-  }
-    if (animalTypesString === "") {
-      animalTypesString = "keine"
+      animalTypesString = animalTypesString + animalType.name
+    }
+    if (animalTypesString === '') {
+      animalTypesString = 'keine'
     }
   }
 
-  const searchFilter: VeterinaryPracticeSearchQueryType = { // only for propagation to component SearchFilter, only are animalTypeIds and ServiceTypeIds are used from this
+  const searchFilter: VeterinaryPracticeSearchQueryType = {
+    // only for propagation to component SearchFilter, only are animalTypeIds and ServiceTypeIds are used from this
     name: '',
     address: '',
     animalTypeIds: filterOptions.animalTypeIds,
     serviceTypeIds: filterOptions.serviceTypeIds,
     page: 0,
-    pageSize: 0
+    pageSize: 0,
   }
 
   return (
@@ -103,9 +124,9 @@ function VeterinaryPractice() {
           <i className="bi bi-arrow-left"></i>
           Zurück
         </button>
-        <h1 className='headerPracticePage'>
+        <h1 className="headerPracticePage">
           {practice.name}
-          <FavoritePractice practice={practice}/>
+          <FavoritePractice practice={practice} />
         </h1>
       </div>
 
@@ -143,7 +164,9 @@ function VeterinaryPractice() {
                 <a href={`tel:${practice.phone}`}>{practice.phone}</a>
               </p>
               <p>
-                <a href={`mailto:${practice.infoEmail}`}>{practice.infoEmail}</a>
+                <a href={`mailto:${practice.infoEmail}`}>
+                  {practice.infoEmail}
+                </a>
               </p>
               {practice.website && (
                 <p>
@@ -165,10 +188,21 @@ function VeterinaryPractice() {
           <div className="appointments-header-section flex-row">
             <h2>Verfügbare Termine</h2>
             <div id="FilterPracticePage">
-              <SearchFilter filterOptions={filterOptions} setFilterServiceType={setFilterServiceType} setFilterAnimalType={setFilterAnimalType} setFilterAnimal={setFilterAnimal} practicePage={practice} searchFilter={searchFilter} landingPage={false} />
+              <SearchFilter
+                filterOptions={filterOptions}
+                setFilterServiceType={setFilterServiceType}
+                setFilterAnimalType={setFilterAnimalType}
+                setFilterAnimal={setFilterAnimal}
+                practicePage={practice}
+                searchFilter={searchFilter}
+                landingPage={false}
+              />
             </div>
           </div>
-          <NextAvailableAppointments practiceId={practice.id.toString()} filterOptions={filterOptions} />
+          <NextAvailableAppointments
+            practiceId={practice.id.toString()}
+            filterOptions={filterOptions}
+          />
         </div>
       </div>
     </div>

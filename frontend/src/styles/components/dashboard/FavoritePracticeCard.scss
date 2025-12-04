@@ -33,7 +33,11 @@
 }
 
 .practice-header {
-  background: linear-gradient(135deg, var(--color-primary-pale, $primary-pale), var(--color-primary-lightest, $primary-lightest));
+  background: linear-gradient(
+    135deg,
+    var(--color-primary-pale, $primary-pale),
+    var(--color-primary-lightest, $primary-lightest)
+  );
   padding: var(--spacing-lg, 2rem);
   display: flex;
   justify-content: space-between;
@@ -44,7 +48,11 @@
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--color-primary, $primary), var(--color-primary-light, $primary-light));
+  background: linear-gradient(
+    135deg,
+    var(--color-primary, $primary),
+    var(--color-primary-light, $primary-light)
+  );
   display: flex;
   align-items: center;
   justify-content: center;

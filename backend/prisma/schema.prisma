@@ -32,7 +32,7 @@ model Animal {
   heightInCm            Int?                   @map("heightincm")
   timeOfDeath           DateTime?              @map("timeofdeath") @db.Date
   isCastrated           Boolean                @map("iscastrated")
-  lifestyleIsIndoors    Boolean                @default(true) @map("lifestyleisindoors")
+  lifestyle             lifestyles             @default(indoor)
   picturePath           String?                @map("picturepath") @db.VarChar(256)
   sex                   Sexes                  @default(not_known)
   animalTypeId          Int                    @map("fk_animaltypeid")
@@ -309,4 +309,12 @@ enum PaymentStatus {
   cancelled
 
   @@map("paymentstatus")
+}
+
+enum lifestyles {
+  indoor
+  outdoor
+  mixed
+
+  @@map("lifestyles")
 }

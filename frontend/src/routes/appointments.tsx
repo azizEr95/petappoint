@@ -52,8 +52,8 @@ function Appointments() {
     data: dataFuture,
   } = useQuery<Array<AppointmentsType>>({
     queryKey: ['appointmentsFuture', userID],
-    queryFn: () => getFutureAppointmentsByUserId(userID?.toString() ?? "-1"),
-    enabled: userID !== undefined
+    queryFn: () => getFutureAppointmentsByUserId(userID?.toString() ?? '-1'),
+    enabled: userID !== undefined,
   })
 
   const {
@@ -62,8 +62,8 @@ function Appointments() {
     data: dataPast,
   } = useQuery<Array<AppointmentsType>>({
     queryKey: ['appointmentsPast', userID],
-    queryFn: () => getPastAppointmentsByUserId(userID?.toString() ?? "-1"),
-    enabled: userID !== undefined
+    queryFn: () => getPastAppointmentsByUserId(userID?.toString() ?? '-1'),
+    enabled: userID !== undefined,
   })
 
   useEffect(() => {

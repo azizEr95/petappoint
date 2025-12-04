@@ -1,8 +1,12 @@
-import { createFileRoute, useLocation, useNavigate } from '@tanstack/react-router'
-import {   useState } from 'react'
+import {
+  createFileRoute,
+  useLocation,
+  useNavigate,
+} from '@tanstack/react-router'
+import { useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { Form, FormGroup } from 'react-bootstrap'
-import {PersonsCreateSchema} from '../../../../shared/schemas/ZodSchemas'
+import { PersonsCreateSchema } from '../../../../shared/schemas/ZodSchemas'
 import '../../styles/routes/personRegistration.scss'
 import { personRegistration } from '../../api/PersonsAPI'
 import type {PersonsCreateType, sexesType} from '../../../../shared/schemas/ZodSchemas';
@@ -14,8 +18,8 @@ export const Route = createFileRoute('/registration/person')({
 
 function PersonRegistration() {
   const navigate = useNavigate()
-  const location = useLocation();
-  const appointment = location.state.appointment;
+  const location = useLocation()
+  const appointment = location.state.appointment
   const selectedService = location.state.selectedService
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
@@ -37,13 +41,14 @@ function PersonRegistration() {
       if(appointment !== undefined){
         navigate({ 
           to: '/practices/$practiceId/booking/$appointmentId',
-          params:{
+          params: {
             practiceId: appointment.veterinaryPractice.id.toString(),
-            appointmentId: appointment.id.toString()
+            appointmentId: appointment.id.toString(),
           },
-          state: { // state for the selected servicetype in booking
-            selectedService: selectedService
-          }
+          state: {
+            // state for the selected servicetype in booking
+            selectedService: selectedService,
+          },
         })
       } else {
         navigate({ to: '/registration/verify-email' })
