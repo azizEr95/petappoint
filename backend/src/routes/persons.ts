@@ -2,6 +2,7 @@ import express from "express";
 import { personService } from "../service/personService";
 import { AnimalsType, PersonsCreateSchema, PersonsType, PostgresIdSchema } from "vetlib-shared/schemas/ZodSchemas";
 import { verifyJWT, verifyPasswordAndCreateJWT } from "../service/jwtService";
+import { sendConfirmationEmail } from "../service/emailService";
 import { optionalAuthentication, requiresAuthentication } from "./authentication";
 import { AuthorizationError } from "../exceptions/errors/AuthorizationError";
 
@@ -47,25 +48,33 @@ personsRouter.get("/:id/favorites",
 personsRouter.post("/",
     optionalAuthentication,
     async (req, res) => {
+        try {
         const validatedBody = PersonsCreateSchema.parse(req.body);
 
-        await personService.create(validatedBody);
+            const person = await personService.create(validatedBody);
 
-        const jwt = await verifyPasswordAndCreateJWT(validatedBody.email, validatedBody.password);
-        if (!jwt) {
-            res.sendStatus(401);
-            return;
-        }
-
-        const loginResource = verifyJWT(jwt);
-        res.cookie('access_token', jwt, {
+            const jwt = await verifyPasswordAndCreateJWT(validatedBody.email, validatedBody.password);
+            // confirmation email 
+            await sendConfirmationEmail(person, jwt);
+            
+            const loginResource = verifyJWT(jwt);
+            res.cookie('access_token', jwt, {
             httpOnly: true,
             expires: new Date(loginResource.exp * 1000),
             secure: true,
             sameSite: "none"
-        });
+            });
 
-        res.status(201).send(loginResource);
+            res.status(201).send(loginResource);
+        } catch (ex) {
+            if(String(ex).includes("JSON Web Token ist ungültig")) {
+                res.status(400).send("JSON Web Token ist ungültig");
+                return;
+            }
+
+            res.status(400).send(ex);
+            return;
+        }
     }
 );
 

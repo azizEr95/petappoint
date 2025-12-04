@@ -16,7 +16,10 @@ const sender = {
 const emailAPI = emailServiceSetup();
 
 
-export async function sendConfirmationEmail(user: PersonsType,jwtToken: string) {
+export async function sendConfirmationEmail(user: PersonsType,jwtToken: string | undefined) {
+    if(!jwtToken) {
+        throw new Error("jwtToken not set");
+    }
     //template 
     const templatePath = path.join(__dirname, '../templates/confirmationEmail.html');
     const templateSource = fs.readFileSync(templatePath, 'utf-8');
@@ -25,10 +28,11 @@ export async function sendConfirmationEmail(user: PersonsType,jwtToken: string) 
     const template = Handlebars.compile(templateSource);
 
     // injecting Data confirmation link is route to endpoint with jwtToken 
+    // using jwttoken to verify through link/button click and a random 6 digit code as one time password for every user 
     const data = {
         firstname: user.firstname,
-        confirmationLink : '',
-        confirmationCode: '22222',
+        confirmationLink : `email-confirmation/${jwtToken}`,
+        confirmationCode: '2222',
         year: new Date().getFullYear()
     };
 
@@ -38,6 +42,13 @@ export async function sendConfirmationEmail(user: PersonsType,jwtToken: string) 
     const message = new SendSmtpEmail();
     message.subject = "Please Confirm Your Email Adress";
     message.htmlContent = htmlContent;
-    message.to = [{email: user.email}]
-    return await emailAPI.sendTransacEmail(message);
+    message.sender = sender;
+    message.to = [{email: user.email}];
+
+    try {
+    const result = await emailAPI.sendTransacEmail(message);
+    return result;
+    } catch (error) {
+        throw new Error("sending Confirmation Email didnt work");
+    }
 }
