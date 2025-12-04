@@ -55,4 +55,25 @@ export const serviceService = {
   async delete(id: number): Promise<void> {
     await prisma.service.delete({ where: { id } });
   },
+
+  async getAvailableServicesForVeterinary(id: number): Promise<ServiceType[]> {
+    const found = await prisma.veterinarian.findUnique({
+      include: {
+        veterinaryHasServices: {
+          include: {
+            service: true
+          }
+        }
+      },
+      where: {
+        id: id
+      }
+    });
+
+    if (!found) {
+      return [];
+    }
+
+    return found.veterinaryHasServices.flatMap(x => x.service);
+  }
 };
