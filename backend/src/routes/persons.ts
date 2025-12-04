@@ -6,6 +6,7 @@ import { sendConfirmationEmail } from "../service/emailService";
 import { optionalAuthentication, requiresAuthentication } from "./authentication";
 import { AuthorizationError } from "../exceptions/errors/AuthorizationError";
 
+
 export const personsRouter = express.Router();
 
 personsRouter.get('/all',
