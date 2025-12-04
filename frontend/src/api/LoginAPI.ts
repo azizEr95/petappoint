@@ -1,7 +1,6 @@
 import { LoginSchema } from '../../../shared/schemas/ZodSchemas'
 import type {
   LoginType,
-  PersonsCreateType,
 } from '../../../shared/schemas/ZodSchemas'
 
 export const loginUser = async (
@@ -74,28 +73,23 @@ export const logoutUser = async (): Promise<void> => {
   return
 }
 
-export const personRegistration = async (
-  person: PersonsCreateType,
-): Promise<LoginType> => {
-  const requestOptions = {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(person),
-    credentials: 'include' as RequestCredentials,
-  }
+// for verify Email
+export const verifyEmail = async (verifyCode: string): Promise<LoginType | false> => {
   const res = await fetch(
-    import.meta.env.VITE_API_URL + '/persons/',
-    requestOptions, // to be changed
+    import.meta.env.VITE_API_URL +
+      '/registration/' + verifyCode,
+    {
+      method: 'GET',
+      credentials: 'include',
+    },
   )
+
   if (!res.ok) {
-    console.log(res)
-    throw new Error('Failed to fetch personRegistration')
+    throw Error('Failed to fetch verifyEmail')
   }
 
   const data = await res.json()
-  return data // is an string, should be from type LoginType
+  return parseLogin(data);
 }
 
 const parseLogin = (unsafeAppointment: LoginType): LoginType => {

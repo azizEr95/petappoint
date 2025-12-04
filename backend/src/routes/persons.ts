@@ -2,10 +2,12 @@ import express from "express";
 import { personService } from "../service/personService";
 import { AnimalsType, PersonsCreateSchema, PersonsType, PersonsUpdateSchema, PostgresIdSchema } from "vetlib-shared/schemas/ZodSchemas";
 import { verifyJWT, verifyPasswordAndCreateJWT } from "../service/jwtService";
+import { sendConfirmationEmail } from "../service/emailService";
 import { optionalAuthentication, requiresAuthentication } from "./authentication";
 import { AuthorizationError } from "../exceptions/errors/AuthorizationError";
 import multer from "multer";
 import { ConstraintError } from "../exceptions/errors/ConstraintError";
+
 
 export const personsRouter = express.Router();
 
@@ -56,7 +58,7 @@ personsRouter.get("/:id/favorites",
     requiresAuthentication,
     async (req, res) => {
         const id = PostgresIdSchema.parse(parseInt(req.params.id));
-        
+
         if (id !== req.userId!) {
             throw new AuthorizationError(`person(${req.userId!}) tried to access favorites of person(${id}).`);
         }
@@ -71,24 +73,17 @@ personsRouter.post("/",
     optionalAuthentication,
     async (req, res) => {
         const validatedBody = PersonsCreateSchema.parse(req.body);
-
-        await personService.create(validatedBody);
+        const person = await personService.create(validatedBody);
 
         const jwt = await verifyPasswordAndCreateJWT(validatedBody.email, validatedBody.password);
         if (!jwt) {
             res.sendStatus(401);
             return;
         }
+        // confirmation email 
+        await sendConfirmationEmail(person, jwt);
 
-        const loginResource = verifyJWT(jwt);
-        res.cookie('access_token', jwt, {
-            httpOnly: true,
-            expires: new Date(loginResource.exp * 1000),
-            secure: true,
-            sameSite: "none"
-        });
-
-        res.status(201).send(loginResource);
+        res.status(201).send(person);
     }
 );
 

@@ -2,6 +2,7 @@
 .env
 .env.local
 .env.*.local
+/cert/
 node_modules/
 /generated/
 /coverage/
