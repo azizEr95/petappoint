@@ -26,7 +26,6 @@ export default function Hero() {
   }
 
   const handleChangeNameAddress = (newName: string | undefined, newAddress: string | undefined) => {
-    console.log(filterAnimalType)
     if (newName !== undefined) {
       searchFilter.name = newName;
     } if (newAddress !== undefined) {

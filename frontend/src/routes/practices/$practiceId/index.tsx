@@ -125,11 +125,11 @@ function VeterinaryPractice() {
               Adresse
             </div>
             <div className="info-content">
-              <p>{practice.addresses.street}</p>
+              <p>{practice.address.street}</p>
               <p>
-                {practice.addresses.citycode} {practice.addresses.city}
+                {practice.address.cityCode} {practice.address.city}
               </p>
-              <p>{practice.addresses.country}</p>
+              <p>{practice.address.country}</p>
             </div>
           </div>
 
@@ -143,7 +143,7 @@ function VeterinaryPractice() {
                 <a href={`tel:${practice.phone}`}>{practice.phone}</a>
               </p>
               <p>
-                <a href={`mailto:${practice.infoemail}`}>{practice.infoemail}</a>
+                <a href={`mailto:${practice.infoEmail}`}>{practice.infoEmail}</a>
               </p>
               {practice.website && (
                 <p>

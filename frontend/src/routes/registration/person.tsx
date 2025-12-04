@@ -1,23 +1,24 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { useState, type ChangeEvent, type FormEvent } from 'react'
-import {
-  PersonsCreateSchema,
-  type PersonsCreateType,
-  type sexesType,
-} from '../../../../shared/schemas/ZodSchemas'
-import '../../styles/routes/personRegistration.scss'
-import { Form, FormGroup } from 'react-bootstrap'
+import { createFileRoute, useLocation, useNavigate } from '@tanstack/react-router'
+import {   useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
+import { Form, FormGroup } from 'react-bootstrap'
+import {PersonsCreateSchema} from '../../../../shared/schemas/ZodSchemas'
+import '../../styles/routes/personRegistration.scss'
+import { useLoginContext } from '../../LoginContext'
 import { personRegistration } from '../../api/LoginAPI'
-import { useAuthStore } from '../../stores/authStore'
+import type {PersonsCreateType, sexesType} from '../../../../shared/schemas/ZodSchemas';
+import type {ChangeEvent, FormEvent} from 'react';
 
 export const Route = createFileRoute('/registration/person')({
   component: PersonRegistration,
 })
 
 function PersonRegistration() {
-  const { setLogin } = useAuthStore()
+  const { setLogin } = useLoginContext()
   const navigate = useNavigate()
+  const location = useLocation();
+  const appointment = location.state.appointment;
+  const selectedService = location.state.selectedService
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
   const [strasse, setStrasse] = useState('')
@@ -34,12 +35,22 @@ function PersonRegistration() {
 
   const { mutate: mutateRegistration } = useMutation({
     mutationFn: (person: PersonsCreateType) => personRegistration(person),
-    onError: () => {
-      console.log('Email oder Password falsch')
-    },
-    onSuccess: () => {
-      setLogin(true)
-      navigate({ to: '/dashboard' })
+    onSuccess: (data) => {
+      setLogin(data);
+      if(appointment !== undefined){
+        navigate({ 
+          to: '/practices/$practiceId/booking/$appointmentId',
+          params:{
+            practiceId: appointment.veterinaryPractice.id.toString(),
+            appointmentId: appointment.id.toString()
+          },
+          state: { // state for the selected servicetype in booking
+            selectedService: selectedService
+          }
+        })
+      } else {
+        navigate({ to: '/dashboard'})
+      }
     },
   })
 
@@ -142,7 +153,7 @@ function PersonRegistration() {
         error = 'Passwort muss mindestens einen Großbuchstaben enthalten'
       } else if (!/[0-9]/.test(value)) {
         error = 'Passwort muss mindestens eine Zahl enthalten'
-      } else if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(value)) {
+      } else if (!/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(value)) {
         error = 'Passwort muss mindestens ein Sonderzeichen enthalten'
       }
     }
@@ -275,7 +286,7 @@ function PersonRegistration() {
         'Passwort muss mindestens einen Großbuchstaben enthalten'
     } else if (!/[0-9]/.test(password)) {
       newErrors.password = 'Passwort muss mindestens eine Zahl enthalten'
-    } else if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+    } else if (!/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password)) {
       newErrors.password =
         'Passwort muss mindestens ein Sonderzeichen enthalten'
     }
