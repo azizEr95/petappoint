@@ -4,8 +4,7 @@ import { useMutation } from '@tanstack/react-query'
 import { Form, FormGroup } from 'react-bootstrap'
 import {PersonsCreateSchema} from '../../../../shared/schemas/ZodSchemas'
 import '../../styles/routes/personRegistration.scss'
-import { useLoginContext } from '../../LoginContext'
-import { personRegistration } from '../../api/LoginAPI'
+import { personRegistration } from '../../api/PersonsAPI'
 import type {PersonsCreateType, sexesType} from '../../../../shared/schemas/ZodSchemas';
 import type {ChangeEvent, FormEvent} from 'react';
 
@@ -14,7 +13,6 @@ export const Route = createFileRoute('/registration/person')({
 })
 
 function PersonRegistration() {
-  const { setLogin } = useLoginContext()
   const navigate = useNavigate()
   const location = useLocation();
   const appointment = location.state.appointment;
@@ -35,8 +33,7 @@ function PersonRegistration() {
 
   const { mutate: mutateRegistration } = useMutation({
     mutationFn: (person: PersonsCreateType) => personRegistration(person),
-    onSuccess: (data) => {
-      setLogin(data);
+    onSuccess: () => {
       if(appointment !== undefined){
         navigate({ 
           to: '/practices/$practiceId/booking/$appointmentId',
@@ -49,7 +46,7 @@ function PersonRegistration() {
           }
         })
       } else {
-        navigate({ to: '/dashboard'})
+        navigate({ to: '/registration/verify-email' })
       }
     },
   })

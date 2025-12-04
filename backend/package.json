@@ -42,6 +42,7 @@
     "vetlib-shared": "file:../shared"
   },
   "dependencies": {
+    "@getbrevo/brevo": "^3.0.1",
     "@prisma/client": "^6.19.0",
     "@types/bcrypt": "^6.0.0",
     "@types/supertest": "^6.0.3",
