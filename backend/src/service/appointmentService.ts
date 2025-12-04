@@ -98,7 +98,15 @@ export const appointmentService = {
             service: true,
           },
         },
-        veterinarian: true,
+        veterinarian: {
+          include: {
+            veterinaryHasServices: {
+              include: {
+                service: true,
+              }
+            }
+          }
+        },
         veterinaryPractice: {
           include: {
             address: true,
@@ -114,7 +122,10 @@ export const appointmentService = {
       throw new Error(`Appointment not found with id: ${id}`);
     }
 
-    const availableServices = foundAppointment.appointmentHasServices.flatMap((x) => x.service);
+    const availableServices: ServiceType[] =
+        foundAppointment.appointmentHasServices.length > 0
+          ? foundAppointment.appointmentHasServices.map((x) => x.service)
+          : foundAppointment.veterinarian.veterinaryHasServices.map((x) => x.service);
     return {
       id: foundAppointment.id,
       startTime: foundAppointment.startTime,
@@ -156,7 +167,7 @@ export const appointmentService = {
             name: foundAppointment.service.name,
           }
         : null,
-      availableServices: foundAppointment.service ? availableServices : [],
+      availableServices: availableServices,
       notes: foundAppointment.notes,
     };
   },
