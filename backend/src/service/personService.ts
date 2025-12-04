@@ -10,6 +10,9 @@ import {
 import { addressService } from "./addressService";
 import z from "zod";
 import { ResourceNotFoundError } from "../exceptions/errors/ResourceNotFoundError";
+import fs from "node:fs/promises";
+import path from "node:path";
+import { ConstraintError } from "../exceptions/errors/ConstraintError";
 
 export const personService = {
   async create(dataRe: PersonsCreateType): Promise<PersonsType> {
@@ -120,19 +123,35 @@ export const personService = {
   },
 
   async update(dataRe: PersonsUpdateType): Promise<PersonsType> {
+    if (dataRe.email) {
+      const existingPerson = await prisma.person.findUnique({
+        where: { email: dataRe.email },
+      });
+      if (existingPerson && existingPerson.id !== dataRe.id) {
+        throw new ConstraintError("Email already in use", [
+          { path: "email", value: dataRe.email }
+        ]);
+      }
+    }
+
     await addressService.update(dataRe.address);
+
+    const updateData: any = {
+      firstName: dataRe.firstName,
+      lastName: dataRe.lastName,
+      sex: dataRe.sex,
+      dateOfBirth: dataRe.dateOfBirth,
+      phone: dataRe.phone,
+      email: dataRe.email,
+    };
+
+    if (dataRe.password) {
+      updateData.password = dataRe.password;
+    }
 
     const updatedPerson = await prisma.person.update({
       where: { id: dataRe.id },
-      data: {
-        firstName: dataRe.firstName,
-        lastName: dataRe.lastName,
-        sex: dataRe.sex,
-        dateOfBirth: dataRe.dateOfBirth,
-        phone: dataRe.phone,
-        email: dataRe.email,
-        password: dataRe.password,
-      },
+      data: updateData,
       include: {
         address: true,
       },
@@ -213,5 +232,50 @@ export const personService = {
 
   async delete(id: number): Promise<void> {
     await prisma.person.delete({ where: { id } });
+  },
+
+  async getPicturePath(personId: number): Promise<string> {
+    const found = await prisma.person.findFirst({
+      where: {
+        id: personId,
+      },
+      select: {
+        picturePath: true,
+      },
+    });
+
+    const filepath = found?.picturePath ?? "public/placeholders/person.png";
+    return path.join(appRootDir, filepath);
+  },
+
+  async savePicture(personId: number, fileOnDiskPath: string | null): Promise<void> {
+    const old = await prisma.person.findFirst({
+      where: {
+        id: personId,
+      },
+      select: {
+        picturePath: true,
+      },
+    });
+    if (!old) {
+      throw new ConstraintError(`No person with given id exists.`, [{ path: "personId", value: personId }]);
+    }
+
+    if (old.picturePath) {
+      const oldImagePath = path.join(appRootDir, old.picturePath);
+      fs.rm(oldImagePath).catch(() => {});
+    }
+
+    await prisma.person.update({
+      where: {
+        id: personId,
+      },
+      data: {
+        picturePath: fileOnDiskPath,
+      },
+      select: {
+        picturePath: true,
+      },
+    });
   },
 };

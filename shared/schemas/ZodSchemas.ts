@@ -137,7 +137,7 @@ export const PersonsCreateSchema = PersonsSchema.omit({
   id: true,
 }).extend({
   address: AddressesCreateSchema,
-  password: z.string().min(6).max(255),
+  password: z.string().min(8).max(255),
 });
 
 export type PersonsCreateType = z.infer<typeof PersonsCreateSchema>;
@@ -146,6 +146,7 @@ export type PersonsType = z.infer<typeof PersonsSchema>;
 export const PersonsUpdateSchema = PersonsCreateSchema.extend({
   id: z.number(),
   address: AddressesSchema,
+  password: z.string().min(8).max(255).optional(),
 });
 export type PersonsUpdateType = z.infer<typeof PersonsUpdateSchema>;
 
