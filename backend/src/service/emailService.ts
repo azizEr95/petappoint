@@ -8,8 +8,8 @@ import { PersonsType } from 'vetlib-shared/schemas/ZodSchemas';
 
 // types 
 const sender = {
-    name: "vetlib",
-    email: "info@vetlib.com"
+    name: "Aziz",
+    email: "aziz.erol@outlook.de"
 }
 
 // instance of Brevo email API
@@ -21,7 +21,7 @@ export async function sendConfirmationEmail(user: PersonsType,jwtToken: string |
         throw new Error("jwtToken not set");
     }
     //template 
-    const templatePath = path.join(__dirname, '../templates/confirmationEmail.html');
+    const templatePath = path.join(__dirname, '../../templates/email/confirmationEmail.html');
     const templateSource = fs.readFileSync(templatePath, 'utf-8');
 
     // Handlebars compiles our Template
@@ -30,8 +30,8 @@ export async function sendConfirmationEmail(user: PersonsType,jwtToken: string |
     // injecting Data confirmation link is route to endpoint with jwtToken 
     // using jwttoken to verify through link/button click and a random 6 digit code as one time password for every user 
     const data = {
-        firstname: user.firstname,
-        confirmationLink : `email-confirmation/${jwtToken}`,
+        firstname: user.firstName,
+        confirmationLink : `localhost:3001/email-confirmation/${jwtToken}`,
         confirmationCode: '2222',
         year: new Date().getFullYear()
     };
@@ -47,6 +47,7 @@ export async function sendConfirmationEmail(user: PersonsType,jwtToken: string |
 
     try {
     const result = await emailAPI.sendTransacEmail(message);
+    console.log(result.body);
     return result;
     } catch (error) {
         throw new Error("sending Confirmation Email didnt work");

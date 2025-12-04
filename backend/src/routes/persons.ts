@@ -35,7 +35,7 @@ personsRouter.get("/:id/favorites",
     requiresAuthentication,
     async (req, res) => {
         const id = PostgresIdSchema.parse(parseInt(req.params.id));
-        
+
         if (id !== req.userId!) {
             throw new AuthorizationError(`person(${req.userId!}) tried to access favorites of person(${id}).`);
         }
@@ -49,33 +49,26 @@ personsRouter.get("/:id/favorites",
 personsRouter.post("/",
     optionalAuthentication,
     async (req, res) => {
-        try {
         const validatedBody = PersonsCreateSchema.parse(req.body);
+        const person = await personService.create(validatedBody);
 
-            const person = await personService.create(validatedBody);
+        const jwt = await verifyPasswordAndCreateJWT(validatedBody.email, validatedBody.password);
+        if (!jwt) {
+            res.sendStatus(401);
+            return;
+        }
+        // confirmation email 
+        await sendConfirmationEmail(person, jwt);
 
-            const jwt = await verifyPasswordAndCreateJWT(validatedBody.email, validatedBody.password);
-            // confirmation email 
-            await sendConfirmationEmail(person, jwt);
-            
-            const loginResource = verifyJWT(jwt);
-            res.cookie('access_token', jwt, {
+        const loginResource = verifyJWT(jwt);
+        res.cookie('access_token', jwt, {
             httpOnly: true,
             expires: new Date(loginResource.exp * 1000),
             secure: true,
             sameSite: "none"
-            });
+        });
 
-            res.status(201).send(loginResource);
-        } catch (ex) {
-            if(String(ex).includes("JSON Web Token ist ungültig")) {
-                res.status(400).send("JSON Web Token ist ungültig");
-                return;
-            }
-
-            res.status(400).send(ex);
-            return;
-        }
+        res.status(201).send(loginResource);
     }
 );
 
