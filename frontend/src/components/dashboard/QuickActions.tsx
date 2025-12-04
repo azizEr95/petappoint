@@ -5,7 +5,11 @@ import '../../styles/components/dashboard/QuickActions.scss'
 export function QuickActions({ onAddPet }: QuickActionsProps) {
   return (
     <div className="quick-actions-grid">
-      <Link to="/search" search={{ name: '', address: '', animalType: '', serviceType: '' }} className="action-button">
+      <Link
+        to="/search"
+        search={{ name: '', address: '', animalType: '', serviceType: '' }}
+        className="action-button"
+      >
         <div className="action-icon">
           <i className="bi bi-calendar-plus"></i>
         </div>

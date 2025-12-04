@@ -8,13 +8,16 @@ import type { VeterinaryPracticeSearchQueryType } from '../../../../shared/schem
 type SearchFieldProps = {
   searchFilter: VeterinaryPracticeSearchQueryType
   filterAnimal: number | undefined
-  handleChangeNameAddress?: (name: string | undefined, address: string | undefined) => void // if this is not undefined, then is this the SearchField on the LandingPage
+  handleChangeNameAddress?: (
+    name: string | undefined,
+    address: string | undefined,
+  ) => void // if this is not undefined, then is this the SearchField on the LandingPage
 }
 
 export function SearchField({
   searchFilter,
   filterAnimal,
-  handleChangeNameAddress
+  handleChangeNameAddress,
 }: SearchFieldProps) {
   const [searchTermName, setSearchTermName] = useState(searchFilter.name)
   const [searchTermOrt, setSearchTermOrt] = useState(searchFilter.address)
@@ -34,15 +37,19 @@ export function SearchField({
             `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`,
             {
               headers: {
-                'Accept-Language': 'de'
-              }
-            }
+                'Accept-Language': 'de',
+              },
+            },
           )
 
           const data = await response.json()
 
           // Nur Stadt extrahieren
-          const city = data.address?.city || data.address?.town || data.address?.village || ''
+          const city =
+            data.address?.city ||
+            data.address?.town ||
+            data.address?.village ||
+            ''
 
           setSearchTermOrt(city)
           if (handleChangeNameAddress !== undefined) {
@@ -59,7 +66,7 @@ export function SearchField({
         setIsLoadingLocation(false)
         console.error('Geolocation Fehler:', error)
         alert('Zugriff auf Standort wurde verweigert')
-      }
+      },
     )
   }
 
@@ -72,13 +79,13 @@ export function SearchField({
       case 'Name':
         setSearchTermName(wert)
         if (handleChangeNameAddress !== undefined) {
-          handleChangeNameAddress(wert, undefined);
+          handleChangeNameAddress(wert, undefined)
         }
         break
       case 'Ort':
         setSearchTermOrt(wert)
         if (handleChangeNameAddress !== undefined) {
-          handleChangeNameAddress(undefined, wert);
+          handleChangeNameAddress(undefined, wert)
         }
         break
     }
@@ -90,12 +97,12 @@ export function SearchField({
       search: {
         name: searchTermName,
         address: searchTermOrt,
-        animalType: searchFilter.animalTypeIds?.join("-") ?? "",
-        serviceType: searchFilter.serviceTypeIds?.join("-") ?? ""
+        animalType: searchFilter.animalTypeIds?.join('-') ?? '',
+        serviceType: searchFilter.serviceTypeIds?.join('-') ?? '',
       },
       state: {
         filterAnimalId: filterAnimal,
-      }
+      },
     })
   }
 
@@ -120,7 +127,11 @@ export function SearchField({
         style={{ cursor: isLoadingLocation ? 'wait' : 'pointer' }}
         title="Aktuellen Standort verwenden"
       >
-        <i className={isLoadingLocation ? "bi bi-arrow-clockwise spin" : "bi bi-geo-alt"}></i>
+        <i
+          className={
+            isLoadingLocation ? 'bi bi-arrow-clockwise spin' : 'bi bi-geo-alt'
+          }
+        ></i>
       </div>
       <input
         type="text"

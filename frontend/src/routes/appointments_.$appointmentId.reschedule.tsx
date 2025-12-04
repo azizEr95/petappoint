@@ -4,11 +4,11 @@ import { useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { getAppointmentsById } from '../api/AppointmentsAPI'
 import { NextAvailableAppointments } from '../components/practice/NextAvailableAppointments'
+import { dateToInfosString } from '../utils/DateToStringFormat'
 import type {
   AppointmentFilterType,
   AppointmentsType,
 } from '../../../shared/schemas/ZodSchemas'
-import { dateToInfosString } from '../utils/DateToStringFormat'
 
 export const Route = createFileRoute(
   '/appointments_/$appointmentId/reschedule',

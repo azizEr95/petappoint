@@ -5,9 +5,7 @@ import type {
   PersonsUpdateType,
 } from '../../../shared/schemas/ZodSchemas'
 
-export const getPersonById = async (
-  personId: number,
-): Promise<PersonsType> => {
+export const getPersonById = async (personId: number): Promise<PersonsType> => {
   const res = await fetch(
     import.meta.env.VITE_API_URL + '/persons/' + personId,
     { credentials: 'include' },

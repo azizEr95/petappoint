@@ -1,48 +1,61 @@
 import { Link } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
-import type { AnimalsType, VeterinaryPracticeSearchResultType } from '../../../../shared/schemas/ZodSchemas'
 import { getAnimalsFromUser } from '../../api/AnimalsAPI'
-import { getFavoritesVeterinaryPractices, getVeterinaryPracticesByNameAddress } from '../../api/VeterinaryPracticeAPI'
+import {
+  getFavoritesVeterinaryPractices,
+  getVeterinaryPracticesByNameAddress,
+} from '../../api/VeterinaryPracticeAPI'
+import type {
+  AnimalsType,
+  VeterinaryPracticeSearchResultType,
+} from '../../../../shared/schemas/ZodSchemas'
 import '../../styles/components/dashboard/DashboardRecommendations.scss'
 
 type DashboardRecommendationsProps = {
   userId: number
 }
 
-export function DashboardRecommendations({ userId }: DashboardRecommendationsProps) {
+export function DashboardRecommendations({
+  userId,
+}: DashboardRecommendationsProps) {
   // Fetch user's animals to get their types
-  const { data: animals = [] } = useQuery<AnimalsType[]>({
+  const { data: animals = [] } = useQuery<Array<AnimalsType>>({
     queryKey: ['animals', userId],
     queryFn: () => getAnimalsFromUser(userId),
   })
 
   // Fetch favorite IDs to filter them out
-  const { data: favoriteIds = [] } = useQuery<number[]>({
+  const { data: favoriteIds = [] } = useQuery<Array<number>>({
     queryKey: ['favoritesVeterinaryPractices', userId],
     queryFn: () => getFavoritesVeterinaryPractices(userId.toString()),
   })
 
   // Get animal type IDs
-  const animalTypeIds = [...new Set(animals.map(a => a.animaltypeid))].filter(id => id !== null && id !== undefined) as number[]
+  const animalTypeIds = [...new Set(animals.map((a) => a.animaltypeid))].filter(
+    (id) => id !== null && id !== undefined,
+  ) as Array<number>
 
   // Fetch practices that treat these animal types
-  const { data: recommendations, isLoading } = useQuery<VeterinaryPracticeSearchResultType>({
-    queryKey: ['recommendedPractices', animalTypeIds],
-    queryFn: () => getVeterinaryPracticesByNameAddress({
-      name: '',
-      address: '',
-      animalTypeIds,
-      serviceTypeIds: [],
-      page: 1,
-      pageSize: 6,
-    }),
-    enabled: animalTypeIds.length > 0,
-  })
+  const { data: recommendations, isLoading } =
+    useQuery<VeterinaryPracticeSearchResultType>({
+      queryKey: ['recommendedPractices', animalTypeIds],
+      queryFn: () =>
+        getVeterinaryPracticesByNameAddress({
+          name: '',
+          address: '',
+          animalTypeIds,
+          serviceTypeIds: [],
+          page: 1,
+          pageSize: 6,
+        }),
+      enabled: animalTypeIds.length > 0,
+    })
 
   // Filter out favorites and take top 3
-  const recommendedPractices = recommendations?.results
-    ?.filter(p => !favoriteIds.includes(p.id))
-    ?.slice(0, 3) || []
+  const recommendedPractices =
+    recommendations?.results
+      ?.filter((p) => !favoriteIds.includes(p.id))
+      ?.slice(0, 3) || []
 
   if (isLoading) {
     return <div className="recommendations-loading">Lade Empfehlungen...</div>
@@ -60,7 +73,11 @@ export function DashboardRecommendations({ userId }: DashboardRecommendationsPro
     return (
       <div className="recommendations-empty">
         <p>Keine Empfehlungen verfügbar.</p>
-        <Link to="/search" search={{ name: '', address: '', animalType: '', serviceType: '' }} className="btn btn-secondary btn-sm">
+        <Link
+          to="/search"
+          search={{ name: '', address: '', animalType: '', serviceType: '' }}
+          className="btn btn-secondary btn-sm"
+        >
           <i className="bi bi-search"></i> Praxen suchen
         </Link>
       </div>
@@ -92,14 +109,14 @@ export function DashboardRecommendations({ userId }: DashboardRecommendationsPro
               {practice.addresses && (
                 <div className="recommendation-address">
                   <i className="bi bi-geo-alt"></i>
-                  <span>
-                    {practice.addresses.city}
-                  </span>
+                  <span>{practice.addresses.city}</span>
                 </div>
               )}
 
               <div className="recommendation-action">
-                <span>Praxis ansehen <i className="bi bi-arrow-right"></i></span>
+                <span>
+                  Praxis ansehen <i className="bi bi-arrow-right"></i>
+                </span>
               </div>
             </div>
           </Link>

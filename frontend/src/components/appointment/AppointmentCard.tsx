@@ -1,10 +1,10 @@
+import { useQuery } from '@tanstack/react-query'
+import { getVeterinaryPracticesById } from '../../api/VeterinaryPracticeAPI'
 import type {
   AppointmentsType,
   ServiceType,
   VeterinaryPracticesType,
 } from '../../../../shared/schemas/ZodSchemas'
-import { useQuery } from '@tanstack/react-query'
-import { getVeterinaryPracticesById } from '../../api/VeterinaryPracticeAPI'
 
 type AppointmentCardProps = {
   appointment: AppointmentsType

@@ -1,5 +1,3 @@
-
-
 # VetLib Naming Conventions
 
 ## 1. General Principles
@@ -11,12 +9,14 @@
 ## 2. File Naming
 
 ### Backend
+
 - **Services**: camelCase, singular noun + "Service" → `animalService.ts`, `appointmentService.ts`
 - **Routes**: camelCase, plural noun → `animals.ts`, `appointments.ts`
 - **Errors**: PascalCase → `ConstraintError.ts`, `ResourceNotFoundError.ts`
 - **Tests**: Match source filename + `.test.ts` → `animalService.test.ts`
 
 ### Frontend
+
 - **Components**: PascalCase → `AnimalCard.tsx`, `NextAvailableAppointments.tsx`
 - **API Clients**: PascalCase + "API" → `AnimalsAPI.ts`, `VeterinaryPracticeAPI.ts`
 - **Routes**: lowercase + $camelCase params → `animals.tsx`, `practices/$practiceId/booking/$appointmentId.tsx`
@@ -25,6 +25,7 @@
 ## 3. Variable & Function Naming
 
 ### JavaScript/TypeScript
+
 - **Variables**: camelCase (English only) → `appointmentId`, `currentDisplay`, `dateView`
 - **Functions**: camelCase verbs → `handleBookAppointment`, `getAnimalTypes`, `createVeterinaryPractice`
 - **Constants**: UPPER_SNAKE_CASE → `HTTP_PORT`, `DATABASE_URL`, `MAX_FILE_SIZE`
@@ -32,32 +33,38 @@
 - **Enums**: PascalCase name, UPPER_SNAKE_CASE values → `enum Status { PENDING = 'PENDING' }`
 
 ### React Components
+
 - **Props**: camelCase → `animalId`, `isLoading`, `onSubmit`
 - **State**: camelCase → `const [selectedAnimal, setSelectedAnimal] = useState()`
 - **Refs**: camelCase + "Ref" → `inputRef`, `modalRef`
 
 ### Query Keys (TanStack Query)
+
 - **Format**: camelCase array → `['veterinaryPractices']`, `['animalTypes', practiceId]`
 - **Never German**: ~~`['tierarztpraxen']`~~ → `['veterinaryPractices']`
 
 ## 4. Database Naming (init.sql)
 
 ### Tables
+
 - **Format**: snake_case, plural → `persons`, `appointments`, `veterinary_practices`
 - **Junction Tables**: `entity1_has_entity2` → `person_has_animal`, `veterinary_has_service`
 - **Exception**: Lookup tables can be singular → `animal_types`, `animal_races`, `animal_groups`
 
 ### Columns
+
 - **Format**: camelCase → `firstName`, `dateOfBirth`, `weightInGram`, `infoEmail`
 - **Foreign Keys**: `fk_entityName` → `fk_personId`, `fk_veterinaryPracticeId`
-- **Booleans**: `is/has` prefix → `isCastrated`, `lifestyleIsIndoors`, `dateOfBirthIsExact`
+- **Booleans**: `is/has` prefix → `isCastrated`, `lifestyle`, `dateOfBirthIsExact`
 - **Dates**: descriptive → `dateOfBirth`, `dateOfVaccination`, `startTime`, `endTime`
 
 ### Enums
+
 - **Type Name**: lowercase → `sexes`, `paymentstatus` (PostgreSQL convention)
 - **Values**: snake_case lowercase → `not_known`, `male`, `female`, `not_applicable`
 
 ### Prisma Schema Conventions (Official)
+
 - **Model Names**: PascalCase SINGULAR → `Person`, `Animal`, `Veterinarian`
 - **Field Names**: camelCase → `firstName`, `dateOfBirth`, `infoEmail`
 - **DB Mapping**: Use @@map() for plural table names
@@ -75,12 +82,14 @@
 ## 5. Route Naming
 
 ### Frontend (TanStack Router)
+
 - **Base Routes**: English lowercase → `/animals`, `/appointments`, `/practices`
 - **Parameters**: $camelCase English → `/$practiceId`, `/$appointmentId`, `/$animalId`
 - **Never German**: ~~`/praxen/$praxisId/$terminId`~~ → `/practices/$practiceId/$appointmentId`
 - **Nested**: Clear hierarchy → `/practices/$practiceId/booking/$appointmentId`
 
 ### Backend (Express)
+
 - **Base**: Plural noun → `/api/animals`, `/api/appointments`, `/api/veterinary-practices`
 - **ID Params**: `:id` or `:entityId` → `/api/animals/:id`, `/api/practices/:practiceId`
 
@@ -89,6 +98,7 @@
 **Location:** `/shared/schemas/ZodSchemas.ts` (used by both backend & frontend)
 
 ### Schema Names
+
 - **Format:** PascalCase + "Schema" suffix
 - **Pattern:** `EntityNameSchema` for base, `EntityNameTypeSchema` for derived
 - **Examples:**
@@ -98,9 +108,11 @@
   - `ServiceSchema` → base service schema
 
 ### Type Exports (from Zod schemas)
+
 - **Format:** PascalCase + "Type" suffix
 - **Pattern:** `z.infer<typeof SchemaName>`
 - **Examples:**
+
   ```typescript
   export const AnimalsSchema = z.object({ ... })
   export type AnimalsType = z.infer<typeof AnimalsSchema>
@@ -113,9 +125,11 @@
   ```
 
 ### Field Naming in Schemas
+
 - **Must match backend service response format** (camelCase)
 - **Critical:** After backend changes, update Zod schemas to match!
 - **Example:**
+
   ```typescript
   // Backend service returns:
   { availableServices: [...] }
@@ -126,16 +140,18 @@
   ```
 
 ### Common Zod Schemas
-| Schema Name | Type Name | Used For | Location |
-|-------------|-----------|----------|----------|
-| PersonSchema | PersonType | Person data | ZodSchemas.ts:20 |
-| AnimalsSchema | AnimalsType | Animal data | ZodSchemas.ts:45 |
-| AppointmentsSchema | AppointmentsType | Appointment data | ZodSchemas.ts:231 |
-| ServiceSchema | ServiceType | Service/treatment type | ZodSchemas.ts:193 |
-| VeterinaryPracticeSchema | VeterinaryPracticesType | Practice data | ZodSchemas.ts:140 |
-| AnimalTypeSchema | AnimalTypeType | Animal type/species | ZodSchemas.ts:162 |
+
+| Schema Name              | Type Name               | Used For               | Location          |
+| ------------------------ | ----------------------- | ---------------------- | ----------------- |
+| PersonSchema             | PersonType              | Person data            | ZodSchemas.ts:20  |
+| AnimalsSchema            | AnimalsType             | Animal data            | ZodSchemas.ts:45  |
+| AppointmentsSchema       | AppointmentsType        | Appointment data       | ZodSchemas.ts:231 |
+| ServiceSchema            | ServiceType             | Service/treatment type | ZodSchemas.ts:193 |
+| VeterinaryPracticeSchema | VeterinaryPracticesType | Practice data          | ZodSchemas.ts:140 |
+| AnimalTypeSchema         | AnimalTypeType          | Animal type/species    | ZodSchemas.ts:162 |
 
 ### Validation Schemas (Create/Update)
+
 - **Pattern:** `EntityNameCreateSchema`, `EntityNameUpdateSchema`
 - **Examples:**
   ```typescript
@@ -146,6 +162,7 @@
 ## 7. Import/Export Naming
 
 ### Named Exports (Preferred)
+
 ```typescript
 // Good
 export const animalService = { create, getById, getAll, update, delete }
@@ -156,6 +173,7 @@ export default AnimalService
 ```
 
 ### Default Exports (Components Only)
+
 ```typescript
 // Acceptable for React components
 export default function AnimalCard({ animalId }: Props) { ... }
@@ -163,25 +181,27 @@ export default function AnimalCard({ animalId }: Props) { ... }
 
 ## 8. Common Entities - Naming Reference
 
-| Entity | DB Table | Prisma Model (Aktuell) | Prisma Model (Ziel Phase 3) | Zod Schema | Service File | API Client | Route |
-|--------|----------|------------------------|----------------------------|------------|--------------|------------|-------|
-| Person | persons | persons | Person @@map("persons") | PersonSchema | personService.ts | - | /persons |
-| Animal | animals | animals | Animal @@map("animals") | AnimalsSchema | animalService.ts | AnimalsAPI.ts | /animals |
-| Appointment | appointments | appointments | Appointment @@map("appointments") | AppointmentsSchema | appointmentService.ts | AppointmentsAPI.ts | /appointments |
-| Veterinary Practice | veterinarypractices | veterinarypractices | VeterinaryPractice @@map("veterinarypractices") | VeterinaryPracticeSchema | veterinaryPracticeService.ts | VeterinaryPracticeAPI.ts | /practices/:practiceId |
-| Veterinarian | veterinarians | veterinarians | Veterinarian @@map("veterinarians") | VeterinarySchema | veterinaryService.ts | - | - |
-| Animal Type | animal_types | animaltypes | AnimalType @@map("animal_types") | AnimalTypeSchema | animalTypeService.ts | AnimalTypeAPI.ts | /animaltypes |
-| Service | services | services | Service @@map("services") | ServiceSchema | serviceService.ts | ServicesAPI.ts | /services |
+| Entity              | DB Table            | Prisma Model (Aktuell) | Prisma Model (Ziel Phase 3)                     | Zod Schema               | Service File                 | API Client               | Route                  |
+| ------------------- | ------------------- | ---------------------- | ----------------------------------------------- | ------------------------ | ---------------------------- | ------------------------ | ---------------------- |
+| Person              | persons             | persons                | Person @@map("persons")                         | PersonSchema             | personService.ts             | -                        | /persons               |
+| Animal              | animals             | animals                | Animal @@map("animals")                         | AnimalsSchema            | animalService.ts             | AnimalsAPI.ts            | /animals               |
+| Appointment         | appointments        | appointments           | Appointment @@map("appointments")               | AppointmentsSchema       | appointmentService.ts        | AppointmentsAPI.ts       | /appointments          |
+| Veterinary Practice | veterinarypractices | veterinarypractices    | VeterinaryPractice @@map("veterinarypractices") | VeterinaryPracticeSchema | veterinaryPracticeService.ts | VeterinaryPracticeAPI.ts | /practices/:practiceId |
+| Veterinarian        | veterinarians       | veterinarians          | Veterinarian @@map("veterinarians")             | VeterinarySchema         | veterinaryService.ts         | -                        | -                      |
+| Animal Type         | animal_types        | animaltypes            | AnimalType @@map("animal_types")                | AnimalTypeSchema         | animalTypeService.ts         | AnimalTypeAPI.ts         | /animaltypes           |
+| Service             | services            | services               | Service @@map("services")                       | ServiceSchema            | serviceService.ts            | ServicesAPI.ts           | /services              |
 
 ## 9. Migration Rules
 
 ### Safe Changes (No DB Impact)
+
 1. Rename backend service files
 2. Rename frontend components/variables
 3. Fix typos in code/comments
 4. Standardize casing (praxisID → practiceId)
 
 ### Risky Changes (Requires DB Rebuild)
+
 1. Update `db/init.sql` column names
 2. Run `docker-compose down -v`
 3. Run `docker-compose up -d`
@@ -191,6 +211,7 @@ export default function AnimalCard({ animalId }: Props) { ... }
 7. Run full test suite
 
 ### NEVER
+
 - Edit `backend/prisma/schema.prisma` manually
 - Edit generated Prisma client files
 - Rename DB tables without updating seed scripts
@@ -198,7 +219,8 @@ export default function AnimalCard({ animalId }: Props) { ... }
 ## 10. Common Mistakes to Avoid
 
 ❌ German variable names in code:
-```typescript
+
+````typescript
 const terminId = Route.useParams().terminId  // Bad
 const appointmentId = Route.useParams().appointmentId  // Good
 
@@ -318,3 +340,4 @@ When renaming an entity or field:
 
 
 
+````

@@ -32,7 +32,11 @@
 }
 
 .profile-avatar-initials {
-  background: linear-gradient(135deg, var(--color-primary, $primary), var(--color-primary-light, $primary-light));
+  background: linear-gradient(
+    135deg,
+    var(--color-primary, $primary),
+    var(--color-primary-light, $primary-light)
+  );
   color: white;
   font-size: 2.5rem;
   font-weight: 700;

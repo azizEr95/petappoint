@@ -51,7 +51,11 @@
 }
 
 .recommendation-header {
-  background: linear-gradient(135deg, var(--color-primary-pale, $primary-pale), white);
+  background: linear-gradient(
+    135deg,
+    var(--color-primary-pale, $primary-pale),
+    white
+  );
   padding: var(--spacing-lg, 2rem);
   display: flex;
   justify-content: space-between;
@@ -62,7 +66,11 @@
   width: 45px;
   height: 45px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--color-primary, $primary), var(--color-primary-light, $primary-light));
+  background: linear-gradient(
+    135deg,
+    var(--color-primary, $primary),
+    var(--color-primary-light, $primary-light)
+  );
   display: flex;
   align-items: center;
   justify-content: center;

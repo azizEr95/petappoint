@@ -35,6 +35,8 @@ CREATE TABLE IF NOT EXISTS addresses(
 
 CREATE TYPE sexes AS ENUM ('not_known', 'male', 'female', 'not_applicable');
 
+CREATE TYPE lifestyles AS ENUM ('indoor', 'outdoor', 'mixed');
+
 CREATE TABLE IF NOT EXISTS persons(
   id SERIAL PRIMARY KEY,
   firstName VARCHAR(60) NOT NULL,
@@ -73,7 +75,7 @@ CREATE TABLE IF NOT EXISTS animals(
   heightInCm INTEGER,
   timeOfDeath DATE,
   isCastrated BOOLEAN NOT NULL,
-  lifestyleIsIndoors BOOLEAN NOT NULL DEFAULT TRUE,
+  lifestyle lifestyles NOT NULL DEFAULT 'indoor',
   picturePath VARCHAR(256) DEFAULT NULL,
   sex sexes NOT NULL DEFAULT 'not_known',
   fk_animalTypeId INTEGER NOT NULL REFERENCES animal_types(id) ON DELETE CASCADE,

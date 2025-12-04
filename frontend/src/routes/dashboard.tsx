@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { DashboardProfileCard } from '../components/dashboard/DashboardProfileCard'
 import { QuickActions } from '../components/dashboard/QuickActions'
 import { DashboardPetsSection } from '../components/dashboard/DashboardPetsSection'
@@ -8,9 +9,8 @@ import { AnimalEditNewDialog } from '../components/animal/AnimalEditNewDialog'
 import { ProfileEditDialog } from '../components/profile/ProfileEditDialog'
 import '../styles/routes/dashboard.scss'
 import { useLoginContext } from '../LoginContext'
-import type { PersonsType } from '../../../shared/schemas/ZodSchemas'
-import { useQuery } from '@tanstack/react-query'
 import { getPersonById, getPictureURLForPersonId } from '../api/PersonsAPI'
+import type { PersonsType } from '../../../shared/schemas/ZodSchemas'
 
 export const Route = createFileRoute('/dashboard')({
   component: Dashboard,
@@ -90,6 +90,12 @@ function Dashboard() {
             <h2>
               <i className="bi bi-heart"></i> Meine Tiere
             </h2>
+            <button
+              className="btn btn-primary btn-add-pet"
+              onClick={handleAddPet}
+            >
+              <i className="bi bi-plus-circle"></i> Tier hinzufügen
+            </button>
           </div>
           <div className="section-content">
             <DashboardPetsSection userId={userId} />

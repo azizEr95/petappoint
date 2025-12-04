@@ -2,7 +2,10 @@ import { useQuery } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import { getVeterinaryPracticesByNameAddress } from '../../api/VeterinaryPracticeAPI'
 import { VeterinaryPracticeCard } from './VeterinaryPracticeCard'
-import type { AppointmentFilterType, VeterinaryPracticeSearchResultType } from '../../../../shared/schemas/ZodSchemas'
+import type {
+  AppointmentFilterType,
+  VeterinaryPracticeSearchResultType,
+} from '../../../../shared/schemas/ZodSchemas'
 
 type VeterinaryPracticeListProps = {
   searchName: string
@@ -15,21 +18,30 @@ export function VeterinaryPracticeList({
   searchName,
   searchOrt,
   filterOptions,
-  onTotalChange
+  onTotalChange,
 }: VeterinaryPracticeListProps) {
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
 
   const { isSuccess, data } = useQuery<VeterinaryPracticeSearchResultType>({
-    queryKey: ['tierarztpraxen', searchName, searchOrt, filterOptions.animalTypeIds, filterOptions.serviceTypeIds, page, pageSize],
-    queryFn: () => getVeterinaryPracticesByNameAddress({
-      name: searchName,
-      address: searchOrt,
-      animalTypeIds: filterOptions.animalTypeIds,
-      serviceTypeIds: filterOptions.serviceTypeIds,
+    queryKey: [
+      'tierarztpraxen',
+      searchName,
+      searchOrt,
+      filterOptions.animalTypeIds,
+      filterOptions.serviceTypeIds,
       page,
-      pageSize
-    }),
+      pageSize,
+    ],
+    queryFn: () =>
+      getVeterinaryPracticesByNameAddress({
+        name: searchName,
+        address: searchOrt,
+        animalTypeIds: filterOptions.animalTypeIds,
+        serviceTypeIds: filterOptions.serviceTypeIds,
+        page,
+        pageSize,
+      }),
   })
 
   useEffect(() => {
@@ -48,14 +60,22 @@ export function VeterinaryPracticeList({
           {/* Results */}
           <div>
             {data.data.map((praxis) => {
-              return <VeterinaryPracticeCard key={praxis.id} practice={praxis} filterOptions={filterOptions} />
+              return (
+                <VeterinaryPracticeCard
+                  key={praxis.id}
+                  practice={praxis}
+                  filterOptions={filterOptions}
+                />
+              )
             })}
           </div>
 
           {/* Pagination Controls */}
           <div className="pagination-container">
             <div className="pagination-info">
-              Zeige {((page - 1) * pageSize) + 1}-{Math.min(page * pageSize, data.total)} von {data.total} Ergebnissen
+              Zeige {(page - 1) * pageSize + 1}-
+              {Math.min(page * pageSize, data.total)} von {data.total}{' '}
+              Ergebnissen
             </div>
 
             <div className="pagination-controls">
@@ -79,7 +99,7 @@ export function VeterinaryPracticeList({
               {/* Page Navigation */}
               <div className="page-navigation">
                 <button
-                  onClick={() => setPage(p => Math.max(1, p - 1))}
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={page === 1}
                   className="pagination-btn"
                 >
@@ -91,7 +111,7 @@ export function VeterinaryPracticeList({
                 </span>
 
                 <button
-                  onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                   disabled={page === totalPages}
                   className="pagination-btn"
                 >

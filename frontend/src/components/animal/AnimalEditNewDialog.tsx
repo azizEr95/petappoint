@@ -1,31 +1,22 @@
-import { useEffect, useMemo, useState, type ChangeEvent } from 'react'
+import {  useEffect, useMemo, useState } from 'react'
 import {
   Button,
   Col,
   Container,
   Form,
+  Image,
   Modal,
   Row,
   ToggleButton,
   ToggleButtonGroup,
-  Image,
 } from 'react-bootstrap'
-import {
-  type AddRacesToAnimalType,
-  type AnimalracesType,
-  type AnimalsCreateType,
-  type AnimalsType,
-  type AnimalTypeType,
-  type AnimalUpdateType,
-  type sexesType,
-} from '../../../../shared/schemas/ZodSchemas'
-import Select, { type MultiValue } from 'react-select'
+import Select from 'react-select'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { getAllAnimalTypes } from '../../api/AnimalTypeAPI'
 import {
   createAnimal,
   editAnimal,
-  getPictureURLForAnimalId,
+  fetchAnimalPicture,
   uploadPictureForAnimalId,
 } from '../../api/AnimalsAPI'
 import {
@@ -38,6 +29,9 @@ import {
   compareDates,
   getDateStringFromDate,
 } from '../../utils/DateToStringFormat'
+import type {MultiValue} from 'react-select';
+import type {ChangeEvent} from 'react';
+import type {AddRacesToAnimalType, AnimalTypeType, AnimalUpdateType, AnimalracesType, AnimalsCreateType, AnimalsType, sexesType} from '../../../../shared/schemas/ZodSchemas';
 import '../../styles/components/AnimalDialog.scss'
 
 type AnimalEditNewDialogProps = {
@@ -60,7 +54,7 @@ export function AnimalEditNewDialog({
   const [dateOfBirthIsExact, setDateOfBirthIsExact] = useState<
     '' | 'Yes' | 'No'
   >('Yes')
-  const [ageInMonth, setAgeInMonth] = useState(0) //is only used if dateOfBirthIsExact is No/false
+  const [ageInMonth, setAgeInMonth] = useState(0) // is only used if dateOfBirthIsExact is No/false
   const [dateOfBirthFromAgeInMonth, setDateOfBirthFromAgeInMonth] = useState('')
   const [sex, setSexes] = useState<sexesType | undefined>(undefined)
   const [weight, setWeight] = useState('')
@@ -69,12 +63,12 @@ export function AnimalEditNewDialog({
     '',
   )
   const [lifestyle, setLifestyle] = useState<
-    '' | 'lifestyleIsIndoor' | 'lifestyleIsNotIndoor'
+    '' | 'indoor' | 'outdoor' | 'mixed'
   >('')
   const [selectedRaces, setSelectedRaces] = useState<
     MultiValue<{ value: AnimalracesType; label: string }>
   >([])
-  const [racesIdNumbers] = useState<number[]>([])
+  const [racesIdNumbers] = useState<Array<number>>([])
   const [dateOfDeath, setDateOfDeath] = useState('')
   const [clickedSaveSubmit, setClickedSaveSubmit] = useState(false)
   const [errorText, setErrorText] = useState('')
@@ -102,46 +96,6 @@ export function AnimalEditNewDialog({
     animalType: undefined,
   })
 
-  // BEGIN IMAGE FORM
-  const [animalPictureURL, setAnimalPictureURL] = useState<string>(
-    getPictureURLForAnimalId(animalEdit?.id ?? 0),
-  )
-  const [selectedPictureFile, setSelectedPictureFile] = useState<File>()
-  const handleFileSelect = (e: ChangeEvent<HTMLInputElement>) => {
-    console.log(e)
-    if (e.target.files !== null) {
-      const file: File | undefined = e.target.files[0]
-      if (file) {
-        if (!file.type.startsWith('image/')) {
-          console.error('Does not start with image.')
-          return
-        }
-
-        // 2MB max
-        if (file.size > 2 * 1024 * 1024) {
-          console.error('File bigger than 2MB.')
-          return
-        }
-
-        setSelectedPictureFile(file)
-      }
-    }
-  }
-  const onSubmitPicture = () => {
-    if (!selectedPictureFile) {
-      return
-    }
-
-    console.log('Uploading image 333.')
-    if (animalEdit) {
-      console.log('Uploading image.')
-      uploadPictureForAnimalId(animalEdit.id, selectedPictureFile)
-      setAnimalPictureURL(getPictureURLForAnimalId(animalEdit.id))
-    }
-  }
-
-  // END IMAGE FORM
-
   // get all Animaltypes
   const { isSuccess: isSuccessAnimalType, data: dataAnimalType } = useQuery<
     Array<AnimalTypeType>
@@ -161,6 +115,58 @@ export function AnimalEditNewDialog({
     enabled: animalEdit !== undefined,
     staleTime: 0,
   })
+
+  // fetch animal picture
+  const { data: animalPictureData } = useQuery({
+    queryKey: ['animalPicture', animalEdit?.id],
+    queryFn: () => fetchAnimalPicture(animalEdit!.id),
+    enabled: animalEdit !== undefined,
+    staleTime: 0,
+  })
+
+  // BEGIN IMAGE FORM
+  const [animalPictureURL, setAnimalPictureURL] = useState<string>(
+    animalPictureData ?? '/placeholders/animal.png',
+  )
+  const [selectedPictureFile, setSelectedPictureFile] = useState<File>()
+
+  useEffect(() => {
+    if (animalPictureData) {
+      setAnimalPictureURL(animalPictureData)
+    }
+  }, [animalPictureData])
+
+  useEffect(() => {
+    if (selectedPictureFile) {
+      const url = URL.createObjectURL(selectedPictureFile)
+      setAnimalPictureURL(url)
+      return () => URL.revokeObjectURL(url)
+    }
+  }, [selectedPictureFile])
+
+  const handleFileSelect = (e: ChangeEvent<HTMLInputElement>) => {
+    console.log(e)
+    if (e.target.files !== null) {
+      const file: File | undefined = e.target.files[0]
+      if (file) {
+        if (!file.type.startsWith('image/')) {
+          setErrorText('Nur Bilder erlaubt.')
+          return
+        }
+
+        // 2MB max
+        if (file.size > 2 * 1024 * 1024) {
+          setErrorText('Datei darf maximal 2MB groß sein.')
+          return
+        }
+
+        setSelectedPictureFile(file)
+        setErrorText('')
+      }
+    }
+  }
+
+  // END IMAGE FORM
 
   // initialize if it is an edit dialog
   useEffect(() => {
@@ -220,11 +226,7 @@ export function AnimalEditNewDialog({
       } else {
         setCastrated('notCastrated')
       }
-      if (animalEdit.lifestyleIsIndoors) {
-        setLifestyle('lifestyleIsIndoor')
-      } else {
-        setLifestyle('lifestyleIsNotIndoor')
-      }
+      setLifestyle(animalEdit.lifestyle)
       if (animalEdit.timeOfDeath !== null) {
         setDateOfDeath(getDateStringFromDate(animalEdit.timeOfDeath))
       }
@@ -279,7 +281,7 @@ export function AnimalEditNewDialog({
     }
     let options = dataRaces
     options = options.filter((race) => {
-      let sameRace = selectedRaces.find((selRace) => {
+      const sameRace = selectedRaces.find((selRace) => {
         if (selRace.value.id === race.id) {
           return true
         }
@@ -293,12 +295,12 @@ export function AnimalEditNewDialog({
     if (selectedRaces.length + options.length !== dataRaces.length) {
       // not all options are currently shown
       dataRaces.map((race) => {
-        let findSelect = selectedRaces.find((selRace) => {
+        const findSelect = selectedRaces.find((selRace) => {
           if (selRace.value.id === race.id) {
             return true
           }
         })
-        let findOptions = selectedRaces.find((opRace) => {
+        const findOptions = selectedRaces.find((opRace) => {
           if (opRace.value.id === race.id) {
             return true
           }
@@ -319,7 +321,11 @@ export function AnimalEditNewDialog({
     onError: () => {
       setErrorText('Fehler beim Erstellen des Tieres')
     },
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
+      // upload picture if selected
+      if (selectedPictureFile) {
+        await uploadPictureForAnimalId(data.id, selectedPictureFile)
+      }
       // add races to the created animal
       setErrorText('')
       const addRaces: AddRacesToAnimalType = {
@@ -341,7 +347,11 @@ export function AnimalEditNewDialog({
     onError: () => {
       setErrorText('Fehler beim Bearbeiten des Tieres')
     },
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
+      // upload picture if selected
+      if (selectedPictureFile) {
+        await uploadPictureForAnimalId(data.id, selectedPictureFile)
+      }
       // animal was successful edited
       setErrorText('')
       mutateDeleteAllRaces(data.id)
@@ -439,10 +449,8 @@ export function AnimalEditNewDialog({
         }
         break
       case 'lifestyle':
-        if (value === 'lifestyleIsIndoor') {
-          setLifestyle('lifestyleIsIndoor')
-        } else if (value === 'lifestyleIsNotIndoor') {
-          setLifestyle('lifestyleIsNotIndoor')
+        if (value === 'indoor' || value === 'outdoor' || value === 'mixed') {
+          setLifestyle(value)
         } else if (value === '') {
           setLifestyle('')
         } else {
@@ -450,8 +458,8 @@ export function AnimalEditNewDialog({
         }
         break
       case 'height':
-        let valueHeight = value.replace(/[^0-9,]/g, '') // an input from letters is not allowed, only float numbers
-        let valueCompleteHeight = valueHeight.split(',') // check if there is only one ,
+        const valueHeight = value.replace(/[^0-9,]/g, '') // an input from letters is not allowed, only float numbers
+        const valueCompleteHeight = valueHeight.split(',') // check if there is only one ,
 
         if (valueCompleteHeight.length <= 1) {
           setHeight(valueHeight)
@@ -463,8 +471,8 @@ export function AnimalEditNewDialog({
         }
         break
       case 'weight':
-        let valueWeight = value.replace(/[^0-9,]/g, '') // an input from letters is not allowed, only numbers
-        let valueCompleteWeight = valueWeight.split(',') // check if there is only one ,
+        const valueWeight = value.replace(/[^0-9,]/g, '') // an input from letters is not allowed, only numbers
+        const valueCompleteWeight = valueWeight.split(',') // check if there is only one ,
 
         if (valueCompleteWeight.length <= 1) {
           setWeight(valueWeight)
@@ -487,7 +495,7 @@ export function AnimalEditNewDialog({
 
   // returns true if all inputs are valid
   const validate = (validateFromSubmit: boolean): boolean => {
-    let allUndefined: boolean = true
+    let allUndefined = true
     if (validateFromSubmit || clickedSaveSubmit) {
       setClickedSaveSubmit(true)
 
@@ -621,7 +629,7 @@ export function AnimalEditNewDialog({
       }
 
       const heightNumber: number = parseInt(height.replace(',', '.'))
-      if (heightNumber >= 12) {
+      if (heightNumber > 12) {
         setValidationErrors((prevState) => ({
           ...prevState,
           height: 'Bitte eine richtige Größe angeben. (max 12m)',
@@ -658,7 +666,7 @@ export function AnimalEditNewDialog({
         heightInCm: heightInCm,
         timeOfDeath: dateOfDeath !== '' ? new Date(dateOfDeath) : null,
         isCastrated: castrated === 'castrated' ? true : false,
-        lifestyleIsIndoors: lifestyle === 'lifestyleIsIndoor' ? true : false,
+        lifestyle: lifestyle as 'indoor' | 'outdoor' | 'mixed',
         animalTypeId: animalTypeAnimal !== undefined ? animalTypeAnimal.id : 1,
         animalGroupId: null, // should be null, Backend Route has to be fixed
       }
@@ -671,7 +679,7 @@ export function AnimalEditNewDialog({
         mutateCreateAnimal(animal)
       } else {
         // edit animal
-        let animalUpdate: AnimalUpdateType = {
+        const animalUpdate: AnimalUpdateType = {
           ...animal,
           id: animalEdit.id,
         }
@@ -719,7 +727,7 @@ export function AnimalEditNewDialog({
         ) {
           return false // dateOfBirth is valid
         } else {
-          return true //year or month or day or all together are invalid
+          return true // year or month or day or all together are invalid
         }
       } catch {
         return true // error by parsing date
@@ -741,7 +749,13 @@ export function AnimalEditNewDialog({
     const animaltypes = dataAnimalType
     // show is always true, visibility is changed from the parent component
     return (
-      <Modal show={true} onHide={hideDialogNewAnimal} className="animal-dialog">
+      <Modal
+        show={true}
+        onHide={hideDialogNewAnimal}
+        size="lg"
+        centered
+        className="animal-dialog"
+      >
         <Modal.Header closeButton>
           {animalEdit === undefined && (
             <Modal.Title>Neues Tier anlegen</Modal.Title>
@@ -752,100 +766,121 @@ export function AnimalEditNewDialog({
         </Modal.Header>
 
         <Modal.Body>
-          {
-            // TODO: ALIGN IMAGE CENTER HORIZONTAL
-          }
           <Container>
-            <Image
-              src={animalPictureURL}
-              width={200}
-              height={200}
-              roundedCircle
-            />
-            <Form>
-              <Form.Group>
-                <Form.Label>Bild auswählen</Form.Label>
-                <Form.Control
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileSelect}
+            <Row className="justify-content-center mb-4">
+              <Col xs="auto" className="text-center">
+                <Image
+                  src={animalPictureURL}
+                  roundedCircle
+                  width={200}
+                  height={200}
+                  alt="Tierbild"
+                  className="mb-3"
                 />
-              </Form.Group>
-              <Button onClick={onSubmitPicture}>Upload</Button>
-            </Form>
-          </Container>
-          <Form className="animal-form">
-            <Form.Group className="mb-3">
-              {animalEdit !== undefined && (
-                <Form.Label>Tierart: {animalTypeAnimal?.name}</Form.Label>
-              )}
-              {animalEdit === undefined && (
-                <>
-                  <Form.Label>Tierart*:</Form.Label>
+                <Form.Group>
+                  <Form.Label>Tierbild ändern</Form.Label>
                   <Form.Control
-                    as="select"
-                    name="animalType"
-                    value={animalTypeAnimal?.id || ''}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileSelect}
+                  />
+                </Form.Group>
+              </Col>
+            </Row>
+
+            {errorText && (
+              <Row>
+                <Col>
+                  <div className="alert alert-danger">{errorText}</div>
+                </Col>
+              </Row>
+            )}
+
+            <Row>
+              <Col>
+                <h5 className="mt-3 mb-3">Tierdaten</h5>
+              </Col>
+            </Row>
+
+            <Row>
+              <Col md={6}>
+                <Form.Group className="mb-3">
+                  {animalEdit !== undefined && (
+                    <Form.Label>Tierart: {animalTypeAnimal?.name}</Form.Label>
+                  )}
+                  {animalEdit === undefined && (
+                    <>
+                      <Form.Label>Tierart*</Form.Label>
+                      <Form.Control
+                        as="select"
+                        name="animalType"
+                        value={animalTypeAnimal?.id || ''}
+                        onChange={handleChange}
+                        isInvalid={validationErrors.animalType !== undefined}
+                      >
+                        <option value="">Bitte auswählen</option>
+                        {animaltypes.map((animaltype) => (
+                          <option key={animaltype.id} value={animaltype.id}>
+                            {animaltype.name}
+                          </option>
+                        ))}
+                      </Form.Control>
+                      <Form.Control.Feedback type="invalid">
+                        {validationErrors.animalType}
+                      </Form.Control.Feedback>
+                    </>
+                  )}
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Tiername*</Form.Label>
+                  <Form.Control
+                    id="AnimalName"
+                    type="text"
+                    placeholder="z.B. Nala"
+                    name="name"
                     onChange={handleChange}
-                    isInvalid={validationErrors.animalType !== undefined}
-                  >
-                    <option value="">Bitte auswählen</option>
-                    {animaltypes.map((animaltype) => (
-                      <option key={animaltype.id} value={animaltype.id}>
-                        {animaltype.name}
-                      </option>
-                    ))}
-                  </Form.Control>
+                    value={name}
+                    isInvalid={validationErrors.name !== undefined}
+                  />
                   <Form.Control.Feedback type="invalid">
-                    {validationErrors.animalType}
+                    {validationErrors.name}
                   </Form.Control.Feedback>
-                </>
-              )}
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Tiername*:</Form.Label>
-              <Form.Control
-                id="AnimalName"
-                type="text"
-                placeholder="z.B. Nala"
-                name="name"
-                onChange={handleChange}
-                value={name}
-                isInvalid={validationErrors.name !== undefined}
-              />
-              <Form.Control.Feedback type="invalid">
-                {validationErrors.name}
-              </Form.Control.Feedback>
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Geburtsdatum*:</Form.Label>
-              <div className="flex-row">
-                <div className="mb-2">Ich kenne das genaue Geburtsdatum:</div>
-                <ToggleButtonGroup
-                  type="radio"
-                  value={dateOfBirthIsExact}
-                  name="dateOfBirthIsExact"
-                  onChange={handleDateOfBirthIsExactChange}
-                >
-                  <ToggleButton
-                    id="dateOfBirthIsExactNo"
-                    value="No"
-                    variant="outline-primary"
-                    className={classNameNoButton}
+                </Form.Group>
+              </Col>
+            </Row>
+            <Row>
+              <Col>
+                <Form.Group className="mb-3">
+                  <Form.Label>Geburtsdatum*</Form.Label>
+                  <div className="mb-2">Ich kenne das genaue Geburtsdatum:</div>
+                  <ToggleButtonGroup
+                    type="radio"
+                    value={dateOfBirthIsExact}
+                    name="dateOfBirthIsExact"
+                    onChange={handleDateOfBirthIsExactChange}
                   >
-                    Nein
-                  </ToggleButton>
-                  <ToggleButton
-                    id="dateOfBirthIsExactYes"
-                    value="Yes"
-                    variant="outline-primary"
-                    className={classNameYesButton}
-                  >
-                    Ja
-                  </ToggleButton>
-                </ToggleButtonGroup>
-              </div>
-            </Form.Group>
+                    <ToggleButton
+                      id="dateOfBirthIsExactNo"
+                      value="No"
+                      variant="outline-primary"
+                      className={classNameNoButton}
+                    >
+                      Nein
+                    </ToggleButton>
+                    <ToggleButton
+                      id="dateOfBirthIsExactYes"
+                      value="Yes"
+                      variant="outline-primary"
+                      className={classNameYesButton}
+                    >
+                      Ja
+                    </ToggleButton>
+                  </ToggleButtonGroup>
+                </Form.Group>
+              </Col>
+            </Row>
             {dateOfBirthIsExact === 'Yes' && (
               <Form.Group className="mb-3">
                 <Form.Control
@@ -885,124 +920,150 @@ export function AnimalEditNewDialog({
                 </Form.Control.Feedback>
               </Form.Group>
             )}
-            <Form.Group className="mb-3">
-              <Form.Label>Geschlecht*:</Form.Label>
-              <Form.Control
-                as="select"
-                name="sex"
-                value={sex}
-                onChange={handleChange}
-                isInvalid={validationErrors.sex !== undefined}
-              >
-                <option value="">Bitte auswählen</option>
-                <option value={'male'}>männlich</option>
-                <option value={'female'}>weiblich</option>
-                <option value={'not_known'}>unbekannt</option>
-              </Form.Control>
-              <Form.Control.Feedback type="invalid">
-                {validationErrors.sex}
-              </Form.Control.Feedback>
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Kastriert*:</Form.Label>
-              <Form.Control
-                as="select"
-                name="castrated"
-                value={castrated}
-                onChange={handleChange}
-                isInvalid={validationErrors.castrated !== undefined}
-              >
-                <option value="">Bitte auswählen</option>
-                <option value="castrated">kastriert</option>
-                <option value="notCastrated">nicht kastriert</option>
-              </Form.Control>
-              <Form.Control.Feedback type="invalid">
-                {validationErrors.castrated}
-              </Form.Control.Feedback>
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Lifestyle*:</Form.Label>
-              <Form.Control
-                as="select"
-                name="lifestyle"
-                value={lifestyle}
-                onChange={handleChange}
-                isInvalid={validationErrors.lifestyle !== undefined}
-              >
-                <option value="">Bitte auswählen</option>
-                <option value="lifestyleIsIndoor">in der Wohnung</option>
-                <option value="lifestyleIsNotIndoor">im Freien</option>
-              </Form.Control>
-              <Form.Control.Feedback type="invalid">
-                {validationErrors.lifestyle}
-              </Form.Control.Feedback>
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Größe in m: (optional)</Form.Label>
-              <Form.Control
-                id="AnimalHeight"
-                type="text"
-                placeholder="z.B. 0,89"
-                name="height"
-                onChange={handleChange}
-                value={height}
-                isInvalid={validationErrors.height !== undefined}
-              />
-              <Form.Control.Feedback type="invalid">
-                {validationErrors.height}
-              </Form.Control.Feedback>
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Gewicht in kg: (optional)</Form.Label>
-              <Form.Control
-                id="AnimalWeight"
-                type="text"
-                placeholder="z.B. 1,5"
-                name="weight"
-                onChange={handleChange}
-                value={weight}
-                isInvalid={validationErrors.weight !== undefined}
-              />
-              <Form.Control.Feedback type="invalid">
-                {validationErrors.weight}
-              </Form.Control.Feedback>
-            </Form.Group>
-            {(raceOptions.length > 0 || selectedRaces.length > 0) && (
-              <Form.Group className="mb-3">
-                <Form.Label>
-                  Rasse auswählen: (optional, mehrere möglich)
-                </Form.Label>
-                <Select
-                  closeMenuOnSelect={false}
-                  isMulti={true}
-                  placeholder="Bitte Rassen auswählen"
-                  options={raceOptions}
-                  value={selectedRaces}
-                  onChange={handleSelectRaces}
-                />
-              </Form.Group>
-            )}
-            {animalEdit !== undefined && (
-              <>
+            <Row>
+              <Col md={6}>
                 <Form.Group className="mb-3">
-                  <Form.Label>Todesdatum: (optional)</Form.Label>
+                  <Form.Label>Geschlecht*</Form.Label>
                   <Form.Control
-                    id="TimeOfDeath"
-                    type="date"
-                    name="dateOfDeath"
+                    as="select"
+                    name="sex"
+                    value={sex}
                     onChange={handleChange}
-                    value={dateOfDeath}
-                    isInvalid={validationErrors.dateOfDeath !== undefined}
-                  />
+                    isInvalid={validationErrors.sex !== undefined}
+                  >
+                    <option value="">Bitte auswählen</option>
+                    <option value={'male'}>männlich</option>
+                    <option value={'female'}>weiblich</option>
+                    <option value={'not_known'}>unbekannt</option>
+                  </Form.Control>
                   <Form.Control.Feedback type="invalid">
-                    {validationErrors.dateOfDeath}
+                    {validationErrors.sex}
                   </Form.Control.Feedback>
                 </Form.Group>
-              </>
+              </Col>
+              <Col md={6}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Kastriert*</Form.Label>
+                  <Form.Control
+                    as="select"
+                    name="castrated"
+                    value={castrated}
+                    onChange={handleChange}
+                    isInvalid={validationErrors.castrated !== undefined}
+                  >
+                    <option value="">Bitte auswählen</option>
+                    <option value="castrated">kastriert</option>
+                    <option value="notCastrated">nicht kastriert</option>
+                  </Form.Control>
+                  <Form.Control.Feedback type="invalid">
+                    {validationErrors.castrated}
+                  </Form.Control.Feedback>
+                </Form.Group>
+              </Col>
+            </Row>
+            <Row>
+              <Col md={6}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Lifestyle*</Form.Label>
+                  <Form.Control
+                    as="select"
+                    name="lifestyle"
+                    value={lifestyle}
+                    onChange={handleChange}
+                    isInvalid={validationErrors.lifestyle !== undefined}
+                  >
+                    <option value="">Bitte auswählen</option>
+                    <option value="indoor">Indoor</option>
+                    <option value="outdoor">Outdoor</option>
+                    <option value="mixed">Mixed</option>
+                  </Form.Control>
+                  <Form.Control.Feedback type="invalid">
+                    {validationErrors.lifestyle}
+                  </Form.Control.Feedback>
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Größe in m (optional)</Form.Label>
+                  <Form.Control
+                    id="AnimalHeight"
+                    type="text"
+                    placeholder="z.B. 0,89"
+                    name="height"
+                    onChange={handleChange}
+                    value={height}
+                    isInvalid={validationErrors.height !== undefined}
+                  />
+                  <Form.Control.Feedback type="invalid">
+                    {validationErrors.height}
+                  </Form.Control.Feedback>
+                </Form.Group>
+              </Col>
+            </Row>
+            <Row>
+              <Col md={6}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Gewicht in kg (optional)</Form.Label>
+                  <Form.Control
+                    id="AnimalWeight"
+                    type="text"
+                    placeholder="z.B. 1,5"
+                    name="weight"
+                    onChange={handleChange}
+                    value={weight}
+                    isInvalid={validationErrors.weight !== undefined}
+                  />
+                  <Form.Control.Feedback type="invalid">
+                    {validationErrors.weight}
+                  </Form.Control.Feedback>
+                </Form.Group>
+              </Col>
+              {animalEdit !== undefined && (
+                <Col md={6}>
+                  <Form.Group className="mb-3">
+                    <Form.Label>Todesdatum (optional)</Form.Label>
+                    <Form.Control
+                      id="TimeOfDeath"
+                      type="date"
+                      name="dateOfDeath"
+                      onChange={handleChange}
+                      value={dateOfDeath}
+                      isInvalid={validationErrors.dateOfDeath !== undefined}
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      {validationErrors.dateOfDeath}
+                    </Form.Control.Feedback>
+                  </Form.Group>
+                </Col>
+              )}
+            </Row>
+
+            {(raceOptions.length > 0 || selectedRaces.length > 0) && (
+              <Row>
+                <Col>
+                  <Form.Group className="mb-3">
+                    <Form.Label>
+                      Rasse auswählen (optional, mehrere möglich)
+                    </Form.Label>
+                    <Select
+                      closeMenuOnSelect={false}
+                      isMulti={true}
+                      placeholder="Bitte Rassen auswählen"
+                      options={raceOptions}
+                      value={selectedRaces}
+                      onChange={handleSelectRaces}
+                    />
+                  </Form.Group>
+                </Col>
+              </Row>
             )}
-            <div>* = Pflichtfeld</div>
-            {errorText !== '' && <div>{errorText}</div>}
-          </Form>
+
+            <Row>
+              <Col>
+                <div className="mt-3">* = Pflichtfeld</div>
+              </Col>
+            </Row>
+          </Container>
         </Modal.Body>
 
         <Modal.Footer>

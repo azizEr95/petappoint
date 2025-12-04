@@ -69,6 +69,9 @@
     margin-bottom: var(--spacing-lg, 2rem);
     padding-bottom: var(--spacing-md, 1.5rem);
     border-bottom: 2px solid var(--color-bg-light, $bg-light);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 
     h2 {
       font-size: $h4-font-size;
@@ -85,6 +88,15 @@
 
       i {
         font-size: 1.5rem;
+      }
+    }
+
+    .btn-add-pet {
+      color: white !important;
+      white-space: nowrap;
+
+      &:hover {
+        color: white !important;
       }
     }
   }

@@ -27,7 +27,7 @@ const customStringifySearch = (search: Record<string, any>) => {
       params.set(key, value)
     }
   }
-  return "?" + params.toString()
+  return '?' + params.toString()
 }
 
 // Create a new router instance
@@ -38,9 +38,8 @@ const router = createRouter({
   scrollRestoration: true,
   defaultStructuralSharing: true,
   defaultPreloadStaleTime: 0,
-  stringifySearch: customStringifySearch
+  stringifySearch: customStringifySearch,
 })
-
 
 // Register the router instance for type safety
 declare module '@tanstack/react-router' {
@@ -58,8 +57,11 @@ if (rootElement && !rootElement.innerHTML) {
   root.render(
     <StrictMode>
       <QueryClientProvider client={queryClient}>
-        <PostHogProvider apiKey={import.meta.env.VITE_PUBLIC_POSTHOG_KEY} options={options}>
-        <App router={router}/>
+        <PostHogProvider
+          apiKey={import.meta.env.VITE_PUBLIC_POSTHOG_KEY}
+          options={options}
+        >
+          <App router={router} />
         </PostHogProvider>
       </QueryClientProvider>
     </StrictMode>,

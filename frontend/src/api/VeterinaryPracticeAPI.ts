@@ -4,9 +4,9 @@ import {
 } from '../../../shared/schemas/ZodSchemas'
 import type {
   VeterinaryPracticeSearchQueryType,
+  VeterinaryPracticeSearchResultType,
   VeterinaryPracticesCreateType,
   VeterinaryPracticesType,
-  VeterinaryPracticeSearchResultType,
 } from '../../../shared/schemas/ZodSchemas'
 
 export const getVeterinaryPracticesByNameAddress = async (
@@ -75,7 +75,7 @@ export const getVeterinaryPracticesById = async (
 
 export const getFavoritesVeterinaryPractices = async (
   userId: string,
-): Promise<number[]> => {
+): Promise<Array<number>> => {
   const res = await fetch(
     import.meta.env.VITE_API_URL + '/persons/' + userId + '/favorites',
     { credentials: 'include' },

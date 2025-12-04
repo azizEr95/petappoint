@@ -1,17 +1,13 @@
-import { useEffect, useState, type ChangeEvent } from 'react'
+import {  useEffect, useState } from 'react'
 import {
   Button,
   Col,
   Container,
   Form,
+  Image,
   Modal,
   Row,
-  Image,
 } from 'react-bootstrap'
-import type {
-  PersonsType,
-  PersonsUpdateType,
-} from '../../../../shared/schemas/ZodSchemas'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   getPictureURLForPersonId,
@@ -19,6 +15,11 @@ import {
   uploadPictureForPersonId,
 } from '../../api/PersonsAPI'
 import { getDateStringFromDate } from '../../utils/DateToStringFormat'
+import type {ChangeEvent} from 'react';
+import type {
+  PersonsType,
+  PersonsUpdateType,
+} from '../../../../shared/schemas/ZodSchemas'
 import '../../styles/components/ProfileDialog.scss'
 
 type ProfileEditDialogProps = {

@@ -1,23 +1,23 @@
 import { Button } from 'react-bootstrap'
-import type {
-  AppointmentsType,
-  ServiceType,
-  VeterinaryPracticesType,
-  AnimalsType,
-} from '../../../../shared/schemas/ZodSchemas'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useEffect, useState } from 'react'
+import { useNavigate } from '@tanstack/react-router'
 import { getVeterinaryPracticesById } from '../../api/VeterinaryPracticeAPI'
 import {
+  bookAppointment,
   cancelAppointment,
   updateAppointmentNotes,
-  bookAppointment,
 } from '../../api/AppointmentsAPI'
 import { getAnimalsFromUser } from '../../api/AnimalsAPI'
 import { getServicesFromPractice } from '../../api/ServicesAPI'
-import { useEffect, useState } from 'react'
 import { exportToCalendar } from '../../utils/calendarExport'
-import { useNavigate } from '@tanstack/react-router'
 import { useLoginContext } from '../../LoginContext'
+import type {
+  AnimalsType,
+  AppointmentsType,
+  ServiceType,
+  VeterinaryPracticesType,
+} from '../../../../shared/schemas/ZodSchemas'
 
 type AppointmentDetailsProps = {
   appointment: AppointmentsType

@@ -15,7 +15,11 @@
 }
 
 .stat-card {
-  background: linear-gradient(135deg, var(--color-primary-pale, $primary-pale), white);
+  background: linear-gradient(
+    135deg,
+    var(--color-primary-pale, $primary-pale),
+    white
+  );
   border: 2px solid var(--color-primary-lightest, $primary-lightest);
   border-radius: var(--radius-md, 12px);
   padding: var(--spacing-lg, 2rem);
@@ -47,7 +51,11 @@
   }
 
   &.stat-icon-upcoming {
-    background: linear-gradient(135deg, var(--color-primary, $primary), var(--color-primary-light, $primary-light));
+    background: linear-gradient(
+      135deg,
+      var(--color-primary, $primary),
+      var(--color-primary-light, $primary-light)
+    );
   }
 
   &.stat-icon-year {

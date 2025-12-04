@@ -2,13 +2,14 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
 import type { ChangeEvent, FormEvent } from 'react'
 import '../../styles/routes/veterinaryRegistration.scss'
-import {
-  VeterinaryPracticeCreateSchema,
-  type VeterinaryPracticesCreateType,
-} from '../../../../shared/schemas/ZodSchemas'
 import { useMutation } from '@tanstack/react-query'
-import { createVeterinaryPractice } from '../../api/VeterinaryPracticeAPI'
 import { Form, FormGroup } from 'react-bootstrap'
+import { createVeterinaryPractice } from '../../api/VeterinaryPracticeAPI'
+import {
+  VeterinaryPracticeCreateSchema
+  
+} from '../../../../shared/schemas/ZodSchemas'
+import type {VeterinaryPracticesCreateType} from '../../../../shared/schemas/ZodSchemas';
 
 export const Route = createFileRoute('/registration/veterinary')({
   component: VeterinaryRegistration,

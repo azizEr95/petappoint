@@ -14,10 +14,10 @@ declare module '@tanstack/react-router' {
     termin?: AppointmentsType // TODO changed to appointment
     appointment?: AppointmentsType
     serviceType?: Array<number> | null
-    selectedAnimal?: AnimalsType,
-    selectedService?: ServiceType,
-    filterOptions?: AppointmentFilterType,
-    filterAnimalId?: number | undefined,
+    selectedAnimal?: AnimalsType
+    selectedService?: ServiceType
+    filterOptions?: AppointmentFilterType
+    filterAnimalId?: number | undefined
     filterAnimalTypeId?: number | undefined
   }
 }

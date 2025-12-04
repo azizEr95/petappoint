@@ -128,9 +128,7 @@ export const personService = {
         where: { email: dataRe.email },
       });
       if (existingPerson && existingPerson.id !== dataRe.id) {
-        throw new ConstraintError("Email already in use", [
-          { path: "email", value: dataRe.email }
-        ]);
+        throw new ConstraintError("Email already in use", [{ path: "email", value: dataRe.email }]);
       }
     }
 
@@ -223,7 +221,7 @@ export const personService = {
       heightInCm: x.animal.heightInCm,
       timeOfDeath: x.animal.timeOfDeath,
       isCastrated: x.animal.isCastrated,
-      lifestyleIsIndoors: x.animal.lifestyleIsIndoors,
+      lifestyle: x.animal.lifestyle,
       sex: x.animal.sex,
       animalTypeId: x.animal.animalTypeId,
       animalGroupId: x.animal.animalGroupId,

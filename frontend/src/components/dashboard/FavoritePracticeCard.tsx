@@ -1,14 +1,21 @@
 import { Link } from '@tanstack/react-router'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import type { VeterinaryPracticesType } from '../../../../shared/schemas/ZodSchemas'
 import { getVeterinaryPracticesById } from '../../api/VeterinaryPracticeAPI'
+import type { VeterinaryPracticesType } from '../../../../shared/schemas/ZodSchemas'
 import type { FavoritePracticeCardProps } from '../../types/dashboard'
 import '../../styles/components/dashboard/FavoritePracticeCard.scss'
 
-export function FavoritePracticeCard({ practiceId, onRemove }: FavoritePracticeCardProps) {
+export function FavoritePracticeCard({
+  practiceId,
+  onRemove,
+}: FavoritePracticeCardProps) {
   const queryClient = useQueryClient()
 
-  const { data: practice, isLoading, isError } = useQuery<VeterinaryPracticesType>({
+  const {
+    data: practice,
+    isLoading,
+    isError,
+  } = useQuery<VeterinaryPracticesType>({
     queryKey: ['veterinaryPractice', practiceId],
     queryFn: () => getVeterinaryPracticesById(practiceId.toString()),
   })
@@ -32,12 +39,20 @@ export function FavoritePracticeCard({ practiceId, onRemove }: FavoritePracticeC
   }
 
   return (
-    <Link to="/practices/$practiceId" params={{ practiceId: practiceId.toString() }} className="favorite-practice-card">
+    <Link
+      to="/practices/$practiceId"
+      params={{ practiceId: practiceId.toString() }}
+      className="favorite-practice-card"
+    >
       <div className="practice-header">
         <div className="practice-logo">
           <i className="bi bi-hospital"></i>
         </div>
-        <button className="remove-favorite-btn" onClick={handleRemove} title="Aus Favoriten entfernen">
+        <button
+          className="remove-favorite-btn"
+          onClick={handleRemove}
+          title="Aus Favoriten entfernen"
+        >
           <i className="bi bi-heart-fill"></i>
         </button>
       </div>
@@ -49,7 +64,8 @@ export function FavoritePracticeCard({ practiceId, onRemove }: FavoritePracticeC
           <div className="practice-address">
             <i className="bi bi-geo-alt"></i>
             <span>
-              {practice.addresses.street}, {practice.addresses.citycode} {practice.addresses.city}
+              {practice.addresses.street}, {practice.addresses.citycode}{' '}
+              {practice.addresses.city}
             </span>
           </div>
         )}
