@@ -4,8 +4,8 @@ import '../../styles/components/dashboard/DashboardProfileCard.scss'
 export function DashboardProfileCard({ user, avatarUrl, onEdit }: DashboardProfileCardProps) {
   // Generate initials from first and last name
   const getInitials = () => {
-    const firstInitial = user.firstname?.charAt(0)?.toUpperCase() || ''
-    const lastInitial = user.lastname?.charAt(0)?.toUpperCase() || ''
+    const firstInitial = user.firstName?.charAt(0)?.toUpperCase() || ''
+    const lastInitial = user.lastName?.charAt(0)?.toUpperCase() || ''
     return `${firstInitial}${lastInitial}`
   }
 
@@ -13,7 +13,7 @@ export function DashboardProfileCard({ user, avatarUrl, onEdit }: DashboardProfi
     <div className="profile-card">
       <div className="profile-avatar-section">
         {avatarUrl ? (
-          <img src={avatarUrl} alt={`${user.firstname} ${user.lastname}`} className="profile-avatar" />
+          <img src={avatarUrl} alt={`${user.firstName} ${user.lastName}`} className="profile-avatar" />
         ) : (
           <div className="profile-avatar profile-avatar-initials">
             {getInitials()}
@@ -23,7 +23,7 @@ export function DashboardProfileCard({ user, avatarUrl, onEdit }: DashboardProfi
 
       <div className="profile-info">
         <h3 className="profile-name">
-          {user.firstname} {user.lastname}
+          {user.firstName} {user.lastName}
         </h3>
 
         <div className="profile-details">
@@ -39,20 +39,20 @@ export function DashboardProfileCard({ user, avatarUrl, onEdit }: DashboardProfi
             </div>
           )}
 
-          {user.addresses && (
+          {user.address && (
             <div className="profile-detail-item">
               <i className="bi bi-geo-alt"></i>
               <span>
-                {user.addresses.street}, {user.addresses.citycode} {user.addresses.city}
+                {user.address.street}, {user.address.cityCode} {user.address.city}
               </span>
             </div>
           )}
 
-          {user.dateofbirth && (
+          {user.dateOfBirth && (
             <div className="profile-detail-item">
               <i className="bi bi-calendar"></i>
               <span>
-                {new Date(user.dateofbirth).toLocaleDateString('de-DE', {
+                {new Date(user.dateOfBirth).toLocaleDateString('de-DE', {
                   year: 'numeric',
                   month: 'long',
                   day: 'numeric',

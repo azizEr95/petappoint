@@ -5,9 +5,12 @@ import { QuickActions } from '../components/dashboard/QuickActions'
 import { DashboardPetsSection } from '../components/dashboard/DashboardPetsSection'
 import { DashboardAppointmentsSection } from '../components/dashboard/DashboardAppointmentsSection'
 import { AnimalEditNewDialog } from '../components/animal/AnimalEditNewDialog'
+import { ProfileEditDialog } from '../components/profile/ProfileEditDialog'
 import '../styles/routes/dashboard.scss'
 import { useLoginContext } from '../LoginContext'
 import type { PersonsType } from '../../../shared/schemas/ZodSchemas'
+import { useQuery } from '@tanstack/react-query'
+import { getPersonById, getPictureURLForPersonId } from '../api/PersonsAPI'
 
 export const Route = createFileRoute('/dashboard')({
   component: Dashboard,
@@ -21,35 +24,25 @@ function Dashboard() {
 
   const userId = login.id
 
-  // Dummy user data - will be replaced with real API call in Phase 10
-  const dummyUser: PersonsType = {
-    id: userId,
-    firstName: 'Max',
-    lastName: 'Mustermann',
-    email: 'max.mustermann@example.com',
-    phone: '+49 30 12345678',
-    dateOfBirth: new Date('1990-01-15'),
-    sex: 'male',
-    address: {
-      id: 1,
-      street: 'Musterstraße 123',
-      city: 'Berlin',
-      cityCode: '10115',
-      country: 'Deutschland',
-      latitude: 52.52,
-      longitude: 13.405,
-    },
-  }
+  const { data: user, isLoading: isLoadingUser } = useQuery<PersonsType>({
+    queryKey: ['person', userId],
+    queryFn: () => getPersonById(userId),
+    retry: false,
+  })
 
   const [showAddPetDialog, setShowAddPetDialog] = useState(false)
+  const [showEditProfileDialog, setShowEditProfileDialog] = useState(false)
 
   const handleEditProfile = () => {
-    // Will be implemented in Phase 10
-    console.log('Edit profile clicked')
+    setShowEditProfileDialog(true)
   }
 
   const handleAddPet = () => {
     setShowAddPetDialog(true)
+  }
+
+  if (isLoadingUser || !user) {
+    return <div>Loading...</div>
   }
 
   return (
@@ -71,7 +64,11 @@ function Dashboard() {
             </h2>
           </div>
           <div className="section-content">
-            <DashboardProfileCard user={dummyUser} onEdit={handleEditProfile} />
+            <DashboardProfileCard
+              user={user}
+              avatarUrl={getPictureURLForPersonId(userId)}
+              onEdit={handleEditProfile}
+            />
           </div>
         </div>
 
@@ -117,6 +114,14 @@ function Dashboard() {
         <AnimalEditNewDialog
           hideDialogNewAnimal={() => setShowAddPetDialog(false)}
           animalEdit={undefined}
+        />
+      )}
+
+      {/* Profile Edit Dialog */}
+      {showEditProfileDialog && user && (
+        <ProfileEditDialog
+          hideDialog={() => setShowEditProfileDialog(false)}
+          person={user}
         />
       )}
     </div>

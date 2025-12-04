@@ -1,11 +1,34 @@
 import express from "express";
 import { personService } from "../service/personService";
-import { AnimalsType, PersonsCreateSchema, PersonsType, PostgresIdSchema } from "vetlib-shared/schemas/ZodSchemas";
+import { AnimalsType, PersonsCreateSchema, PersonsType, PersonsUpdateSchema, PostgresIdSchema } from "vetlib-shared/schemas/ZodSchemas";
 import { verifyJWT, verifyPasswordAndCreateJWT } from "../service/jwtService";
 import { optionalAuthentication, requiresAuthentication } from "./authentication";
 import { AuthorizationError } from "../exceptions/errors/AuthorizationError";
+import multer from "multer";
+import { ConstraintError } from "../exceptions/errors/ConstraintError";
 
 export const personsRouter = express.Router();
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "public/uploads/persons");
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(null, file.fieldname + "-" + uniqueSuffix + "." + file.originalname.split(".").pop());
+  },
+});
+
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 2 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    if (!file.mimetype.startsWith("image/")) {
+      return cb(new Error("Only images are allowed"));
+    }
+    cb(null, true);
+  },
+});
 
 personsRouter.get('/all',
     requiresAuthentication,
@@ -97,5 +120,71 @@ personsRouter.delete("/:id/favorites/:practiceId",
         await personService.deleteFavorizedVeterinaryPracticeId(id, practiceId);
 
         res.sendStatus(204);
+    }
+);
+
+personsRouter.get('/:id',
+    requiresAuthentication,
+    async (req, res) => {
+        const id = PostgresIdSchema.parse(parseInt(req.params.id));
+
+        if (id !== req.userId!) {
+            throw new AuthorizationError(`person(${req.userId!}) tried to access profile of person(${id}).`);
+        }
+
+        const person: PersonsType = await personService.getById(id);
+        res.send(person);
+    }
+);
+
+personsRouter.put('/:id',
+    requiresAuthentication,
+    async (req, res) => {
+        const id = PostgresIdSchema.parse(parseInt(req.params.id));
+
+        if (id !== req.userId!) {
+            throw new AuthorizationError(`person(${req.userId!}) tried to update profile of person(${id}).`);
+        }
+
+        const validatedBody = PersonsUpdateSchema.parse(req.body);
+
+        if (validatedBody.id !== id) {
+            throw new ConstraintError("Mismatch", [
+                { path: "params.id", value: id },
+                { path: "body.id", value: validatedBody.id },
+            ]);
+        }
+
+        const updatedPerson: PersonsType = await personService.update(validatedBody);
+        res.send(updatedPerson);
+    }
+);
+
+personsRouter.get('/:id/picture',
+    requiresAuthentication,
+    async (req, res) => {
+        const id = PostgresIdSchema.parse(parseInt(req.params.id));
+
+        if (id !== req.userId!) {
+            throw new AuthorizationError(`person(${req.userId!}) tried to access picture of person(${id}).`);
+        }
+
+        const filepath = await personService.getPicturePath(id);
+        res.sendFile(filepath);
+    }
+);
+
+personsRouter.post('/:id/picture',
+    requiresAuthentication,
+    upload.single("picture"),
+    async (req, res) => {
+        const id = PostgresIdSchema.parse(parseInt(req.params.id));
+
+        if (id !== req.userId!) {
+            throw new AuthorizationError(`person(${req.userId!}) tried to update picture of person(${id}).`);
+        }
+
+        await personService.savePicture(id, req.file?.path ?? null);
+        res.sendStatus(200);
     }
 );
