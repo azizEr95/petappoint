@@ -31,10 +31,6 @@ export function SelectAnimal({
     Array<AnimalsType>
   >([])
 
-  if (!login) {
-    return
-  }
-
   let animals: Array<AnimalsType> = []
   useEffect(() => {
     if (animals.length > 0) {
@@ -48,12 +44,13 @@ export function SelectAnimal({
     }
   }, [animals])
 
-  const userId = login.id
+  const userId = login ? login.id : undefined
   const { isSuccess, data } = useQuery<Array<AnimalsType>>({
     // for this query is no error handling implemented, if the query fails
     queryKey: ['animals', userId],
-    queryFn: () => getAnimalsFromUser(userId),
+    queryFn: () => getAnimalsFromUser(userId ?? -1), // always defined if enabled
     retry: false,
+    enabled: userId !== undefined,
   })
 
   useEffect(() => {

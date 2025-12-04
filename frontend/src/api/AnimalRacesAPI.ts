@@ -98,16 +98,13 @@ export const deleteAllRacesFromAnimal = async (
     method: 'DELETE',
     credentials: 'include' as RequestCredentials,
   }
-  console.log('here')
   const res = await fetch(
     import.meta.env.VITE_API_URL + '/animals/' + animalID + '/races',
     requestOptions,
   )
-  console.log('heree33')
   if (!res.ok) {
     throw new Error('Failed to fetch deleteAllRacesFromAnimal')
   }
-  console.log('res deletealraces ok')
   return
 }
 

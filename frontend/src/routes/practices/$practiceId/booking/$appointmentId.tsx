@@ -14,6 +14,7 @@ import { getAppointmentsById } from '../../../../api/AppointmentsAPI'
 import { dateToInfosString } from '../../../../utils/DateToStringFormat'
 import { useLoginContext } from '../../../../LoginContext'
 import { getAnimalsFromUser } from '../../../../api/AnimalsAPI'
+import { LoginForm } from '../../../../components/Login'
 import type {
   AnimalsType,
   AppointmentsType,
@@ -27,8 +28,9 @@ export const Route = createFileRoute(
   component: BookingComponent,
 })
 
-enum StatusBooking {
+export enum StatusBooking {
   selectAppointmentType = 'SELECT_APPOINTMENT_TYPE',
+  login = 'LOGIN',
   selectAnimal = 'SELECT_ANIMAL',
   booked = 'BOOKED',
 }
@@ -40,6 +42,7 @@ function BookingComponent() {
   const serviceType = location.state.serviceType
   const animalId = location.state.filterAnimalId
   const animalTypeId = location.state.filterAnimalTypeId
+  const selectedService = location.state.selectedService
   const { practiceId, appointmentId } = Route.useParams()
   const [selectedAppointmentType, setSelectedAppointmentType] =
     useState<ServiceType | null>(null)
@@ -51,6 +54,7 @@ function BookingComponent() {
     useState<Array<ServiceType> | null>(null) // if an filter was selected save which services have to been shown and available
   const [notFoundFilteredServices, setNotFoundFilteredServices] =
     useState<Array<ServiceType> | null>(null) // if filter was selected all services from the filter that are not available
+  const [userId, setUserId] = useState(login ? login.id : undefined);
 
   // load VeterinaryPractice:
   const {
@@ -77,15 +81,30 @@ function BookingComponent() {
   })
 
   // load animal if it was in filter selected:
-  const userId = login ? login.id : -1
   const { isSuccess: isSuccessAnimal, data: dataAnimal } = useQuery<
     Array<AnimalsType>
   >({
     queryKey: ['animal', userId],
-    queryFn: () => getAnimalsFromUser(userId),
+    queryFn: () => getAnimalsFromUser(userId ?? -1),
     retry: false,
-    enabled: userId !== -1,
+    enabled: userId !== undefined,
   })
+
+  useEffect(() => {
+    setUserId(login ? login.id : undefined);
+  }, [login])
+
+  useEffect(() => {
+    if (userId === undefined && status === StatusBooking.selectAnimal) {
+      setStatus(StatusBooking.login);
+    }
+  }, [userId])
+
+  useEffect(() => {
+    if (selectedService !== undefined) {
+      handleSelectAppointmentType(selectedService)
+    }
+  }, [selectedService])
 
   useEffect(() => {
     if (
@@ -112,7 +131,11 @@ function BookingComponent() {
         // if only one ServiceType was selected, skip SelectAppointmentType component
         setFoundFilteredServices(null)
         setSelectedAppointmentType(foundService[0])
-        setStatus(StatusBooking.selectAnimal)
+        if (login !== undefined && login !== false) {
+          setStatus(StatusBooking.selectAnimal);
+        } else {
+          setStatus(StatusBooking.login);
+        }
       }
       setNotFoundFilteredServices(notFoundService)
     }
@@ -147,7 +170,7 @@ function BookingComponent() {
   }, [isSuccessAnimal, dataAnimal])
 
   useEffect(() => {
-    if (status === 'SELECT_ANIMAL' && selectedAnimal !== null) {
+    if (status === StatusBooking.selectAnimal && selectedAnimal !== null) {
       // if animal was selected in filter book appointment immediately
       handleBookAppoinment()
     }
@@ -172,7 +195,18 @@ function BookingComponent() {
 
   const handleSelectAppointmentType = (appointmentType: ServiceType) => {
     setSelectedAppointmentType(appointmentType)
-    setStatus(StatusBooking.selectAnimal)
+
+    navigate({ // save the current selected service in the state, to get this service after registration
+      state: {
+        selectedService: appointmentType,
+      }
+    })
+
+    if (login !== undefined && login !== false) {
+      setStatus(StatusBooking.selectAnimal);
+    } else {
+      setStatus(StatusBooking.login);
+    }
   }
 
   const handleBookAppoinment = () => {
@@ -221,6 +255,9 @@ function BookingComponent() {
       submitButton = null
       currentStep = 1
       break
+    case StatusBooking.login:
+      currentDisplay = <LoginForm setStatusBookingProcess={setStatus} appointment={appointment} />
+      break;
     case StatusBooking.selectAnimal:
       currentDisplay = (
         <SelectAnimal
@@ -268,7 +305,7 @@ function BookingComponent() {
         <h1>Termin buchen</h1>
       </div>
 
-      <BookingStepper currentStep={currentStep} />
+      {status !== StatusBooking.login && <BookingStepper currentStep={currentStep} />}
 
       <div className="booking-layout">
         <div className="booking-main">

@@ -1,4 +1,5 @@
-import { LoginSchema, type LoginType, type PersonsCreateType } from "../../../shared/schemas/ZodSchemas"
+import { LoginSchema   } from "../../../shared/schemas/ZodSchemas"
+import type {LoginType, PersonsCreateType} from "../../../shared/schemas/ZodSchemas";
 
 
 export const loginUser = async (email: string, password: string): Promise<LoginType> => {
@@ -26,7 +27,24 @@ export const loginUser = async (email: string, password: string): Promise<LoginT
     return parseLogin(data);
 }
 
-export const personRegistration = async (person: PersonsCreateType): Promise<string> => {
+export const logoutUser = async (): Promise<void> => {
+    const requestOptions = {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        credentials: 'include'  as RequestCredentials
+    }
+    const res = await fetch(
+        import.meta.env.VITE_API_URL + '/login/', requestOptions
+    )
+    if (!res.ok) {
+        throw new Error('Failed to fetch login')
+    }
+    return;
+}
+
+export const personRegistration = async (person: PersonsCreateType): Promise<LoginType> => {
     const requestOptions = {
         method: 'POST',
         headers: {

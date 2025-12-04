@@ -24,10 +24,6 @@ function Appointments() {
   const location = useLocation()
   const navigate = useNavigate()
 
-  if (!login) {
-    return
-  }
-
   // Capture state once on mount to survive navigation state clearing
   const [initialState] = useState(() => {
     const state = location.state as any
@@ -48,7 +44,7 @@ function Appointments() {
   const [hasJustBooked, setHasJustBooked] = useState(initialState.justBooked)
   const [showCancelSuccess, setShowCancelSuccess] = useState(false)
 
-  const userID = login.id // TODO: get from auth context
+  const userID = login ? login.id : undefined
 
   const {
     isError: isErrorFuture,
@@ -56,7 +52,8 @@ function Appointments() {
     data: dataFuture,
   } = useQuery<Array<AppointmentsType>>({
     queryKey: ['appointmentsFuture', userID],
-    queryFn: () => getFutureAppointmentsByUserId(userID.toString()),
+    queryFn: () => getFutureAppointmentsByUserId(userID?.toString() ?? "-1"),
+    enabled: userID !== undefined
   })
 
   const {
@@ -65,7 +62,8 @@ function Appointments() {
     data: dataPast,
   } = useQuery<Array<AppointmentsType>>({
     queryKey: ['appointmentsPast', userID],
-    queryFn: () => getPastAppointmentsByUserId(userID.toString()),
+    queryFn: () => getPastAppointmentsByUserId(userID?.toString() ?? "-1"),
+    enabled: userID !== undefined
   })
 
   useEffect(() => {
