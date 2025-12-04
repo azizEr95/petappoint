@@ -1,5 +1,5 @@
 import express from "express";
-import { ServiceType } from "vetlib-shared/schemas/ZodSchemas";
+import { PostgresIdSchema, ServiceType } from "vetlib-shared/schemas/ZodSchemas";
 import { serviceService } from "../service/serviceService";
 import { optionalAuthentication, requiresAuthentication } from "./authentication";
 
@@ -12,5 +12,11 @@ serviceRouter.get("/all", optionalAuthentication, async (_req, res) => {
 
 serviceRouter.get("/all/available", optionalAuthentication, async (_req, res) => {
   const services: ServiceType[] = await serviceService.getAllAvailable();
+  res.send(services);
+});
+
+serviceRouter.get('/veterinary/:id', optionalAuthentication, async (req, res) => {
+  const id: number = PostgresIdSchema.parse(parseInt(req.params.id));
+  const services: ServiceType[] = await serviceService.getAvailableServicesForVeterinary(id);
   res.send(services);
 });
