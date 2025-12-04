@@ -19,7 +19,7 @@ export function QuickActions({ onAddPet }: QuickActionsProps) {
         <div className="action-label">Tier hinzufügen</div>
       </button>
 
-      <Link to="/search" search={{ name: '', address: '', animalType: '', serviceType: '' }} className="action-button">
+      <Link to="/practices/favorites"  className="action-button">
         <div className="action-icon">
           <i className="bi bi-star"></i>
         </div>
