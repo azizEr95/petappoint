@@ -22,12 +22,21 @@ build:
 
 test:
   stage: test
+  services:
+    - name: postgres:15
+      alias: postgres
+  variables:
+    POSTGRES_USER: vetilib
+    POSTGRES_PASSWORD: "123"
+    POSTGRES_DB: vetilib-db
+    DATABASE_URL: "postgresql://vetilib:123@postgres:5432/vetilib-db"
   coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/
   dependencies:
     - build
   before_script:
     - cd backend
     - npm install
+    - npx prisma db push --skip-generate
   script:
     - npm run test
   cache:
@@ -51,7 +60,7 @@ pages:
   script:
       - mkdir .public
       - cp -r coverage/* .public
-      - mv .public .public
+      - mv .public public
   artifacts:
     paths:
       - public
