@@ -43,10 +43,10 @@
   }
 }
 
-// Main Layout - Two Column Grid
+// Main Layout - One Third / Two Thirds Grid
 .booking-layout {
   display: grid;
-  grid-template-columns: 1fr 400px;
+  grid-template-columns: 1fr 2fr;
   gap: var(--spacing-xl);
   align-items: start;
   margin-top: var(--spacing-xl);
@@ -78,6 +78,7 @@
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
   padding: var(--spacing-xl);
+  order: -1;
 
   .sidebar-section-title {
     font-size: $font-size-sm;
@@ -434,14 +435,14 @@
 }
 
 // Responsive Design
-@media (max-width: 992px) {
+@media (max-width: 1024px) {
   .booking-layout {
     grid-template-columns: 1fr;
   }
 
   .booking-sidebar {
     position: static;
-    order: -1; // Move sidebar above main content on mobile
+    order: 0;
   }
 }
 

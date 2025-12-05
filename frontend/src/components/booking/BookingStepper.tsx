@@ -6,8 +6,8 @@ interface BookingStepperProps {
 
 export default function BookingStepper({ currentStep }: BookingStepperProps) {
   const steps = [
-    { number: 1, label: 'Terminart' },
-    { number: 2, label: 'Tier auswählen' },
+    { number: 1, label: 'Tier auswählen' },
+    { number: 2, label: 'Leistung auswählen' },
     { number: 3, label: 'Bestätigung' },
   ]
 

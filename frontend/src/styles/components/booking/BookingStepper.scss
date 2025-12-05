@@ -8,15 +8,21 @@
 .stepper-container {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  max-width: 600px;
+  justify-content: center;
+  max-width: 700px;
   margin: 0 auto;
 }
 
 .stepper-step {
   display: flex;
   align-items: center;
-  flex: 1;
+  flex: 0 0 auto;
+
+  &:not(:last-child) {
+    .stepper-line {
+      width: 80px;
+    }
+  }
 }
 
 .stepper-item {
@@ -63,7 +69,6 @@
 }
 
 .stepper-line {
-  flex: 1;
   height: 3px;
   background: #e9ecef;
   margin: 0 0.5rem;

@@ -84,6 +84,13 @@ export function SelectAnimal({
 
   useEffect(() => {
     if (isSuccessAnimalUser) {
+      // If no filter, all animals are selectable
+      if (filteredAnimalTypeId.length === 0) {
+        setSelectableAnimals(dataAnimalUser)
+        setNotSelectableAnimals([])
+        return
+      }
+
       const isSelectable = dataAnimalUser.filter((x) => {
         const foundSelect = filteredAnimalTypeId.find((y) => {
           if (x.animalTypeId === y) {
@@ -168,7 +175,7 @@ export function SelectAnimal({
   return (
     <>
       <div className="select-animal">
-        <h5 className="section-title">Tier auswählen ({animaltypesString}):</h5>
+        <h5 className="section-title">Tier auswählen</h5>
         <div className="animal-list">
           {selectableAnimals.map((animal) => (
             <div
@@ -177,26 +184,7 @@ export function SelectAnimal({
               onClick={() => handleSelectAnimal(animal)}
             >
               <div className="animal-name">{animal.name}</div>
-              <button
-                className="edit-button"
-                onClick={(e) => handleAnimalEdit(animal, e)}
-              >
-                <i className="bi bi-pencil-fill"></i>
-              </button>
-              <button
-                className="delete-button"
-                onClick={(e) => handleAnimalDelete(animal, e)}
-              >
-                <i className="bi bi-trash3"></i>
-              </button>
-            </div>
-          ))}
-          {notSelectableAnimals.map(
-            (
-              animal,
-            ) => (
-              <div key={animal.id} className={`animal-item disabled`} aria-disabled={true}>
-                <div className="animal-name">{animal.name}</div>
+              <div className="action-buttons" onClick={(e) => e.stopPropagation()}>
                 <button
                   className="edit-button"
                   onClick={(e) => handleAnimalEdit(animal, e)}
@@ -209,6 +197,29 @@ export function SelectAnimal({
                 >
                   <i className="bi bi-trash3"></i>
                 </button>
+              </div>
+            </div>
+          ))}
+          {notSelectableAnimals.map(
+            (
+              animal,
+            ) => (
+              <div key={animal.id} className={`animal-item disabled`} aria-disabled={true}>
+                <div className="animal-name">{animal.name}</div>
+                <div className="action-buttons" onClick={(e) => e.stopPropagation()}>
+                  <button
+                    className="edit-button"
+                    onClick={(e) => handleAnimalEdit(animal, e)}
+                  >
+                    <i className="bi bi-pencil-fill"></i>
+                  </button>
+                  <button
+                    className="delete-button"
+                    onClick={(e) => handleAnimalDelete(animal, e)}
+                  >
+                    <i className="bi bi-trash3"></i>
+                  </button>
+                </div>
               </div>
             ),
           )}
