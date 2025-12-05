@@ -33,6 +33,13 @@
       &:active {
         transform: translateX(0);
       }
+
+      &.disabled {
+        background: rgb(205, 205, 205);
+        border-color: rgb(205, 205, 205);
+        cursor: default;
+        pointer-events: none;
+      }
     }
   }
 }

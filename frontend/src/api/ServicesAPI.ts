@@ -1,9 +1,7 @@
-import z from 'zod'
-import {
-  ServiceSchema
-  
-} from '../../../shared/schemas/ZodSchemas'
-import type {ServiceType} from '../../../shared/schemas/ZodSchemas';
+import z from "zod";
+import { ServiceSchema  } from "../../../shared/schemas/ZodSchemas";
+import type {ServiceType} from "../../../shared/schemas/ZodSchemas";
+
 
 export const getServicesFromPractice = async (
   practiceId: string,
@@ -17,6 +15,23 @@ export const getServicesFromPractice = async (
   )
   if (!res.ok) {
     throw new Error('Failed to fetch getServicesFromPractice')
+  }
+
+  const data = await res.json()
+  return parseServiceArray(data)
+}
+
+export const getServicesFromVeterinary = async (
+  id: string,
+): Promise<Array<ServiceType>> => {
+  const res = await fetch(
+    import.meta.env.VITE_API_URL +
+      '/services/veterinary/' +
+      id,
+    { credentials: 'include' },
+  )
+  if (!res.ok) {
+    throw new Error('Failed to fetch getServicesFromVeterinary')
   }
 
   const data = await res.json()
@@ -41,14 +56,13 @@ export const getAllAvailableServices = async (
   return parseServiceArray(data)
 }
 
-function parseServiceArray(serviceArray: Array<ServiceType>) {
-  const parsed = z.array(ServiceSchema).safeParse(serviceArray)
-  if (parsed.error !== undefined) {
-    // if Zod throws an Error print them
-    console.log(parsed.error)
-  }
-  if (!parsed.success) {
-    throw new Error(parsed.error.toString())
-  }
-  return parsed.data
+function parseServiceArray(serviceArray: Array<ServiceType>): Array<ServiceType> {
+    const parsed = z.array(ServiceSchema).safeParse(serviceArray);
+    if (parsed.error !== undefined) { // if Zod throws an Error print them
+        console.log(parsed.error);
+    }
+    if (!parsed.success) {
+        throw new Error(parsed.error.toString())
+    }
+    return parsed.data
 }

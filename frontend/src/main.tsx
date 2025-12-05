@@ -1,12 +1,12 @@
-import { StrictMode, useState } from 'react'
+import { StrictMode } from 'react'
 import ReactDOM from 'react-dom/client'
-import { RouterProvider, createRouter } from '@tanstack/react-router'
+import { createRouter } from '@tanstack/react-router'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { PostHogProvider } from 'posthog-js/react'
 import { routeTree } from './routeTree.gen' // Import the generated route tree
 import './styles/main.scss'
 import reportWebVitals from './reportWebVitals.ts'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { App } from './App.tsx'
-import { PostHogProvider } from 'posthog-js/react'
 
 const options = {
   api_host: import.meta.env.VITE_PUBLIC_POSTHOG_HOST,

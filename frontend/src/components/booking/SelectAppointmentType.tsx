@@ -69,7 +69,7 @@ export function SelectAppointmentType({
     } else {
       setNotAppointmentServices(notFoundFilterServices)
     }
-  }, [])
+  }, [notFoundFilterServices])
 
   return (
     <div className="select-appointment-type">
@@ -85,7 +85,7 @@ export function SelectAppointmentType({
           </button>
         ))}
         {notAppointmentServices.map((appointmentType) => (
-          <button key={appointmentType.id} className="service-item" disabled>
+          <button key={appointmentType.id} className="service-item disabled" disabled>
             {appointmentType.name}
           </button>
         ))}

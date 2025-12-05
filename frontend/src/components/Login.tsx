@@ -3,8 +3,8 @@ import { useState } from 'react'
 import '../styles/routes/login.scss'
 import { useMutation } from '@tanstack/react-query'
 import { loginUser } from '../api/LoginAPI'
+import { StatusBooking } from '../types/booking'
 import { useLoginContext } from '../LoginContext'
-import { StatusBooking } from '../routes/practices/$practiceId/booking/$appointmentId'
 import type { ChangeEvent, FormEvent } from 'react'
 import type {
   AppointmentsType,

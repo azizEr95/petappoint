@@ -1,9 +1,9 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Link } from "@tanstack/react-router";
+import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import type { VeterinaryPracticesType } from "../../../../shared/schemas/ZodSchemas";
 import { getFavoritesVeterinaryPracticesDetails } from "../../api/VeterinaryPracticeAPI";
 import { FavoritePractice } from "../../components/practice/FavoritePractice";
+import { useLoginContext } from "../../LoginContext";
+import type { VeterinaryPracticesType } from "../../../../shared/schemas/ZodSchemas";
 import type { MouseEvent } from "react";
 
 export const Route = createFileRoute('/practices/favorites')({
@@ -11,18 +11,20 @@ export const Route = createFileRoute('/practices/favorites')({
 })
 
 function FavoritePracticesPage() {
+  const { login } = useLoginContext();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-  const userId = 6; 
+  const userId = login ? login.id : -1; 
 
   const { 
     data: favorites = [], 
     isLoading, 
     isError,
     refetch 
-  } = useQuery<VeterinaryPracticesType[]>({
+  } = useQuery<Array<VeterinaryPracticesType>>({
     queryKey: ['favoritesDetails', userId],
     queryFn: () => getFavoritesVeterinaryPracticesDetails(userId.toString()),
+    enabled: userId !== -1,
   });
 
   const openPraxisPage = (practiceId: number) => (e: MouseEvent<HTMLButtonElement>) => {
