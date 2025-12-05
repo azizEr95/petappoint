@@ -43,7 +43,7 @@ function BookingComponent() {
     useState<ServiceType | null>(null)
   const [selectedAnimal, setSelectedAnimal] = useState<AnimalsType | null>(null) // aktuell ausgewaehltes Tier, bei null ist keins ausgewaehlt
   const [status, setStatus] = useState<StatusBooking>(
-    StatusBooking.selectAppointmentType,
+    StatusBooking.selectAnimal,
   ) // State in the booking prozess, controls what is displayed
   const [foundFilteredServices, setFoundFilteredServices] =
     useState<Array<ServiceType> | null>(null) // if an filter was selected save which services have to been shown and available
@@ -193,6 +193,12 @@ function BookingComponent() {
       })
       if (animal !== undefined) {
         setSelectedAnimal(animal)
+        // Skip to service selection if animal is pre-selected
+        if (login !== undefined && login !== false) {
+          setStatus(StatusBooking.selectAppointmentType)
+        } else {
+          setStatus(StatusBooking.login)
+        }
       }
     }
   }, [isSuccessAnimal, dataAnimal])
@@ -207,34 +213,41 @@ function BookingComponent() {
   const handleClickBack = () => {
     // einmal auf der seite zurueck
     switch (status) {
-      case StatusBooking.selectAppointmentType:
-        setSelectedAppointmentType(null)
+      case StatusBooking.selectAnimal:
+        setSelectedAnimal(null)
         window.history.back();
         break
-      case StatusBooking.selectAnimal:
+      case StatusBooking.selectAppointmentType:
         setSelectedAppointmentType(null)
-        setStatus(StatusBooking.selectAppointmentType)
+        setStatus(StatusBooking.selectAnimal)
+        break
+      case StatusBooking.login:
+        setStatus(StatusBooking.selectAnimal)
         break
       default:
-        setSelectedAppointmentType(null)
-        setStatus(StatusBooking.selectAppointmentType)
+        setSelectedAnimal(null)
+        setStatus(StatusBooking.selectAnimal)
     }
   }
 
   const handleSelectAppointmentType = (appointmentType: ServiceType) => {
     setSelectedAppointmentType(appointmentType)
-    navigate({ // save the current selected service in the state, to get this service after registration
-      state: {
-        selectedService: appointmentType,
-        filterAnimalTypeId: animalTypeId,
-      }
-    })
 
-    if (login !== undefined && login !== false) {
-      setStatus(StatusBooking.selectAnimal)
-    } else {
-      setStatus(StatusBooking.login)
+    // Navigate to confirmation page with all booking data
+    if (selectedAnimal === null) {
+      navigate({ to: '/practices/' + practiceId + '/booking/' + appointmentId })
+      return
     }
+
+    navigate({
+      to: '/booking/confirmation',
+      state: {
+        appointment: appointment,
+        selectedAnimal: selectedAnimal,
+        selectedService: appointmentType,
+        practice: practice,
+      },
+    })
   }
 
   const handleBookAppoinment = () => {
@@ -259,6 +272,23 @@ function BookingComponent() {
     setSelectedAnimal(animal)
   }
 
+  const handleSelectAnimal = () => {
+    if (selectedAnimal === null) {
+      return
+    }
+    navigate({
+      state: {
+        selectedAnimal: selectedAnimal,
+      }
+    })
+
+    if (login !== undefined && login !== false) {
+      setStatus(StatusBooking.selectAppointmentType)
+    } else {
+      setStatus(StatusBooking.login)
+    }
+  }
+
   if (!isSuccessAppointment || !isSuccessPractice || appointment === undefined || practice === undefined) {
     return <></>
   }
@@ -269,6 +299,36 @@ function BookingComponent() {
   let currentStep: 1 | 2 | 3 = 1
 
   switch (status) {
+    case StatusBooking.selectAnimal:
+      currentDisplay = (
+        <SelectAnimal
+          handleChangeAnimal={handleChangeAnimal}
+          filteredAnimalTypeId={filterTreatAnimaltypes}
+        />
+      )
+      submitButton = (
+        <div className="select-animal-actions">
+          <button
+            id="selectAnimalButton"
+            className="booking-confirm-button"
+            onClick={handleSelectAnimal}
+            disabled={!selectedAnimal}
+          >
+            <i className="bi bi-arrow-right-circle"></i>
+            Weiter zur Leistungsauswahl
+          </button>
+        </div>
+      )
+      currentStep = 1
+      break
+    case StatusBooking.login:
+      currentDisplay = (
+        <LoginForm
+          setStatusBookingProcess={setStatus}
+          appointment={appointment}
+        />
+      )
+      break
     case StatusBooking.selectAppointmentType:
       currentDisplay = (
         <SelectAppointmentType
@@ -280,49 +340,15 @@ function BookingComponent() {
         />
       )
       submitButton = null
-      currentStep = 1
+      currentStep = 2
       break
-    case StatusBooking.login:
-      currentDisplay = (
-        <LoginForm
-          setStatusBookingProcess={setStatus}
-          appointment={appointment}
-        />
-      )
-      break
-    case StatusBooking.selectAnimal:
+    default:
       currentDisplay = (
         <SelectAnimal
           handleChangeAnimal={handleChangeAnimal}
           filteredAnimalTypeId={filterTreatAnimaltypes}
         />
       )
-      submitButton = (
-        <div className="select-animal-actions">
-          <button
-            id="bookAppointment"
-            className="booking-confirm-button"
-            onClick={handleBookAppoinment}
-            disabled={!selectedAnimal}
-          >
-            <i className="bi bi-arrow-right-circle"></i>
-            Weiter zur Zusammenfassung
-          </button>
-        </div>
-      )
-      currentStep = 2
-      break
-    default:
-      currentDisplay = (
-        <SelectAppointmentType
-          practice={practice}
-          appointment={appointment}
-          handleSelectAppointmentType={handleSelectAppointmentType}
-          foundFilterServices={null}
-          notFoundFilterServices={null}
-        />
-      )
-
       submitButton = null
       currentStep = 1
   }
@@ -389,15 +415,13 @@ function BookingComponent() {
             </div>
           )}
 
-          {selectedAnimal && (
-            <div className="info-item">
-              <i className="bi bi-paw"></i>
-              <div className="info-content">
-                <div className="info-label">Tier</div>
-                <div className="info-value">{selectedAnimal.name}</div>
-              </div>
+          <div className="info-item">
+            <i className="bi bi-paw"></i>
+            <div className="info-content">
+              <div className="info-label">Tier</div>
+              <div className="info-value">{selectedAnimal ? selectedAnimal.name : '-'}</div>
             </div>
-          )}
+          </div>
         </div>
       </div>
     </div>

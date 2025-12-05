@@ -19,24 +19,33 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      background: var(--color-primary);
-      color: white;
-      border-radius: 50px;
-      padding: var(--spacing-sm) var(--spacing-lg);
+      background: white;
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-sm) var(--spacing-md);
       cursor: pointer;
-      transition: all 0.2s;
-      border: 2px solid var(--color-primary);
+      transition: all 0.3s ease;
       min-height: 48px;
 
-      &:hover {
-        background: var(--color-primary-dark);
-        border-color: var(--color-primary-dark);
+      &:hover:not(.disabled) {
+        transform: translateY(-4px);
+        border-color: var(--color-primary);
+        box-shadow: var(--shadow-md);
+        background: var(--color-primary-pale);
       }
 
       &.selected {
-        background: var(--color-primary-dark);
-        border-color: var(--color-primary-dark);
-        box-shadow: var(--shadow-md);
+        background: linear-gradient(
+          135deg,
+          var(--color-primary-pale),
+          var(--color-primary-lightest)
+        );
+        border-color: var(--color-primary);
+        box-shadow: var(--shadow-lg);
+
+        .animal-name {
+          color: var(--color-primary-dark);
+        }
       }
 
       .animal-name {
@@ -44,57 +53,63 @@
         font-weight: 600;
         flex: 1;
         text-align: left;
+        color: var(--color-text-dark);
+        transition: color 0.2s;
       }
 
       &.disabled {
-        color: rgb(0, 0, 0);
-        background: rgb(205, 205, 205);
-        border-color: rgb(205, 205, 205);
-        cursor: default;
+        background: $gray-100;
+        border-color: $gray-200;
+        cursor: not-allowed;
+        opacity: 0.6;
+
+        &:hover {
+          transform: none;
+          box-shadow: none;
+        }
+
+        .animal-name {
+          color: $gray-600;
+        }
       }
 
-      .edit-button {
-        background: rgba(255, 255, 255, 0.2);
-        border: none;
-        border-radius: 50%;
-        width: 32px;
-        height: 32px;
+      .action-buttons {
+        display: flex;
+        gap: var(--spacing-xs);
+        margin-left: var(--spacing-sm);
+      }
+
+      .edit-button,
+      .delete-button {
+        background: transparent;
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-sm);
+        width: 28px;
+        height: 28px;
         display: flex;
         align-items: center;
         justify-content: center;
-        color: white;
         cursor: pointer;
         transition: all 0.2s;
+        color: var(--color-text-muted);
+        flex-shrink: 0;
 
         &:hover {
-          background: rgba(255, 255, 255, 0.3);
+          background: var(--color-primary-pale);
+          border-color: var(--color-primary);
+          color: var(--color-primary);
         }
 
         i {
-          font-size: 0.85rem;
+          font-size: 0.75rem;
         }
       }
 
       .delete-button {
-        background: rgba(245, 5, 5);
-        border: none;
-        border-radius: 50%;
-        width: 32px;
-        height: 32px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: rgb(0, 0, 0);
-        cursor: pointer;
-        transition: all 0.2s;
-        margin-left: 10px;
-
         &:hover {
-          background: rgba(245, 5, 5, 0.5);
-        }
-
-        i {
-          font-size: 0.85rem;
+          background: #fef2f2;
+          border-color: $danger;
+          color: $danger;
         }
       }
     }
@@ -106,14 +121,30 @@
     color: var(--color-primary);
     background: white;
     font-weight: 600;
-    padding: var(--spacing-sm) var(--spacing-lg);
-    border-radius: 50px;
-    min-height: 48px;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--radius-lg);
     transition: all 0.2s;
+    min-height: 48px;
 
     &:hover {
       background: var(--color-primary-pale);
       border-color: var(--color-primary);
+    }
+  }
+}
+
+@media (max-width: 576px) {
+  .select-animal .animal-list .animal-item {
+    flex-direction: column;
+    align-items: flex-start;
+
+    .animal-name {
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .action-buttons {
+      width: 100%;
+      justify-content: flex-start;
     }
   }
 }
