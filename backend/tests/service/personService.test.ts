@@ -1,80 +1,82 @@
-// WICHTIG: Zuerst den singleton importieren, damit das Mocking funktioniert
-import { prismaMock } from "../../testConfig/mockConfig";
-// Danach die Types importieren
-import { persons, sexes } from "../../generated/prisma";
-// Dann den Service importieren
+import { prisma } from "../../testConfig/integrationConfig";
+import { sexes } from "../../generated/prisma";
 import { personService } from "../../src/service/personService";
-import { includes } from "zod/mini";
 
 describe("personService", () => {
-  // Test-Datenvorbereitung
-  const mockPerson: persons = {
-    id: 1,
+  let addressId: number;
+
+  beforeEach(async () => {
+    const address = await prisma.addresses.create({
+      data: {
+        street: "Teststraße 1",
+        citycode: "12345",
+        city: "Berlin",
+        country: "Germany",
+        longitude: 0.0,
+        latitude: 0.0,
+      },
+    });
+    addressId = address.id;
+  });
+
+  const getPersonData = () => ({
     firstname: "Max",
     lastname: "Mustermann",
     sex: sexes.male,
     dateofbirth: new Date("1990-05-15"),
-    fk_address: 1,
+    fk_address: addressId,
     phone: "015712345678",
-    email: "max.mustermann@example.com",
-    password: "hashedpassword123",
-  };
+    email: `max.mustermann.${Date.now()}@example.com`,
+    password: "plainpassword123",
+  });
 
   describe("create", () => {
     it("sollte eine neue Person erstellen", async () => {
-      prismaMock.persons.create.mockResolvedValue(mockPerson);
+      const result = await personService.create(getPersonData());
 
-      const result = await personService.create(mockPerson);
+      expect(result.firstname).toBe("Max");
+      expect(result.fk_address).toBe(addressId);
+      expect(result.password).not.toBe("plainpassword123"); // Should be hashed
 
-      expect(result).toEqual(mockPerson);
-      expect(prismaMock.persons.create).toHaveBeenCalledWith({
-        data: mockPerson,
-      });
-      expect(prismaMock.persons.create).toHaveBeenCalledTimes(1);
+      const dbPerson = await prisma.persons.findUnique({ where: { id: result.id } });
+      expect(dbPerson).not.toBeNull();
+      expect(dbPerson?.firstname).toBe("Max");
     });
 
     it("sollte einen Fehler werfen, wenn die Erstellung fehlschlägt", async () => {
-      const error = new Error("Database error");
-      prismaMock.persons.create.mockRejectedValue(error);
+      const invalidData = { ...getPersonData(), email: null } as any;
 
-      await expect(personService.create(mockPerson)).rejects.toThrow("Database error");
+      await expect(personService.create(invalidData)).rejects.toThrow();
     });
   });
 
   describe("getById", () => {
     it("sollte eine Person anhand der ID finden", async () => {
-      prismaMock.persons.findUnique.mockResolvedValue(mockPerson);
+      const created = await prisma.persons.create({ data: getPersonData() });
 
-      const result = await personService.getById(1);
+      const result = await personService.getById(created.id);
 
-      expect(result).toEqual(mockPerson);
-      expect(prismaMock.persons.findUnique).toHaveBeenCalledWith({
-        where: { id: 1 },
-      });
+      expect(result.id).toBe(created.id);
+      expect(result.firstname).toBe("Max");
     });
 
     it("sollte einen Fehler werfen, wenn die Person nicht gefunden wird", async () => {
-      prismaMock.persons.findUnique.mockResolvedValue(null);
-
-      await expect(personService.getById(999)).rejects.toThrow("Person not found with id: 999");
+      await expect(personService.getById(999999)).rejects.toThrow("Person not found with id: 999999");
     });
   });
 
   describe("getByEmail", () => {
     it("sollte eine Person anhand der E-Mail finden", async () => {
-      prismaMock.persons.findUnique.mockResolvedValue(mockPerson);
+      const personData = getPersonData();
+      await prisma.persons.create({ data: personData });
 
-      const result = await personService.getByEmail("max.mustermann@example.com");
+      const result = await personService.getByEmail(personData.email);
 
-      expect(result).toEqual(mockPerson);
-      expect(prismaMock.persons.findUnique).toHaveBeenCalledWith({
-        where: { email: "max.mustermann@example.com" },
-      });
+      expect(result.email).toBe(personData.email);
+      expect(result.firstname).toBe("Max");
     });
 
     it("sollte einen Fehler werfen, wenn keine Person mit der E-Mail gefunden wird", async () => {
-      prismaMock.persons.findUnique.mockResolvedValue(null);
-
       await expect(personService.getByEmail("nichtexistent@example.com")).rejects.toThrow(
         "Person not found with the email nichtexistent@example.com"
       );
@@ -83,43 +85,25 @@ describe("personService", () => {
 
   describe("getAll", () => {
     it("sollte alle Personen finden", async () => {
-      const mockPersons = [
-        mockPerson,
-        {
-          id: 2,
+      await prisma.persons.create({ data: getPersonData() });
+      await prisma.persons.create({
+        data: {
+          ...getPersonData(),
           firstname: "Anna",
           lastname: "Schmidt",
           sex: sexes.female,
-          dateofbirth: new Date("1985-08-20"),
-          fk_address: 2,
-          phone: "015798765432",
-          email: "anna.schmidt@example.com",
-          password: "hashedpassword456",
+          email: `anna.schmidt.${Date.now()}@example.com`,
         },
-        {
-          id: 3,
-          firstname: "Thomas",
-          lastname: "Müller",
-          sex: sexes.male,
-          dateofbirth: new Date("1978-03-10"),
-          fk_address: 3,
-          phone: "015755555555",
-          email: "thomas.mueller@example.com",
-          password: "hashedpassword789",
-        },
-      ];
-
-      prismaMock.persons.findMany.mockResolvedValue(mockPersons);
+      });
 
       const result = await personService.getAll();
 
-      expect(result).toEqual(mockPersons);
-      expect(result.length).toBe(3);
+      expect(result.length).toBeGreaterThanOrEqual(2);
+      expect(result.some(p => p.firstname === "Max")).toBe(true);
+      expect(result.some(p => p.firstname === "Anna")).toBe(true);
     });
 
     it("sollte ein leeres Array zurückgeben, wenn keine Personen existieren", async () => {
-      prismaMock.persons.findMany.mockResolvedValue([]);
-
       const result = await personService.getAll();
 
       expect(result).toEqual([]);
@@ -129,55 +113,47 @@ describe("personService", () => {
 
   describe("update", () => {
     it("sollte eine Person aktualisieren", async () => {
-      const updatedPerson = {
-        ...mockPerson,
+      const created = await prisma.persons.create({ data: getPersonData() });
+      const updatedData = {
+        ...created,
         firstname: "Maximilian",
         phone: "015799999999",
-        email: "maximilian.mustermann@example.com",
       };
 
-      prismaMock.persons.update.mockResolvedValue(updatedPerson);
+      const result = await personService.update(updatedData);
 
-      const result = await personService.update(updatedPerson);
+      expect(result.firstname).toBe("Maximilian");
+      expect(result.phone).toBe("015799999999");
 
-      expect(result).toEqual(updatedPerson);
-      expect(prismaMock.persons.update).toHaveBeenCalledWith({
-        where: { id: updatedPerson.id },
-        data: updatedPerson,
-      });
+      const dbPerson = await prisma.persons.findUnique({ where: { id: created.id } });
+      expect(dbPerson?.firstname).toBe("Maximilian");
     });
 
     it("sollte einen Fehler werfen, wenn keine ID für das Update angegeben wird", async () => {
-      const personWithoutId = { ...mockPerson, id: undefined } as any;
+      const personWithoutId = { ...getPersonData(), id: undefined } as any;
 
       await expect(personService.update(personWithoutId)).rejects.toThrow("ID is required for update");
     });
 
     it("sollte einen Fehler werfen, wenn die zu aktualisierende Person nicht existiert", async () => {
-      const error = new Error("Record to update not found");
-      prismaMock.persons.update.mockRejectedValue(error);
+      const nonExistentPerson = { ...getPersonData(), id: 999999 };
 
-      await expect(personService.update({ ...mockPerson, id: 999 })).rejects.toThrow("Record to update not found");
+      await expect(personService.update(nonExistentPerson)).rejects.toThrow();
     });
   });
 
   describe("delete", () => {
     it("sollte eine Person löschen", async () => {
-      prismaMock.persons.delete.mockResolvedValue(mockPerson);
+      const created = await prisma.persons.create({ data: getPersonData() });
 
-      await personService.delete(1);
+      await personService.delete(created.id);
 
-      expect(prismaMock.persons.delete).toHaveBeenCalledWith({
-        where: { id: 1 },
-      });
-      expect(prismaMock.persons.delete).toHaveBeenCalledTimes(1);
+      const dbPerson = await prisma.persons.findUnique({ where: { id: created.id } });
+      expect(dbPerson).toBeNull();
     });
 
     it("sollte einen Fehler werfen, wenn die zu löschende Person nicht existiert", async () => {
-      const error = new Error("Record to delete does not exist");
-      prismaMock.persons.delete.mockRejectedValue(error);
-
-      await expect(personService.delete(999)).rejects.toThrow("Record to delete does not exist");
+      await expect(personService.delete(999999)).rejects.toThrow();
     });
   });
 });
