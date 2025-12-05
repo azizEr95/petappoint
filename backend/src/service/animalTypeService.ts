@@ -36,4 +36,17 @@ export const animalTypeService = {
   async delete(id: number): Promise<void> {
     await prisma.animalType.delete({ where: { id } });
   },
+
+  async getTreatableTypesForVeterinaryId(veterinaryId: number): Promise<AnimalTypeType[]> {
+    const found = await prisma.veterinaryCanTreatAnimalType.findMany({
+      include: {
+        animalType: true
+      },
+      where: {
+        veterinaryId: veterinaryId
+      }
+    });
+
+    return found.map(x => x.animalType);
+  }
 };

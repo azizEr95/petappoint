@@ -10,6 +10,7 @@ import { serviceRouter } from './routes/services';
 import { loginRouter } from './routes/login';
 import { routerExceptionHandler } from './exceptions/routerExceptionMiddleware';
 import { emailverificationRouter } from './routes/emailverification';
+import { veterinariansRouter } from './routes/veterinary';
 
 export const app = express();
 
@@ -19,6 +20,7 @@ app.use(cookieParser());
 app.use(express.json());
 
 app.use("/api/login", loginRouter);
+app.use("/api/veterinarians", veterinariansRouter);
 app.use("/api/veterinary-practice", veterinaryPracticeRouter);
 app.use("/api/appointments", appointmentRouter);
 app.use("/api/persons", personsRouter);
