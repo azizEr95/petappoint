@@ -1,87 +1,61 @@
-// WICHTIG: Zuerst den singleton importieren, damit das Mocking funktioniert
-import { prismaMock } from "../../testConfig/mockConfig";
-// Danach die Types importieren
-import { medications } from "../../generated/prisma";
-// Dann den Service importieren
+import { prisma } from "../../testConfig/integrationConfig";
 import { medicationService } from "../../src/service/medicationsService";
 
 describe("medicationService", () => {
-  // Test-Datenvorbereitung
-  const mockMedication: medications = {
-    id: 1,
+  const medicationData = {
     name: "Amoxicillin",
   };
 
   describe("create", () => {
     it("sollte ein neues Medikament erstellen", async () => {
-      prismaMock.medications.create.mockResolvedValue(mockMedication);
+      const result = await medicationService.create(medicationData);
 
-      const result = await medicationService.create(mockMedication);
+      expect(result.name).toBe(medicationData.name);
 
-      expect(result).toEqual(mockMedication);
-      expect(prismaMock.medications.create).toHaveBeenCalledWith({
-        data: mockMedication,
-      });
-      expect(prismaMock.medications.create).toHaveBeenCalledTimes(1);
+      const dbMedication = await prisma.medications.findUnique({ where: { id: result.id } });
+      expect(dbMedication).not.toBeNull();
+      expect(dbMedication?.name).toBe(medicationData.name);
     });
 
     it("sollte einen Fehler werfen, wenn die Erstellung fehlschlägt", async () => {
-      const error = new Error("Database error");
-      prismaMock.medications.create.mockRejectedValue(error);
+      const invalidData = { name: null } as any;
 
-      await expect(medicationService.create(mockMedication)).rejects.toThrow("Database error");
+      await expect(medicationService.create(invalidData)).rejects.toThrow();
     });
   });
 
   describe("getById", () => {
     it("sollte ein Medikament anhand der ID finden", async () => {
-      prismaMock.medications.findUnique.mockResolvedValue(mockMedication);
+      const created = await prisma.medications.create({ data: medicationData });
 
-      const result = await medicationService.getById(1);
+      const result = await medicationService.getById(created.id);
 
-      expect(result).toEqual(mockMedication);
-      expect(prismaMock.medications.findUnique).toHaveBeenCalledWith({
-        where: { id: 1 },
-      });
+      expect(result.id).toBe(created.id);
+      expect(result.name).toBe(medicationData.name);
     });
 
     it("sollte einen Fehler werfen, wenn das Medikament nicht gefunden wird", async () => {
-      prismaMock.medications.findUnique.mockResolvedValue(null);
-
-      await expect(medicationService.getById(999)).rejects.toThrow("Medication with id 999 does not exist");
+      await expect(medicationService.getById(999999)).rejects.toThrow("Medication with id 999999 does not exist");
     });
   });
 
   describe("getAll", () => {
     it("sollte alle Medikamente finden", async () => {
-      const mockMedications = [
-        mockMedication,
-        {
-          id: 2,
-          name: "Metacam",
-        },
-        {
-          id: 3,
-          name: "Frontline",
-        },
-        {
-          id: 4,
-          name: "Prednison",
-        },
-      ];
-
-      prismaMock.medications.findMany.mockResolvedValue(mockMedications);
+      await prisma.medications.create({ data: medicationData });
+      await prisma.medications.create({ data: { name: "Metacam" } });
+      await prisma.medications.create({ data: { name: "Frontline" } });
+      await prisma.medications.create({ data: { name: "Prednison" } });
 
       const result = await medicationService.getAll();
 
-      expect(result).toEqual(mockMedications);
-      expect(prismaMock.medications.findMany).toHaveBeenCalledWith();
       expect(result.length).toBe(4);
+      expect(result.some(m => m.name === "Amoxicillin")).toBe(true);
+      expect(result.some(m => m.name === "Metacam")).toBe(true);
+      expect(result.some(m => m.name === "Frontline")).toBe(true);
+      expect(result.some(m => m.name === "Prednison")).toBe(true);
     });
 
     it("sollte ein leeres Array zurückgeben, wenn keine Medikamente existieren", async () => {
-      prismaMock.medications.findMany.mockResolvedValue([]);
-
       const result = await medicationService.getAll();
 
       expect(result).toEqual([]);
@@ -91,55 +65,45 @@ describe("medicationService", () => {
 
   describe("update", () => {
     it("sollte ein Medikament aktualisieren", async () => {
-      const updatedMedication = {
-        ...mockMedication,
+      const created = await prisma.medications.create({ data: medicationData });
+      const updatedData = {
+        ...created,
         name: "Amoxicillin 500mg",
       };
 
-      prismaMock.medications.update.mockResolvedValue(updatedMedication);
+      const result = await medicationService.update(updatedData);
 
-      const result = await medicationService.update(updatedMedication);
+      expect(result.name).toBe("Amoxicillin 500mg");
 
-      expect(result).toEqual(updatedMedication);
-      expect(prismaMock.medications.update).toHaveBeenCalledWith({
-        where: { id: updatedMedication.id },
-        data: updatedMedication,
-      });
+      const dbMedication = await prisma.medications.findUnique({ where: { id: created.id } });
+      expect(dbMedication?.name).toBe("Amoxicillin 500mg");
     });
 
     it("sollte einen Fehler werfen, wenn keine ID für das Update angegeben wird", async () => {
-      const medicationWithoutId = { ...mockMedication, id: undefined } as any;
+      const medicationWithoutId = { ...medicationData, id: undefined } as any;
 
       await expect(medicationService.update(medicationWithoutId)).rejects.toThrow("ID is required for update");
     });
 
     it("sollte einen Fehler werfen, wenn das zu aktualisierende Medikament nicht existiert", async () => {
-      const error = new Error("Record to update not found");
-      prismaMock.medications.update.mockRejectedValue(error);
+      const nonExistentMedication = { ...medicationData, id: 999999 };
 
-      await expect(medicationService.update({ ...mockMedication, id: 999 })).rejects.toThrow(
-        "Record to update not found"
-      );
+      await expect(medicationService.update(nonExistentMedication)).rejects.toThrow();
     });
   });
 
   describe("delete", () => {
     it("sollte ein Medikament löschen", async () => {
-      prismaMock.medications.delete.mockResolvedValue(mockMedication);
+      const created = await prisma.medications.create({ data: medicationData });
 
-      await medicationService.delete(1);
+      await medicationService.delete(created.id);
 
-      expect(prismaMock.medications.delete).toHaveBeenCalledWith({
-        where: { id: 1 },
-      });
-      expect(prismaMock.medications.delete).toHaveBeenCalledTimes(1);
+      const dbMedication = await prisma.medications.findUnique({ where: { id: created.id } });
+      expect(dbMedication).toBeNull();
     });
 
     it("sollte einen Fehler werfen, wenn das zu löschende Medikament nicht existiert", async () => {
-      const error = new Error("Record to delete does not exist");
-      prismaMock.medications.delete.mockRejectedValue(error);
-
-      await expect(medicationService.delete(999)).rejects.toThrow("Record to delete does not exist");
+      await expect(medicationService.delete(999999)).rejects.toThrow();
     });
   });
 });

@@ -1,82 +1,59 @@
-// WICHTIG: Zuerst den singleton importieren, damit das Mocking funktioniert
-import { prismaMock } from "../../testConfig/mockConfig";
-// Danach die Types importieren
-import { vaccinations } from "../../generated/prisma";
-// Dann den Service importieren
+import { prisma } from "../../testConfig/integrationConfig";
 import { vaccinationService } from "../../src/service/vaccinationsService";
 
 describe("vaccinationService", () => {
-  const mockVaccination: vaccinations = {
-    id: 1,
+  const vaccinationData = {
     name: "Tollwut",
   };
 
   describe("create", () => {
     it("sollte eine neue Impfung erstellen", async () => {
-      prismaMock.vaccinations.create.mockResolvedValue(mockVaccination);
+      const result = await vaccinationService.create(vaccinationData);
 
-      const result = await vaccinationService.create(mockVaccination);
+      expect(result.name).toBe(vaccinationData.name);
 
-      expect(result).toEqual(mockVaccination);
-      expect(prismaMock.vaccinations.create).toHaveBeenCalledWith({
-        data: mockVaccination,
-      });
-      expect(prismaMock.vaccinations.create).toHaveBeenCalledTimes(1);
+      const dbVaccination = await prisma.vaccinations.findUnique({ where: { id: result.id } });
+      expect(dbVaccination).not.toBeNull();
+      expect(dbVaccination?.name).toBe(vaccinationData.name);
     });
 
     it("sollte einen Fehler werfen, wenn die Erstellung fehlschlägt", async () => {
-      const error = new Error("Database error");
-      prismaMock.vaccinations.create.mockRejectedValue(error);
+      const invalidData = { name: null } as any;
 
-      await expect(vaccinationService.create(mockVaccination)).rejects.toThrow("Database error");
+      await expect(vaccinationService.create(invalidData)).rejects.toThrow();
     });
   });
 
   describe("getById", () => {
     it("sollte eine Impfung anhand der ID finden", async () => {
-      prismaMock.vaccinations.findUnique.mockResolvedValue(mockVaccination);
+      const created = await prisma.vaccinations.create({ data: vaccinationData });
 
-      const result = await vaccinationService.getById(1);
+      const result = await vaccinationService.getById(created.id);
 
-      expect(result).toEqual(mockVaccination);
-      expect(prismaMock.vaccinations.findUnique).toHaveBeenCalledWith({
-        where: { id: 1 },
-      });
+      expect(result.id).toBe(created.id);
+      expect(result.name).toBe(vaccinationData.name);
     });
 
     it("sollte einen Fehler werfen, wenn die Impfung nicht gefunden wird", async () => {
-      prismaMock.vaccinations.findUnique.mockResolvedValue(null);
-
-      await expect(vaccinationService.getById(999)).rejects.toThrow("Vaccination does not exist with id 999");
+      await expect(vaccinationService.getById(999999)).rejects.toThrow("Vaccination does not exist with id 999999");
     });
   });
 
   describe("getAll", () => {
     it("sollte alle Impfungen finden", async () => {
-      const mockVaccinations = [
-        mockVaccination,
-        {
-          id: 2,
-          name: "Staupe",
-        },
-        {
-          id: 3,
-          name: "Parvovirose",
-        },
-      ];
-
-      prismaMock.vaccinations.findMany.mockResolvedValue(mockVaccinations);
+      await prisma.vaccinations.create({ data: vaccinationData });
+      await prisma.vaccinations.create({ data: { name: "Staupe" } });
+      await prisma.vaccinations.create({ data: { name: "Parvovirose" } });
 
       const result = await vaccinationService.getAll();
 
-      expect(result).toEqual(mockVaccinations);
-      expect(prismaMock.vaccinations.findMany).toHaveBeenCalledWith();
       expect(result.length).toBe(3);
+      expect(result.some(v => v.name === "Tollwut")).toBe(true);
+      expect(result.some(v => v.name === "Staupe")).toBe(true);
+      expect(result.some(v => v.name === "Parvovirose")).toBe(true);
     });
 
     it("sollte ein leeres Array zurückgeben, wenn keine Impfungen existieren", async () => {
-      prismaMock.vaccinations.findMany.mockResolvedValue([]);
-
       const result = await vaccinationService.getAll();
 
       expect(result).toEqual([]);
@@ -86,55 +63,45 @@ describe("vaccinationService", () => {
 
   describe("update", () => {
     it("sollte eine Impfung aktualisieren", async () => {
-      const updatedVaccination = {
-        ...mockVaccination,
+      const created = await prisma.vaccinations.create({ data: vaccinationData });
+      const updatedData = {
+        ...created,
         name: "Tollwut - Neu",
       };
 
-      prismaMock.vaccinations.update.mockResolvedValue(updatedVaccination);
+      const result = await vaccinationService.update(updatedData);
 
-      const result = await vaccinationService.update(updatedVaccination);
+      expect(result.name).toBe("Tollwut - Neu");
 
-      expect(result).toEqual(updatedVaccination);
-      expect(prismaMock.vaccinations.update).toHaveBeenCalledWith({
-        where: { id: updatedVaccination.id },
-        data: updatedVaccination,
-      });
+      const dbVaccination = await prisma.vaccinations.findUnique({ where: { id: created.id } });
+      expect(dbVaccination?.name).toBe("Tollwut - Neu");
     });
 
     it("sollte einen Fehler werfen, wenn keine ID für das Update angegeben wird", async () => {
-      const vaccinationWithoutId = { ...mockVaccination, id: undefined } as any;
+      const vaccinationWithoutId = { ...vaccinationData, id: undefined } as any;
 
       await expect(vaccinationService.update(vaccinationWithoutId)).rejects.toThrow("ID is required for update");
     });
 
     it("sollte einen Fehler werfen, wenn die zu aktualisierende Impfung nicht existiert", async () => {
-      const error = new Error("Record to update not found");
-      prismaMock.vaccinations.update.mockRejectedValue(error);
+      const nonExistentVaccination = { ...vaccinationData, id: 999999 };
 
-      await expect(vaccinationService.update({ ...mockVaccination, id: 999 })).rejects.toThrow(
-        "Record to update not found"
-      );
+      await expect(vaccinationService.update(nonExistentVaccination)).rejects.toThrow();
     });
   });
 
   describe("delete", () => {
     it("sollte eine Impfung löschen", async () => {
-      prismaMock.vaccinations.delete.mockResolvedValue(mockVaccination);
+      const created = await prisma.vaccinations.create({ data: vaccinationData });
 
-      await vaccinationService.delete(1);
+      await vaccinationService.delete(created.id);
 
-      expect(prismaMock.vaccinations.delete).toHaveBeenCalledWith({
-        where: { id: 1 },
-      });
-      expect(prismaMock.vaccinations.delete).toHaveBeenCalledTimes(1);
+      const dbVaccination = await prisma.vaccinations.findUnique({ where: { id: created.id } });
+      expect(dbVaccination).toBeNull();
     });
 
     it("sollte einen Fehler werfen, wenn die zu löschende Impfung nicht existiert", async () => {
-      const error = new Error("Record to delete does not exist");
-      prismaMock.vaccinations.delete.mockRejectedValue(error);
-
-      await expect(vaccinationService.delete(999)).rejects.toThrow("Record to delete does not exist");
+      await expect(vaccinationService.delete(999999)).rejects.toThrow();
     });
   });
 });
