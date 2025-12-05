@@ -30,6 +30,7 @@ function PersonRegistration() {
   const [land, setLand] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
   const [phone, setPhone] = useState('')
   const [dateOfBirth, setDateOfBirth] = useState('')
   const [sex, setSex] = useState<sexesType | undefined>(undefined)
@@ -170,6 +171,7 @@ function PersonRegistration() {
         }
       }
     }
+    
     if (name === 'password') {
       if (!value.trim()) {
         error = 'Passwort ist erforderlich'
@@ -183,6 +185,15 @@ function PersonRegistration() {
         error = 'Passwort muss mindestens ein Sonderzeichen enthalten'
       }
     }
+    
+    if (name === 'confirmPassword') {
+      if (!value.trim()) {
+        error = 'Passwort-Wiederholung ist erforderlich'
+      } else if (value !== password) {
+        error = 'Passwörter stimmen nicht überein'
+      }
+    }
+    
     if (name === 'phone') {
       if (!value.trim()) {
         error = 'Telefon ist erforderlich'
@@ -195,6 +206,7 @@ function PersonRegistration() {
         }
       }
     }
+    
     if (name === 'dateOfBirth') {
       if (!value.trim()) {
         error = 'Geburtsdatum ist erforderlich'
@@ -213,6 +225,7 @@ function PersonRegistration() {
         }
       }
     }
+    
     if (name === 'sex') {
       if (!value) error = 'Geschlecht ist erforderlich'
     }
@@ -314,6 +327,7 @@ function PersonRegistration() {
         newErrors.email = 'E-Mail enthält ungültige Zeichen'
       }
     }
+    
     if (!password.trim()) {
       newErrors.password = 'Passwort ist erforderlich'
     } else if (password.length < 6) {
@@ -327,6 +341,13 @@ function PersonRegistration() {
       newErrors.password =
         'Passwort muss mindestens ein Sonderzeichen enthalten'
     }
+    
+    if (!confirmPassword.trim()) {
+      newErrors.confirmPassword = 'Passwort-Wiederholung ist erforderlich'
+    } else if (confirmPassword !== password) {
+      newErrors.confirmPassword = 'Passwörter stimmen nicht überein'
+    }
+    
     if (!phone.trim()) {
       newErrors.phone = 'Telefon ist erforderlich'
     } else if (!/^[+]?[0-9]+$/.test(phone)) {
@@ -338,6 +359,7 @@ function PersonRegistration() {
         newErrors.phone = 'Telefon muss mindestens aus 6 Zahlen bestehen'
       }
     }
+    
     if (!dateOfBirth.trim()) {
       newErrors.dateOfBirth = 'Geburtsdatum ist erforderlich'
     } else {
@@ -353,6 +375,7 @@ function PersonRegistration() {
         }
       }
     }
+    
     if (!sex) newErrors.sex = 'Geschlecht ist erforderlich'
 
     setErrors(newErrors)
@@ -397,6 +420,17 @@ function PersonRegistration() {
         break
       case 'password':
         setPassword(value)
+        // Check confirmPassword when password changes
+        if (confirmPassword && value !== confirmPassword) {
+          setErrors({ ...errors, confirmPassword: 'Passwörter stimmen nicht überein' })
+        } else if (confirmPassword && value === confirmPassword) {
+          const newErrors = { ...errors }
+          delete newErrors.confirmPassword
+          setErrors(newErrors)
+        }
+        break
+      case 'confirmPassword':
+        setConfirmPassword(value)
         break
       case 'phone':
         setPhone(value)
@@ -414,7 +448,6 @@ function PersonRegistration() {
         } else if (value === 'not_applicable') {
           setSex(value)
         }
-
         break
       default:
         console.log(
@@ -459,6 +492,7 @@ function PersonRegistration() {
     }
     mutateRegistration(person)
   }
+  
   return (
     <div className="auth-page">
       <div className="auth-container">
@@ -610,6 +644,25 @@ function PersonRegistration() {
                 />
                 <Form.Control.Feedback type="invalid">
                   {errors.password}
+                </Form.Control.Feedback>
+              </FormGroup>
+
+              <FormGroup className="form-group">
+                <Form.Label htmlFor="confirmPassword" className="form-label">
+                  Passwort wiederholen *
+                </Form.Label>
+                <Form.Control
+                  id="CreatePersonConfirmPassword"
+                  type="password"
+                  placeholder="••••••••"
+                  name="confirmPassword"
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  value={confirmPassword}
+                  isInvalid={!!errors.confirmPassword}
+                />
+                <Form.Control.Feedback type="invalid">
+                  {errors.confirmPassword}
                 </Form.Control.Feedback>
               </FormGroup>
             </div>
