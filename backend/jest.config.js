@@ -15,6 +15,7 @@ module.exports = {
 
   setupFilesAfterEnv: [
     '<rootDir>/testConfig/setupFile.ts',
-    '<rootDir>/testConfig/mockConfig.ts'
+    '<rootDir>/testConfig/integrationConfig.ts'
   ],
+  testTimeout: 30000,
 }
