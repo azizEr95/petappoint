@@ -1,4 +1,4 @@
-import { LoginType, PersonsAuthenticatedType } from "vetlib-shared/schemas/ZodSchemas";
+import { LoginType, PersonsAuthenticatedType } from "vetilib-shared/schemas/ZodSchemas";
 import { login } from "./authenticationService";
 import { JsonWebTokenError, JwtPayload, sign, verify } from "jsonwebtoken";
 

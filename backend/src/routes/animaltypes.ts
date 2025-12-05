@@ -1,6 +1,6 @@
 import express from "express";
 import { animalTypeService } from "../service/animalTypeService";
-import { AnimalTypeType, PostgresIdSchema } from "vetlib-shared/schemas/ZodSchemas";
+import { AnimalTypeType, PostgresIdSchema } from "vetilib-shared/schemas/ZodSchemas";
 import { animalRaceService } from "../service/animalRaceService";
 import { optionalAuthentication } from "./authentication";
 

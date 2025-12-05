@@ -1,6 +1,6 @@
 import express from "express";
 import { appointmentService } from "../service/appointmentService";
-import { AppointmentsType, BookAppointmentSchema, PostgresIdSchema } from "vetlib-shared/schemas/ZodSchemas";
+import { AppointmentsType, BookAppointmentSchema, PostgresIdSchema } from "vetilib-shared/schemas/ZodSchemas";
 import { optionalAuthentication, requiresAuthentication } from "./authentication";
 import { AuthorizationError } from "../exceptions/errors/AuthorizationError";
 import { animalService } from "../service/animalService";

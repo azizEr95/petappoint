@@ -1,7 +1,7 @@
 import request from "supertest";
 import { prismaMock } from "../../testConfig/mockConfig";
 import { app } from "../../src/app";
-import { LoginValidatorType } from "vetlib-shared/schemas/ZodSchemas";
+import { LoginValidatorType } from "vetilib-shared/schemas/ZodSchemas";
 import { hashPassword } from "../../src/utils/password";
 
 let createdAdresse: {

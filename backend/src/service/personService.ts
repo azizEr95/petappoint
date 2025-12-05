@@ -6,7 +6,7 @@ import {
   PersonsUpdateSchema,
   PersonsUpdateType,
   PostgresIdSchema,
-} from "vetlib-shared/schemas/ZodSchemas";
+} from "vetilib-shared/schemas/ZodSchemas";
 import { addressService } from "./addressService";
 import z from "zod";
 import { ResourceNotFoundError } from "../exceptions/errors/ResourceNotFoundError";

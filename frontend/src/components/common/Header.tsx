@@ -23,7 +23,7 @@ export default function Header() {
         <nav className="nav-clean">
           <Link to="/" className="logo-clean">
             <span className="logo-icon">🐾</span>
-            <span className="logo-text">vetlib</span>
+            <span className="logo-text">VetiLib</span>
           </Link>
 
           <div className="nav-links-clean">

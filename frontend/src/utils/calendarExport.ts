@@ -17,7 +17,7 @@ export const exportToCalendar = (
   const icsContent = [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
-    'PRODID:-//Vetlib//Appointment//DE',
+    'PRODID:-//vetilib//Appointment//DE',
     'CALSCALE:GREGORIAN',
     'METHOD:PUBLISH',
     'BEGIN:VEVENT',
@@ -26,7 +26,7 @@ export const exportToCalendar = (
     `SUMMARY:${escapeICSString(`Tierarzttermin bei ${practiceName}`)}`,
     `DESCRIPTION:${escapeICSString(serviceName ? `Service: ${serviceName}` : 'Tierarzttermin')}`,
     `LOCATION:${escapeICSString(practiceAddress)}`,
-    `UID:${appointment.id}@vetlib.app`,
+    `UID:${appointment.id}@vetilib.app`,
     `DTSTAMP:${formatICSDate(new Date())}`,
     'STATUS:CONFIRMED',
     'SEQUENCE:0',

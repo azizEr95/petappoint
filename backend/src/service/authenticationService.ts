@@ -1,6 +1,6 @@
 import { prisma } from "../singletonPC";
 import bcrypt from "bcrypt";
-import { PersonsAuthenticatedType } from "vetlib-shared/schemas/ZodSchemas";
+import { PersonsAuthenticatedType } from "vetilib-shared/schemas/ZodSchemas";
 /*
  * This Service acts as login layer
  */

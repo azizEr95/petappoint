@@ -1,5 +1,5 @@
 {
-  "name": "vetlib-db",
+  "name": "vetilib-db",
   "version": "1.0.0",
   "scripts": {
     "db": "docker compose down && docker compose up -d --build"

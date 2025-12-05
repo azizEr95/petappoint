@@ -9,7 +9,7 @@ export default function Footer() {
         <Row className="g-4">
           {/* Logo & Description */}
           <Col lg={3} md={6}>
-            <h4 className="fw-bold text-success mb-3">vetlib</h4>
+            <h4 className="fw-bold text-success mb-3">vetilib</h4>
             <p className="text-light small">
               Ihre moderne Plattform für einfache und schnelle
               Tierarzt-Terminbuchungen.
@@ -79,7 +79,7 @@ export default function Footer() {
             <ul className="footer-contact list-unstyled">
               <li>
                 <i className="bi bi-envelope me-2"></i>
-                <a href="mailto:info@vetlib.de">info@vetlib.de</a>
+                <a href="mailto:info@vetilib.de">info@vetilib.de</a>
               </li>
               <li>
                 <i className="bi bi-telephone me-2"></i>
@@ -131,7 +131,7 @@ export default function Footer() {
         <Row className="align-items-center">
           <Col md={6} className="text-center text-md-start mb-3 mb-md-0">
             <small className="text-light">
-              © {new Date().getFullYear()} Vetlib. Alle Rechte vorbehalten.
+              © {new Date().getFullYear()} vetilib. Alle Rechte vorbehalten.
             </small>
           </Col>
           <Col md={6} className="text-center text-md-end">

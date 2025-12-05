@@ -1,7 +1,7 @@
 import express from "express";
 import { JsonWebTokenError } from "jsonwebtoken";
 import { verifyJWT, verifyPasswordAndCreateJWT } from "../service/jwtService";
-import { loginValidator } from "vetlib-shared/schemas/ZodSchemas";
+import { loginValidator } from "vetilib-shared/schemas/ZodSchemas";
 import { optionalAuthentication } from "./authentication";
 //import { optionalAuthentication } from "./authentication";
 
