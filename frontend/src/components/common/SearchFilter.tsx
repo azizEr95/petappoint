@@ -42,13 +42,6 @@ export function SearchFilter({
   const location = useLocation()
   const stateAnimal = location.state.filterAnimalId
   const [showFilterDialog, setShowFilterDialog] = useState<boolean>(false)
-  const [filterServiceTypeLocal, setFilterServiceTypeLocal] = useState<
-    Array<number>
-  >(
-    searchFilter !== null && searchFilter.serviceTypeIds !== undefined
-      ? searchFilter.serviceTypeIds
-      : [],
-  )
   const [filterAnimalTypeLocal, setFilterAnimalTypeLocal] = useState<
     Array<number>
   >(
@@ -115,10 +108,11 @@ export function SearchFilter({
     }
   }, [stateAnimal, isSuccessAnimals])
 
-  useEffect(() => {
-    if (isSuccessAllAvailableServices && filterServiceTypeLocal.length > 0) {
+  useEffect(() => { // init selected servicetypes from before filter
+    const searchService = searchFilter?.serviceTypeIds;
+    if (isSuccessAllAvailableServices && searchService !== undefined && searchService.length > 0) {
       const selectedServices = dataAllAvailableServices.filter((x) => {
-        const serv = filterServiceTypeLocal.find((y) => {
+        const serv = searchService.find((y) => {
           return x.id === y
         })
         if (serv !== undefined) {
@@ -138,15 +132,6 @@ export function SearchFilter({
     dataAllAvailableServices,
     filterAnimalTypeLocal,
   ])
-
-  useEffect(() => {
-    if (selectedServiceType.length > setFilterServiceTypeLocal.length) {
-      const updatedFilterServiceTypeLocal = selectedServiceType.map(
-        (service) => service.value.id,
-      )
-      setFilterServiceTypeLocal(updatedFilterServiceTypeLocal)
-    }
-  }, [selectedServiceType])
 
   useEffect(() => {
     const animalsByCorrectType = dataAnimals?.filter((x) => {
@@ -171,32 +156,9 @@ export function SearchFilter({
     }
   }, [filterAnimalTypeLocal])
 
-  const handleChangeServiceType = (service: ServiceType) => {
-    const findServiceType = filterServiceTypeLocal.find((servId) => {
-      return service.id === servId
-    })
-
-    if (findServiceType !== undefined) {
-      // delete these service from array
-      let selectedServices = filterServiceTypeLocal.slice()
-      selectedServices = selectedServices.filter(
-        (servId) => servId !== service.id,
-      )
-      setFilterServiceTypeLocal(selectedServices)
-    } else {
-      // add these service to array
-      const selectedServices = filterServiceTypeLocal.slice()
-      selectedServices.push(service.id)
-      setFilterServiceTypeLocal(selectedServices)
-    }
-  }
-
   // for multiselect from servicetypes
   const serviceTypeOptions = useMemo(() => {
-    if (
-      !isSuccessAllAvailableServices ||
-      dataAllAvailableServices.length === 0
-    ) {
+    if (!isSuccessAllAvailableServices || dataAllAvailableServices.length === 0) {
       return []
     }
     let options = dataAllAvailableServices
@@ -212,11 +174,7 @@ export function SearchFilter({
         return true
       }
     })
-    if (
-      selectedServiceType.length + options.length !==
-        dataAllAvailableServices.length ||
-      selectedServiceType.length !== filterServiceTypeLocal.length
-    ) {
+    if (selectedServiceType.length + options.length !== dataAllAvailableServices.length){// || selectedServiceType.length !== filterServiceTypeLocal.length) {
       // not all options are currently shown
       dataAllAvailableServices.map((service) => {
         const findOptions = selectedServiceType.find((selService) => {
@@ -226,7 +184,6 @@ export function SearchFilter({
         })
         if (findOptions !== undefined) {
           options.push(service)
-          handleChangeServiceType(service)
         }
       })
     }
@@ -248,15 +205,17 @@ export function SearchFilter({
     if (!landingPage) {
       handleSubmitFilterDialog()
     } else {
+      const filteredServices = selectedServiceType.map((service) => service.value.id)
       setFilterAnimal(filterAnimalLocal)
-      setFilterServiceType(filterServiceTypeLocal)
+      setFilterServiceType(filteredServices)
       setFilterAnimalType(filterAnimalTypeLocal)
       setShowFilterDialog(false)
     }
   }
 
   const handleSubmitFilterDialog = () => {
-    setFilterServiceType(filterServiceTypeLocal)
+    const filteredServices = selectedServiceType.map((service) => service.value.id).sort((a,b) => a - b)
+    setFilterServiceType(filteredServices)
     setFilterAnimalType(filterAnimalTypeLocal)
     setFilterAnimal(filterAnimalLocal)
     if (practicePage === null && searchFilter !== null) {
@@ -267,7 +226,7 @@ export function SearchFilter({
           name: searchFilter.name,
           address: searchFilter.address,
           animalType: filterAnimalTypeLocal.join('-'),
-          serviceType: filterServiceTypeLocal.join('-'),
+          serviceType: filteredServices.join('-'),
         },
         state: {
           filterAnimalId: filterAnimalLocal,
@@ -281,7 +240,7 @@ export function SearchFilter({
     setSelectedServiceType([])
     setFilterAnimalLocal(undefined)
     setFilterAnimalTypeLocal([])
-    setFilterServiceTypeLocal([])
+    // setFilterServiceTypeLocal([])
   }
 
   const handleChangeAnimal = (event: ChangeEvent<HTMLInputElement>) => {
@@ -315,9 +274,9 @@ export function SearchFilter({
   }
 
   const handleSelectServiceTypes = (
-    raceSelect: MultiValue<{ value: AnimalTypeType; label: string }>,
+    serviceSelect: MultiValue<{ value: AnimalTypeType; label: string }>,
   ) => {
-    setSelectedServiceType(raceSelect)
+    setSelectedServiceType(serviceSelect)
   }
 
   let animaltypes: Array<AnimalTypeType> = []

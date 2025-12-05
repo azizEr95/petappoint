@@ -6,20 +6,22 @@ import { getAnimalsFromUser } from '../../api/AnimalsAPI'
 import { AnimalEditNewDialog } from '../animal/AnimalEditNewDialog'
 import { AnimalDeleteDialog } from '../animal/AnimalDeleteDialog'
 import { useLoginContext } from '../../LoginContext'
-import type { AnimalsType } from '../../../../shared/schemas/ZodSchemas'
+import { getAllAnimalTypes } from '../../api/AnimalTypeAPI'
+import type { AnimalTypeType, AnimalsType } from '../../../../shared/schemas/ZodSchemas'
 
 type SelectAnimalProps = {
-  filteredAnimalType: number | undefined
+  filteredAnimalTypeId: Array<number>
   handleChangeAnimal: (animal: AnimalsType | null) => void
 }
 
 export function SelectAnimal({
   handleChangeAnimal,
-  filteredAnimalType,
+  filteredAnimalTypeId,
 }: SelectAnimalProps) {
   const { login } = useLoginContext()
   const [selectedAnimal, setSelectedAnimal] = useState(-1)
   const [showDialogNewAnimal, setShowDialogNewAnimal] = useState(false)
+  const [filterAnimalType, setFilterAnimalType] = useState<Array<AnimalTypeType> | undefined>(undefined)
   const [showDialogEditAnimal, setShowDialogEditAnimal] =
     useState<AnimalsType | null>(null)
   const [showDialogDeleteAnimal, setShowDialogDeleteAnimal] =
@@ -45,7 +47,7 @@ export function SelectAnimal({
   }, [animals])
 
   const userId = login ? login.id : undefined
-  const { isSuccess, data } = useQuery<Array<AnimalsType>>({
+  const { isSuccess: isSuccessAnimalUser, data: dataAnimalUser } = useQuery<Array<AnimalsType>>({
     // for this query is no error handling implemented, if the query fails
     queryKey: ['animals', userId],
     queryFn: () => getAnimalsFromUser(userId ?? -1), // always defined if enabled
@@ -53,20 +55,63 @@ export function SelectAnimal({
     enabled: userId !== undefined,
   })
 
+    // get all Animaltypes
+    const { isSuccess: isSuccessAnimalType, data: dataAnimalType } = useQuery<
+    Array<AnimalTypeType>
+  >({
+    queryKey: ['allAnimalTypes'],
+    queryFn: () => getAllAnimalTypes(undefined),
+    retry: false,
+  })
+
   useEffect(() => {
-    if (isSuccess && filteredAnimalType !== undefined) {
-      const isSelectable = data.filter((x) => {
-        return x.animalTypeId === filteredAnimalType
+    if(isSuccessAnimalType){
+      const x = dataAnimalType.filter((animalType) => {
+        const foundAnimalType = filteredAnimalTypeId.find((y) => {
+          if (animalType.id === y) {
+            return true
+          }
+        })
+        if(foundAnimalType !== undefined){
+          return true
+        } else {
+          return false
+        }
       })
-      const isNotSelectable = data.filter((x) => {
-        return x.animalTypeId !== filteredAnimalType
+      setFilterAnimalType(x);
+    }
+  },[isSuccessAnimalType, dataAnimalType, filteredAnimalTypeId])
+
+  useEffect(() => {
+    if (isSuccessAnimalUser) {
+      const isSelectable = dataAnimalUser.filter((x) => {
+        const foundSelect = filteredAnimalTypeId.find((y) => {
+          if (x.animalTypeId === y) {
+            return true
+          }
+        })
+        if(foundSelect !== undefined){
+          return true
+        } else {
+          return false
+        }
+      })
+      const isNotSelectable = dataAnimalUser.filter((x) => {
+        const notFoundSelect = filteredAnimalTypeId.find((y) => {
+          if (x.animalTypeId === y) {
+            return true
+          }
+        })
+        if(notFoundSelect !== undefined){
+          return false
+        } else {
+          return true
+        }
       })
       setSelectableAnimals(isSelectable)
       setNotSelectableAnimals(isNotSelectable)
-    } else if (isSuccess) {
-      setSelectableAnimals(data)
     }
-  }, [isSuccess, data, filteredAnimalType])
+  }, [isSuccessAnimalUser, dataAnimalUser, filteredAnimalTypeId])
 
   const handleSelectAnimal = (animal: AnimalsType) => {
     if (selectedAnimal === animal.id) {
@@ -106,16 +151,24 @@ export function SelectAnimal({
     setShowDialogDeleteAnimal(deleteAnimal)
   }
 
-  if (!isSuccess) {
+  if (!isSuccessAnimalUser) {
     return null
   }
 
-  animals = data
+  animals = dataAnimalUser
+
+  let animaltypesString = ""
+  for(const type of filterAnimalType ?? []){
+    if(animaltypesString !== "")  {
+      animaltypesString = animaltypesString + ", "
+    }
+    animaltypesString = animaltypesString + type.name
+  }
 
   return (
     <>
       <div className="select-animal">
-        <h5 className="section-title">Tier auswählen:</h5>
+        <h5 className="section-title">Tier auswählen ({animaltypesString}):</h5>
         <div className="animal-list">
           {selectableAnimals.map((animal) => (
             <div
@@ -140,9 +193,9 @@ export function SelectAnimal({
           ))}
           {notSelectableAnimals.map(
             (
-              animal, // should be shown as diabled and not clickable (edit and delete are allowed), animaltype does not matches with the filtered animaltype
+              animal,
             ) => (
-              <div key={animal.id} className={`animal-item disabled`}>
+              <div key={animal.id} className={`animal-item disabled`} aria-disabled={true}>
                 <div className="animal-name">{animal.name}</div>
                 <button
                   className="edit-button"

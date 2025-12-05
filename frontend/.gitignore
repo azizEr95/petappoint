@@ -8,7 +8,6 @@ count.txt
 .env
 .nitro
 .tanstack
-src/types/*
 
 
 # Logs

@@ -92,13 +92,14 @@ export function SearchField({
   }
 
   const handleSearch = () => {
+    const sortedServiceTypes = searchFilter.serviceTypeIds?.sort((a,b) => a - b)
     navigate({
       to: '/search',
       search: {
         name: searchTermName,
         address: searchTermOrt,
-        animalType: searchFilter.animalTypeIds?.join('-') ?? '',
-        serviceType: searchFilter.serviceTypeIds?.join('-') ?? '',
+        animalType: searchFilter.animalTypeIds?.join("-") ?? "",
+        serviceType: sortedServiceTypes?.join("-") !== undefined ? sortedServiceTypes.join("-") : "",
       },
       state: {
         filterAnimalId: filterAnimal,
