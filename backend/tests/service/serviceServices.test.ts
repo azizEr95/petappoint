@@ -1,14 +1,8 @@
-// WICHTIG: Zuerst den singleton importieren, damit das Mocking funktioniert
-import { prismaMock } from "../../testConfig/mockConfig";
-// Danach die Types importieren
-import { services } from "../../generated/prisma";
-// Dann den Service importieren
+import { prisma } from "../../testConfig/integrationConfig";
 import { serviceService } from "../../src/service/serviceService";
 
 describe("serviceService", () => {
-  // Test-Datenvorbereitung
-  const mockService: services = {
-    id: 1,
+  const serviceData = {
     name: "Allgemeine Untersuchung",
     priceincents: 50.0,
     fk_veterinarypracticeid: null,
@@ -16,72 +10,53 @@ describe("serviceService", () => {
 
   describe("create", () => {
     it("sollte einen neuen Service erstellen", async () => {
-      prismaMock.services.create.mockResolvedValue(mockService);
+      const result = await serviceService.create(serviceData);
 
-      const result = await serviceService.create(mockService);
+      expect(result.name).toBe(serviceData.name);
+      expect(result.priceincents).toBe(serviceData.priceincents);
 
-      expect(result).toEqual(mockService);
-      expect(prismaMock.services.create).toHaveBeenCalledWith({
-        data: mockService,
-      });
-      expect(prismaMock.services.create).toHaveBeenCalledTimes(1);
+      const dbService = await prisma.services.findUnique({ where: { id: result.id } });
+      expect(dbService).not.toBeNull();
+      expect(dbService?.name).toBe(serviceData.name);
     });
 
     it("sollte einen Fehler werfen, wenn die Erstellung fehlschlägt", async () => {
-      const error = new Error("Database error");
-      prismaMock.services.create.mockRejectedValue(error);
+      const invalidData = { name: null } as any;
 
-      await expect(serviceService.create(mockService)).rejects.toThrow("Database error");
+      await expect(serviceService.create(invalidData)).rejects.toThrow();
     });
   });
 
   describe("getById", () => {
     it("sollte einen Service anhand der ID finden", async () => {
-      prismaMock.services.findUnique.mockResolvedValue(mockService);
+      const created = await prisma.services.create({ data: serviceData });
 
-      const result = await serviceService.getById(1);
+      const result = await serviceService.getById(created.id);
 
-      expect(result).toEqual(mockService);
-      expect(prismaMock.services.findUnique).toHaveBeenCalledWith({
-        where: { id: 1 },
-      });
+      expect(result.id).toBe(created.id);
+      expect(result.name).toBe(serviceData.name);
     });
 
     it("sollte einen Fehler werfen, wenn der Service nicht gefunden wird", async () => {
-      prismaMock.services.findUnique.mockResolvedValue(null);
-
-      await expect(serviceService.getById(999)).rejects.toThrow("Service does not exist with id 999");
+      await expect(serviceService.getById(999999)).rejects.toThrow("Service does not exist with id 999999");
     });
   });
 
   describe("getAll", () => {
     it("sollte alle Services finden", async () => {
-      const mockServices = [
-        mockService,
-        {
-          id: 2,
-          name: "Impfung",
-          price: 35.0,
-        },
-        {
-          id: 3,
-          name: "Zahnreinigung",
-          price: 75.0,
-        },
-      ];
-
-      prismaMock.services.findMany.mockResolvedValue(mockServices);
+      await prisma.services.create({ data: serviceData });
+      await prisma.services.create({ data: { name: "Impfung", priceincents: 35.0, fk_veterinarypracticeid: null } });
+      await prisma.services.create({ data: { name: "Zahnreinigung", priceincents: 75.0, fk_veterinarypracticeid: null } });
 
       const result = await serviceService.getAll();
 
-      expect(result).toEqual(mockServices);
-      expect(prismaMock.services.findMany).toHaveBeenCalledWith();
       expect(result.length).toBe(3);
+      expect(result.some(s => s.name === "Allgemeine Untersuchung")).toBe(true);
+      expect(result.some(s => s.name === "Impfung")).toBe(true);
+      expect(result.some(s => s.name === "Zahnreinigung")).toBe(true);
     });
 
     it("sollte ein leeres Array zurückgeben, wenn keine Services existieren", async () => {
-      prismaMock.services.findMany.mockResolvedValue([]);
-
       const result = await serviceService.getAll();
 
       expect(result).toEqual([]);
@@ -91,54 +66,47 @@ describe("serviceService", () => {
 
   describe("update", () => {
     it("sollte einen Service aktualisieren", async () => {
-      const updatedService = {
-        ...mockService,
+      const created = await prisma.services.create({ data: serviceData });
+      const updatedData = {
+        ...created,
         name: "Allgemeine Untersuchung - Erweitert",
-        price: 60.0,
+        priceincents: 60.0,
       };
 
-      prismaMock.services.update.mockResolvedValue(updatedService);
+      const result = await serviceService.update(updatedData);
 
-      const result = await serviceService.update(updatedService);
+      expect(result.name).toBe("Allgemeine Untersuchung - Erweitert");
+      expect(result.priceincents).toBe(60.0);
 
-      expect(result).toEqual(updatedService);
-      expect(prismaMock.services.update).toHaveBeenCalledWith({
-        where: { id: updatedService.id },
-        data: updatedService,
-      });
+      const dbService = await prisma.services.findUnique({ where: { id: created.id } });
+      expect(dbService?.name).toBe("Allgemeine Untersuchung - Erweitert");
     });
 
     it("sollte einen Fehler werfen, wenn keine ID für das Update angegeben wird", async () => {
-      const serviceWithoutId = { ...mockService, id: undefined } as any;
+      const serviceWithoutId = { ...serviceData, id: undefined } as any;
 
       await expect(serviceService.update(serviceWithoutId)).rejects.toThrow("ID is required for update");
     });
 
     it("sollte einen Fehler werfen, wenn der zu aktualisierende Service nicht existiert", async () => {
-      const error = new Error("Record to update not found");
-      prismaMock.services.update.mockRejectedValue(error);
+      const nonExistentService = { ...serviceData, id: 999999 };
 
-      await expect(serviceService.update({ ...mockService, id: 999 })).rejects.toThrow("Record to update not found");
+      await expect(serviceService.update(nonExistentService)).rejects.toThrow();
     });
   });
 
   describe("delete", () => {
     it("sollte einen Service löschen", async () => {
-      prismaMock.services.delete.mockResolvedValue(mockService);
+      const created = await prisma.services.create({ data: serviceData });
 
-      await serviceService.delete(1);
+      await serviceService.delete(created.id);
 
-      expect(prismaMock.services.delete).toHaveBeenCalledWith({
-        where: { id: 1 },
-      });
-      expect(prismaMock.services.delete).toHaveBeenCalledTimes(1);
+      const dbService = await prisma.services.findUnique({ where: { id: created.id } });
+      expect(dbService).toBeNull();
     });
 
     it("sollte einen Fehler werfen, wenn der zu löschende Service nicht existiert", async () => {
-      const error = new Error("Record to delete does not exist");
-      prismaMock.services.delete.mockRejectedValue(error);
-
-      await expect(serviceService.delete(999)).rejects.toThrow("Record to delete does not exist");
+      await expect(serviceService.delete(999999)).rejects.toThrow();
     });
   });
 });
