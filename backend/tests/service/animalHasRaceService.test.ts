@@ -1,241 +1,137 @@
-// WICHTIG: Zuerst den singleton importieren, damit das Mocking funktioniert
-import { prismaMock } from "../../testConfig/mockConfig";
-// Danach die Types importieren
-import { animal_has_races } from "../../generated/prisma";
-// Dann den Service importieren
+import { prisma } from "../../testConfig/integrationConfig";
 import { animalHasRacesService } from "../../src/service/animalHasRacesService";
 
 describe("animalHasRacesService", () => {
-  // Test-Datenvorbereitung
-  const mockAnimalHasRace: animal_has_races = {
-    fk_animalid: 1,
-    fk_animalraceid: 1,
-  };
+  let animalId: number;
+  let raceId: number;
 
-  const mockAnimalHasRaceWithRelations = {
-    fk_animalid: 1,
-    fk_animalraceid: 1,
-    animals: {
-      id: 1,
-      name: "Bello",
-      dateofbirth: new Date("2020-05-15"),
-      dateofbirthisexact: true,
-      weightingram: 15000,
-      heightincm: 45,
-      timeofdeath: null,
-      iscastrated: false,
-      lifestyle: "indoor",
-      fk_animaltypeid: 1,
-      fk_animalgroupid: 1,
-    },
-    animalraces: {
-      id: 1,
-      name: "Golden Retriever",
-      fk_animaltypeid: 1,
-    },
-  };
+  beforeEach(async () => {
+    const animalType = await prisma.animaltypes.create({ data: { name: "Hund" } });
+    const animal = await prisma.animals.create({
+      data: {
+        name: "Bello",
+        dateofbirth: new Date("2020-05-15"),
+        fk_animaltypeid: animalType.id,
+      },
+    });
+    animalId = animal.id;
+
+    const race = await prisma.animalraces.create({
+      data: {
+        name: "Golden Retriever",
+        fk_animaltypeid: animalType.id,
+      },
+    });
+    raceId = race.id;
+  });
 
   describe("create", () => {
     it("sollte eine neue Tier-Rasse-Verbindung erstellen", async () => {
-      prismaMock.animal_has_races.create.mockResolvedValue(mockAnimalHasRace);
+      const data = {
+        fk_animalid: animalId,
+        fk_animalraceid: raceId,
+      };
 
-      const result = await animalHasRacesService.create(mockAnimalHasRace);
+      const result = await animalHasRacesService.create(data);
 
-      expect(result).toEqual(mockAnimalHasRace);
-      expect(prismaMock.animal_has_races.create).toHaveBeenCalledWith({
-        data: mockAnimalHasRace,
+      expect(result.fk_animalid).toBe(animalId);
+      expect(result.fk_animalraceid).toBe(raceId);
+
+      const dbRelation = await prisma.animal_has_races.findUnique({
+        where: {
+          fk_animalid_fk_animalraceid: {
+            fk_animalid: animalId,
+            fk_animalraceid: raceId,
+          },
+        },
       });
-      expect(prismaMock.animal_has_races.create).toHaveBeenCalledTimes(1);
+      expect(dbRelation).not.toBeNull();
     });
 
     it("sollte einen Fehler werfen, wenn die Erstellung fehlschlägt", async () => {
-      const error = new Error("Database error");
-      prismaMock.animal_has_races.create.mockRejectedValue(error);
+      const invalidData = { fk_animalid: 999999, fk_animalraceid: 999999 };
 
-      await expect(animalHasRacesService.create(mockAnimalHasRace)).rejects.toThrow("Database error");
+      await expect(animalHasRacesService.create(invalidData)).rejects.toThrow();
     });
   });
 
   describe("getAnimalByRacesId", () => {
     it("sollte alle Tiere einer bestimmten Rasse finden", async () => {
-      const mockAnimalRaces = [
-        mockAnimalHasRaceWithRelations,
-        {
-          fk_animalid: 2,
-          fk_animalraceid: 1,
-          animals: {
-            id: 2,
-            name: "Max",
-            dateofbirth: new Date("2019-03-10"),
-            dateofbirthisexact: true,
-            weightingram: 18000,
-            heightincm: 50,
-            timeofdeath: null,
-            iscastrated: true,
-            lifestyle: "outdoor",
-            fk_animaltypeid: 1,
-            fk_animalgroupid: 1,
-          },
-          animalraces: {
-            id: 1,
-            name: "Golden Retriever",
-            fk_animaltypeid: 1,
-          },
-        },
-      ];
-
-      prismaMock.animal_has_races.findMany.mockResolvedValue(mockAnimalRaces as any);
-
-      const result = await animalHasRacesService.getAnimalByRacesId(1);
-
-      expect(result).toEqual([
-        {
-          animal: mockAnimalRaces[0].animals,
-          animalraces: mockAnimalRaces[0].animalraces,
-        },
-        {
-          animal: mockAnimalRaces[1].animals,
-          animalraces: mockAnimalRaces[1].animalraces,
-        },
-      ]);
-      expect(prismaMock.animal_has_races.findMany).toHaveBeenCalledWith({
-        where: { fk_animalraceid: 1 },
-        include: {
-          animals: true,
-          animalraces: true,
-        },
+      await prisma.animal_has_races.create({
+        data: { fk_animalid: animalId, fk_animalraceid: raceId },
       });
+
+      const result = await animalHasRacesService.getAnimalByRacesId(raceId);
+
+      expect(result.length).toBe(1);
+      expect(result[0].animal.id).toBe(animalId);
+      expect(result[0].animalraces.id).toBe(raceId);
     });
 
     it("sollte ein leeres Array zurückgeben, wenn keine Tiere mit dieser Rasse existieren", async () => {
-      prismaMock.animal_has_races.findMany.mockResolvedValue([]);
-
-      const result = await animalHasRacesService.getAnimalByRacesId(999);
+      const result = await animalHasRacesService.getAnimalByRacesId(999999);
 
       expect(result).toEqual([]);
-      expect(result.length).toBe(0);
     });
   });
 
   describe("getRacesByAnimalId", () => {
     it("sollte alle Rassen eines Tieres finden", async () => {
-      const mockRacesAnimals = [
-        mockAnimalHasRaceWithRelations,
-        {
-          fk_animalid: 1,
-          fk_animalraceid: 2,
-          animals: {
-            id: 1,
-            name: "Bello",
-            dateofbirth: new Date("2020-05-15"),
-            dateofbirthisexact: true,
-            weightingram: 15000,
-            heightincm: 45,
-            timeofdeath: null,
-            iscastrated: false,
-            lifestyle: "indoor",
-            fk_animaltypeid: 1,
-            fk_animalgroupid: 1,
-          },
-          animalraces: {
-            id: 2,
-            name: "Labrador",
-            fk_animaltypeid: 1,
-          },
-        },
-      ];
-
-      prismaMock.animal_has_races.findMany.mockResolvedValue(mockRacesAnimals as any);
-
-      const result = await animalHasRacesService.getRacesByAnimalId(1);
-
-      expect(result).toEqual([
-        {
-          animal: mockRacesAnimals[0].animals,
-          animalraces: mockRacesAnimals[0].animalraces,
-        },
-        {
-          animal: mockRacesAnimals[1].animals,
-          animalraces: mockRacesAnimals[1].animalraces,
-        },
-      ]);
-      expect(prismaMock.animal_has_races.findMany).toHaveBeenCalledWith({
-        where: { fk_animalid: 1 },
-        include: {
-          animals: true,
-          animalraces: true,
-        },
+      await prisma.animal_has_races.create({
+        data: { fk_animalid: animalId, fk_animalraceid: raceId },
       });
+
+      const result = await animalHasRacesService.getRacesByAnimalId(animalId);
+
+      expect(result.length).toBe(1);
+      expect(result[0].animal.id).toBe(animalId);
+      expect(result[0].animalraces.id).toBe(raceId);
     });
 
     it("sollte ein leeres Array zurückgeben, wenn das Tier keine Rassen hat", async () => {
-      prismaMock.animal_has_races.findMany.mockResolvedValue([]);
-
-      const result = await animalHasRacesService.getRacesByAnimalId(999);
+      const result = await animalHasRacesService.getRacesByAnimalId(999999);
 
       expect(result).toEqual([]);
-      expect(result.length).toBe(0);
     });
   });
 
   describe("delete", () => {
     it("sollte eine Tier-Rasse-Verbindung löschen", async () => {
-      prismaMock.animal_has_races.delete.mockResolvedValue(mockAnimalHasRace);
+      await prisma.animal_has_races.create({
+        data: { fk_animalid: animalId, fk_animalraceid: raceId },
+      });
 
-      await animalHasRacesService.delete(mockAnimalHasRace);
+      await animalHasRacesService.delete({ fk_animalid: animalId, fk_animalraceid: raceId });
 
-      expect(prismaMock.animal_has_races.delete).toHaveBeenCalledWith({
+      const dbRelation = await prisma.animal_has_races.findUnique({
         where: {
           fk_animalid_fk_animalraceid: {
-            fk_animalid: mockAnimalHasRace.fk_animalid,
-            fk_animalraceid: mockAnimalHasRace.fk_animalraceid,
+            fk_animalid: animalId,
+            fk_animalraceid: raceId,
           },
         },
       });
-      expect(prismaMock.animal_has_races.delete).toHaveBeenCalledTimes(1);
+      expect(dbRelation).toBeNull();
     });
 
     it("sollte einen Fehler werfen, wenn die zu löschende Verbindung nicht existiert", async () => {
-      const error = new Error("Record to delete does not exist");
-      prismaMock.animal_has_races.delete.mockRejectedValue(error);
-
-      const nonExistentRelation: animal_has_races = {
-        fk_animalid: 999,
-        fk_animalraceid: 999,
-      };
-
-      await expect(animalHasRacesService.delete(nonExistentRelation)).rejects.toThrow(
-        "Record to delete does not exist"
-      );
+      await expect(animalHasRacesService.delete({ fk_animalid: 999999, fk_animalraceid: 999999 })).rejects.toThrow();
     });
   });
 
   describe("exists", () => {
     it("sollte true zurückgeben, wenn die Verbindung existiert", async () => {
-      prismaMock.animal_has_races.findUnique.mockResolvedValue(mockAnimalHasRace);
+      await prisma.animal_has_races.create({
+        data: { fk_animalid: animalId, fk_animalraceid: raceId },
+      });
 
-      const result = await animalHasRacesService.exists(mockAnimalHasRace);
+      const result = await animalHasRacesService.exists({ fk_animalid: animalId, fk_animalraceid: raceId });
 
       expect(result).toBe(true);
-      expect(prismaMock.animal_has_races.findUnique).toHaveBeenCalledWith({
-        where: {
-          fk_animalid_fk_animalraceid: {
-            fk_animalid: mockAnimalHasRace.fk_animalid,
-            fk_animalraceid: mockAnimalHasRace.fk_animalraceid,
-          },
-        },
-      });
     });
 
     it("sollte false zurückgeben, wenn die Verbindung nicht existiert", async () => {
-      prismaMock.animal_has_races.findUnique.mockResolvedValue(null);
-
-      const nonExistentRelation: animal_has_races = {
-        fk_animalid: 999,
-        fk_animalraceid: 999,
-      };
-
-      const result = await animalHasRacesService.exists(nonExistentRelation);
+      const result = await animalHasRacesService.exists({ fk_animalid: 999999, fk_animalraceid: 999999 });
 
       expect(result).toBe(false);
     });
