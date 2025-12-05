@@ -31,7 +31,7 @@ export function DashboardRecommendations({
   })
 
   // Get animal type IDs
-  const animalTypeIds = [...new Set(animals.map((a) => a.animaltypeid))].filter(
+  const animalTypeIds = [...new Set(animals.map((a) => a.animalTypeId))].filter(
     (id) => id !== null && id !== undefined,
   ) as Array<number>
 
@@ -53,7 +53,7 @@ export function DashboardRecommendations({
 
   // Filter out favorites and take top 3
   const recommendedPractices =
-    recommendations?.results
+    recommendations?.data
       ?.filter((p) => !favoriteIds.includes(p.id))
       ?.slice(0, 3) || []
 
@@ -106,10 +106,10 @@ export function DashboardRecommendations({
             <div className="recommendation-body">
               <h4 className="recommendation-name">{practice.name}</h4>
 
-              {practice.addresses && (
+              {practice.address && (
                 <div className="recommendation-address">
                   <i className="bi bi-geo-alt"></i>
-                  <span>{practice.addresses.city}</span>
+                  <span>{practice.address.city}</span>
                 </div>
               )}
 

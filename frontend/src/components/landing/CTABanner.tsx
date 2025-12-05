@@ -14,12 +14,16 @@ export default function CTABanner() {
           wenigen Minuten
         </p>
         <div className="d-flex flex-wrap justify-content-center gap-3">
-          <Link to="/search" className="btn btn-light btn-lg px-5 py-3 fw-bold">
+          <Link
+            to="/search"
+            search={{ name: '', address: '', animalType: '', serviceType: '' }}
+            className="btn btn-light btn-lg px-5 py-3 fw-bold"
+          >
             <i className="bi bi-search me-2"></i>
             Jetzt Termin finden
           </Link>
           <Link
-            to="/veterinaryRegistration"
+            to="/registration/veterinary"
             className="btn btn-outline-light btn-lg px-5 py-3 fw-bold"
           >
             <i className="bi bi-building me-2"></i>
