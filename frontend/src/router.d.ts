@@ -3,6 +3,7 @@ import type {
   AnimalsType,
   AppointmentFilterType,
   AppointmentsType,
+  PersonsType,
   ServiceType,
   VeterinaryPracticesType,
 } from '../../shared/schemas/ZodSchemas'
@@ -19,5 +20,6 @@ declare module '@tanstack/react-router' {
     filterOptions?: AppointmentFilterType
     filterAnimalId?: number | undefined
     filterAnimalTypeId?: number | undefined
+    person?: PersonsType
   }
 }

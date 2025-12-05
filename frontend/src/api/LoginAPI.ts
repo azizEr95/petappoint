@@ -6,7 +6,7 @@ import type {
 export const loginUser = async (
   email: string,
   password: string,
-): Promise<LoginType> => {
+): Promise<LoginType | false> => {
   const loginInfos = {
     email: email,
     password: password,
