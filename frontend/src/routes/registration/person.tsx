@@ -37,7 +37,7 @@ function PersonRegistration() {
 
   const { mutate: mutateRegistration } = useMutation({
     mutationFn: (person: PersonsCreateType) => personRegistration(person),
-    onSuccess: () => {
+    onSuccess: (data) => {
       if(appointment !== undefined){
         navigate({ 
           to: '/practices/$practiceId/booking/$appointmentId',
@@ -51,7 +51,12 @@ function PersonRegistration() {
           },
         })
       } else {
-        navigate({ to: '/registration/verify-email' })
+        navigate({ 
+          to: '/registration/verify-email',
+          state: {
+            person: data // data is the current logged in user
+          }
+        })
       }
     },
   })
