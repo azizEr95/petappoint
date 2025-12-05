@@ -1,95 +1,89 @@
-// WICHTIG: Zuerst den singleton importieren, damit das Mocking funktioniert
-import { prismaMock } from "../../testConfig/mockConfig";
-// Danach die Types importieren
-import { recipes } from "../../generated/prisma";
-// Dann den Service importieren
+import { prisma } from "../../testConfig/integrationConfig";
 import { recipeService } from "../../src/service/recipesService";
 
 describe("recipeService", () => {
-  // Test-Datenvorbereitung
-  const mockRecipe: recipes = {
-    id: 1,
-    fk_animalid: 1,
-    fk_medicationid: 1,
+  let animalId: number;
+  let medicationId: number;
+
+  beforeEach(async () => {
+    const animalType = await prisma.animaltypes.create({ data: { name: "Hund" } });
+    const animal = await prisma.animals.create({
+      data: {
+        name: "Bello",
+        dateofbirth: new Date("2020-01-01"),
+        fk_animaltypeid: animalType.id,
+      },
+    });
+    animalId = animal.id;
+
+    const medication = await prisma.medications.create({ data: { name: "Amoxicillin" } });
+    medicationId = medication.id;
+  });
+
+  const getRecipeData = () => ({
+    fk_animalid: animalId,
+    fk_medicationid: medicationId,
     starting: new Date("2025-01-15"),
     enddate: new Date("2025-01-22"),
     instructions: "2x täglich 1 Tablette mit Futter geben",
-  };
+  });
 
   describe("create", () => {
     it("sollte ein neues Rezept erstellen", async () => {
-      prismaMock.recipes.create.mockResolvedValue(mockRecipe);
+      const result = await recipeService.create(getRecipeData());
 
-      const result = await recipeService.create(mockRecipe);
+      expect(result.fk_animalid).toBe(animalId);
+      expect(result.fk_medicationid).toBe(medicationId);
+      expect(result.instructions).toBe("2x täglich 1 Tablette mit Futter geben");
 
-      expect(result).toEqual(mockRecipe);
-      expect(prismaMock.recipes.create).toHaveBeenCalledWith({
-        data: mockRecipe,
-      });
-      expect(prismaMock.recipes.create).toHaveBeenCalledTimes(1);
+      const dbRecipe = await prisma.recipes.findUnique({ where: { id: result.id } });
+      expect(dbRecipe).not.toBeNull();
+      expect(dbRecipe?.instructions).toBe("2x täglich 1 Tablette mit Futter geben");
     });
 
     it("sollte einen Fehler werfen, wenn die Erstellung fehlschlägt", async () => {
-      const error = new Error("Database error");
-      prismaMock.recipes.create.mockRejectedValue(error);
+      const invalidData = { fk_animalid: 999999, fk_medicationid: medicationId } as any;
 
-      await expect(recipeService.create(mockRecipe)).rejects.toThrow("Database error");
+      await expect(recipeService.create(invalidData)).rejects.toThrow();
     });
   });
 
   describe("getById", () => {
     it("sollte ein Rezept anhand der ID finden", async () => {
-      prismaMock.recipes.findUnique.mockResolvedValue(mockRecipe);
+      const created = await prisma.recipes.create({ data: getRecipeData() });
 
-      const result = await recipeService.getById(1);
+      const result = await recipeService.getById(created.id);
 
-      expect(result).toEqual(mockRecipe);
-      expect(prismaMock.recipes.findUnique).toHaveBeenCalledWith({
-        where: { id: 1 },
-      });
+      expect(result.id).toBe(created.id);
+      expect(result.fk_animalid).toBe(animalId);
     });
 
     it("sollte einen Fehler werfen, wenn das Rezept nicht gefunden wird", async () => {
-      prismaMock.recipes.findUnique.mockResolvedValue(null);
-
-      await expect(recipeService.getById(999)).rejects.toThrow("Recipe does not exist with id 999");
+      await expect(recipeService.getById(999999)).rejects.toThrow("Recipe does not exist with id 999999");
     });
   });
 
   describe("getAll", () => {
     it("sollte alle Rezepte finden", async () => {
-      const mockRecipes = [
-        mockRecipe,
-        {
-          id: 2,
-          fk_animalid: 2,
-          fk_medicationid: 2,
+      await prisma.recipes.create({ data: getRecipeData() });
+      await prisma.recipes.create({
+        data: {
+          fk_animalid: animalId,
+          fk_medicationid: medicationId,
           starting: new Date("2025-01-20"),
           enddate: new Date("2025-01-25"),
           instructions: "1x täglich nach Bedarf bei Schmerzen",
         },
-        {
-          id: 3,
-          fk_animalid: 1,
-          fk_medicationid: 3,
-          starting: new Date("2025-02-01"),
-          enddate: new Date("2025-02-11"),
-          instructions: "3x täglich mit Futter, nach Mahlzeiten",
-        },
-      ];
-
-      prismaMock.recipes.findMany.mockResolvedValue(mockRecipes);
+      });
 
       const result = await recipeService.getAll();
 
-      expect(result).toEqual(mockRecipes);
-      expect(prismaMock.recipes.findMany).toHaveBeenCalledWith();
-      expect(result.length).toBe(3);
+      expect(result.length).toBe(2);
+      expect(result.some(r => r.instructions === "2x täglich 1 Tablette mit Futter geben")).toBe(true);
+      expect(result.some(r => r.instructions === "1x täglich nach Bedarf bei Schmerzen")).toBe(true);
     });
 
     it("sollte ein leeres Array zurückgeben, wenn keine Rezepte existieren", async () => {
-      prismaMock.recipes.findMany.mockResolvedValue([]);
-
       const result = await recipeService.getAll();
 
       expect(result).toEqual([]);
@@ -99,54 +93,46 @@ describe("recipeService", () => {
 
   describe("update", () => {
     it("sollte ein Rezept aktualisieren", async () => {
-      const updatedRecipe = {
-        ...mockRecipe,
+      const created = await prisma.recipes.create({ data: getRecipeData() });
+      const updatedData = {
+        ...created,
         enddate: new Date("2025-01-29"),
         instructions: "3x täglich 1 Tablette mit Futter geben - Dosierung erhöht",
       };
 
-      prismaMock.recipes.update.mockResolvedValue(updatedRecipe);
+      const result = await recipeService.update(updatedData);
 
-      const result = await recipeService.update(updatedRecipe);
+      expect(result.instructions).toBe("3x täglich 1 Tablette mit Futter geben - Dosierung erhöht");
 
-      expect(result).toEqual(updatedRecipe);
-      expect(prismaMock.recipes.update).toHaveBeenCalledWith({
-        where: { id: updatedRecipe.id },
-        data: updatedRecipe,
-      });
+      const dbRecipe = await prisma.recipes.findUnique({ where: { id: created.id } });
+      expect(dbRecipe?.instructions).toBe("3x täglich 1 Tablette mit Futter geben - Dosierung erhöht");
     });
 
     it("sollte einen Fehler werfen, wenn keine ID für das Update angegeben wird", async () => {
-      const recipeWithoutId = { ...mockRecipe, id: undefined } as any;
+      const recipeWithoutId = { ...getRecipeData(), id: undefined } as any;
 
       await expect(recipeService.update(recipeWithoutId)).rejects.toThrow("ID is required for update");
     });
 
     it("sollte einen Fehler werfen, wenn das zu aktualisierende Rezept nicht existiert", async () => {
-      const error = new Error("Record to update not found");
-      prismaMock.recipes.update.mockRejectedValue(error);
+      const nonExistentRecipe = { ...getRecipeData(), id: 999999 };
 
-      await expect(recipeService.update({ ...mockRecipe, id: 999 })).rejects.toThrow("Record to update not found");
+      await expect(recipeService.update(nonExistentRecipe)).rejects.toThrow();
     });
   });
 
   describe("delete", () => {
     it("sollte ein Rezept löschen", async () => {
-      prismaMock.recipes.delete.mockResolvedValue(mockRecipe);
+      const created = await prisma.recipes.create({ data: getRecipeData() });
 
-      await recipeService.delete(1);
+      await recipeService.delete(created.id);
 
-      expect(prismaMock.recipes.delete).toHaveBeenCalledWith({
-        where: { id: 1 },
-      });
-      expect(prismaMock.recipes.delete).toHaveBeenCalledTimes(1);
+      const dbRecipe = await prisma.recipes.findUnique({ where: { id: created.id } });
+      expect(dbRecipe).toBeNull();
     });
 
     it("sollte einen Fehler werfen, wenn das zu löschende Rezept nicht existiert", async () => {
-      const error = new Error("Record to delete does not exist");
-      prismaMock.recipes.delete.mockRejectedValue(error);
-
-      await expect(recipeService.delete(999)).rejects.toThrow("Record to delete does not exist");
+      await expect(recipeService.delete(999999)).rejects.toThrow();
     });
   });
 });
