@@ -11,7 +11,7 @@ import {
   AppointmentFilterSchema,
   VeterinaryPracticeSearchResultType,
   PostgresIdSchema,
-} from "vetlib-shared/schemas/ZodSchemas";
+} from "vetilib-shared/schemas/ZodSchemas";
 import { optionalAuthentication, requiresAuthentication } from "./authentication";
 
 export const veterinaryPracticeRouter = express.Router();

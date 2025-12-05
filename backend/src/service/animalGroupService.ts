@@ -1,7 +1,7 @@
 import { prisma } from "../singletonPC";
 import { AnimalGroup } from "../../generated/prisma";
 import { ResourceNotFoundError } from "../exceptions/errors/ResourceNotFoundError";
-import { AnimalGroupCreateType, AnimalGroupType } from "vetlib-shared/schemas/ZodSchemas";
+import { AnimalGroupCreateType, AnimalGroupType } from "vetilib-shared/schemas/ZodSchemas";
 
 export const animalGroupService = {
   async create(data: AnimalGroupCreateType): Promise<AnimalGroupType> {

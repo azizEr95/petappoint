@@ -1,6 +1,6 @@
 import express from "express";
 import { personService } from "../service/personService";
-import { AnimalsType, PersonsCreateSchema, PersonsType, PersonsUpdateSchema, PostgresIdSchema } from "vetlib-shared/schemas/ZodSchemas";
+import { AnimalsType, PersonsCreateSchema, PersonsType, PersonsUpdateSchema, PostgresIdSchema } from "vetilib-shared/schemas/ZodSchemas";
 import { verifyJWT, verifyPasswordAndCreateJWT } from "../service/jwtService";
 import { sendConfirmationEmail } from "../service/emailService";
 import { optionalAuthentication, requiresAuthentication } from "./authentication";

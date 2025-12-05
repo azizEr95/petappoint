@@ -21,7 +21,6 @@
   text-decoration: none;
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--color-primary);
   transition:
     transform 0.3s,
     opacity 0.3s;
@@ -35,6 +34,10 @@
 
 .logo-icon {
   font-size: 1.8rem;
+}
+
+.logo-text {
+  color: #15803d; // Dunkleres Grün (green-700)
 }
 
 .nav-links-clean {

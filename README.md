@@ -1,4 +1,4 @@
-# VetLib
+# vetilib
 
 Veterinary library management system for managing veterinary practices, appointments, animals, and patient records.
 
@@ -42,7 +42,7 @@ npm run install-all
 Start all services (database, backend, frontend):
 
 ```bash
-npm run vetlib
+npm run vetilib
 ```
 
 This runs all services in Docker containers:
@@ -69,8 +69,8 @@ npm run dev
 
 ### Root Level
 
-- `npm run vetlib` - Start all services
-- `npm run vetlib:detached` - Start services in background
+- `npm run vetilib` - Start all services
+- `npm run vetilib:detached` - Start services in background
 - `npm run stop` - Stop all Docker containers
 - `npm test` - Run all tests (backend + frontend)
 - `npm run prisma` - Pull DB schema and generate Prisma client
@@ -92,7 +92,7 @@ npm run dev
 ## Project Structure
 
 ```
-vetlib/
+vetilib/
 ├── backend/           # Express API + Prisma
 │   ├── src/
 │   │   ├── routes/    # API endpoints
@@ -119,8 +119,8 @@ vetlib/
 
 Connection details (development):
 - Host: `localhost:5432`
-- Database: `vetlib-db`
-- User: `vetlib`
+- Database: `vetilib-db`
+- User: `vetilib`
 - Password: `123`
 
 After schema changes, regenerate Prisma client:

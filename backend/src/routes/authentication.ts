@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { verifyJWT } from "../service/jwtService";
-import { RoleEnum } from "vetlib-shared/schemas/ZodSchemas";
+import { RoleEnum } from "vetilib-shared/schemas/ZodSchemas";
 
 declare global {
     namespace Express {

@@ -39,7 +39,7 @@
     "ts-node": "^10.9.2",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3",
-    "vetlib-shared": "file:../shared"
+    "vetilib-shared": "file:../shared"
   },
   "dependencies": {
     "@getbrevo/brevo": "^3.0.1",

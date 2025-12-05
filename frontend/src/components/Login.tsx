@@ -121,7 +121,7 @@ export function LoginForm({
       </div>
 
       <div className="auth-option-card">
-        <p className="option-text">Neu bei vetlib?</p>
+        <p className="option-text">Neu bei vetilib?</p>
         <button
           type="button"
           className="option-button"

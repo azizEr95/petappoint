@@ -1,4 +1,4 @@
-# VetLib Naming Conventions
+# vetilib Naming Conventions
 
 ## 1. General Principles
 

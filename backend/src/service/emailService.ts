@@ -3,12 +3,12 @@ import fs from 'fs';
 import path from 'path';
 import { SendSmtpEmail } from "@getbrevo/brevo";
 import { emailServiceSetup } from "../singletonEmail";
-import { PersonsType } from 'vetlib-shared/schemas/ZodSchemas';
+import { PersonsType } from 'vetilib-shared/schemas/ZodSchemas';
 
 
 // types 
 const sender = {
-    name: "Vetlib",
+    name: "vetilib",
     email: "aziz.erol@outlook.de"
 }
 

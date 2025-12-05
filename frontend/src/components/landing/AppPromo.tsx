@@ -8,7 +8,7 @@ export default function AppPromo() {
         <Row className="align-items-center">
           <Col lg={6} className="mb-4 mb-lg-0">
             <h2 className="display-5 fw-bold mb-3">
-              Noch bequemer mit der Vetlib App
+              Noch bequemer mit der vetilib App
             </h2>
             <p className="lead mb-4">
               Verwalten Sie alle Termine unterwegs, erhalten Sie

@@ -1,5 +1,5 @@
 import express from "express";
-import { PostgresIdSchema, ServiceType } from "vetlib-shared/schemas/ZodSchemas";
+import { PostgresIdSchema, ServiceType } from "vetilib-shared/schemas/ZodSchemas";
 import { serviceService } from "../service/serviceService";
 import { optionalAuthentication, requiresAuthentication } from "./authentication";
 

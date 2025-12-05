@@ -6,7 +6,7 @@ import {
   VeterinaryPracticeSearchQueryType,
   VeterinaryPracticesType,
   VeterinaryPracticeSearchResultType,
-} from "vetlib-shared/schemas/ZodSchemas";
+} from "vetilib-shared/schemas/ZodSchemas";
 import { addressService } from "./addressService";
 import { ResourceNotFoundError } from "../exceptions/errors/ResourceNotFoundError";
 import { ConstraintError } from "../exceptions/errors/ConstraintError";

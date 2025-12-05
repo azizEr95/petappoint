@@ -1,4 +1,4 @@
-import { AddRacesToAnimalType, Animal_has_RacesType, AnimalracesType } from "vetlib-shared/schemas/ZodSchemas";
+import { AddRacesToAnimalType, Animal_has_RacesType, AnimalracesType } from "vetilib-shared/schemas/ZodSchemas";
 import { AnimalHasRace } from "../../generated/prisma";
 import { prisma } from "../singletonPC";
 

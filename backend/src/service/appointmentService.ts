@@ -5,7 +5,7 @@ import {
   AppointmentsCreateType,
   AppointmentsType,
   ServiceType,
-} from "vetlib-shared/schemas/ZodSchemas";
+} from "vetilib-shared/schemas/ZodSchemas";
 import { animalService } from "./animalService";
 import { ResourceNotFoundError } from "../exceptions/errors/ResourceNotFoundError";
 import { ConstraintError } from "../exceptions/errors/ConstraintError";

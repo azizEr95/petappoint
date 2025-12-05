@@ -1,6 +1,6 @@
 import request from 'supertest'
 import { app } from '../../src/app';
-import { VeterinaryPracticeSearchBodyType } from 'vetlib-shared/schemas/ZodSchemas';
+import { VeterinaryPracticeSearchBodyType } from 'vetilib-shared/schemas/ZodSchemas';
 
 
 describe('/api/veterinary-practice', () => {
