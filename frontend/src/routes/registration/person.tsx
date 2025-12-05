@@ -35,6 +35,25 @@ function PersonRegistration() {
   const [sex, setSex] = useState<sexesType | undefined>(undefined)
   const [errors, setErrors] = useState<{ [key: string]: string }>({})
 
+  // Helper function to calculate age
+  const calculateAge = (birthDate: Date): number => {
+    const today = new Date()
+    let age = today.getFullYear() - birthDate.getFullYear()
+    const monthDiff = today.getMonth() - birthDate.getMonth()
+    
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--
+    }
+    
+    return age
+  }
+
+  // Get max date (today) in YYYY-MM-DD format
+  const getMaxDate = (): string => {
+    const today = new Date()
+    return today.toISOString().split('T')[0]
+  }
+
   const { mutate: mutateRegistration } = useMutation({
     mutationFn: (person: PersonsCreateType) => personRegistration(person),
     onSuccess: (data) => {
@@ -177,7 +196,22 @@ function PersonRegistration() {
       }
     }
     if (name === 'dateOfBirth') {
-      if (!value.trim()) error = 'Geburtsdatum ist erforderlich'
+      if (!value.trim()) {
+        error = 'Geburtsdatum ist erforderlich'
+      } else {
+        const birthDate = new Date(value)
+        const today = new Date()
+        
+        // Check if date is in the future
+        if (birthDate > today) {
+          error = 'Geburtsdatum darf nicht in der Zukunft liegen'
+        } else {
+          const age = calculateAge(birthDate)
+          if (age < 14) {
+            error = 'Sie müssen mindestens 14 Jahre alt sein'
+          }
+        }
+      }
     }
     if (name === 'sex') {
       if (!value) error = 'Geschlecht ist erforderlich'
@@ -186,11 +220,7 @@ function PersonRegistration() {
     return error
   }
 
-  const handleBlur = (
-    e: React.FocusEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >,
-  ) => {
+  const handleBlur = (e: any) => {
     const name = e.target.name
     const value = e.target.value
 
@@ -308,17 +338,28 @@ function PersonRegistration() {
         newErrors.phone = 'Telefon muss mindestens aus 6 Zahlen bestehen'
       }
     }
-    if (!dateOfBirth.trim())
+    if (!dateOfBirth.trim()) {
       newErrors.dateOfBirth = 'Geburtsdatum ist erforderlich'
+    } else {
+      const birthDate = new Date(dateOfBirth)
+      const today = new Date()
+      
+      if (birthDate > today) {
+        newErrors.dateOfBirth = 'Geburtsdatum darf nicht in der Zukunft liegen'
+      } else {
+        const age = calculateAge(birthDate)
+        if (age < 14) {
+          newErrors.dateOfBirth = 'Sie müssen mindestens 14 Jahre alt sein'
+        }
+      }
+    }
     if (!sex) newErrors.sex = 'Geschlecht ist erforderlich'
 
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
 
-  const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
-  ) => {
+  const handleChange = (e: any) => {
     const t = e.target
     const name = t.name
     const value = t.value
@@ -480,6 +521,7 @@ function PersonRegistration() {
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={dateOfBirth}
+                    max={getMaxDate()}
                     isInvalid={!!errors.dateOfBirth}
                   />
                   <Form.Control.Feedback type="invalid">
