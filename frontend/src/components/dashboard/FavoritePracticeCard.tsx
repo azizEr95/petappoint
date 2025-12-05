@@ -60,12 +60,12 @@ export function FavoritePracticeCard({
       <div className="practice-body">
         <h4 className="practice-name">{practice.name}</h4>
 
-        {practice.addresses && (
+        {practice.address && (
           <div className="practice-address">
             <i className="bi bi-geo-alt"></i>
             <span>
-              {practice.addresses.street}, {practice.addresses.citycode}{' '}
-              {practice.addresses.city}
+              {practice.address.street}, {practice.address.cityCode}{' '}
+              {practice.address.city}
             </span>
           </div>
         )}

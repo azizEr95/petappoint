@@ -12,10 +12,10 @@ export function PetCard({
 }: PetCardProps) {
   // Calculate age from date of birth
   const getAge = () => {
-    if (!animal.dateofbirth) return 'Unbekannt'
+    if (!animal.dateOfBirth) return 'Unbekannt'
 
     const now = new Date()
-    const birth = new Date(animal.dateofbirth)
+    const birth = new Date(animal.dateOfBirth)
     const years = now.getFullYear() - birth.getFullYear()
     const months = now.getMonth() - birth.getMonth()
     const totalMonths = years * 12 + months

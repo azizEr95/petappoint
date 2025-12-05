@@ -44,7 +44,12 @@ export default function Footer() {
                 <a href="#for-vets">Für Tierärzte</a>
               </li>
               <li>
-                <Link to="/search">Tierarzt finden</Link>
+                <Link
+                  to="/search"
+                  search={{ name: '', address: '', animalType: '', serviceType: '' }}
+                >
+                  Tierarzt finden
+                </Link>
               </li>
             </ul>
           </Col>
