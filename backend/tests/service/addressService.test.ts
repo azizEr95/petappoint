@@ -1,14 +1,8 @@
-// WICHTIG: Zuerst den singleton importieren, damit das Mocking funktioniert
-import { prismaMock } from "../../testConfig/mockConfig";
-// Danach die Types importieren
-import { addresses } from "../../generated/prisma";
-// Dann den Service importieren
+import { prisma } from "../../testConfig/integrationConfig";
 import { addressService } from "../../src/service/addressService";
 
 describe("addressService", () => {
-  // Test-Datenvorbereitung
-  const mockAddress: addresses = {
-    id: 1,
+  const addressData = {
     street: "Musterstraße 123",
     citycode: "10115",
     city: "Berlin",
@@ -19,50 +13,43 @@ describe("addressService", () => {
 
   describe("create", () => {
     it("sollte eine neue Adresse erstellen", async () => {
-      prismaMock.addresses.create.mockResolvedValue(mockAddress);
+      const result = await addressService.create(addressData);
 
-      const result = await addressService.create(mockAddress);
+      expect(result.street).toBe(addressData.street);
+      expect(result.city).toBe(addressData.city);
 
-      expect(result).toEqual(mockAddress);
-      expect(prismaMock.addresses.create).toHaveBeenCalledWith({
-        data: mockAddress,
-      });
-      expect(prismaMock.addresses.create).toHaveBeenCalledTimes(1);
+      const dbAddress = await prisma.addresses.findUnique({ where: { id: result.id } });
+      expect(dbAddress).not.toBeNull();
+      expect(dbAddress?.street).toBe(addressData.street);
     });
 
     it("sollte einen Fehler werfen, wenn die Erstellung fehlschlägt", async () => {
-      const error = new Error("Database error");
-      prismaMock.addresses.create.mockRejectedValue(error);
+      const invalidData = { ...addressData, street: null } as any;
 
-      await expect(addressService.create(mockAddress)).rejects.toThrow("Database error");
+      await expect(addressService.create(invalidData)).rejects.toThrow();
     });
   });
 
   describe("getById", () => {
     it("sollte eine Adresse anhand der ID finden", async () => {
-      prismaMock.addresses.findUnique.mockResolvedValue(mockAddress);
+      const created = await prisma.addresses.create({ data: addressData });
 
-      const result = await addressService.getById(1);
+      const result = await addressService.getById(created.id);
 
-      expect(result).toEqual(mockAddress);
-      expect(prismaMock.addresses.findUnique).toHaveBeenCalledWith({
-        where: { id: 1 },
-      });
+      expect(result.id).toBe(created.id);
+      expect(result.street).toBe(addressData.street);
     });
 
     it("sollte einen Fehler werfen, wenn die Adresse nicht gefunden wird", async () => {
-      prismaMock.addresses.findUnique.mockResolvedValue(null);
-
-      await expect(addressService.getById(999)).rejects.toThrow("Address with 999 does not exist");
+      await expect(addressService.getById(999999)).rejects.toThrow("Address with 999999 does not exist");
     });
   });
 
   describe("getAll", () => {
     it("sollte alle Adressen finden", async () => {
-      const mockAddresses = [
-        mockAddress,
-        {
-          id: 2,
+      await prisma.addresses.create({ data: addressData });
+      await prisma.addresses.create({
+        data: {
           street: "Alexanderplatz 1",
           citycode: "10178",
           city: "Berlin",
@@ -70,8 +57,9 @@ describe("addressService", () => {
           longitude: 13.413215,
           latitude: 52.521918,
         },
-        {
-          id: 3,
+      });
+      await prisma.addresses.create({
+        data: {
           street: "Kurfürstendamm 234",
           citycode: "10719",
           city: "Berlin",
@@ -79,20 +67,15 @@ describe("addressService", () => {
           longitude: 13.285034,
           latitude: 52.502314,
         },
-      ];
-
-      prismaMock.addresses.findMany.mockResolvedValue(mockAddresses);
+      });
 
       const result = await addressService.getAll();
 
-      expect(result).toEqual(mockAddresses);
-      expect(prismaMock.addresses.findMany).toHaveBeenCalledWith();
       expect(result.length).toBe(3);
+      expect(result.some(a => a.street === addressData.street)).toBe(true);
     });
 
     it("sollte ein leeres Array zurückgeben, wenn keine Adressen existieren", async () => {
-      prismaMock.addresses.findMany.mockResolvedValue([]);
-
       const result = await addressService.getAll();
 
       expect(result).toEqual([]);
@@ -102,54 +85,47 @@ describe("addressService", () => {
 
   describe("update", () => {
     it("sollte eine Adresse aktualisieren", async () => {
-      const updatedAddress = {
-        ...mockAddress,
+      const created = await prisma.addresses.create({ data: addressData });
+      const updatedData = {
+        ...created,
         street: "Neue Straße 456",
         citycode: "10117",
       };
 
-      prismaMock.addresses.update.mockResolvedValue(updatedAddress);
+      const result = await addressService.update(updatedData);
 
-      const result = await addressService.update(updatedAddress);
+      expect(result.street).toBe("Neue Straße 456");
+      expect(result.citycode).toBe("10117");
 
-      expect(result).toEqual(updatedAddress);
-      expect(prismaMock.addresses.update).toHaveBeenCalledWith({
-        where: { id: updatedAddress.id },
-        data: updatedAddress,
-      });
+      const dbAddress = await prisma.addresses.findUnique({ where: { id: created.id } });
+      expect(dbAddress?.street).toBe("Neue Straße 456");
     });
 
     it("sollte einen Fehler werfen, wenn keine ID für das Update angegeben wird", async () => {
-      const addressWithoutId = { ...mockAddress, id: undefined } as any;
+      const addressWithoutId = { ...addressData, id: undefined } as any;
 
       await expect(addressService.update(addressWithoutId)).rejects.toThrow("ID is required for update");
     });
 
     it("sollte einen Fehler werfen, wenn die zu aktualisierende Adresse nicht existiert", async () => {
-      const error = new Error("Record to update not found");
-      prismaMock.addresses.update.mockRejectedValue(error);
+      const nonExistentAddress = { ...addressData, id: 999999 };
 
-      await expect(addressService.update({ ...mockAddress, id: 999 })).rejects.toThrow("Record to update not found");
+      await expect(addressService.update(nonExistentAddress)).rejects.toThrow();
     });
   });
 
   describe("delete", () => {
     it("sollte eine Adresse löschen", async () => {
-      prismaMock.addresses.delete.mockResolvedValue(mockAddress);
+      const created = await prisma.addresses.create({ data: addressData });
 
-      await addressService.delete(1);
+      await addressService.delete(created.id);
 
-      expect(prismaMock.addresses.delete).toHaveBeenCalledWith({
-        where: { id: 1 },
-      });
-      expect(prismaMock.addresses.delete).toHaveBeenCalledTimes(1);
+      const dbAddress = await prisma.addresses.findUnique({ where: { id: created.id } });
+      expect(dbAddress).toBeNull();
     });
 
     it("sollte einen Fehler werfen, wenn die zu löschende Adresse nicht existiert", async () => {
-      const error = new Error("Record to delete does not exist");
-      prismaMock.addresses.delete.mockRejectedValue(error);
-
-      await expect(addressService.delete(999)).rejects.toThrow("Record to delete does not exist");
+      await expect(addressService.delete(999999)).rejects.toThrow();
     });
   });
 });
