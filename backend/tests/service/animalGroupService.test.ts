@@ -1,83 +1,59 @@
-// WICHTIG: Zuerst den singleton importieren, damit das Mocking funktioniert
-import { prismaMock } from "../../testConfig/mockConfig";
-// Danach die Types importieren
-import { animalgroup } from "../../generated/prisma";
-// Dann den Service importieren
+import { prisma } from "../../testConfig/integrationConfig";
 import { animalGroupService } from "../../src/service/animalGroupService";
 
 describe("animalGroupService", () => {
-  // Test-Datenvorbereitung
-  const mockAnimalGroup: animalgroup = {
-    id: 1,
+  const animalGroupData = {
     name: "Haustiere",
   };
 
   describe("create", () => {
     it("sollte eine neue Tiergruppe erstellen", async () => {
-      prismaMock.animalgroup.create.mockResolvedValue(mockAnimalGroup);
+      const result = await animalGroupService.create(animalGroupData);
 
-      const result = await animalGroupService.create(mockAnimalGroup);
+      expect(result.name).toBe(animalGroupData.name);
 
-      expect(result).toEqual(mockAnimalGroup);
-      expect(prismaMock.animalgroup.create).toHaveBeenCalledWith({
-        data: mockAnimalGroup,
-      });
-      expect(prismaMock.animalgroup.create).toHaveBeenCalledTimes(1);
+      const dbGroup = await prisma.animalgroup.findUnique({ where: { id: result.id } });
+      expect(dbGroup).not.toBeNull();
+      expect(dbGroup?.name).toBe(animalGroupData.name);
     });
 
     it("sollte einen Fehler werfen, wenn die Erstellung fehlschlägt", async () => {
-      const error = new Error("Database error");
-      prismaMock.animalgroup.create.mockRejectedValue(error);
+      const invalidData = { name: null } as any;
 
-      await expect(animalGroupService.create(mockAnimalGroup)).rejects.toThrow("Database error");
+      await expect(animalGroupService.create(invalidData)).rejects.toThrow();
     });
   });
 
   describe("getById", () => {
     it("sollte eine Tiergruppe anhand der ID finden", async () => {
-      prismaMock.animalgroup.findUnique.mockResolvedValue(mockAnimalGroup);
+      const created = await prisma.animalgroup.create({ data: animalGroupData });
 
-      const result = await animalGroupService.getById(1);
+      const result = await animalGroupService.getById(created.id);
 
-      expect(result).toEqual(mockAnimalGroup);
-      expect(prismaMock.animalgroup.findUnique).toHaveBeenCalledWith({
-        where: { id: 1 },
-      });
+      expect(result.id).toBe(created.id);
+      expect(result.name).toBe(animalGroupData.name);
     });
 
     it("sollte einen Fehler werfen, wenn die Tiergruppe nicht gefunden wird", async () => {
-      prismaMock.animalgroup.findUnique.mockResolvedValue(null);
-
-      await expect(animalGroupService.getById(999)).rejects.toThrow("Animal group with ID 999 does not exist");
+      await expect(animalGroupService.getById(999999)).rejects.toThrow("Animal group with ID 999999 does not exist");
     });
   });
 
   describe("getAll", () => {
     it("sollte alle Tiergruppen finden", async () => {
-      const mockAnimalGroups = [
-        mockAnimalGroup,
-        {
-          id: 2,
-          name: "Nutztiere",
-        },
-        {
-          id: 3,
-          name: "Wildtiere",
-        },
-      ];
-
-      prismaMock.animalgroup.findMany.mockResolvedValue(mockAnimalGroups);
+      await prisma.animalgroup.create({ data: animalGroupData });
+      await prisma.animalgroup.create({ data: { name: "Nutztiere" } });
+      await prisma.animalgroup.create({ data: { name: "Wildtiere" } });
 
       const result = await animalGroupService.getAll();
 
-      expect(result).toEqual(mockAnimalGroups);
-      expect(prismaMock.animalgroup.findMany).toHaveBeenCalledWith();
       expect(result.length).toBe(3);
+      expect(result.some(g => g.name === "Haustiere")).toBe(true);
+      expect(result.some(g => g.name === "Nutztiere")).toBe(true);
+      expect(result.some(g => g.name === "Wildtiere")).toBe(true);
     });
 
     it("sollte ein leeres Array zurückgeben, wenn keine Tiergruppen existieren", async () => {
-      prismaMock.animalgroup.findMany.mockResolvedValue([]);
-
       const result = await animalGroupService.getAll();
 
       expect(result).toEqual([]);
@@ -87,55 +63,45 @@ describe("animalGroupService", () => {
 
   describe("update", () => {
     it("sollte eine Tiergruppe aktualisieren", async () => {
-      const updatedAnimalGroup = {
-        ...mockAnimalGroup,
+      const created = await prisma.animalgroup.create({ data: animalGroupData });
+      const updatedData = {
+        ...created,
         name: "Heimtiere",
       };
 
-      prismaMock.animalgroup.update.mockResolvedValue(updatedAnimalGroup);
+      const result = await animalGroupService.update(updatedData);
 
-      const result = await animalGroupService.update(updatedAnimalGroup);
+      expect(result.name).toBe("Heimtiere");
 
-      expect(result).toEqual(updatedAnimalGroup);
-      expect(prismaMock.animalgroup.update).toHaveBeenCalledWith({
-        where: { id: updatedAnimalGroup.id },
-        data: updatedAnimalGroup,
-      });
+      const dbGroup = await prisma.animalgroup.findUnique({ where: { id: created.id } });
+      expect(dbGroup?.name).toBe("Heimtiere");
     });
 
     it("sollte einen Fehler werfen, wenn keine ID für das Update angegeben wird", async () => {
-      const groupWithoutId = { ...mockAnimalGroup, id: undefined } as any;
+      const groupWithoutId = { ...animalGroupData, id: undefined } as any;
 
       await expect(animalGroupService.update(groupWithoutId)).rejects.toThrow("ID is required for update");
     });
 
     it("sollte einen Fehler werfen, wenn die zu aktualisierende Tiergruppe nicht existiert", async () => {
-      const error = new Error("Record to update not found");
-      prismaMock.animalgroup.update.mockRejectedValue(error);
+      const nonExistentGroup = { ...animalGroupData, id: 999999 };
 
-      await expect(animalGroupService.update({ ...mockAnimalGroup, id: 999 })).rejects.toThrow(
-        "Record to update not found"
-      );
+      await expect(animalGroupService.update(nonExistentGroup)).rejects.toThrow();
     });
   });
 
   describe("delete", () => {
     it("sollte eine Tiergruppe löschen", async () => {
-      prismaMock.animalgroup.delete.mockResolvedValue(mockAnimalGroup);
+      const created = await prisma.animalgroup.create({ data: animalGroupData });
 
-      await animalGroupService.delete(1);
+      await animalGroupService.delete(created.id);
 
-      expect(prismaMock.animalgroup.delete).toHaveBeenCalledWith({
-        where: { id: 1 },
-      });
-      expect(prismaMock.animalgroup.delete).toHaveBeenCalledTimes(1);
+      const dbGroup = await prisma.animalgroup.findUnique({ where: { id: created.id } });
+      expect(dbGroup).toBeNull();
     });
 
     it("sollte einen Fehler werfen, wenn die zu löschende Tiergruppe nicht existiert", async () => {
-      const error = new Error("Record to delete does not exist");
-      prismaMock.animalgroup.delete.mockRejectedValue(error);
-
-      await expect(animalGroupService.delete(999)).rejects.toThrow("Record to delete does not exist");
+      await expect(animalGroupService.delete(999999)).rejects.toThrow();
     });
   });
 });
