@@ -1,4 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { useLoginContext } from '../LoginContext'
 import Hero from '../components/landing/Hero'
 import FeaturesOverview from '../components/landing/FeaturesOverview'
 import BenefitsOwners from '../components/landing/BenefitsOwners'
@@ -14,10 +15,12 @@ export const Route = createFileRoute('/')({
 })
 
 function App() {
+  const { login } = useLoginContext()
+
   return (
     <div>
       <Hero />
-      <FeaturesOverview />
+      {!login && <FeaturesOverview />}
       <BenefitsOwners />
       <AppPromo />
       <BenefitsVets />

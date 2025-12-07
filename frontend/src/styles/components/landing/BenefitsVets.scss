@@ -1,11 +1,140 @@
-.benefits-vets-section {
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+@import '../../variables';
+
+#for-vets {
+  background: linear-gradient(to bottom, #ffffff 0%, #f8f9fa 100%);
+  padding: 5rem 0 6rem 0;
+}
+
+.benefits-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2.5rem;
+  margin-top: 3rem;
+  margin-bottom: 3rem;
+}
+
+.benefit-card {
+  background: white;
+  padding: 2.5rem 2rem;
+  border-radius: 16px;
+  border: 2px solid #e5e7eb;
+  text-align: center;
+
+  &:hover .benefit-icon {
+    transform: scale(1.15);
+  }
+}
+
+.benefit-icon-wrapper {
+  margin-bottom: 1.5rem;
+}
+
+.benefit-icon {
+  font-size: 4rem;
+  color: var(--color-primary);
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.benefit-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-primary-dark);
+  margin-bottom: 1rem;
+  letter-spacing: -0.5px;
+}
+
+.benefit-description {
+  color: #6b7280;
+  font-size: 1rem;
+  line-height: 1.7;
+  margin: 0;
 }
 
 .demo-preview {
-  max-width: 700px;
+  background: white;
+  padding: $spacing-lg;
+  border-radius: $border-radius-lg;
+  box-shadow: $box-shadow-md;
+  max-width: 500px;
 }
 
-.icon-lg {
-  font-size: 2rem;
+.demo-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--color-text-dark);
+}
+
+.demo-item {
+  display: flex;
+  align-items: flex-start;
+  gap: $spacing-md;
+  padding: $spacing-md;
+  background: var(--color-primary-pale);
+  border-radius: $border-radius-sm;
+
+  i {
+    font-size: 1.5rem;
+    color: var(--color-primary);
+    margin-top: 0.25rem;
+    flex-shrink: 0;
+  }
+}
+
+.demo-content {
+  text-align: left;
+  flex: 1;
+
+  strong {
+    display: block;
+    color: var(--color-text-dark);
+    margin-bottom: 0.25rem;
+  }
+}
+
+.demo-subtitle {
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+}
+
+.btn-primary {
+  background: var(--color-primary);
+  border: none;
+  border-radius: $border-radius-pill;
+  font-weight: 600;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: var(--color-primary-dark);
+    transform: translateY(-2px);
+    box-shadow: $box-shadow-lg;
+  }
+
+  i {
+    margin-right: 0.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  #for-vets {
+    padding: 3rem 0 4rem 0;
+  }
+
+  .benefits-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+
+  .benefit-card {
+    padding: 2rem 1.5rem;
+  }
+
+  .benefit-icon {
+    font-size: 3.5rem;
+  }
+
+  .demo-preview {
+    padding: $spacing-md;
+  }
 }

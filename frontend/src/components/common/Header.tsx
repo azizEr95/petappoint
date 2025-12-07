@@ -27,9 +27,6 @@ export default function Header() {
           </Link>
 
           <div className="nav-links-clean">
-            <Link to="/" className="nav-link-clean">
-              Start
-            </Link>
             {login ? (
               <>
                 <Link to="/dashboard" className="nav-link-clean">
