@@ -1,81 +1,69 @@
-import { Card, Col, Container, Row } from 'react-bootstrap'
 import { Link } from '@tanstack/react-router'
 import '../../styles/components/landing/BenefitsVets.scss'
 
 export default function BenefitsVets() {
   const benefits = [
     {
-      icon: '📊',
+      icon: 'bi-graph-up-arrow',
       title: 'Effiziente Terminverwaltung',
       description:
         'Automatische Terminplanung spart Zeit und reduziert No-Shows',
     },
     {
-      icon: '🎯',
+      icon: 'bi-eye',
       title: 'Mehr Sichtbarkeit',
       description: 'Erreichen Sie neue Patienten durch unsere Plattform',
     },
     {
-      icon: '📱',
+      icon: 'bi-phone-landscape',
       title: 'Digitale Praxisverwaltung',
       description: 'Alle Termine und Patientendaten zentral verwalten',
-    },
-    {
-      icon: '💬',
-      title: 'Direkter Kontakt',
-      description: 'Kommunizieren Sie einfach mit Ihren Patienten',
     },
   ]
 
   return (
-    <section id="for-vets" className="section-padding benefits-vets-section">
-      <Container>
-        <div className="text-center mb-5">
-          <h2 className="section-title">Vorteile für Tierärzte</h2>
-          <p className="section-subtitle">
-            Über 500 Praxen vertrauen bereits auf vetilib
-          </p>
+    <section id="for-vets" className="section">
+      <div className="container">
+        <h2 className="section-title">Vorteile für Tierärzte</h2>
+        <p className="section-subtitle">
+          Über 500 Praxen vertrauen bereits auf Vetlib
+        </p>
+
+        <div className="benefits-grid mb-5">
+          {benefits.map((benefit, index) => (
+            <div key={index} className="benefit-card">
+              <div className="benefit-icon-wrapper">
+                <i className={`${benefit.icon} benefit-icon`}></i>
+              </div>
+              <h3 className="benefit-title">{benefit.title}</h3>
+              <p className="benefit-description">{benefit.description}</p>
+            </div>
+          ))}
         </div>
 
-        <Row className="g-4 mb-5">
-          {benefits.map((benefit, index) => (
-            <Col key={index} md={6} lg={3}>
-              <Card className="benefit-card h-100 border-0 shadow-sm">
-                <Card.Body className="text-center p-4">
-                  <div className="benefit-icon mb-3">{benefit.icon}</div>
-                  <Card.Title className="h5 mb-2">{benefit.title}</Card.Title>
-                  <Card.Text className="text-muted small">
-                    {benefit.description}
-                  </Card.Text>
-                </Card.Body>
-              </Card>
-            </Col>
-          ))}
-        </Row>
-
         <div className="text-center">
-          <div className="demo-preview bg-white p-5 rounded-3 shadow-sm mb-4 mx-auto">
-            <h5 className="mb-3">Praxis-Dashboard Vorschau</h5>
-            <div className="d-flex flex-column gap-2">
-              <div className="d-flex align-items-center p-3 bg-light rounded">
-                <i className="bi bi-calendar-check text-success me-3 icon-lg"></i>
-                <div className="text-start flex-grow-1">
+          <div className="demo-preview mb-4 mx-auto">
+            <h5 className="demo-title mb-4">Praxis-Dashboard Vorschau</h5>
+            <div className="d-flex flex-column gap-3">
+              <div className="demo-item">
+                <i className="bi bi-calendar-check"></i>
+                <div className="demo-content">
                   <strong>Heute: 12 Termine</strong>
-                  <div className="text-muted small">Nächster in 15 Min</div>
+                  <div className="demo-subtitle">Nächster in 15 Min</div>
                 </div>
               </div>
-              <div className="d-flex align-items-center p-3 bg-light rounded">
-                <i className="bi bi-people text-primary me-3 icon-lg"></i>
-                <div className="text-start flex-grow-1">
+              <div className="demo-item">
+                <i className="bi bi-people"></i>
+                <div className="demo-content">
                   <strong>47 neue Patienten</strong>
-                  <div className="text-muted small">Diesen Monat</div>
+                  <div className="demo-subtitle">Diesen Monat</div>
                 </div>
               </div>
-              <div className="d-flex align-items-center p-3 bg-light rounded">
-                <i className="bi bi-star-fill text-warning me-3 icon-lg"></i>
-                <div className="text-start flex-grow-1">
+              <div className="demo-item">
+                <i className="bi bi-star-fill"></i>
+                <div className="demo-content">
                   <strong>4.8 ★ Bewertung</strong>
-                  <div className="text-muted small">128 Bewertungen</div>
+                  <div className="demo-subtitle">128 Bewertungen</div>
                 </div>
               </div>
             </div>
@@ -83,38 +71,18 @@ export default function BenefitsVets() {
 
           <Link
             to="/registration/veterinary"
-            className="btn btn-success btn-lg px-5 py-3"
+            className="btn btn-primary btn-lg px-5 py-3 mb-3 text-white"
           >
             <i className="bi bi-building me-2"></i>
             Praxis jetzt anmelden
           </Link>
-          <div className="mt-3">
+          <div>
             <small className="text-muted">
               Kostenlos für die ersten 3 Monate
             </small>
           </div>
         </div>
-      </Container>
-
-      <style>{`
-        .benefit-card {
-          transition: transform 0.3s, box-shadow 0.3s;
-          border-radius: 12px;
-        }
-
-        .benefit-card:hover {
-          transform: translateY(-5px);
-          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
-        }
-
-        .benefit-icon {
-          font-size: 2.5rem;
-        }
-
-        .demo-preview {
-          border: 2px dashed #dee2e6;
-        }
-      `}</style>
+      </div>
     </section>
   )
 }

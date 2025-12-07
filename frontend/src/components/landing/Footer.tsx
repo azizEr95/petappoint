@@ -110,14 +110,14 @@ export default function Footer() {
                 </Button>
               </div>
             </Form>
-            <div className="mt-3">
-              <small className="text-light">App herunterladen:</small>
-              <div className="d-flex gap-2 mt-2">
-                <Button variant="outline-light" size="sm">
+            <div className="mt-4 app-download-section">
+              <small className="text-light d-block mb-3">App herunterladen:</small>
+              <div className="d-flex gap-2">
+                <Button className="app-download-btn">
                   <i className="bi bi-apple me-1"></i>
                   iOS
                 </Button>
-                <Button variant="outline-light" size="sm">
+                <Button className="app-download-btn">
                   <i className="bi bi-google-play me-1"></i>
                   Android
                 </Button>

@@ -1,4 +1,5 @@
 import { Accordion, Col, Container, Row } from 'react-bootstrap'
+import '../../styles/components/landing/FAQ.scss'
 
 export default function FAQ() {
   const faqTierhalter = [
@@ -48,7 +49,7 @@ export default function FAQ() {
   ]
 
   return (
-    <section className="section-padding">
+    <section className="faq-section section-padding">
       <Container>
         <div className="text-center mb-5">
           <h2 className="section-title">Häufig gestellte Fragen</h2>
@@ -59,11 +60,11 @@ export default function FAQ() {
 
         <Row>
           <Col lg={6} className="mb-4">
-            <h4 className="mb-3">
-              <i className="bi bi-person-circle text-success me-2"></i>
+            <h4 className="faq-category-title mb-4">
+              <i className="bi bi-person-circle me-2"></i>
               Für Tierhalter
             </h4>
-            <Accordion>
+            <Accordion className="faq-accordion">
               {faqTierhalter.map((faq, index) => (
                 <Accordion.Item key={index} eventKey={String(index)}>
                   <Accordion.Header>{faq.question}</Accordion.Header>
@@ -74,11 +75,11 @@ export default function FAQ() {
           </Col>
 
           <Col lg={6} className="mb-4">
-            <h4 className="mb-3">
-              <i className="bi bi-building text-success me-2"></i>
+            <h4 className="faq-category-title mb-4">
+              <i className="bi bi-building me-2"></i>
               Für Tierärzte
             </h4>
-            <Accordion>
+            <Accordion className="faq-accordion">
               {faqTieraerzte.map((faq, index) => (
                 <Accordion.Item key={index} eventKey={String(index)}>
                   <Accordion.Header>{faq.question}</Accordion.Header>
@@ -90,9 +91,9 @@ export default function FAQ() {
         </Row>
 
         <div className="text-center mt-5">
-          <p className="text-muted">
+          <p className="faq-contact">
             Weitere Fragen?{' '}
-            <a href="#contact" className="text-success fw-bold">
+            <a href="#contact">
               Kontaktieren Sie uns
             </a>
           </p>
