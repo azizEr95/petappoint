@@ -1,5 +1,6 @@
 import { Outlet, createRootRoute } from '@tanstack/react-router'
 import Header from '../components/common/Header'
+import Breadcrumb from '../components/common/Breadcrumb'
 
 export const Route = createRootRoute({
   component: RootComponent,
@@ -10,6 +11,7 @@ function RootComponent() {
   return (
     <>
       <Header />
+      <Breadcrumb />
       <Outlet />
     </>
   )
