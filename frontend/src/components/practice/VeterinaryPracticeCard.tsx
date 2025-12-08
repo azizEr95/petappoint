@@ -1,10 +1,12 @@
-import { useQueryClient } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import '../../styles/components/practice/VeterinaryPracticeCard.scss'
 import { useNavigate } from '@tanstack/react-router'
+import { getAnimaltypesFromPractice } from '../../api/AnimalTypeAPI.ts'
 import { NextAvailableAppointments } from './NextAvailableAppointments.tsx'
 import { FavoritePractice } from './FavoritePractice.tsx'
 import type { MouseEvent } from 'react'
 import type {
+  AnimalTypeType,
   AppointmentFilterType,
   VeterinaryPracticesType,
 } from '../../../../shared/schemas/ZodSchemas'
@@ -37,6 +39,26 @@ export function VeterinaryPracticeCard({
     })
   }
 
+  // get all AnimalTypes from practice
+  const {
+    isSuccess: isSuccessAnimaltypesPractice,
+    data: dataAnimaltypesPractice,
+  } = useQuery<Array<AnimalTypeType>>({
+    queryKey: ['AnimaltypesPractice', practice.id],
+    queryFn: () => getAnimaltypesFromPractice(practice.id.toString()),
+    retry: false
+  })
+
+  let animalTypesString = ''
+  if (isSuccessAnimaltypesPractice) {
+    for (const animalType of dataAnimaltypesPractice) {
+      if (animalTypesString !== '') {
+        animalTypesString = animalTypesString + ', '
+      }
+      animalTypesString = animalTypesString + animalType.name
+    }
+  }
+
   return (
     <div className="praxis-card-modern">
       <div className="card-content">
@@ -46,8 +68,10 @@ export function VeterinaryPracticeCard({
               {practice.name}
               <FavoritePractice practice={practice} />
             </h3>
-            {practice.info && (
+            {practice.info && (<>
               <p className="praxis-description">{practice.info}</p>
+              {animalTypesString !== "" && <p>Tierarten: {animalTypesString}</p>}
+            </>
             )}
 
             <div className="praxis-details">

@@ -17,7 +17,9 @@ import { getAnimalsFromUser } from '../../../../api/AnimalsAPI'
 import { getAllAvailableServices, getServicesFromVeterinary } from '../../../../api/ServicesAPI'
 import { LoginForm } from '../../../../components/Login'
 import { StatusBooking } from '../../../../types/booking'
+import { getAnimaltypesFromVeterinary } from '../../../../api/AnimalTypeAPI'
 import type {
+  AnimalTypeType,
   AnimalsType,
   AppointmentsType,
   ServiceType,
@@ -100,9 +102,25 @@ function BookingComponent() {
     enabled: appointment !== undefined,
   })
 
-  // TODO: load all Animaltypes from veterinary
+  // load all Animaltypes from veterinary
+  const {
+    isSuccess: isSuccessAnimaltypesVeterinary,
+    data: dataAnimaltypesVeterinary,
+  } = useQuery<Array<AnimalTypeType>>({
+    queryKey: ['allAnimaltypesVeterinary', appointment?.veterinary.id],
+    queryFn: () => getAnimaltypesFromVeterinary(appointment?.veterinary.id.toString() ?? ""), // appointment is always defined if enabled
+    retry: false,
+    enabled: appointment !== undefined,
+  })
 
-  // useEffect for theses: if filterTreatAnimaltype is empty, set this to all Animaltypes from the veterinary
+  useEffect(() => {
+    if (isSuccessAnimaltypesVeterinary) {
+      if (filterTreatAnimaltypes.length === 0) {
+        const allAnimaltypeIds = dataAnimaltypesVeterinary.map((animalType) => animalType.id);
+        setFilterTreatAnimaltypes(allAnimaltypeIds);
+      }
+    }
+  }, [isSuccessAnimaltypesVeterinary, dataAnimaltypesVeterinary])
 
   // load animal if it was in filter selected:
   const { isSuccess: isSuccessAnimal, data: dataAnimal } = useQuery<
@@ -134,6 +152,7 @@ function BookingComponent() {
     if (
       serviceType !== null &&
       serviceType !== undefined &&
+      serviceType.length > 0 &&
       isSuccessAppointment && isSuccessAllServices
     ) {
       const uniqueService = new Set(serviceType)
@@ -163,11 +182,15 @@ function BookingComponent() {
           setStatus(StatusBooking.login)
         }
       }
-      if(foundService.length === 0 && isSuccessServicesVeterinary){ // no services found, set all services from the veterinary
+      if (foundService.length === 0 && isSuccessServicesVeterinary) { // no services found, set all services from the veterinary
         setFoundFilteredServices(dataServicesVeterinary);
       }
+    } else if (serviceType?.length === 0) { // if no filter was selected, show all available services
+      if (isSuccessAppointment) {
+        setFoundFilteredServices(dataAppointment.availableServices);
+      }
     }
-  }, [serviceType, isSuccessAppointment, dataAppointment, selectedService, isSuccessAllServices, isSuccessServicesVeterinary])
+  }, [serviceType, isSuccessAppointment, dataAppointment, selectedService, isSuccessAllServices, dataAllServices, isSuccessServicesVeterinary, dataServicesVeterinary])
 
   useEffect(() => {
     if (isPendingPractice || isPendingAppointment) {
@@ -279,6 +302,7 @@ function BookingComponent() {
     navigate({
       state: {
         selectedAnimal: selectedAnimal,
+        serviceType: serviceType // only to save in state
       }
     })
 

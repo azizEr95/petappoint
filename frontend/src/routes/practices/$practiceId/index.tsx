@@ -25,7 +25,6 @@ function VeterinaryPractice() {
   const navigate = useNavigate()
   const location = useLocation()
   const { practiceId } = Route.useParams()
-  let practice = location.state.practice
   let filterOptions = location.state.filterOptions
   const [filterServiceType, setFilterServiceType] = useState<Array<number>>(
     filterOptions?.serviceTypeIds !== undefined
@@ -48,12 +47,11 @@ function VeterinaryPractice() {
   }
 
   // load VeterinaryPractices:
-  const { isError, isSuccess, isPending, data } =
+  const { isError: isErrorPractice, isSuccess: isSuccessPractice, isPending: isPendingPractice, data: dataPractice } =
     useQuery<VeterinaryPracticesType>({
       queryKey: ['veterinaryPractices', practiceId],
       queryFn: () => getVeterinaryPracticesById(practiceId),
-      retry: false,
-      enabled: practice === undefined,
+      retry: false
     })
 
   // get all AnimalTypes from practice
@@ -61,32 +59,28 @@ function VeterinaryPractice() {
     isSuccess: isSuccessAnimaltypesPractice,
     data: dataAnimaltypesPractice,
   } = useQuery<Array<AnimalTypeType>>({
-    queryKey: ['AnimaltypesPractice', practice?.id],
-    queryFn: () => getAnimaltypesFromPractice(practice?.id.toString() ?? ''),
-    retry: false,
-    enabled: practice?.id !== undefined,
+    queryKey: ['AnimaltypesPractice', practiceId],
+    queryFn: () => getAnimaltypesFromPractice(practiceId),
+    retry: false
   })
 
   useEffect(() => {
-    if (isPending) {
+    if (isPendingPractice) {
       return
     }
 
-    if (isError) {
+    if (isErrorPractice) {
       navigate({ to: '/' })
     }
-  }, [isError, isSuccess, isPending])
+  }, [isErrorPractice, isSuccessPractice, isPendingPractice])
 
   const handleClickBack = () => {
     window.history.back()
   }
 
-  if (!isSuccess && !isPending && practice !== undefined) {
-    return
-  }
-
-  if (isSuccess) {
-    practice = data
+  let practice: VeterinaryPracticesType | undefined = undefined;
+  if (isSuccessPractice) {
+    practice = dataPractice
   }
 
   // practice is here always defined, because of the state or useQuery is success
@@ -200,7 +194,7 @@ function VeterinaryPractice() {
             </div>
           </div>
           <NextAvailableAppointments
-            practiceId={practice.id.toString()}
+            practiceId={practiceId}
             filterOptions={filterOptions}
           />
         </div>
