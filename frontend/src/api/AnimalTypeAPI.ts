@@ -41,6 +41,25 @@ export const getAnimaltypesFromPractice = async (
   return parseAnimalTypeArray(data)
 }
 
+export const getAnimaltypesFromVeterinary = async (
+  id: string,
+): Promise<Array<AnimalTypeType>> => {
+  const res = await fetch(
+    import.meta.env.VITE_API_URL +
+      '/veterinarians/' +
+      id +
+      '/animaltypes',
+    { credentials: 'include' },
+  )
+
+  if (!res.ok) {
+    throw new Error('Failed to fetch getAnimaltypesFromVeterinary')
+  }
+
+  const data = await res.json()
+  return parseAnimalTypeArray(data)
+}
+
 /*
  * safeParse an array of animaltypes
  */
