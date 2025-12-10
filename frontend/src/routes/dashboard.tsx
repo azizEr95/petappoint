@@ -1,10 +1,11 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { DashboardProfileCard } from '../components/dashboard/DashboardProfileCard'
-import { QuickActions } from '../components/dashboard/QuickActions'
+import { DashboardHeader } from '../components/dashboard/DashboardHeader'
 import { DashboardPetsSection } from '../components/dashboard/DashboardPetsSection'
 import { DashboardAppointmentsSection } from '../components/dashboard/DashboardAppointmentsSection'
+import { DashboardFavoritesSection } from '../components/dashboard/DashboardFavoritesSection'
+import Footer from '../components/landing/Footer'
 import { AnimalEditNewDialog } from '../components/animal/AnimalEditNewDialog'
 import { ProfileEditDialog } from '../components/profile/ProfileEditDialog'
 import '../styles/routes/dashboard.scss'
@@ -17,6 +18,7 @@ export const Route = createFileRoute('/dashboard')({
 })
 
 function Dashboard() {
+  const navigate = useNavigate()
   const { login } = useLoginContext()
   if (!login) {
     return
@@ -41,79 +43,86 @@ function Dashboard() {
     setShowAddPetDialog(true)
   }
 
+  const handleBookAppointment = () => {
+    navigate({
+      to: '/search',
+      search: {
+        name: '',
+        address: '',
+        animalType: '',
+        serviceType: '',
+      },
+    })
+  }
+
   if (isLoadingUser || !user) {
     return <div>Loading...</div>
   }
 
   return (
-    <div className="dashboard-page">
-      <div className="dashboard-header">
-        <h1>Mein Dashboard</h1>
-        <p className="dashboard-subtitle">
-          Willkommen zurück! Hier ist eine Übersicht über Ihre Tiere und
-          Termine.
-        </p>
-      </div>
+    <>
+      <div className="dashboard-page">
+        {/* Header with greeting + profile */}
+        <DashboardHeader
+          user={user}
+          avatarUrl={getPictureURLForPersonId(userId)}
+          onEditProfile={handleEditProfile}
+        />
 
-      <div className="dashboard-grid">
-        {/* Profile Section */}
-        <div className="dashboard-section">
-          <div className="section-header">
-            <h2>
-              <i className="bi bi-person-circle"></i> Profil
-            </h2>
+        {/* Main sections grid */}
+        <div className="dashboard-grid">
+          {/* Appointments Section */}
+          <div className="dashboard-section dashboard-section-full">
+            <div className="section-header">
+              <h2>
+                <i className="bi bi-calendar-check"></i> Termine
+              </h2>
+              <button
+                className="btn btn-primary"
+                onClick={handleBookAppointment}
+              >
+                <i className="bi bi-plus-circle"></i> Termin buchen
+              </button>
+            </div>
+            <div className="section-content">
+              <DashboardAppointmentsSection userId={userId} />
+            </div>
           </div>
-          <div className="section-content">
-            <DashboardProfileCard
-              user={user}
-              avatarUrl={getPictureURLForPersonId(userId)}
-              onEdit={handleEditProfile}
-            />
-          </div>
-        </div>
 
-        {/* Quick Actions Section */}
-        <div className="dashboard-section">
-          <div className="section-header">
-            <h2>
-              <i className="bi bi-lightning-charge"></i> Schnellzugriff
-            </h2>
+          {/* Pets Section */}
+          <div className="dashboard-section dashboard-section-full">
+            <div className="section-header">
+              <h2>
+                <i className="bi bi-paw"></i> Meine Tiere
+              </h2>
+              <button
+                className="btn btn-primary btn-add-pet"
+                onClick={handleAddPet}
+              >
+                <i className="bi bi-plus-circle"></i> Tier hinzufügen
+              </button>
+            </div>
+            <div className="section-content">
+              <DashboardPetsSection userId={userId} />
+            </div>
           </div>
-          <div className="section-content">
-            <QuickActions onAddPet={handleAddPet} />
-          </div>
-        </div>
 
-        {/* Pets Section */}
-        <div className="dashboard-section dashboard-section-full">
-          <div className="section-header">
-            <h2>
-              <i className="bi bi-heart"></i> Meine Tiere
-            </h2>
-            <button
-              className="btn btn-primary btn-add-pet"
-              onClick={handleAddPet}
-            >
-              <i className="bi bi-plus-circle"></i> Tier hinzufügen
-            </button>
-          </div>
-          <div className="section-content">
-            <DashboardPetsSection userId={userId} />
-          </div>
-        </div>
-
-        {/* Appointments Section */}
-        <div className="dashboard-section dashboard-section-full">
-          <div className="section-header">
-            <h2>
-              <i className="bi bi-calendar-check"></i> Termine
-            </h2>
-          </div>
-          <div className="section-content">
-            <DashboardAppointmentsSection userId={userId} />
+          {/* Favorites Section */}
+          <div className="dashboard-section dashboard-section-full">
+            <div className="section-header">
+              <h2>
+                <i className="bi bi-star"></i> Favoriten
+              </h2>
+            </div>
+            <div className="section-content">
+              <DashboardFavoritesSection userId={userId} />
+            </div>
           </div>
         </div>
       </div>
+
+      {/* Footer - Full Width */}
+      <Footer />
 
       {/* Animal Dialog */}
       {showAddPetDialog && (
@@ -130,6 +139,6 @@ function Dashboard() {
           person={user}
         />
       )}
-    </div>
+    </>
   )
 }

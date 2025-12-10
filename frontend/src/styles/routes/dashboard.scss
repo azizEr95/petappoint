@@ -10,40 +10,11 @@
   }
 }
 
-.dashboard-header {
-  margin-bottom: var(--spacing-2xl, 4rem);
-
-  h1 {
-    color: var(--color-primary, $primary);
-    font-size: $h2-font-size;
-    font-weight: 700;
-    margin-bottom: var(--spacing-sm, 1rem);
-
-    @media (max-width: 768px) {
-      font-size: $h3-font-size;
-    }
-  }
-
-  .dashboard-subtitle {
-    color: var(--text-light, $text-light);
-    font-size: $font-size-lg;
-    margin: 0;
-
-    @media (max-width: 768px) {
-      font-size: $font-size-base;
-    }
-  }
-}
-
 .dashboard-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--spacing-xl, 3rem);
-
-  @media (max-width: 992px) {
-    grid-template-columns: 1fr;
-    gap: var(--spacing-lg, 2rem);
-  }
+  grid-template-columns: 1fr;
+  gap: var(--spacing-lg, 2rem);
+  margin-top: var(--spacing-2xl, 4rem);
 }
 
 .dashboard-section {
@@ -94,14 +65,24 @@
     .btn-add-pet {
       color: white !important;
       white-space: nowrap;
+      background-color: var(--color-primary, $primary);
 
       &:hover {
         color: white !important;
+        background-color: var(--color-primary-dark, $primary-dark);
       }
     }
   }
 
   .section-content {
     color: var(--text-dark, $text-dark);
+  }
+}
+
+.btn-primary {
+  color: white !important;
+
+  &:hover {
+    color: white !important;
   }
 }
