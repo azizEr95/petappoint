@@ -8,7 +8,7 @@ import { FavoritePracticeCard } from './FavoritePracticeCard'
 import '../../styles/components/dashboard/DashboardFavoritesSection.scss'
 
 type DashboardFavoritesSectionProps = {
-  userId: number
+  userId?: number
 }
 
 export function DashboardFavoritesSection({
@@ -18,7 +18,9 @@ export function DashboardFavoritesSection({
 
   const { data: favoriteIds = [], isLoading } = useQuery<Array<number>>({
     queryKey: ['favoritesVeterinaryPractices', userId],
-    queryFn: () => getFavoritesVeterinaryPractices(userId.toString()),
+    queryFn: () =>
+      getFavoritesVeterinaryPractices(userId ? userId.toString() : ''),
+    enabled: !!userId,
   })
 
   const { mutate: removeFavorite } = useMutation({
@@ -64,10 +66,13 @@ export function DashboardFavoritesSection({
     )
   }
 
+  const limitedFavorites = favoriteIds.slice(0, 3)
+  const hasMoreFavorites = favoriteIds.length > 3
+
   return (
     <div className="dashboard-favorites-section">
       <div className="favorites-grid">
-        {favoriteIds.map((practiceId) => (
+        {limitedFavorites.map((practiceId) => (
           <FavoritePracticeCard
             key={practiceId}
             practiceId={practiceId}
@@ -75,6 +80,17 @@ export function DashboardFavoritesSection({
           />
         ))}
       </div>
+      {hasMoreFavorites && (
+        <div className="favorites-footer">
+          <Link
+            to="/favorites"
+            className="view-all-link"
+          >
+            Alle {favoriteIds.length} Favoriten anzeigen{' '}
+            <i className="bi bi-arrow-right"></i>
+          </Link>
+        </div>
+      )}
     </div>
   )
 }
