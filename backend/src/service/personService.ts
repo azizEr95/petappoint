@@ -243,7 +243,7 @@ export const personService = {
       },
     });
 
-    const filepath = found?.picturePath ?? "public/placeholders/unkown.png";
+    const filepath = found?.picturePath ?? "public/placeholders/unknown.png";
     return path.join(appRootDir, filepath);
   },
 
