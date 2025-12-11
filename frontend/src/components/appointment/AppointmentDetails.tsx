@@ -1,4 +1,3 @@
-import { Button } from 'react-bootstrap'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
@@ -13,10 +12,14 @@ import {
   cancelAppointment,
   updateAppointmentNotes,
 } from '../../api/AppointmentsAPI'
-import { getAnimalsFromUser, getPictureURLForAnimalId } from '../../api/AnimalsAPI'
+import {
+  getAnimalsFromUser,
+  getPictureURLForAnimalId,
+} from '../../api/AnimalsAPI'
 import { getServicesFromPractice } from '../../api/ServicesAPI'
 import { exportToCalendar } from '../../utils/calendarExport'
 import { useLoginContext } from '../../LoginContext'
+import { AppointmentDeleteDialog } from './AppointmentDeleteDialog' // 👈 Import
 import type {
   AnimalsType,
   AppointmentsType,
@@ -48,6 +51,7 @@ export function AppointmentDetails({
   >(undefined)
   const [isFavorite, setIsFavorite] = useState(false)
   const [isLoadingFavorite, setIsLoadingFavorite] = useState(false)
+  const [showCancelDialog, setShowCancelDialog] = useState(false) // 👈 Neu
   const queryClient = useQueryClient()
   const navigate = useNavigate()
 
@@ -56,7 +60,7 @@ export function AppointmentDetails({
   }
 
   const practiceID = appointment.veterinaryPractice.id
-  const userID = login.id // TODO: get from auth context
+  const userID = login.id
 
   const { isSuccess, data } = useQuery<VeterinaryPracticesType>({
     queryKey: ['veterinaryPractice', practiceID],
@@ -138,7 +142,9 @@ export function AppointmentDetails({
     // Load favorite status
     const loadFavoriteStatus = async () => {
       try {
-        const favorites = await getFavoritesVeterinaryPractices(login.id)
+        const favorites = await getFavoritesVeterinaryPractices(
+          String(login.id),
+        )
         setIsFavorite(favorites.includes(appointment.veterinaryPractice.id))
       } catch (error) {
         console.error('Failed to load favorite status:', error)
@@ -159,9 +165,7 @@ export function AppointmentDetails({
   }
 
   const handleCancel = () => {
-    if (window.confirm('Möchten Sie diesen Termin wirklich absagen?')) {
-      cancelMutation.mutate(appointment.id)
-    }
+    setShowCancelDialog(true)
   }
 
   const handleExport = () => {
@@ -201,18 +205,20 @@ export function AppointmentDetails({
     try {
       if (isFavorite) {
         await deleteFavoritesVeterinaryPractices(
-          login.id,
-          appointment.veterinaryPractice.id,
+          String(login.id),
+          String(appointment.veterinaryPractice.id),
         )
       } else {
         await addFavoritesVeterinaryPractices(
-          login.id,
-          appointment.veterinaryPractice.id,
+          String(login.id),
+          String(appointment.veterinaryPractice.id),
         )
       }
       setIsFavorite(!isFavorite)
       queryClient.invalidateQueries({ queryKey: ['veterinaryPractices'] })
-      queryClient.invalidateQueries({ queryKey: ['favoriteVeterinaryPractices'] })
+      queryClient.invalidateQueries({
+        queryKey: ['favoriteVeterinaryPractices'],
+      })
     } catch (error) {
       console.error('Failed to toggle favorite:', error)
     } finally {
@@ -349,7 +355,10 @@ export function AppointmentDetails({
               <i className="bi bi-geo-alt"></i>
               <span>Navigation</span>
             </button>
-            <button className="btn-action btn-reschedule" onClick={handleReschedule}>
+            <button
+              className="btn-action btn-reschedule"
+              onClick={handleReschedule}
+            >
               <i className="bi bi-calendar-event"></i>
               <span>Verschieben</span>
             </button>
@@ -359,7 +368,9 @@ export function AppointmentDetails({
               disabled={cancelMutation.isPending}
             >
               <i className="bi bi-x-circle"></i>
-              <span>{cancelMutation.isPending ? 'Wird abgesagt...' : 'Absagen'}</span>
+              <span>
+                {cancelMutation.isPending ? 'Wird abgesagt...' : 'Absagen'}
+              </span>
             </button>
           </div>
         )}
@@ -381,9 +392,15 @@ export function AppointmentDetails({
                 className="favorite-button"
                 onClick={handleToggleFavorite}
                 disabled={isLoadingFavorite}
-                title={isFavorite ? 'Aus Favoriten entfernen' : 'Zu Favoriten hinzufügen'}
+                title={
+                  isFavorite
+                    ? 'Aus Favoriten entfernen'
+                    : 'Zu Favoriten hinzufügen'
+                }
               >
-                <i className={`bi ${isFavorite ? 'bi-heart-fill' : 'bi-heart'}`}></i>
+                <i
+                  className={`bi ${isFavorite ? 'bi-heart-fill' : 'bi-heart'}`}
+                ></i>
               </button>
             </div>
 
@@ -394,7 +411,8 @@ export function AppointmentDetails({
                 onClick={handleMapsLink}
                 title="Auf Google Maps öffnen"
               >
-                {practice.address.street}, {practice.address.cityCode} {practice.address.city}
+                {practice.address.street}, {practice.address.cityCode}{' '}
+                {practice.address.city}
               </button>
             </div>
 
@@ -418,7 +436,8 @@ export function AppointmentDetails({
                   </select>
                 ) : (
                   <>
-                    {userAnimals?.find((a) => a.id === selectedAnimalId)?.name ||
+                    {userAnimals?.find((a) => a.id === selectedAnimalId)
+                      ?.name ||
                       appointment.animal?.name ||
                       'Nicht zugewiesen'}
                   </>
@@ -441,7 +460,10 @@ export function AppointmentDetails({
                   >
                     <i className="bi bi-check"></i>
                   </button>
-                  <button className="edit-icon-button-mini" onClick={cancelAnimalEdit}>
+                  <button
+                    className="edit-icon-button-mini"
+                    onClick={cancelAnimalEdit}
+                  >
                     <i className="bi bi-x"></i>
                   </button>
                 </div>
@@ -467,8 +489,8 @@ export function AppointmentDetails({
                     ))}
                   </select>
                 ) : (
-                  practiceServices?.find((s) => s.id === selectedServiceId)?.name ||
-                  '-'
+                  practiceServices?.find((s) => s.id === selectedServiceId)
+                    ?.name || '-'
                 )}
               </div>
               {futureAppointment && !editingService && (
@@ -514,6 +536,13 @@ export function AppointmentDetails({
             </div>
           </div>
         </div>
+        {showCancelDialog && (
+          <AppointmentDeleteDialog
+            hideDialogDeleteAppointment={() => setShowCancelDialog(false)}
+            appointmentDelete={appointment}
+            deleteMutation={cancelMutation}
+          />
+        )}
       </div>
     )
   }
