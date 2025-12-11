@@ -5,7 +5,6 @@ import { DashboardHeader } from '../components/dashboard/DashboardHeader'
 import { DashboardPetsSection } from '../components/dashboard/DashboardPetsSection'
 import { DashboardAppointmentsSection } from '../components/dashboard/DashboardAppointmentsSection'
 import { DashboardFavoritesSection } from '../components/dashboard/DashboardFavoritesSection'
-import Footer from '../components/landing/Footer'
 import { AnimalEditNewDialog } from '../components/animal/AnimalEditNewDialog'
 import { ProfileEditDialog } from '../components/profile/ProfileEditDialog'
 import '../styles/routes/dashboard.scss'
@@ -120,9 +119,6 @@ function Dashboard() {
           </div>
         </div>
       </div>
-
-      {/* Footer - Full Width */}
-      <Footer />
 
       {/* Animal Dialog */}
       {showAddPetDialog && (

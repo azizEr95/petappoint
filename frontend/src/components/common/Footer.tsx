@@ -9,7 +9,7 @@ export default function Footer() {
         <Row className="g-4">
           {/* Logo & Description */}
           <Col lg={3} md={6}>
-            <h4 className="fw-bold text-success mb-3">vetilib</h4>
+            <h4 className="fw-bold text-success mb-3">VetiLib</h4>
             <p className="text-light small">
               Ihre moderne Plattform für einfache und schnelle
               Tierarzt-Terminbuchungen.
@@ -46,7 +46,12 @@ export default function Footer() {
               <li>
                 <Link
                   to="/search"
-                  search={{ name: '', address: '', animalType: '', serviceType: '' }}
+                  search={{
+                    name: '',
+                    address: '',
+                    animalType: '',
+                    serviceType: '',
+                  }}
                 >
                   Tierarzt finden
                 </Link>
@@ -111,7 +116,9 @@ export default function Footer() {
               </div>
             </Form>
             <div className="mt-4 app-download-section">
-              <small className="text-light d-block mb-3">App herunterladen:</small>
+              <small className="text-light d-block mb-3">
+                App herunterladen:
+              </small>
               <div className="d-flex gap-2">
                 <Button className="app-download-btn">
                   <i className="bi bi-apple me-1"></i>
