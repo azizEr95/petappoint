@@ -7,8 +7,9 @@
 .appointments-tabs {
   display: flex;
   gap: var(--spacing-sm, 1rem);
+  padding-top: var(--spacing-md, 1.5rem);
   margin-bottom: var(--spacing-lg, 2rem);
-  border-bottom: 2px solid var(--color-bg-light, $bg-light);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .tab-button {

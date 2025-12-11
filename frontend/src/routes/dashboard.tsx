@@ -1,7 +1,6 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { DashboardHeader } from '../components/dashboard/DashboardHeader'
 import { DashboardPetsSection } from '../components/dashboard/DashboardPetsSection'
 import { DashboardAppointmentsSection } from '../components/dashboard/DashboardAppointmentsSection'
 import { DashboardFavoritesSection } from '../components/dashboard/DashboardFavoritesSection'
@@ -33,6 +32,7 @@ function Dashboard() {
 
   const [showAddPetDialog, setShowAddPetDialog] = useState(false)
   const [showEditProfileDialog, setShowEditProfileDialog] = useState(false)
+  const [activeTab, setActiveTab] = useState<'appointments' | 'pets' | 'favorites'>('appointments')
 
   const handleEditProfile = () => {
     setShowEditProfileDialog(true)
@@ -62,61 +62,87 @@ function Dashboard() {
     <>
       <div className="dashboard-page">
         {/* Header with greeting + profile */}
-        <DashboardHeader
-          user={user}
-          avatarUrl={getPictureURLForPersonId(userId, Date.now())}
-          onEditProfile={handleEditProfile}
-        />
-
-        {/* Main sections grid */}
-        <div className="dashboard-grid">
-          {/* Appointments Section */}
-          <div className="dashboard-section dashboard-section-full">
-            <div className="section-header">
-              <h2>
-                <i className="bi bi-calendar-check"></i> Termine
-              </h2>
-              <button
-                className="btn btn-primary"
-                onClick={handleBookAppointment}
-              >
-                <i className="bi bi-plus-circle"></i> Termin buchen
-              </button>
-            </div>
-            <div className="section-content">
-              <DashboardAppointmentsSection userId={userId} />
+        <div className="dashboard-header-section">
+          <div className="dashboard-header-text">
+            <h1 className="greeting-title">Hallo {user.firstName}!</h1>
+            <p className="greeting-subtitle">
+              Willkommen zurück! Hier hast du eine Übersicht über deine Tiere und
+              Termine.
+            </p>
+          </div>
+          <div className="dashboard-header-actions">
+            <button
+              className="dashboard-header-cta"
+              onClick={handleBookAppointment}
+            >
+              <i className="bi bi-calendar-plus"></i> Termin buchen
+            </button>
+            <div className="dashboard-header-profile">
+              <div className="profile-image-wrapper">
+                <img
+                  src={getPictureURLForPersonId(userId, Date.now())}
+                  alt={`${user.firstName} ${user.lastName}`}
+                  className="profile-image"
+                />
+                <button
+                  className="profile-edit-btn"
+                  onClick={handleEditProfile}
+                  title="Profil bearbeiten"
+                >
+                  <i className="bi bi-pencil"></i>
+                </button>
+              </div>
             </div>
           </div>
+        </div>
 
-          {/* Pets Section */}
-          <div className="dashboard-section dashboard-section-full">
-            <div className="section-header">
-              <h2>
-                <i className="bi bi-paw"></i> Meine Tiere
-              </h2>
-              <button
-                className="btn btn-primary btn-add-pet"
-                onClick={handleAddPet}
-              >
-                <i className="bi bi-plus-circle"></i> Tier hinzufügen
-              </button>
-            </div>
-            <div className="section-content">
+        {/* Tab Navigation Header */}
+        <div className="dashboard-tabs-header">
+          <div className="dashboard-tabs">
+            <button
+              className={`dashboard-tab ${activeTab === 'appointments' ? 'active' : ''}`}
+              onClick={() => setActiveTab('appointments')}
+            >
+              <i className="bi bi-calendar-check"></i> Termine
+            </button>
+            <button
+              className={`dashboard-tab ${activeTab === 'pets' ? 'active' : ''}`}
+              onClick={() => setActiveTab('pets')}
+            >
+              <i className="bi bi-paw"></i> Meine Tiere
+            </button>
+            <button
+              className={`dashboard-tab ${activeTab === 'favorites' ? 'active' : ''}`}
+              onClick={() => setActiveTab('favorites')}
+            >
+              <i className="bi bi-star"></i> Favoriten
+            </button>
+          </div>
+        </div>
+
+        {/* Tab Content */}
+        <div className="dashboard-content">
+          {activeTab === 'appointments' && (
+            <DashboardAppointmentsSection userId={userId} />
+          )}
+
+          {activeTab === 'pets' && (
+            <>
+              <div className="section-actions">
+                <button
+                  className="btn btn-primary btn-add-pet"
+                  onClick={handleAddPet}
+                >
+                  <i className="bi bi-plus-circle"></i> Tier hinzufügen
+                </button>
+              </div>
               <DashboardPetsSection userId={userId} />
-            </div>
-          </div>
+            </>
+          )}
 
-          {/* Favorites Section */}
-          <div className="dashboard-section dashboard-section-full">
-            <div className="section-header">
-              <h2>
-                <i className="bi bi-star"></i> Favoriten
-              </h2>
-            </div>
-            <div className="section-content">
-              <DashboardFavoritesSection userId={userId} />
-            </div>
-          </div>
+          {activeTab === 'favorites' && (
+            <DashboardFavoritesSection userId={userId} />
+          )}
         </div>
       </div>
 

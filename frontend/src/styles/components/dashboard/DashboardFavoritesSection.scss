@@ -54,6 +54,7 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: var(--spacing-lg, 2rem);
+  padding-top: var(--spacing-md, 1.5rem);
 
   @media (max-width: 992px) {
     grid-template-columns: repeat(2, 1fr);
