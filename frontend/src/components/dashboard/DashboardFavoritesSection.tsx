@@ -24,11 +24,13 @@ export function DashboardFavoritesSection({
   })
 
   const { mutate: removeFavorite } = useMutation({
-    mutationFn: (practiceId: number) =>
-      deleteFavoritesVeterinaryPractices(
+    mutationFn: (practiceId: number) => {
+      if (!userId) throw new Error('User not logged in')
+      return deleteFavoritesVeterinaryPractices(
         userId.toString(),
         practiceId.toString(),
-      ),
+      )
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ['favoritesVeterinaryPractices'],

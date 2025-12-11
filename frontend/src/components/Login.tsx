@@ -29,7 +29,13 @@ export function LoginForm({
   const selectedService = location.state.selectedService
 
   const { mutate: mutateLogin } = useMutation({
-    mutationFn: () => loginUser(email, password),
+    mutationFn: async () => {
+      const result = await loginUser(email, password)
+      if (result === false) {
+        throw new Error('Login failed')
+      }
+      return result
+    },
     onError: () => {
       setLogin(false)
       setErrorLogin('Email oder Password falsch')
