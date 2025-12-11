@@ -16,10 +16,6 @@ export function DashboardHeader({
     <div className="dashboard-header">
       <div className="header-greeting">
         <h1 className="greeting-title">Hallo {user.firstName}!</h1>
-        <p className="greeting-subtitle">
-          Willkommen zurück! Hier hast du eine Übersicht über deine Tiere und
-          Termine.
-        </p>
       </div>
 
       <div className="header-profile">
