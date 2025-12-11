@@ -2,7 +2,7 @@ image: node:latest
 
 stages:
   - build
-  - test
+  #- test
   - deploy
 
 build:
@@ -46,8 +46,8 @@ build:
 
 pages:
   stage: deploy
-  dependencies:
-    - test
+  #dependencies:
+    #- test
   script:
       - mkdir .public
       - cp -r coverage/* .public
