@@ -43,8 +43,9 @@ export const updatePerson = async (
   return parsePerson(data)
 }
 
-export const getPictureURLForPersonId = (personId: number): string => {
-  return import.meta.env.VITE_API_URL + '/persons/' + personId + '/picture'
+export const getPictureURLForPersonId = (personId: number, cacheBust?: number): string => {
+  const url = import.meta.env.VITE_API_URL + '/persons/' + personId + '/picture'
+  return cacheBust ? `${url}?t=${cacheBust}` : url
 }
 
 export const uploadPictureForPersonId = async (
