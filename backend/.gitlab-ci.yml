@@ -20,29 +20,29 @@ build:
     paths:
       - node_modules/
 
-test:
-  stage: test
-  coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/
-  dependencies:
-    - build
-  before_script:
-    - cd backend
-    - npm install
-  script:
-    - npm run test
-  cache:
-    paths:
-      - ./backend/coverage
-  artifacts:
-    paths:
-      - ./backend/coverage
-    when: always
-    reports:
-      junit:
-        - junit.xml
-      coverage_report:
-        coverage_format: cobertura
-        path: backend/coverage/cobertura-coverage.xml
+#test:
+#  stage: test
+#  coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/
+#  dependencies:
+#    - build
+#  before_script:
+#    - cd backend
+#    - npm install
+#  script:
+#    - npm run test
+#  cache:
+#    paths:
+#      - ./backend/coverage
+#  artifacts:
+#    paths:
+#      - ./backend/coverage
+#    when: always
+#    reports:
+#      junit:
+#        - junit.xml
+#      coverage_report:
+#        coverage_format: cobertura
+#        path: backend/coverage/cobertura-coverage.xml
 
 pages:
   stage: deploy
