@@ -10,6 +10,7 @@ export const Route = createFileRoute('/animals')({
 
 function Animals() {
   const [showAnimalDialog, setShowAnimalDialog] = useState(false)
+  const [hasAnimals, setHasAnimals] = useState(false)
 
   const { login } = useLoginContext()
   if (!login) {
@@ -26,9 +27,16 @@ function Animals() {
     <div className="container py-5">
       <h1 className="mb-4">Meine Tiere</h1>
       <div>
-        <button className="btn btn-primary btn-add-pet" onClick={handleAddPet}>
-          <i className="bi bi-plus-circle"></i> Tier hinzufügen
-        </button>
+        {!hasAnimals ? (
+          <></>
+        ) : (
+          <button
+            className="btn btn-primary btn-add-pet"
+            onClick={handleAddPet}
+          >
+            <i className="bi bi-plus-circle"></i> Tier hinzufügen
+          </button>
+        )}
         <div>
           {showAnimalDialog && (
             <AnimalEditNewDialog
@@ -40,7 +48,9 @@ function Animals() {
       </div>
       <br />
       <div>
-        <DashboardPetsSection userId={userId} />
+        <DashboardPetsSection 
+        userId={userId} 
+        onAnimalsLoaded={setHasAnimals}/>
       </div>
     </div>
   )
