@@ -44,6 +44,11 @@
   }
 }
 
+.pet-card-actions {
+  display: flex;
+  gap: var(--spacing-sm, 1rem);
+}
+
 .pet-edit-btn {
   background: white;
   border: 2px solid var(--color-primary-light, $primary-light);
@@ -61,6 +66,35 @@
     background: var(--color-primary, $primary);
     color: white;
     transform: scale(1.1);
+  }
+
+  i {
+    font-size: 0.9rem;
+  }
+}
+
+.pet-delete-btn {
+  background: white;
+  border: 2px solid #dc3545;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #dc3545;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover:not(:disabled) {
+    background: #dc3545;
+    color: white;
+    transform: scale(1.1);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
   }
 
   i {
