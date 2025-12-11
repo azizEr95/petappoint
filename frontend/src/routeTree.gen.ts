@@ -19,9 +19,11 @@ import { Route as RegistrationVeterinaryRouteImport } from './routes/registratio
 import { Route as RegistrationVerifyEmailRouteImport } from './routes/registration/verify-email'
 import { Route as RegistrationPersonRouteImport } from './routes/registration/person'
 import { Route as PracticesFavoritesRouteImport } from './routes/practices/favorites'
+import { Route as PasswordResetRequestRouteImport } from './routes/password-reset/request'
 import { Route as BookingConfirmationRouteImport } from './routes/booking/confirmation'
 import { Route as PracticesPracticeIdIndexRouteImport } from './routes/practices/$practiceId/index'
 import { Route as RegistrationEmailConfirmationEmailVerifyCodeRouteImport } from './routes/registration/email-confirmation/$emailVerifyCode'
+import { Route as PasswordResetConfirmTokenRouteImport } from './routes/password-reset/confirm.$token'
 import { Route as AppointmentsAppointmentIdRescheduleRouteImport } from './routes/appointments_.$appointmentId.reschedule'
 import { Route as PracticesPracticeIdBookingAppointmentIdRouteImport } from './routes/practices/$practiceId/booking/$appointmentId'
 
@@ -75,6 +77,11 @@ const PracticesFavoritesRoute = PracticesFavoritesRouteImport.update({
   path: '/practices/favorites',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PasswordResetRequestRoute = PasswordResetRequestRouteImport.update({
+  id: '/password-reset/request',
+  path: '/password-reset/request',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BookingConfirmationRoute = BookingConfirmationRouteImport.update({
   id: '/booking/confirmation',
   path: '/booking/confirmation',
@@ -90,6 +97,12 @@ const RegistrationEmailConfirmationEmailVerifyCodeRoute =
   RegistrationEmailConfirmationEmailVerifyCodeRouteImport.update({
     id: '/registration/email-confirmation/$emailVerifyCode',
     path: '/registration/email-confirmation/$emailVerifyCode',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const PasswordResetConfirmTokenRoute =
+  PasswordResetConfirmTokenRouteImport.update({
+    id: '/password-reset/confirm/$token',
+    path: '/password-reset/confirm/$token',
     getParentRoute: () => rootRouteImport,
   } as any)
 const AppointmentsAppointmentIdRescheduleRoute =
@@ -113,11 +126,13 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/search': typeof SearchRoute
   '/booking/confirmation': typeof BookingConfirmationRoute
+  '/password-reset/request': typeof PasswordResetRequestRoute
   '/practices/favorites': typeof PracticesFavoritesRoute
   '/registration/person': typeof RegistrationPersonRoute
   '/registration/verify-email': typeof RegistrationVerifyEmailRoute
   '/registration/veterinary': typeof RegistrationVeterinaryRoute
   '/appointments/$appointmentId/reschedule': typeof AppointmentsAppointmentIdRescheduleRoute
+  '/password-reset/confirm/$token': typeof PasswordResetConfirmTokenRoute
   '/registration/email-confirmation/$emailVerifyCode': typeof RegistrationEmailConfirmationEmailVerifyCodeRoute
   '/practices/$practiceId': typeof PracticesPracticeIdIndexRoute
   '/practices/$practiceId/booking/$appointmentId': typeof PracticesPracticeIdBookingAppointmentIdRoute
@@ -130,11 +145,13 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/search': typeof SearchRoute
   '/booking/confirmation': typeof BookingConfirmationRoute
+  '/password-reset/request': typeof PasswordResetRequestRoute
   '/practices/favorites': typeof PracticesFavoritesRoute
   '/registration/person': typeof RegistrationPersonRoute
   '/registration/verify-email': typeof RegistrationVerifyEmailRoute
   '/registration/veterinary': typeof RegistrationVeterinaryRoute
   '/appointments/$appointmentId/reschedule': typeof AppointmentsAppointmentIdRescheduleRoute
+  '/password-reset/confirm/$token': typeof PasswordResetConfirmTokenRoute
   '/registration/email-confirmation/$emailVerifyCode': typeof RegistrationEmailConfirmationEmailVerifyCodeRoute
   '/practices/$practiceId': typeof PracticesPracticeIdIndexRoute
   '/practices/$practiceId/booking/$appointmentId': typeof PracticesPracticeIdBookingAppointmentIdRoute
@@ -148,11 +165,13 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/search': typeof SearchRoute
   '/booking/confirmation': typeof BookingConfirmationRoute
+  '/password-reset/request': typeof PasswordResetRequestRoute
   '/practices/favorites': typeof PracticesFavoritesRoute
   '/registration/person': typeof RegistrationPersonRoute
   '/registration/verify-email': typeof RegistrationVerifyEmailRoute
   '/registration/veterinary': typeof RegistrationVeterinaryRoute
   '/appointments_/$appointmentId/reschedule': typeof AppointmentsAppointmentIdRescheduleRoute
+  '/password-reset/confirm/$token': typeof PasswordResetConfirmTokenRoute
   '/registration/email-confirmation/$emailVerifyCode': typeof RegistrationEmailConfirmationEmailVerifyCodeRoute
   '/practices/$practiceId/': typeof PracticesPracticeIdIndexRoute
   '/practices/$practiceId/booking/$appointmentId': typeof PracticesPracticeIdBookingAppointmentIdRoute
@@ -167,11 +186,13 @@ export interface FileRouteTypes {
     | '/login'
     | '/search'
     | '/booking/confirmation'
+    | '/password-reset/request'
     | '/practices/favorites'
     | '/registration/person'
     | '/registration/verify-email'
     | '/registration/veterinary'
     | '/appointments/$appointmentId/reschedule'
+    | '/password-reset/confirm/$token'
     | '/registration/email-confirmation/$emailVerifyCode'
     | '/practices/$practiceId'
     | '/practices/$practiceId/booking/$appointmentId'
@@ -184,11 +205,13 @@ export interface FileRouteTypes {
     | '/login'
     | '/search'
     | '/booking/confirmation'
+    | '/password-reset/request'
     | '/practices/favorites'
     | '/registration/person'
     | '/registration/verify-email'
     | '/registration/veterinary'
     | '/appointments/$appointmentId/reschedule'
+    | '/password-reset/confirm/$token'
     | '/registration/email-confirmation/$emailVerifyCode'
     | '/practices/$practiceId'
     | '/practices/$practiceId/booking/$appointmentId'
@@ -201,11 +224,13 @@ export interface FileRouteTypes {
     | '/login'
     | '/search'
     | '/booking/confirmation'
+    | '/password-reset/request'
     | '/practices/favorites'
     | '/registration/person'
     | '/registration/verify-email'
     | '/registration/veterinary'
     | '/appointments_/$appointmentId/reschedule'
+    | '/password-reset/confirm/$token'
     | '/registration/email-confirmation/$emailVerifyCode'
     | '/practices/$practiceId/'
     | '/practices/$practiceId/booking/$appointmentId'
@@ -219,11 +244,13 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   SearchRoute: typeof SearchRoute
   BookingConfirmationRoute: typeof BookingConfirmationRoute
+  PasswordResetRequestRoute: typeof PasswordResetRequestRoute
   PracticesFavoritesRoute: typeof PracticesFavoritesRoute
   RegistrationPersonRoute: typeof RegistrationPersonRoute
   RegistrationVerifyEmailRoute: typeof RegistrationVerifyEmailRoute
   RegistrationVeterinaryRoute: typeof RegistrationVeterinaryRoute
   AppointmentsAppointmentIdRescheduleRoute: typeof AppointmentsAppointmentIdRescheduleRoute
+  PasswordResetConfirmTokenRoute: typeof PasswordResetConfirmTokenRoute
   RegistrationEmailConfirmationEmailVerifyCodeRoute: typeof RegistrationEmailConfirmationEmailVerifyCodeRoute
   PracticesPracticeIdIndexRoute: typeof PracticesPracticeIdIndexRoute
   PracticesPracticeIdBookingAppointmentIdRoute: typeof PracticesPracticeIdBookingAppointmentIdRoute
@@ -301,6 +328,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PracticesFavoritesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/password-reset/request': {
+      id: '/password-reset/request'
+      path: '/password-reset/request'
+      fullPath: '/password-reset/request'
+      preLoaderRoute: typeof PasswordResetRequestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/booking/confirmation': {
       id: '/booking/confirmation'
       path: '/booking/confirmation'
@@ -320,6 +354,13 @@ declare module '@tanstack/react-router' {
       path: '/registration/email-confirmation/$emailVerifyCode'
       fullPath: '/registration/email-confirmation/$emailVerifyCode'
       preLoaderRoute: typeof RegistrationEmailConfirmationEmailVerifyCodeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/password-reset/confirm/$token': {
+      id: '/password-reset/confirm/$token'
+      path: '/password-reset/confirm/$token'
+      fullPath: '/password-reset/confirm/$token'
+      preLoaderRoute: typeof PasswordResetConfirmTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/appointments_/$appointmentId/reschedule': {
@@ -347,12 +388,14 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   SearchRoute: SearchRoute,
   BookingConfirmationRoute: BookingConfirmationRoute,
+  PasswordResetRequestRoute: PasswordResetRequestRoute,
   PracticesFavoritesRoute: PracticesFavoritesRoute,
   RegistrationPersonRoute: RegistrationPersonRoute,
   RegistrationVerifyEmailRoute: RegistrationVerifyEmailRoute,
   RegistrationVeterinaryRoute: RegistrationVeterinaryRoute,
   AppointmentsAppointmentIdRescheduleRoute:
     AppointmentsAppointmentIdRescheduleRoute,
+  PasswordResetConfirmTokenRoute: PasswordResetConfirmTokenRoute,
   RegistrationEmailConfirmationEmailVerifyCodeRoute:
     RegistrationEmailConfirmationEmailVerifyCodeRoute,
   PracticesPracticeIdIndexRoute: PracticesPracticeIdIndexRoute,

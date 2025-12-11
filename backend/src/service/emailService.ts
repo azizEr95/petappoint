@@ -22,9 +22,43 @@ function randomGenerator(): number {
     return Math.floor(Math.random() * 999999);
 }
 
+export async function sendPasswordResetEmail(
+    email: string,
+    firstName: string,
+    resetToken: string
+): Promise<void> {
+    const templatePath = path.join(__dirname, '../../templates/email/passwordResetEmail.html');
+    const templateSource = fs.readFileSync(templatePath, 'utf-8');
+
+    const template = Handlebars.compile(templateSource);
+
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3001';
+    const resetLink = `${frontendUrl}/password-reset/confirm/${resetToken}`;
+
+    const data = {
+        firstName,
+        resetLink,
+        year: new Date().getFullYear()
+    };
+
+    const htmlContent = template(data);
+
+    const message = new SendSmtpEmail();
+    message.subject = "Passwort zurücksetzen - vetilib";
+    message.htmlContent = htmlContent;
+    message.sender = sender;
+    message.to = [{ email }];
+
+    try {
+        const result = await emailAPI.sendTransacEmail(message);
+        console.log('Password reset email sent:', result.body);
+    } catch (error) {
+        console.error('Failed to send password reset email:', error);
+        throw new Error("Failed to send password reset email");
+    }
+}
+
 export const emailService = {
-
-
     async sendConfirmationEmail(user: PersonsType) {
 
         //template 
