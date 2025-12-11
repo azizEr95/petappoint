@@ -112,6 +112,23 @@ export function LoginForm({
               value={password}
               required
             />
+            <div style={{ marginTop: '0.5rem' }}>
+              <button
+                type="button"
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: 'var(--color-primary, #667eea)',
+                  fontSize: '0.9rem',
+                  cursor: 'pointer',
+                  textDecoration: 'underline',
+                  padding: 0
+                }}
+                onClick={() => navigate({ to: '/password-reset/request' })}
+              >
+                Passwort vergessen?
+              </button>
+            </div>
           </div>
           {errorLogin !== '' && <div>{errorLogin}</div>}
           <button type="submit" className="auth-button">

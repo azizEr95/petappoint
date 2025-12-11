@@ -19,6 +19,7 @@ DROP TABLE IF EXISTS animals;
 DROP TABLE IF EXISTS animal_groups;
 DROP TABLE IF EXISTS animal_races;
 DROP TABLE IF EXISTS animal_types;
+DROP TABLE IF EXISTS password_reset_tokens;
 DROP TABLE IF EXISTS persons;
 DROP TABLE IF EXISTS addresses;
 
@@ -49,6 +50,18 @@ CREATE TABLE IF NOT EXISTS persons(
   password VARCHAR(255) NOT NULL,
   picturePath VARCHAR(256) DEFAULT NULL
 );
+
+CREATE TABLE IF NOT EXISTS password_reset_tokens(
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER NOT NULL REFERENCES persons(id) ON DELETE CASCADE,
+  token_hash VARCHAR(255) NOT NULL UNIQUE,
+  expires_at TIMESTAMP NOT NULL,
+  used_at TIMESTAMP DEFAULT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX idx_password_reset_tokens_user_id ON password_reset_tokens(user_id);
+CREATE INDEX idx_password_reset_tokens_expires_at ON password_reset_tokens(expires_at);
 
 CREATE TABLE IF NOT EXISTS animal_types(
   id SERIAL PRIMARY KEY,

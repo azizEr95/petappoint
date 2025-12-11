@@ -11,6 +11,7 @@ import { loginRouter } from './routes/login';
 import { routerExceptionHandler } from './exceptions/routerExceptionMiddleware';
 import { emailverificationRouter } from './routes/emailverification';
 import { veterinariansRouter } from './routes/veterinary';
+import { passwordResetRouter } from './routes/passwordReset';
 
 export const app = express();
 
@@ -28,4 +29,5 @@ app.use("/api/animals", animalsRouter);
 app.use("/api/animaltypes", animaltypeRouter);
 app.use("/api/services", serviceRouter);
 app.use("/api/registration", emailverificationRouter);
+app.use("/api/password-reset", passwordResetRouter);
 app.use(routerExceptionHandler);
