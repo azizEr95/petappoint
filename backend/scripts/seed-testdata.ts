@@ -1,4 +1,7 @@
+import { Prisma, Sexes } from "../generated/prisma";
 import { prisma } from "../src/singletonPC";
+
+
 
 async function seedTestdata() {
   console.log("🌱 Seeding test data...");
