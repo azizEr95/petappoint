@@ -20,15 +20,15 @@ export async function sendConfirmationEmail(user: PersonsType,jwtToken: string |
     if(!jwtToken) {
         throw new Error("jwtToken not set");
     }
-    //template 
+    //template
     const templatePath = path.join(__dirname, '../../templates/email/confirmationEmail.html');
     const templateSource = fs.readFileSync(templatePath, 'utf-8');
 
     // Handlebars compiles our Template
     const template = Handlebars.compile(templateSource);
 
-    // injecting Data confirmation link is route to endpoint with jwtToken 
-    // using jwttoken to verify through link/button click and a random 6 digit code as one time password for every user 
+    // injecting Data confirmation link is route to endpoint with jwtToken
+    // using jwttoken to verify through link/button click and a random 6 digit code as one time password for every user
     const data = {
         firstName: user.firstName,
         confirmationLink : `localhost:3001/registration/email-confirmation/${jwtToken}`,
@@ -52,5 +52,41 @@ export async function sendConfirmationEmail(user: PersonsType,jwtToken: string |
     return result;
     } catch (error) {
         throw new Error("sending Confirmation Email didnt work");
+    }
+}
+
+export async function sendPasswordResetEmail(
+    email: string,
+    firstName: string,
+    resetToken: string
+): Promise<void> {
+    const templatePath = path.join(__dirname, '../../templates/email/passwordResetEmail.html');
+    const templateSource = fs.readFileSync(templatePath, 'utf-8');
+
+    const template = Handlebars.compile(templateSource);
+
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3001';
+    const resetLink = `${frontendUrl}/password-reset/confirm/${resetToken}`;
+
+    const data = {
+        firstName,
+        resetLink,
+        year: new Date().getFullYear()
+    };
+
+    const htmlContent = template(data);
+
+    const message = new SendSmtpEmail();
+    message.subject = "Passwort zurücksetzen - vetilib";
+    message.htmlContent = htmlContent;
+    message.sender = sender;
+    message.to = [{ email }];
+
+    try {
+        const result = await emailAPI.sendTransacEmail(message);
+        console.log('Password reset email sent:', result.body);
+    } catch (error) {
+        console.error('Failed to send password reset email:', error);
+        throw new Error("Failed to send password reset email");
     }
 }
