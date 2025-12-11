@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { getVeterinaryPracticesById } from '../../api/VeterinaryPracticeAPI'
+import { getPictureURLForAnimalId } from '../../api/AnimalsAPI'
 import type {
   AppointmentsType,
   ServiceType,
@@ -11,6 +12,7 @@ type AppointmentCardProps = {
   handleShowDetailsAppointment: (appointment: AppointmentsType) => void
   isActive: boolean
   isPast: boolean
+  compact?: boolean
 }
 
 export function AppointmentCard({
@@ -18,6 +20,7 @@ export function AppointmentCard({
   handleShowDetailsAppointment,
   isActive,
   isPast,
+  compact = false,
 }: AppointmentCardProps) {
   const practiceID = appointment.veterinaryPractice.id
 
@@ -69,6 +72,32 @@ export function AppointmentCard({
         hour: '2-digit',
         minute: '2-digit',
       })
+    }
+
+    if (compact) {
+      return (
+        <div
+          className={`appointment-card compact ${isActive ? 'active' : ''} ${isPast ? 'past' : 'upcoming'}`}
+          onClick={() => handleShowDetailsAppointment(appointment)}
+        >
+          <div className="compact-animal-image">
+            <img
+              src={getPictureURLForAnimalId(appointment.animal?.id || 0)}
+              alt={appointment.animal?.name || 'Tier'}
+              onError={(e) => {
+                e.currentTarget.src = '/logo192.png'
+              }}
+            />
+          </div>
+          <div className="compact-info">
+            <div className="compact-practice">{practice.name}</div>
+            <div className="compact-date">{formatDate(appointment.startTime)}</div>
+            {appointmentType && (
+              <div className="compact-service">{appointmentType.name}</div>
+            )}
+          </div>
+        </div>
+      )
     }
 
     return (

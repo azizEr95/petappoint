@@ -181,6 +181,27 @@ function Appointments() {
     <div className="appointments-page">
       <div className="appointments-header">
         <h1>Meine Termine</h1>
+      </div>
+
+      <div className="appointments-tabs-wrapper">
+        <div className="appointments-tabs">
+          <button
+            className={`tab-button ${activeTab === 'upcoming' ? 'active' : ''}`}
+            onClick={() => setActiveTab('upcoming')}
+          >
+            Bevorstehend
+            {isSuccessFuture &&
+              dataFuture.length > 0 &&
+              ` (${dataFuture.length})`}
+          </button>
+          <button
+            className={`tab-button ${activeTab === 'past' ? 'active' : ''}`}
+            onClick={() => setActiveTab('past')}
+          >
+            Vergangen
+            {isSuccessPast && dataPast.length > 0 && ` (${dataPast.length})`}
+          </button>
+        </div>
         <button
           className="btn btn-primary book-appointment-btn"
           onClick={() =>
@@ -197,25 +218,6 @@ function Appointments() {
         >
           <i className="bi bi-calendar-plus"></i>
           Termin buchen
-        </button>
-      </div>
-
-      <div className="appointments-tabs">
-        <button
-          className={`tab-button ${activeTab === 'upcoming' ? 'active' : ''}`}
-          onClick={() => setActiveTab('upcoming')}
-        >
-          Bevorstehend
-          {isSuccessFuture &&
-            dataFuture.length > 0 &&
-            ` (${dataFuture.length})`}
-        </button>
-        <button
-          className={`tab-button ${activeTab === 'past' ? 'active' : ''}`}
-          onClick={() => setActiveTab('past')}
-        >
-          Vergangen
-          {isSuccessPast && dataPast.length > 0 && ` (${dataPast.length})`}
         </button>
       </div>
 

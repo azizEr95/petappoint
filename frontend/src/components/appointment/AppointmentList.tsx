@@ -28,6 +28,7 @@ export function AppointmentList({
               handleShowDetailsAppointment={handleShowDetailsAppointment}
               isActive={selectedAppointment?.id === appointment.id}
               isPast={isPast}
+              compact={true}
             />
           )
         })}
