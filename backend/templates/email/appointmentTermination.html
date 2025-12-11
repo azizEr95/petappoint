@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terminabsage</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+        .content {
+            padding: 40px 20px;
+        }
+        .content p {
+            margin: 0 0 20px 0;
+            font-size: 16px;
+        }
+        .appointment-box {
+            background-color: #f4f4f4;
+            padding: 18px;
+            border-radius: 6px;
+            margin: 20px 0;
+            border-left: 4px solid #ef4444;
+        }
+        .appointment-box p {
+            margin: 10px 0;
+            font-size: 15px;
+        }
+        .appointment-box strong {
+            display: inline-block;
+            width: 120px;
+        }
+        .primary-link {
+            display: inline-block;
+            background-color: #ef4444;
+            color: white;
+            padding: 12px 28px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            margin: 18px 0;
+            text-align: center;
+        }
+        .primary-link:hover {
+            background-color: #dc2626;
+        }
+        .info-box {
+            background-color: #fef3c7;
+            border: 1px solid #fcd34d;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+            font-size: 14px;
+            color: #92400e;
+        }
+        .footer {
+            background-color: #f4f4f4;
+            padding: 18px;
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+            border-top: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Termin abgesagt</h1>
+        </div>
+
+        <div class="content">
+            <p>Hallo {{firstName}},</p>
+
+            <p>wir müssen Sie leider mitteilen, dass Ihr vereinbarter Termin abgesagt wurde.</p>
+
+            <div class="appointment-box">
+                <p><strong>Datum:</strong> {{appointmentDate}}</p>
+                <p><strong>Uhrzeit:</strong> {{appointmentTime}}</p>
+                <p><strong>Patient/Tier:</strong> {{patientName}}</p>
+                <p><strong>Behandlung:</strong> {{serviceName}}</p>
+            </div>
+
+            <div class="info-box">
+                <strong>Nächste Schritte:</strong> Bitte kontaktieren Sie uns, um einen neuen Termin zu vereinbaren. Wir stehen Ihnen gerne zur Verfügung.
+            </div>
+
+            <div style="text-align: center;">
+                <a href="{{rebookingLink}}" class="primary-link">
+                    Neuen Termin buchen
+                </a>
+            </div>
+
+            <p>Für Rückfragen erreichen Sie uns unter
+                <a href="mailto:{{supportEmail}}">{{supportEmail}}</a>
+                oder telefonisch unter {{supportPhone}}.
+            </p>
+
+            <p>Entschuldigen Sie die Unannehmlichkeiten.<br>
+                <strong>{{clinicName}}</strong>
+            </p>
+        </div>
+
+        <div class="footer">
+            <p>&copy; {{year}} {{clinicName}}. Alle Rechte vorbehalten.</p>
+            <p>Dies ist eine automatisch generierte Nachricht. Bitte nicht direkt darauf antworten.</p>
+        </div>
+    </div>
+</body>
+</html>

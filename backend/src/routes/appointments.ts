@@ -6,6 +6,7 @@ import { AuthorizationError } from "../exceptions/errors/AuthorizationError";
 import { animalService } from "../service/animalService";
 import { ConstraintError } from "../exceptions/errors/ConstraintError";
 import z from "zod";
+import { emailService } from "../service/emailService";
 
 export const appointmentRouter = express.Router();
 
@@ -94,6 +95,10 @@ appointmentRouter.delete("/:id", requiresAuthentication, async (req, res) => {
   ensureUserCanEditAppointment(req.userId!, appointmentId);
 
   await appointmentService.cancelAppointmentAsPerson(appointmentId);
+
+  // sending termination mail
+  await emailService.sendAppointmentEmail(req.userId!,appointmentId,"termination");
+
   res.sendStatus(204);
 });
 
@@ -105,5 +110,8 @@ appointmentRouter.patch("/:id/notes", requiresAuthentication, async (req, res) =
 
   const updated = await appointmentService.updateNotes(appointmentId, notes || null);
 
+  // sending confirmation mail
+  await emailService.sendAppointmentEmail(req.userId!,updated.id,"confirmation");
+  
   res.status(200).send(updated);
 });

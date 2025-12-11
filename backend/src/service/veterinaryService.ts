@@ -11,7 +11,7 @@ export const veterinaryService = {
       where: { id },
       include: {
         appointments: true,
-        veterinaryPractice: true,
+        veterinarypractices: true,
         person: true,
         veterinaryHasServices: {
           include: {
@@ -29,7 +29,7 @@ export const veterinaryService = {
 
   async getByPractice(practiceId: number): Promise<Veterinarian[]> {
     return await prisma.veterinarian.findMany({
-      where: { veterinaryPracticeId: practiceId },
+      where: { fk_veterinarypracticeid: practiceId },
     });
   },
 

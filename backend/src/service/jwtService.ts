@@ -1,6 +1,7 @@
 import { LoginType, PersonsAuthenticatedType } from "vetilib-shared/schemas/ZodSchemas";
 import { login } from "./authenticationService";
 import { JsonWebTokenError, JwtPayload, sign, verify } from "jsonwebtoken";
+import { personService } from "./personService";
 
 
 export async function verifyPasswordAndCreateJWT(email: string, password: string): Promise<string | undefined> {
@@ -33,7 +34,6 @@ export async function verifyPasswordAndCreateJWT(email: string, password: string
             expiresIn: ttlAsNumber,
             algorithm: "HS256"
         });
-
     return jwtString;
 }
 
@@ -48,12 +48,12 @@ export function verifyJWT(jwtString: string | undefined): LoginType {
     if (!jwtString) {
         throw new JsonWebTokenError("JSON Web Token ist ungültig");
     }
-    const payload = verify(jwtString, secret) as JwtPayload;
+    const payload = verify(jwtString, secret) as JwtPayload;//#endregion
+    
 
     const payloadID = payload.sub as string;
     const payloadRole = payload.role;
     const payloadEXP = payload.exp as number;
-    
     const loginRes : LoginType= {
         id: parseInt(payloadID),
         role: payloadRole,

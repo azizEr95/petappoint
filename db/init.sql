@@ -217,3 +217,11 @@ CREATE TABLE IF NOT EXISTS person_has_favorized_veterinarypractice(
   fk_veterinaryPracticeId INTEGER NOT NULL REFERENCES veterinarypractices(id) ON DELETE CASCADE,
   PRIMARY KEY (fk_personId, fk_veterinaryPracticeId)
 );
+
+CREATE TABLE IF NOT EXISTS person_has_confirmation_code(
+  fk_personId INTEGER NOT NULL REFERENCES persons(id) ON DELETE CASCADE,
+  code char(6) NOT NULL ,
+  dateOfCreation DATE NOT NULL,
+  verified BOOLEAN NOT NULL,
+  PRIMARY KEY (fk_personId)
+);

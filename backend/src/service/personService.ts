@@ -13,6 +13,7 @@ import { ResourceNotFoundError } from "../exceptions/errors/ResourceNotFoundErro
 import fs from "node:fs/promises";
 import path from "node:path";
 import { ConstraintError } from "../exceptions/errors/ConstraintError";
+import { person_has_confirmation_code } from "../../generated/prisma";
 
 export const personService = {
   async create(dataRe: PersonsCreateType): Promise<PersonsType> {
@@ -276,4 +277,55 @@ export const personService = {
       },
     });
   },
+  async checkConfirmationCodeExists(userId: number, generatedCode: string): Promise<boolean> {
+    const found = await prisma.person_has_confirmation_code.findFirst({where: {
+      fk_personid: userId,
+      code: generatedCode,
+      dateofcreation: {
+        gte: new Date(new Date().valueOf() - 15 * 60000)
+      }
+    }});
+    return !!found;
+  },
+  async createConfirmationCode(userId: number, generatedCode: string): Promise<person_has_confirmation_code> {
+    const created = await prisma.person_has_confirmation_code.upsert({
+     where: {
+        fk_personid: userId
+     },
+     update: {
+        code: generatedCode,
+        dateofcreation: new Date().toISOString()
+     },
+     create:{
+        fk_personid: userId,
+        code: generatedCode,
+        dateofcreation: new Date().toISOString(),
+        verified: false
+     }
+    });
+    return created;
+  },
+  async checkVerified(userId: number): Promise<boolean> {
+    const check = await prisma.person_has_confirmation_code.findUnique({
+      where: {
+        fk_personid: userId
+      }
+    })
+    if(!check) {
+      throw new ResourceNotFoundError("User not found.","userId",userId);
+    }
+    return check.verified
+  },
+  async updateVerified(userId: number,code: string): Promise<person_has_confirmation_code> {
+    const user = await prisma.person_has_confirmation_code.update({
+      where: {
+        fk_personid: userId,
+        code: code
+      },
+      data: {
+        verified: true
+      }
+    });
+    return user;
+  }
 };
