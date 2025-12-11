@@ -171,7 +171,7 @@ function PersonRegistration() {
     if (name === 'password') {
       if (!value.trim()) {
         error = 'Passwort ist erforderlich'
-      } else if (value.length < 6) {
+      } else if (value.length < 8) {
         error = 'Passwort muss mindestens aus 6 Zeichen bestehen'
       } else if (!/[A-Z]/.test(value)) {
         error = 'Passwort muss mindestens einen Großbuchstaben enthalten'
