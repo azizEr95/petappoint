@@ -77,18 +77,6 @@ export function DashboardAppointmentsSection({
                 Buchen Sie jetzt einen Termin bei einer Tierarztpraxis in Ihrer
                 Nähe.
               </p>
-              <Link
-                to="/search"
-                search={{
-                  name: '',
-                  address: '',
-                  animalType: '',
-                  serviceType: '',
-                }}
-                className="btn btn-primary"
-              >
-                <i className="bi bi-calendar-plus"></i> Termin buchen
-              </Link>
             </div>
           ) : (
             <>

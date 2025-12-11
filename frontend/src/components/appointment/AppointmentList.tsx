@@ -46,23 +46,6 @@ export function AppointmentList({
             ? 'Buchen Sie Ihren ersten Termin bei einer Tierarztpraxis.'
             : 'Buchen Sie jetzt einen Termin bei einer Tierarztpraxis in Ihrer Nähe.'}
         </p>
-        <button
-          className="btn btn-primary"
-          onClick={() =>
-            navigate({
-              to: '/search',
-              search: {
-                name: '',
-                address: '',
-                animalType: '',
-                serviceType: '',
-              },
-            })
-          }
-        >
-          <i className="bi bi-calendar-plus"></i>
-          Termin buchen
-        </button>
       </div>
     )
   }
