@@ -1,5 +1,7 @@
 import { Link } from '@tanstack/react-router'
+import { useState } from 'react'
 import { getPictureURLForAnimalId } from '../../api/AnimalsAPI'
+import { AnimalDeleteDialog } from '../animal/AnimalDeleteDialog'
 import type { PetCardProps } from '../../types/dashboard'
 import '../../styles/components/dashboard/PetCard.scss'
 
@@ -10,6 +12,15 @@ export function PetCard({
   nextAppointment,
   onEdit,
 }: PetCardProps) {
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+
+  const handleDelete = () => {
+    setShowDeleteDialog(true)
+  }
+
+  const handleCloseDelete = () => {
+    setShowDeleteDialog(false)
+  }
   // Calculate age from date of birth
   const getAge = () => {
     if (!animal.dateOfBirth) return 'Unbekannt'
@@ -44,13 +55,22 @@ export function PetCard({
             className="rounded-circle"
           />
         </div>
-        <button
-          className="pet-edit-btn"
-          onClick={() => onEdit(animal)}
-          title="Bearbeiten"
-        >
-          <i className="bi bi-pencil"></i>
-        </button>
+        <div className="pet-card-actions">
+          <button
+            className="pet-edit-btn"
+            onClick={() => onEdit(animal)}
+            title="Bearbeiten"
+          >
+            <i className="bi bi-pencil"></i>
+          </button>
+          <button
+            className="pet-delete-btn"
+            onClick={handleDelete}
+            title="Löschen"
+          >
+            <i className="bi bi-trash"></i>
+          </button>
+        </div>
       </div>
 
       <div className="pet-card-body">
@@ -109,6 +129,13 @@ export function PetCard({
           </div>
         </div>
       </div>
+
+      {showDeleteDialog && (
+        <AnimalDeleteDialog
+          hideDialogDeleteAnimal={handleCloseDelete}
+          animalDelete={animal}
+        />
+      )}
     </div>
   )
 }
