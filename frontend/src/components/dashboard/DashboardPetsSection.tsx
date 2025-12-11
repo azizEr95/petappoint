@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { getAnimalsFromUser } from '../../api/AnimalsAPI'
 import {
@@ -15,19 +15,26 @@ import '../../styles/components/dashboard/DashboardPetsSection.scss'
 
 type DashboardPetsSectionProps = {
   userId: number
+  onAnimalsLoaded?: (hasAnimals: boolean) => void
 }
 
-export function DashboardPetsSection({ userId }: DashboardPetsSectionProps) {
+export function DashboardPetsSection({ userId, onAnimalsLoaded }: DashboardPetsSectionProps) {
   const [showAnimalDialog, setShowAnimalDialog] = useState(false)
   const [editAnimal, setEditAnimal] = useState<AnimalsType | undefined>(
     undefined,
   )
 
-  // Fetch animals
+  // Fetch 
   const { data: animals = [], isLoading } = useQuery<Array<AnimalsType>>({
     queryKey: ['animals', userId],
     queryFn: () => getAnimalsFromUser(userId),
   })
+
+  useEffect(() => {
+    if (!isLoading) {
+      onAnimalsLoaded?.(animals.length > 0)
+    }
+  }, [animals, isLoading, onAnimalsLoaded])
 
   // Fetch all appointments (past and future) to determine last treatment
   const { data: pastAppointments = [] } = useQuery<Array<AppointmentsType>>({

@@ -10,7 +10,10 @@ import '../styles/routes/dashboard.scss'
 import { useLoginContext } from '../LoginContext'
 import { getPersonById, getPictureURLForPersonId } from '../api/PersonsAPI'
 import { getAppointmentsById } from '../api/AppointmentsAPI'
-import type { AppointmentsType, PersonsType } from '../../../shared/schemas/ZodSchemas'
+import type {
+  AppointmentsType,
+  PersonsType,
+} from '../../../shared/schemas/ZodSchemas'
 
 export const Route = createFileRoute('/dashboard')({
   component: Dashboard,
@@ -21,7 +24,10 @@ function Dashboard() {
   const { login } = useLoginContext()
   const [showAddPetDialog, setShowAddPetDialog] = useState(false)
   const [showEditProfileDialog, setShowEditProfileDialog] = useState(false)
-  const [activeTab, setActiveTab] = useState<'appointments' | 'pets' | 'favorites'>('appointments')
+  const [hasAnimals, setHasAnimals] = useState(false)
+  const [activeTab, setActiveTab] = useState<
+    'appointments' | 'pets' | 'favorites'
+  >('appointments')
   if (!login) {
     return
   }
@@ -33,8 +39,6 @@ function Dashboard() {
     queryFn: () => getPersonById(userId),
     retry: false,
   })
-
-  
 
   const handleEditProfile = () => {
     setShowEditProfileDialog(true)
@@ -67,10 +71,6 @@ function Dashboard() {
         <div className="dashboard-header-section">
           <div className="dashboard-header-text">
             <h1 className="greeting-title">Hallo {user.firstName}!</h1>
-            <p className="greeting-subtitle">
-              Willkommen zurück! Hier hast du eine Übersicht über deine Tiere und
-              Termine.
-            </p>
           </div>
           <div className="dashboard-header-actions">
             <button
@@ -131,14 +131,19 @@ function Dashboard() {
           {activeTab === 'pets' && (
             <>
               <div className="section-actions">
-                <button
-                  className="btn btn-primary btn-add-pet"
-                  onClick={handleAddPet}
-                >
-                  <i className="bi bi-plus-circle"></i> Tier hinzufügen
-                </button>
+                {!hasAnimals ? (
+                  <></>
+                ) : (
+                  <button
+                    className="btn btn-primary btn-add-pet"
+                    onClick={handleAddPet}
+                  >
+                    <i className="bi bi-plus-circle"></i> Tier hinzufügen
+                  </button>
+                )}
               </div>
-              <DashboardPetsSection userId={userId} />
+              <DashboardPetsSection userId={userId}
+              onAnimalsLoaded={setHasAnimals} />
             </>
           )}
 
