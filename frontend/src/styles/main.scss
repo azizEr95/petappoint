@@ -10,3 +10,6 @@
 
 // 3. Base styles (typography, layout, utilities)
 @import 'base';
+
+// 4. Component-specific styles (error pages)
+@import 'components/Error';
