@@ -26,7 +26,7 @@ export default function BenefitsVets() {
       <div className="container">
         <h2 className="section-title">Vorteile für Tierärzte</h2>
         <p className="section-subtitle">
-          Über 500 Praxen vertrauen bereits auf Vetlib
+          Über 500 Praxen vertrauen bereits auf VetiLib
         </p>
 
         <div className="benefits-grid mb-5">
