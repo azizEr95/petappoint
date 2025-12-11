@@ -64,7 +64,7 @@ function Dashboard() {
         {/* Header with greeting + profile */}
         <DashboardHeader
           user={user}
-          avatarUrl={getPictureURLForPersonId(userId)}
+          avatarUrl={getPictureURLForPersonId(userId, Date.now())}
           onEditProfile={handleEditProfile}
         />
 

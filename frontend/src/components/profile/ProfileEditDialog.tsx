@@ -1,4 +1,5 @@
 import {  useEffect, useState } from 'react'
+import type { KeyboardEvent } from 'react'
 import {
   Button,
   Col,
@@ -52,7 +53,7 @@ export function ProfileEditDialog({
   const [confirmPassword, setConfirmPassword] = useState('')
 
   const [profilePictureURL, setProfilePictureURL] = useState<string>(
-    getPictureURLForPersonId(person.id),
+    getPictureURLForPersonId(person.id, Date.now()),
   )
   const [selectedPictureFile, setSelectedPictureFile] = useState<File>()
 
@@ -215,6 +216,13 @@ export function ProfileEditDialog({
     updatePersonMutation.mutate(updatedPerson)
   }
 
+  const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'Enter' && !updatePersonMutation.isPending) {
+      e.preventDefault()
+      handleSubmit()
+    }
+  }
+
   useEffect(() => {
     if (selectedPictureFile) {
       const url = URL.createObjectURL(selectedPictureFile)
@@ -229,7 +237,7 @@ export function ProfileEditDialog({
         <Modal.Title>Profil bearbeiten</Modal.Title>
       </Modal.Header>
 
-      <Modal.Body>
+      <Modal.Body onKeyDown={handleKeyDown}>
         <Container>
           <Row className="justify-content-center mb-4">
             <Col xs="auto" className="text-center">
