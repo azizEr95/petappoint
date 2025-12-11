@@ -16,7 +16,7 @@ loginRouter.post("/",
         if (!jwtString) {
             return res.sendStatus(401);
         }
-
+    
         const logRes = verifyJWT(jwtString);
 
         logRes.verified = await personService.checkVerified(logRes.id);

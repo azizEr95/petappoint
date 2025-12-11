@@ -98,7 +98,7 @@ export const logoutUser = async (): Promise<void> => {
 }
 
 // for verify Email
-export const verifyEmail = async (verifyCode: string): Promise<LoginType | false> => {
+export const verifyEmail = async (verifyCode: string): Promise<LoginType> => {
   const res = await fetch(
     import.meta.env.VITE_API_URL +
       '/registration/' + verifyCode,
@@ -114,6 +114,24 @@ export const verifyEmail = async (verifyCode: string): Promise<LoginType | false
 
   const data = await res.json()
   return parseLogin(data);
+}
+
+export const newToken = async (): Promise<void> => {
+  const res = await fetch(
+    import.meta.env.VITE_API_URL +
+      '/registration/',
+    {
+      method: 'POST',
+      credentials: 'include',
+    },
+  )
+
+  if (!res.ok) {
+    throw Error('Failed to fetch verifyEmail')
+  }
+
+  return;
+
 }
 
 const parseLogin = (unsafeAppointment: LoginType): LoginType => {

@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { DashboardPetsSection } from '../components/dashboard/DashboardPetsSection'
 import { DashboardAppointmentsSection } from '../components/dashboard/DashboardAppointmentsSection'
@@ -9,7 +9,8 @@ import { ProfileEditDialog } from '../components/profile/ProfileEditDialog'
 import '../styles/routes/dashboard.scss'
 import { useLoginContext } from '../LoginContext'
 import { getPersonById, getPictureURLForPersonId } from '../api/PersonsAPI'
-import type { PersonsType } from '../../../shared/schemas/ZodSchemas'
+import { getAppointmentsById } from '../api/AppointmentsAPI'
+import type { AppointmentsType, PersonsType } from '../../../shared/schemas/ZodSchemas'
 
 export const Route = createFileRoute('/dashboard')({
   component: Dashboard,
@@ -18,6 +19,9 @@ export const Route = createFileRoute('/dashboard')({
 function Dashboard() {
   const navigate = useNavigate()
   const { login } = useLoginContext()
+  const [showAddPetDialog, setShowAddPetDialog] = useState(false)
+  const [showEditProfileDialog, setShowEditProfileDialog] = useState(false)
+  const [activeTab, setActiveTab] = useState<'appointments' | 'pets' | 'favorites'>('appointments')
   if (!login) {
     return
   }
@@ -30,9 +34,7 @@ function Dashboard() {
     retry: false,
   })
 
-  const [showAddPetDialog, setShowAddPetDialog] = useState(false)
-  const [showEditProfileDialog, setShowEditProfileDialog] = useState(false)
-  const [activeTab, setActiveTab] = useState<'appointments' | 'pets' | 'favorites'>('appointments')
+  
 
   const handleEditProfile = () => {
     setShowEditProfileDialog(true)
@@ -155,7 +157,7 @@ function Dashboard() {
       )}
 
       {/* Profile Edit Dialog */}
-      {showEditProfileDialog && user && (
+      {showEditProfileDialog && (
         <ProfileEditDialog
           hideDialog={() => setShowEditProfileDialog(false)}
           person={user}

@@ -55,7 +55,7 @@ personsRouter.get('/:id/animals',
 );
 
 personsRouter.get("/:id/favorites",
-    requiresAuthentication,
+    requiresAuthentication, 
     async (req, res) => {
         const id = PostgresIdSchema.parse(parseInt(req.params.id));
 
@@ -127,7 +127,7 @@ personsRouter.delete("/:id/favorites/:practiceId",
 );
 
 personsRouter.get('/:id',
-    requiresAuthentication,
+    requiresAuthentication, 
     async (req, res) => {
         const id = PostgresIdSchema.parse(parseInt(req.params.id));
 

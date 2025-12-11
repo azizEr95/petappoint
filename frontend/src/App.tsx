@@ -9,7 +9,7 @@ type AppProps = {
 }
 
 export function App({ router }: AppProps) {
-  const [login, setLogin] = useState<LoginType | false | undefined>(undefined)
+  const [login, setLogin] = useState<LoginType | false>(false)
 
   useEffect(() => {
     checkLogin().then((result) => {
