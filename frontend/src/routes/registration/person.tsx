@@ -8,9 +8,10 @@ import { useMutation } from '@tanstack/react-query'
 import { Form, FormGroup } from 'react-bootstrap'
 import { PersonsCreateSchema } from '../../../../shared/schemas/ZodSchemas'
 import '../../styles/routes/personRegistration.scss'
-import { personRegistration } from '../../api/PersonsAPI'
+import { personRegistration } from '../../api/LoginAPI'
+import { useLoginContext } from '../../LoginContext'
 import type {PersonsCreateType, sexesType} from '../../../../shared/schemas/ZodSchemas';
-import type {ChangeEvent, FormEvent} from 'react';
+import type {FormEvent} from 'react';
 
 export const Route = createFileRoute('/registration/person')({
   component: PersonRegistration,
@@ -20,7 +21,8 @@ function PersonRegistration() {
   const navigate = useNavigate()
   const location = useLocation()
   const appointment = location.state.appointment
-  const selectedService = location.state.selectedService
+  // const selectedService = location.state.selectedService
+  const { setLogin } = useLoginContext()
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
   const [strasse, setStrasse] = useState('')
@@ -58,24 +60,18 @@ function PersonRegistration() {
   const { mutate: mutateRegistration } = useMutation({
     mutationFn: (person: PersonsCreateType) => personRegistration(person),
     onSuccess: (data) => {
+      setLogin(data)
       if(appointment !== undefined){
-        navigate({ 
-          to: '/practices/$practiceId/booking/$appointmentId',
-          params: {
-            practiceId: appointment.veterinaryPractice.id.toString(),
-            appointmentId: appointment.id.toString(),
-          },
-          state: {
-            // state for the selected servicetype in booking
-            selectedService: selectedService,
-          },
-        })
-      } else {
         navigate({ 
           to: '/registration/verify-email',
           state: {
-            person: data // data is the current logged in user
+            appointment: appointment
           }
+        })
+
+      } else {
+        navigate({ 
+          to: '/registration/verify-email',
         })
       }
     },

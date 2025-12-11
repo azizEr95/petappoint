@@ -173,18 +173,12 @@ export type LoginValidatorType = z.infer<typeof loginValidator>;
 export const LoginSchema = z.object({
   id: PostgresIdSchema,
   role: RoleSchema,
+  verified: z.boolean(),
   exp: z.number(),
 });
 
 export type LoginType = z.infer<typeof LoginSchema>;
 
-//confirmType: 
-export const confirmSchema = z.object({
-  id: PostgresIdSchema,
-  verified: z.boolean()
-})
-
-export type confirmType = z.infer<typeof confirmSchema>;
 
 //Person has Animal:
 export const Person_has_AnimalSchema = z.object({

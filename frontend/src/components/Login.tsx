@@ -40,7 +40,7 @@ export function LoginForm({
       setLogin(false)
       setErrorLogin('Email oder Password falsch')
     },
-    onSuccess: (data: LoginType) => {
+    onSuccess: (data: LoginType | false) => {
       setLogin(data)
       if (setStatusBookingProcess !== undefined) {
         setStatusBookingProcess(StatusBooking.selectAnimal)

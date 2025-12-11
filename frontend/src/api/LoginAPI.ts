@@ -1,6 +1,7 @@
 import { LoginSchema } from '../../../shared/schemas/ZodSchemas'
 import type {
   LoginType,
+  PersonsCreateType,
 } from '../../../shared/schemas/ZodSchemas'
 
 export const loginUser = async (
@@ -30,6 +31,29 @@ export const loginUser = async (
 
   const data = await res.json()
   return parseLogin(data)
+}
+
+export const personRegistration = async (
+  person: PersonsCreateType,
+): Promise<LoginType> => {
+  const requestOptions = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(person),
+    credentials: 'include' as RequestCredentials,
+  }
+  const res = await fetch(
+    import.meta.env.VITE_API_URL + '/persons/',
+    requestOptions,
+  )
+  if (!res.ok) {
+    throw new Error('Failed to fetch personRegistration')
+  }
+
+  const data = await res.json()
+  return parseLogin(data);
 }
 
 export const checkLogin = async (): Promise<LoginType | false> => {

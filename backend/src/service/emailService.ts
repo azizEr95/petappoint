@@ -7,6 +7,7 @@ import { AppointmentsType, PersonsType } from 'vetilib-shared/schemas/ZodSchemas
 import { personService } from './personService';
 import { person_has_confirmation_code } from '../../generated/prisma';
 import { appointmentService } from './appointmentService';
+import { dateFormatter } from '../utils/dateFormatter';
 
 
 // types 
@@ -87,7 +88,7 @@ export const emailService = {
         const htmlContent = template(data);
 
         const message = new SendSmtpEmail();
-        message.subject = "Please Confirm Your Email Adress";
+        message.subject = "Bitte bestätige deine Email-Adresse!";
         message.htmlContent = htmlContent;
         message.sender = sender;
         message.to = [{ email: user.email }];
@@ -111,28 +112,31 @@ export const emailService = {
                 emailtype = "appointmentConfirmation";
                 appointmentData  = {
                     firstName: user.firstName,
-                    appointmentDate: appointment.startTime,
+                    appointmentDate: dateFormatter(appointment.startTime,"date"),
+                    appointmentTime: dateFormatter(appointment.startTime,"time"),
                     patientName: appointment.animal ? appointment.animal.name : "",
                     serviceName: appointment.service ? appointment.service.name : "",
-                    location: appointment.veterinaryPractice.address,
+                    location: appointment.veterinaryPractice.address.street,
+                    appointmentLink: `${process.env.PROD ? process.env.PROD_SERVER : process.env.DEV_SERVER}/api/appointment/${appointment.id}`,
                     supportEmail: appointment.veterinaryPractice.email,
                     supportPhone: appointment.veterinaryPractice.phone,
                     clinicName: appointment.veterinaryPractice.name
                 }
-                message.subject = "Your Appointment got confirmed!";
+                message.subject = "Dein Termin wurde erfolgreich gebucht!";
                 break;
             case "termination": 
                 emailtype = "appointmentTermination";
                 appointmentData = {
                     firstName: user.firstName,
-                    appointmentDate: appointment.startTime,
-                    patientName: appointment.animal ? appointment.animal.name : "",
-                    serviceName: appointment.service ? appointment.service.name : "",
+                    appointmentDate: dateFormatter(appointment.startTime,"date"),
+                    appointmentTime: dateFormatter(appointment.startTime,"time"),
+                    patientName: appointment.animal?.name ?? "",
+                    serviceName: appointment.service?.name ?? "",
                     supportEmail: appointment.veterinaryPractice.email,
                     supportPhone: appointment.veterinaryPractice.phone,
                     clinicName: appointment.veterinaryPractice.name
                 }
-                message.subject = "Your Appointment got canceled!";
+                message.subject = "Dein Termin wurde erfolgreich storniert!";
 
             default:
                 break;
@@ -169,7 +173,10 @@ export const emailService = {
     */
 
     async checkVerificationandSetVerifiedStatus(userId: number, code: string): Promise<person_has_confirmation_code | false> {
-
-        return await personService.updateVerified(userId,code);
+        try {
+            return await personService.updateVerified(userId,code);
+        } catch (error) {
+            return false;   
+        } 
     },
 }

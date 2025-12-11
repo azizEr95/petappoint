@@ -1,9 +1,11 @@
 import express from 'express'
 import { emailService } from '../service/emailService';
-import { confirmType } from 'vetilib-shared/schemas/ZodSchemas';
-import { requiresAuthentication } from './authentication';
+import { LoginType } from 'vetilib-shared/schemas/ZodSchemas';
+import { checkVerified, requiresAuthentication } from './authentication';
 import { personService } from '../service/personService';
 import { ResourceNotFoundError } from '../exceptions/errors/ResourceNotFoundError';
+import { verifyCodeandCreateJWT, verifyJWT, verifyPasswordAndCreateJWT } from '../service/jwtService';
+
 
 /*
 * This Router is for emailverification only post emailverification is done in persons Router
@@ -15,15 +17,19 @@ emailverificationRouter.get("/:sixdigitcode", requiresAuthentication,
         try {
             const code = req.params.sixdigitcode;
             const result = await emailService.checkVerificationandSetVerifiedStatus(req.userId!, code);
+            const jwt = await verifyCodeandCreateJWT(req.userId!, code);
             if (!result) {
                 res.status(400).send("Code ist falsch oder abgelaufen");
                 return;
             }
-            const confirmRes: confirmType = {
-                id: result.fk_personid,
-                verified: result.verified
-            }
-            res.send(confirmRes);
+            const logRes = verifyJWT(jwt);
+            res.cookie("access_token", jwt, {
+                httpOnly: true,
+                expires: new Date(logRes.exp * 1000),
+                secure: true,
+                sameSite: "none"
+            });
+            res.send(logRes);
         } catch (error) {
             res.sendStatus(500);
         }
@@ -42,7 +48,7 @@ emailverificationRouter.post("/", requiresAuthentication,
             await emailService.sendConfirmationEmail(person);
             res.sendStatus(200);
         } catch (error) {
-            if(error instanceof ResourceNotFoundError) {
+            if (error instanceof ResourceNotFoundError) {
                 res.status(400).send(error.message);
                 return;
             }

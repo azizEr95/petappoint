@@ -1,7 +1,7 @@
 import express from "express";
 import { appointmentService } from "../service/appointmentService";
 import { AppointmentsType, BookAppointmentSchema, PostgresIdSchema } from "vetilib-shared/schemas/ZodSchemas";
-import { optionalAuthentication, requiresAuthentication } from "./authentication";
+import { checkVerified, optionalAuthentication, requiresAuthentication } from "./authentication";
 import { AuthorizationError } from "../exceptions/errors/AuthorizationError";
 import { animalService } from "../service/animalService";
 import { ConstraintError } from "../exceptions/errors/ConstraintError";
@@ -24,12 +24,12 @@ async function ensureUserCanEditAppointment(personId: number, appointmentId: num
   }
 }
 
-appointmentRouter.get("/all", requiresAuthentication, async (_req, res) => {
+appointmentRouter.get("/all", requiresAuthentication, checkVerified, async (_req, res) => {
   const allAppointments: AppointmentsType[] = await appointmentService.getAll();
   res.send(allAppointments);
 });
 
-appointmentRouter.get("/past/:personId", requiresAuthentication, async (req, res) => {
+appointmentRouter.get("/past/:personId", requiresAuthentication, checkVerified, async (req, res) => {
   const personId = PostgresIdSchema.parse(parseInt(req.params.personId));
 
   if (personId !== req.userId!) {
@@ -40,7 +40,7 @@ appointmentRouter.get("/past/:personId", requiresAuthentication, async (req, res
   res.send(pastAppointments);
 });
 
-appointmentRouter.get("/future/:personId", requiresAuthentication, async (req, res) => {
+appointmentRouter.get("/future/:personId", requiresAuthentication, checkVerified, async (req, res) => {
   const personId = PostgresIdSchema.parse(parseInt(req.params.personId));
 
   if (personId !== req.userId!) {
@@ -68,7 +68,7 @@ appointmentRouter.get("/:id", optionalAuthentication, async (req, res) => {
   res.send(appointment);
 });
 
-appointmentRouter.put("/:id", requiresAuthentication, async (req, res, next) => {
+appointmentRouter.put("/:id", requiresAuthentication, checkVerified, async (req, res, next) => {
   const appointmentId = parseInt(req.params.id);
   const validatedData = BookAppointmentSchema.parse(req.body);
 
@@ -86,23 +86,25 @@ appointmentRouter.put("/:id", requiresAuthentication, async (req, res, next) => 
     validatedData.animalId,
     validatedData.serviceId
   );
+  // send confirmation email
+  emailService.sendAppointmentEmail(req.userId!, bookedAppointment.id, "confirmation");
   res.status(201).send(bookedAppointment);
 });
 
-appointmentRouter.delete("/:id", requiresAuthentication, async (req, res) => {
+appointmentRouter.delete("/:id", requiresAuthentication, checkVerified, async (req, res) => {
   const appointmentId = PostgresIdSchema.parse(parseInt(req.params.id));
 
   ensureUserCanEditAppointment(req.userId!, appointmentId);
 
-  await appointmentService.cancelAppointmentAsPerson(appointmentId);
-
   // sending termination mail
-  await emailService.sendAppointmentEmail(req.userId!,appointmentId,"termination");
+  await emailService.sendAppointmentEmail(req.userId!, appointmentId, "termination");
+
+  await appointmentService.cancelAppointmentAsPerson(appointmentId);
 
   res.sendStatus(204);
 });
 
-appointmentRouter.patch("/:id/notes", requiresAuthentication, async (req, res) => {
+appointmentRouter.patch("/:id/notes", requiresAuthentication, checkVerified, async (req, res) => {
   const appointmentId = PostgresIdSchema.parse(parseInt(req.params.id));
   const notes = z.string().min(1).max(1000).optional().parse(req.body);
 
@@ -110,8 +112,5 @@ appointmentRouter.patch("/:id/notes", requiresAuthentication, async (req, res) =
 
   const updated = await appointmentService.updateNotes(appointmentId, notes || null);
 
-  // sending confirmation mail
-  await emailService.sendAppointmentEmail(req.userId!,updated.id,"confirmation");
-  
   res.status(200).send(updated);
 });

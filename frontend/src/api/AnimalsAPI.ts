@@ -69,7 +69,6 @@ export const createAnimal = async (
     body: JSON.stringify(animal),
     credentials: 'include' as RequestCredentials,
   }
-
   const res = await fetch(
     import.meta.env.VITE_API_URL + '/animals',
     requestOptions,

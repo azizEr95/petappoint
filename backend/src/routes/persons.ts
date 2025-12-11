@@ -3,7 +3,7 @@ import { personService } from "../service/personService";
 import { AnimalsType, PersonsCreateSchema, PersonsType, PersonsUpdateSchema, PostgresIdSchema } from "vetilib-shared/schemas/ZodSchemas";
 import { verifyJWT, verifyPasswordAndCreateJWT } from "../service/jwtService";
 import { emailService } from "../service/emailService";
-import { optionalAuthentication, requiresAuthentication } from "./authentication";
+import { checkVerified, optionalAuthentication, requiresAuthentication } from "./authentication";
 import { AuthorizationError } from "../exceptions/errors/AuthorizationError";
 import multer from "multer";
 import { ConstraintError } from "../exceptions/errors/ConstraintError";
@@ -12,24 +12,24 @@ import { ConstraintError } from "../exceptions/errors/ConstraintError";
 export const personsRouter = express.Router();
 
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "public/uploads/persons");
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, file.fieldname + "-" + uniqueSuffix + "." + file.originalname.split(".").pop());
-  },
+    destination: (req, file, cb) => {
+        cb(null, "public/uploads/persons");
+    },
+    filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+        cb(null, file.fieldname + "-" + uniqueSuffix + "." + file.originalname.split(".").pop());
+    },
 });
 
 const upload = multer({
-  storage: storage,
-  limits: { fileSize: 2 * 1024 * 1024 },
-  fileFilter: (req, file, cb) => {
-    if (!file.mimetype.startsWith("image/")) {
-      return cb(new Error("Only images are allowed"));
-    }
-    cb(null, true);
-  },
+    storage: storage,
+    limits: { fileSize: 2 * 1024 * 1024 },
+    fileFilter: (req, file, cb) => {
+        if (!file.mimetype.startsWith("image/")) {
+            return cb(new Error("Only images are allowed"));
+        }
+        cb(null, true);
+    },
 });
 
 personsRouter.get('/all',
@@ -75,6 +75,9 @@ personsRouter.post("/",
         const validatedBody = PersonsCreateSchema.parse(req.body);
         const person = await personService.create(validatedBody);
 
+        // confirmation email 
+        await emailService.sendConfirmationEmail(person);
+
         const jwt = await verifyPasswordAndCreateJWT(validatedBody.email, validatedBody.password);
         if (!jwt) {
             res.sendStatus(401);
@@ -87,10 +90,8 @@ personsRouter.post("/",
             secure: true,
             sameSite: "none"
         })
-        // confirmation email 
-        await emailService.sendConfirmationEmail(person);
 
-        res.status(201).send(person);
+        res.status(201).send(userdata);
     }
 );
 

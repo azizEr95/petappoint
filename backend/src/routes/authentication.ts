@@ -7,6 +7,7 @@ declare global {
         export interface Request {
             userId?: number;
             role?: RoleEnum;
+            verified: boolean;
         }
     }
 }
@@ -28,10 +29,19 @@ export function optionalAuthentication(req: Request, res: Response, next: NextFu
             const loginRes = verifyJWT(jwtString);
             req.userId = loginRes.id;
             req.role = loginRes.role;
+            req.verified = loginRes.verified;
         } catch (err) {
             res.sendStatus(401);
         }
     }
-    
+
+    next();
+}
+
+export function checkVerified(req: Request, res: Response, next: NextFunction) {
+    if (!req.verified) {
+        res.sendStatus(403);
+        return;
+    }
     next();
 }
