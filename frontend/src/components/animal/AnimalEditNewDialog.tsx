@@ -126,7 +126,7 @@ export function AnimalEditNewDialog({
 
   // BEGIN IMAGE FORM
   const [animalPictureURL, setAnimalPictureURL] = useState<string>(
-    animalPictureData ?? '/placeholders/bambisFace.png',
+    animalPictureData ?? '/placeholders/animal-unknown.png',
   )
   const [selectedPictureFile, setSelectedPictureFile] = useState<File>()
 
