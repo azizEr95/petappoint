@@ -190,7 +190,7 @@ function BookingComponent() {
         setFoundFilteredServices(dataAppointment.availableServices);
       }
     }
-  }, [serviceType, isSuccessAppointment, dataAppointment, selectedService, isSuccessAllServices, dataAllServices, isSuccessServicesVeterinary, dataServicesVeterinary])
+  }, [serviceType, isSuccessAppointment, dataAppointment, selectedService, isSuccessAllServices, dataAllServices, isSuccessServicesVeterinary, dataServicesVeterinary, dataAllServices])
 
   useEffect(() => {
     if (isPendingPractice || isPendingAppointment) {

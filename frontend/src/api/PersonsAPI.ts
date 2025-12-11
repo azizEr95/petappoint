@@ -1,6 +1,5 @@
 import { PersonsSchema } from '../../../shared/schemas/ZodSchemas'
 import type {
-  PersonsCreateType,
   PersonsType,
   PersonsUpdateType,
 } from '../../../shared/schemas/ZodSchemas'
@@ -65,29 +64,6 @@ export const uploadPictureForPersonId = async (
   if (!response.ok) {
     throw Error('Could not upload profile picture')
   }
-}
-
-export const personRegistration = async (
-  person: PersonsCreateType,
-): Promise<PersonsType> => {
-  const requestOptions = {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(person),
-    credentials: 'include' as RequestCredentials,
-  }
-  const res = await fetch(
-    import.meta.env.VITE_API_URL + '/persons/',
-    requestOptions,
-  )
-  if (!res.ok) {
-    throw new Error('Failed to fetch personRegistration')
-  }
-
-  const data = await res.json()
-  return parsePerson(data);
 }
 
 const parsePerson = (unsafePerson: PersonsType): PersonsType => {

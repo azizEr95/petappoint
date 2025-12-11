@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { createFileRoute, useLocation, useNavigate } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 import { Form } from 'react-bootstrap'
 import { loginUser, verifyEmail } from '../../../api/LoginAPI'
@@ -17,6 +17,8 @@ export const Route = createFileRoute(
 function RouteComponent() {
   const { setLogin } = useLoginContext();
   const navigate = useNavigate();
+  const location = useLocation();
+  const appointment = location.state.appointment;
   const { emailVerifyCode } = Route.useParams();
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -54,10 +56,26 @@ function RouteComponent() {
   useEffect(() => {
     if (isSuccessVerifyEmail) {
       setTimeout(() => {
-        navigate({ to: '/dashboard' });
+        if (appointment === undefined) {
+          navigate({ to: '/dashboard' });
+        } else {
+          navigate({
+            to: '/practices/$practiceId/booking/$appointmentId',
+            params: {
+              practiceId: appointment.veterinaryPractice.id.toString(),
+              appointmentId: appointment.id.toString(),
+            }
+          })
+        }
       }, 3000)
     }
   }, [isSuccessVerifyEmail]);
+
+  useEffect(() => {
+    if (isSuccessVerifyEmail) {
+      setLogin(dataVerifyEmail);
+    }
+  }, [isSuccessVerifyEmail, dataVerifyEmail])
 
   const handleNewCode = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -143,13 +161,13 @@ function RouteComponent() {
       </div>);
   }
 
-  setLogin(dataVerifyEmail);
   return (
     <div className="auth-page">
       <div className="auth-container">
         <div className="auth-card">
           <h1 className="auth-title">E-Mail Verifizierung erfolgreich</h1>
-          <div className="section2">Du wirst in 3 Sekunden automatisch zum Dashboard weitergeleitet.</div>
+          {appointment === undefined && <div className="section2">Du wirst in 3 Sekunden automatisch zum Dashboard weitergeleitet.</div>}
+          {appointment !== undefined && <div className="section2">Du wirst in 3 Sekunden automatisch zur Buchung weitergeleitet.</div>}
         </div>
       </div>
     </div>);

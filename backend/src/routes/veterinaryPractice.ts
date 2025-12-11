@@ -12,7 +12,7 @@ import {
   VeterinaryPracticeSearchResultType,
   PostgresIdSchema,
 } from "vetilib-shared/schemas/ZodSchemas";
-import { optionalAuthentication, requiresAuthentication } from "./authentication";
+import { checkVerified, optionalAuthentication, requiresAuthentication } from "./authentication";
 
 export const veterinaryPracticeRouter = express.Router();
 

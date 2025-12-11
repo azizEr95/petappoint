@@ -3,6 +3,7 @@ import { JsonWebTokenError } from "jsonwebtoken";
 import { verifyJWT, verifyPasswordAndCreateJWT } from "../service/jwtService";
 import { loginValidator } from "vetilib-shared/schemas/ZodSchemas";
 import { optionalAuthentication } from "./authentication";
+import { personService } from "../service/personService";
 //import { optionalAuthentication } from "./authentication";
 
 export const loginRouter = express.Router();
@@ -17,6 +18,9 @@ loginRouter.post("/",
         }
 
         const logRes = verifyJWT(jwtString);
+
+        logRes.verified = await personService.checkVerified(logRes.id);
+
         res.cookie("access_token", jwtString, {
             httpOnly: true,
             // läuft zu dem Datum und zu der Zeit ab

@@ -8,10 +8,11 @@ export const Route = createFileRoute('/registration/verify-email')({
 })
 
 function PendingConfirmation() {
-  const navigate = useNavigate()
-  const location = useLocation()
-  const user = location.state?.person
-  const [code, setCode] = useState('')
+  const navigate = useNavigate();
+  // const location = useLocation();
+  // const user = location.state.person;
+  // const appointment = location.state.appointment;
+  const [code, setCode] = useState('');
 
   const handleCode = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/[^0-9]/g, '')
@@ -19,9 +20,9 @@ function PendingConfirmation() {
     setCode(newCode)
   }
 
-  const handleChangeEmail = () => {
-    console.log('not implemented yet')
-  }
+  // const handleChangeEmail = () => {
+  //   console.log('not implemented yet')
+  // }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -36,7 +37,8 @@ function PendingConfirmation() {
         <div className="auth-card">
           <h1 className="auth-title">Bestätige deine E-Mail-Adresse</h1>
 
-          {user !== undefined && (
+          {/* TODO: Feature folgt noch, noch nicht implentiert... */}
+          {/* {user !== undefined && (
             <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
               <p style={{ color: '#6b7280', marginBottom: '1rem' }}>
                 Wir haben eine Bestätigungsmail an <strong>{user.email}</strong> versendet.
@@ -57,7 +59,7 @@ function PendingConfirmation() {
                 Vertippt? E-Mail-Adresse ändern
               </button>
             </div>
-          )}
+          )} */}
 
           <p style={{ textAlign: 'center', color: '#6b7280', marginBottom: '1.5rem' }}>
             Klicke auf den Link in der E-Mail oder gib den 6-stelligen Code ein.
