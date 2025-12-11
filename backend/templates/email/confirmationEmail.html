@@ -22,7 +22,7 @@
             overflow: hidden;
         }
         .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
             color: white;
             padding: 40px 20px;
             text-align: center;
@@ -40,7 +40,7 @@
         }
         .confirmation-link {
             display: inline-block;
-            background-color: #667eea;
+            background-color: #22c55e;
             color: white;
             padding: 14px 32px;
             text-decoration: none;
@@ -50,7 +50,34 @@
             text-align: center;
         }
         .confirmation-link:hover {
-            background-color: #764ba2;
+            background-color: #16a34a;
+        }
+        .code-section {
+            background-color: #f4f4f4;
+            padding: 20px;
+            border-radius: 6px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .code-section p {
+            margin: 0;
+            font-size: 14px;
+            color: #666;
+        }
+        .code {
+            font-size: 24px;
+            font-weight: bold;
+            color: #22c55e;
+            letter-spacing: 4px;
+            margin-top: 10px;
+        }
+        .footer {
+            background-color: #f4f4f4;
+            padding: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+            border-top: 1px solid #ddd;
         }
         .expiry-warning {
             background-color: #fff3cd;
@@ -74,31 +101,32 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>E-Mail-Bestätigung</h1>
+            <h1>Bestätigen Sie Ihre E-Mail-Adresse</h1>
         </div>
 
         <div class="content">
             <p>Hallo {{firstName}},</p>
-
-            <p>vielen Dank für Ihre Registrierung! Um Ihre Anmeldung abzuschließen und Ihr Konto zu sichern, bestätigen Sie bitte Ihre E-Mail-Adresse.</p>
-
-            <div style="text-align: center;">
-                <a href="{{confirmationLink}}" class="confirmation-link">E-Mail bestätigen</a>
+            
+            <p>vielen Dank für Ihre Registrierung! Um Ihre Anmeldung abzuschließen und Ihr Konto zu sichern, bestätigen Sie bitte Ihre E-Mail-Adresse mit dem folgenden 6-stelligen Code.</p>
+           
+            <div class="code-section">
+                <p>Bestätigungscode:</p>
+                <div class="code">{{confirmationCode}}</div>
             </div>
-
+            
             <div class="expiry-warning">
-                <strong>⏰ Wichtig:</strong> Dieser Bestätigungslink ist 24 Stunden gültig. Wenn Sie Ihre E-Mail nicht innerhalb dieser Zeit bestätigen, müssen Sie einen neuen Bestätigungslink anfordern.
+                <strong>⏰ Wichtig:</strong> Dieser Bestätigungscode läuft in 24 Stunden ab. Wenn Sie Ihre E-Mail bis dahin nicht bestätigen, müssen Sie einen neuen Bestätigungslink anfordern.
             </div>
-
-            <p>Falls Sie dieses Konto nicht erstellt haben oder Fragen haben, kontaktieren Sie bitte unser Support-Team.</p>
-
-            <p>Beste Grüße,<br>
-            <strong>Das vetilib Team</strong></p>
+            
+            <p>Falls Sie dieses Konto nicht erstellt haben oder Fragen haben, wenden Sie sich bitte an unser Support-Team unter <a href="mailto:support@vetlib.com">support@vetlib.com</a>.</p>
+            
+            <p>Viele Grüße,<br>
+            <strong>Das Vetlib-Team</strong></p>
         </div>
 
         <div class="footer">
-            <p>&copy; {{year}} vetilib. Alle Rechte vorbehalten.</p>
-            <p>Dies ist eine automatische Nachricht. Bitte antworten Sie nicht auf diese E-Mail.</p>
+            <p>&copy; {{year}} Vetlib. Alle Rechte vorbehalten.</p>
+            <p>Dies ist eine automatisch generierte Nachricht. Bitte antworten Sie nicht auf diese E-Mail.</p>
         </div>
     </div>
 </body>

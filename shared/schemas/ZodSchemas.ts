@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { boolean, z } from "zod";
 
 export const PostgresIdSchema = z.number().int();
 export type PostgresIdType = z.infer<typeof PostgresIdSchema>;
@@ -177,6 +177,14 @@ export const LoginSchema = z.object({
 });
 
 export type LoginType = z.infer<typeof LoginSchema>;
+
+//confirmType: 
+export const confirmSchema = z.object({
+  id: PostgresIdSchema,
+  verified: z.boolean()
+})
+
+export type confirmType = z.infer<typeof confirmSchema>;
 
 //Person has Animal:
 export const Person_has_AnimalSchema = z.object({

@@ -2,7 +2,7 @@ import express from "express";
 import { personService } from "../service/personService";
 import { AnimalsType, PersonsCreateSchema, PersonsType, PersonsUpdateSchema, PostgresIdSchema } from "vetilib-shared/schemas/ZodSchemas";
 import { verifyJWT, verifyPasswordAndCreateJWT } from "../service/jwtService";
-import { sendConfirmationEmail } from "../service/emailService";
+import { emailService } from "../service/emailService";
 import { optionalAuthentication, requiresAuthentication } from "./authentication";
 import { AuthorizationError } from "../exceptions/errors/AuthorizationError";
 import multer from "multer";
@@ -80,8 +80,15 @@ personsRouter.post("/",
             res.sendStatus(401);
             return;
         }
+        const userdata = verifyJWT(jwt);
+        res.cookie('access_token', jwt, {
+            httpOnly: true,
+            expires: new Date(userdata.exp * 1000),
+            secure: true,
+            sameSite: "none"
+        })
         // confirmation email 
-        await sendConfirmationEmail(person, jwt);
+        await emailService.sendConfirmationEmail(person);
 
         res.status(201).send(person);
     }
