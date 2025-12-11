@@ -13,7 +13,8 @@
     "seed:practices": "tsx scripts/seed-practices.ts",
     "seed:testdata": "tsx scripts/seed-testdata.ts",
     "seed:appointments": "tsx scripts/seed-appointments.ts",
-    "seed:all": "npm run seed:testdata && npm run seed:practices && npm run seed:appointments"
+    "seed:playtest": "tsx scripts/seed-playtest.ts",
+    "seed:all": "npm run seed:testdata && npm run seed:practices && npm run seed:appointments && npm run seed:playtest"
   },
   "keywords": [],
   "author": "",
