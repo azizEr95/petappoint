@@ -206,7 +206,7 @@ export const animalService = {
       },
     });
 
-    const filepath = found?.picturePath ?? "public/placeholders/animal.png";
+    const filepath = found?.picturePath ?? "public/placeholders/mayasFace.png";
     return path.join(appRootDir, filepath);
   },
 
