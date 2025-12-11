@@ -7,6 +7,7 @@ import { ResourceNotFoundError } from '../exceptions/errors/ResourceNotFoundErro
 import { verifyCodeandCreateJWT, verifyJWT, verifyPasswordAndCreateJWT } from '../service/jwtService';
 
 
+
 /*
 * This Router is for emailverification only post emailverification is done in persons Router
 */

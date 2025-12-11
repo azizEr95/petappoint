@@ -2,8 +2,8 @@ import React from 'react'
 import type { LoginType } from '../../shared/schemas/ZodSchemas'
 
 interface LoginContextType {
-  login: LoginType | false | undefined
-  setLogin: (loginResource: LoginType | false | undefined) => void
+  login: LoginType | false
+  setLogin: (loginResource: LoginType | false) => void
 }
 
 export const LoginContext = React.createContext<LoginContextType>(

@@ -1,15 +1,15 @@
 import { useLocation, useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
-import '../styles/routes/login.scss'
+import '../../styles/routes/login.scss'
 import { useMutation } from '@tanstack/react-query'
-import { loginUser } from '../api/LoginAPI'
-import { StatusBooking } from '../types/booking'
-import { useLoginContext } from '../LoginContext'
+import { loginUser } from '../../api/LoginAPI'
+import { StatusBooking } from '../../types/booking'
+import { useLoginContext } from '../../LoginContext'
 import type { ChangeEvent, FormEvent } from 'react'
 import type {
   AppointmentsType,
   LoginType,
-} from '../../../shared/schemas/ZodSchemas'
+} from '../../../../shared/schemas/ZodSchemas'
 
 type LoginProps = {
   setStatusBookingProcess?: (status: StatusBooking) => void // only if Login is in Booking Process
@@ -72,6 +72,9 @@ export function LoginForm({
   }
 
   const handleClickRegistration = () => {
+    if(appointment !== undefined){
+      localStorage.setItem('bookAppointment', JSON.stringify({ appointmentId: appointment.id, practiceId: appointment.veterinaryPractice.id }));
+    }
     navigate({
       to: '/registration/person',
       state: {

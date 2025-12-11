@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { verifyJWT } from "../service/jwtService";
 import { RoleEnum } from "vetilib-shared/schemas/ZodSchemas";
+import { emailService } from "../service/emailService";
 
 declare global {
     namespace Express {
@@ -44,4 +45,11 @@ export function checkVerified(req: Request, res: Response, next: NextFunction) {
         return;
     }
     next();
+}
+
+export function checkVerified(req: Request, res: Response, next: NextFunction) {
+    if (!req.verified) {
+        res.sendStatus(403);
+        return;
+    }
 }

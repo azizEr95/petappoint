@@ -1,7 +1,8 @@
-import { createFileRoute, useLocation, useNavigate } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import '../../styles/routes/_auth-shared.scss'
-import { Form } from 'react-bootstrap'
-import { useState } from 'react'
+import { useEffect } from 'react'
+import { useLoginContext } from '../../LoginContext'
+import { EmailVerificationCode } from '../../components/registration/EmailVerificationCode'
 
 export const Route = createFileRoute('/registration/verify-email')({
   component: PendingConfirmation,
@@ -9,27 +10,23 @@ export const Route = createFileRoute('/registration/verify-email')({
 
 function PendingConfirmation() {
   const navigate = useNavigate();
+  const { login } = useLoginContext();
   // const location = useLocation();
   // const user = location.state.person;
   // const appointment = location.state.appointment;
-  const [code, setCode] = useState('');
+  
 
-  const handleCode = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/[^0-9]/g, '')
-    const newCode = value.slice(0, 6)
-    setCode(newCode)
-  }
+  useEffect(() => { // if not verified go to start
+    if(login !== false && login.verified) {
+      navigate({ to: '/dashboard' });
+    } else if(login === false){
+      navigate({ to: '/' });
+    }
+  },[login]);
 
   // const handleChangeEmail = () => {
   //   console.log('not implemented yet')
   // }
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (code.length === 6) {
-      navigate({ to: `/registration/email-confirmation/${code}` })
-    }
-  }
 
   return (
     <div className="auth-page">
@@ -65,31 +62,7 @@ function PendingConfirmation() {
             Klicke auf den Link in der E-Mail oder gib den 6-stelligen Code ein.
           </p>
 
-          <Form className="auth-form" onSubmit={handleSubmit}>
-            <div className="form-group">
-              <Form.Label htmlFor="code" className="form-label">
-                Bestätigungscode *
-              </Form.Label>
-              <Form.Control
-                id="code"
-                type="text"
-                className="form-input"
-                placeholder="000000"
-                name="code"
-                value={code}
-                onChange={handleCode}
-                maxLength={6}
-              />
-            </div>
-
-            <button
-              type="submit"
-              className="auth-button"
-              disabled={code.length !== 6}
-            >
-              {code.length === 6 ? 'Bestätigen' : 'Code eingeben (6 Ziffern)'}
-            </button>
-          </Form>
+          <EmailVerificationCode />
         </div>
       </div>
     </div>

@@ -15,7 +15,7 @@ import { dateToInfosString } from '../../../../utils/DateToStringFormat'
 import { useLoginContext } from '../../../../LoginContext'
 import { getAnimalsFromUser } from '../../../../api/AnimalsAPI'
 import { getAllAvailableServices, getServicesFromVeterinary } from '../../../../api/ServicesAPI'
-import { LoginForm } from '../../../../components/Login'
+import { LoginForm } from '../../../../components/registration/Login'
 import { StatusBooking } from '../../../../types/booking'
 import { getAnimaltypesFromVeterinary } from '../../../../api/AnimalTypeAPI'
 import type {
@@ -176,7 +176,7 @@ function BookingComponent() {
         // if only one ServiceType was selected, skip SelectAppointmentType component
         setFoundFilteredServices(null)
         setSelectedAppointmentType(foundService[0])
-        if (login !== undefined && login !== false) {
+        if (login) {
           setStatus(StatusBooking.selectAnimal)
         } else {
           setStatus(StatusBooking.login)
@@ -217,7 +217,7 @@ function BookingComponent() {
       if (animal !== undefined) {
         setSelectedAnimal(animal)
         // Skip to service selection if animal is pre-selected
-        if (login !== undefined && login !== false) {
+        if (login) {
           setStatus(StatusBooking.selectAppointmentType)
         } else {
           setStatus(StatusBooking.login)
@@ -306,7 +306,7 @@ function BookingComponent() {
       }
     })
 
-    if (login !== undefined && login !== false) {
+    if (login) {
       setStatus(StatusBooking.selectAppointmentType)
     } else {
       setStatus(StatusBooking.login)
