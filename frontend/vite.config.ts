@@ -27,4 +27,25 @@ export default defineConfig({
       '@': resolve(__dirname, './src'),
     },
   },
+  // auskommentieren im vps server
+  /*
+  build: {
+  outDir: 'dist',
+  sourcemap: false,
+  minify: 'terser', //macht code unleserlich
+  terserOptions: {
+    compress: {
+      drop_console: true,
+      drop_debugger: true,
+      pure_funcs: ['console.log', 'console.debug', 'console.info'],
+    },
+    mangle: {
+      toplevel: true,
+    },
+    format: {
+      comments: false,
+    },
+  },  
+},
+*/
 })
