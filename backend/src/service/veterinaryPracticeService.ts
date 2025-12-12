@@ -74,15 +74,45 @@ export const veterinaryPracticeService = {
         !query.serviceTypeIds || query.serviceTypeIds.length <= 0
           ? {}
           : {
-            veterinarians: {
-              some: {
-                veterinaryHasServices: {
+            AND: [
+              {
+                appointments: {
                   some: {
-                    serviceId: { in: query.serviceTypeIds },
-                  },
+                    serviceId: null,
+                    animalId: null
+                  }
                 },
-              },
-            },
+                OR: [
+                  {
+                    appointments: {
+                      some: {
+                        appointmentHasServices: {
+                          some: {
+                            serviceId: { in: query.serviceTypeIds },
+                          },
+                        },
+                      }
+                    }
+                  },
+                  {
+                    appointments: {
+                      some: {
+                        appointmentHasServices: { none: {} },
+                      }
+                    },
+                    veterinarians: {
+                      some: {
+                        veterinaryHasServices: {
+                          some: {
+                            serviceId: { in: query.serviceTypeIds }
+                          }
+                        }
+                      }
+                    }
+                  },
+                ],
+              }
+            ],
           },
         query.name.length <= 0
           ? {}
@@ -126,7 +156,7 @@ export const veterinaryPracticeService = {
           },
       ],
     } as const;
-    
+
     const [searchResults, total] = await Promise.all([
       prisma.veterinaryPractice.findMany({
         include: {
