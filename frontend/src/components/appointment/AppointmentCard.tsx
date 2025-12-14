@@ -47,16 +47,7 @@ export function AppointmentCard({
 
   if (isSuccess) {
     const practice: VeterinaryPracticesType = data
-    let appointmentType: ServiceType | undefined
-
-    if (
-      appointment.availableServices !== null &&
-      appointment.availableServices !== undefined
-    ) {
-      appointmentType = appointment.availableServices.find(
-        (x) => x.id === appointment.service?.id,
-      )
-    }
+    const appointmentType: ServiceType | undefined = appointment.availableServices.find((x) => x.id === appointment.service?.id)
 
     const formatDate = (date: Date) => {
       return date.toLocaleDateString('de-DE', {

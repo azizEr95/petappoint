@@ -160,10 +160,6 @@ function Appointments() {
     setSelectedAppointment(appointment)
   }
 
-  const handleAppointmentCancelled = () => {
-    // useEffect will handle selecting next appointment after query invalidation
-  }
-
   const handleShowCancelSuccess = () => {
     setShowCancelSuccess(true)
     window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -296,7 +292,6 @@ function Appointments() {
             {selectedAppointment && (
               <AppointmentDetails
                 appointment={selectedAppointment}
-                onAppointmentCancelled={handleAppointmentCancelled}
                 onShowCancelSuccess={handleShowCancelSuccess}
               />
             )}
