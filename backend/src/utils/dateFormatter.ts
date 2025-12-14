@@ -6,7 +6,7 @@ export function dateFormatter(datum:Date, mode: 'time' | 'date'): string {
             return `${datum.getDay()}.${datum.getMonth()}.${datum.getFullYear()}`;
         case "time":
             //format HH/MM
-            return `${datum.getHours()}:${datum.getMinutes()}`;
+            return `${String(datum.getHours()).padStart(2,"0")}:${String(datum.getMinutes()).padStart(2,"0")}`;
         default:
             throw new Error("Format not given");
     }

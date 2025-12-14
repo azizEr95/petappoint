@@ -95,7 +95,7 @@
         <div class="content">
             <p>Hallo {{firstName}},</p>
 
-            <p>wir müssen Sie leider mitteilen, dass Ihr vereinbarter Termin abgesagt wurde.</p>
+            <p>du hast deinen Termin erfolgreich abgesagt.</p>
 
             <div class="appointment-box">
                 <p><strong>Datum:</strong> {{appointmentDate}}</p>
@@ -104,22 +104,19 @@
                 <p><strong>Behandlung:</strong> {{serviceName}}</p>
             </div>
 
-            <div class="info-box">
-                <strong>Nächste Schritte:</strong> Bitte kontaktieren Sie uns, um einen neuen Termin zu vereinbaren. Wir stehen Ihnen gerne zur Verfügung.
-            </div>
 
-            <p>Für Rückfragen erreichen Sie uns unter
+            <p>Bei Rückfragen an die Arztpraxis erreichst du sie unter
                 <a href="mailto:{{supportEmail}}">{{supportEmail}}</a>
                 oder telefonisch unter {{supportPhone}}.
             </p>
 
-            <p>Entschuldigen Sie die Unannehmlichkeiten.<br>
-                <strong>{{clinicName}}</strong>
+            <p>Beste Grüße,<br>
+                <strong>Vetilib</strong>
             </p>
         </div>
 
         <div class="footer">
-            <p>&copy; {{year}} {{clinicName}}. Alle Rechte vorbehalten.</p>
+            <p>&copy; {{year}} vetilib. Alle Rechte vorbehalten.</p>
             <p>Dies ist eine automatisch generierte Nachricht. Bitte nicht direkt darauf antworten.</p>
         </div>
     </div>

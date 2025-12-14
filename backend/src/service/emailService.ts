@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import { SendSmtpEmail } from "@getbrevo/brevo";
 import { emailServiceSetup } from "../singletonEmail";
-import { AppointmentsType, PersonsType } from 'vetilib-shared/schemas/ZodSchemas';
+import { PersonsType } from 'vetilib-shared/schemas/ZodSchemas';
 import { personService } from './personService';
 import { person_has_confirmation_code } from '../../generated/prisma';
 import { appointmentService } from './appointmentService';
@@ -114,10 +114,11 @@ export const emailService = {
                     firstName: user.firstName,
                     appointmentDate: dateFormatter(appointment.startTime,"date"),
                     appointmentTime: dateFormatter(appointment.startTime,"time"),
-                    patientName: appointment.animal ? appointment.animal.name : "",
-                    serviceName: appointment.service ? appointment.service.name : "",
+                    patientName: appointment.animal?.name ?? "",
+                    serviceName: appointment.service?.name ?? "",
                     location: appointment.veterinaryPractice.address.street,
-                    appointmentLink: `${process.env.PROD ? process.env.PROD_SERVER : process.env.DEV_SERVER}/api/appointment/${appointment.id}`,
+                    appointmentLink: `${process.env.PROD === "true" ? process.env.PROD_SERVER : process.env.DEV_SERVER}/appointments/`,
+                    cancellationDeadline: dateFormatter(new Date(new Date().setDate(appointment.startTime.getDate() - 1)),"date"), //horrible fix but works
                     supportEmail: appointment.veterinaryPractice.email,
                     supportPhone: appointment.veterinaryPractice.phone,
                     clinicName: appointment.veterinaryPractice.name
