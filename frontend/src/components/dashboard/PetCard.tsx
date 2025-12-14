@@ -1,6 +1,7 @@
 import { Link } from '@tanstack/react-router'
 import { useState } from 'react'
-import { getPictureURLForAnimalId } from '../../api/AnimalsAPI'
+import { useQuery } from '@tanstack/react-query'
+import { getPictureFromAnimal } from '../../api/AnimalsAPI'
 import { AnimalDeleteDialog } from '../animal/AnimalDeleteDialog'
 import type { PetCardProps } from '../../types/dashboard'
 import '../../styles/components/dashboard/PetCard.scss'
@@ -13,6 +14,13 @@ export function PetCard({
   onEdit,
 }: PetCardProps) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+
+  // fetch animal picture
+  const { data: animalPictureData, isSuccess: isSuccessPictureData } = useQuery({
+    queryKey: ['animalPicture', 'PetCard', animal.id],
+    queryFn: () => getPictureFromAnimal(animal.id),
+    staleTime: 0,
+  })
 
   const handleDelete = () => {
     setShowDeleteDialog(true)
@@ -44,98 +52,99 @@ export function PetCard({
       day: 'numeric',
     })
   }
-
-  return (
-    <div className="pet-card">
-      <div className="pet-card-header">
-        <div className="pet-image">
-          <img
-            src={getPictureURLForAnimalId(animal.id)}
-            alt={animal.name}
-            className="rounded-circle"
-          />
-        </div>
-        <div className="pet-card-actions">
-          <button
-            className="pet-edit-btn"
-            onClick={() => onEdit(animal)}
-            title="Bearbeiten"
-          >
-            <i className="bi bi-pencil"></i>
-          </button>
-          <button
-            className="pet-delete-btn"
-            onClick={handleDelete}
-            title="Löschen"
-          >
-            <i className="bi bi-trash"></i>
-          </button>
-        </div>
-      </div>
-
-      <div className="pet-card-body">
-        <h4 className="pet-name">{animal.name}</h4>
-        <div className="pet-detail">
-          <i className="bi bi-info-circle"></i>
-          <span>Alter: {getAge()}</span>
+  if (isSuccessPictureData) {
+    return (
+      <div className="pet-card">
+        <div className="pet-card-header">
+          <div className="pet-image">
+            <img
+              src={animalPictureData}
+              alt={animal.name}
+              className="rounded-circle"
+            />
+          </div>
+          <div className="pet-card-actions">
+            <button
+              className="pet-edit-btn"
+              onClick={() => onEdit(animal)}
+              title="Bearbeiten"
+            >
+              <i className="bi bi-pencil"></i>
+            </button>
+            <button
+              className="pet-delete-btn"
+              onClick={handleDelete}
+              title="Löschen"
+            >
+              <i className="bi bi-trash"></i>
+            </button>
+          </div>
         </div>
 
-        {/* Vaccination Status */}
-        <div
-          className={`pet-status ${vaccinationStatus === 'overdue' ? 'pet-status-warning' : 'pet-status-success'}`}
-        >
-          <i
-            className={`bi ${vaccinationStatus === 'overdue' ? 'bi-exclamation-triangle' : 'bi-check-circle'}`}
-          ></i>
-          <span>
-            {vaccinationStatus === 'overdue'
-              ? 'Impfung überfällig'
-              : 'Impfung aktuell'}
-          </span>
-        </div>
-
-        {/* Appointments */}
-        <div className="pet-appointments">
-          {/* Letzter Termin */}
+        <div className="pet-card-body">
+          <h4 className="pet-name">{animal.name}</h4>
           <div className="pet-detail">
-            <i className="bi bi-calendar-check"></i>
+            <i className="bi bi-info-circle"></i>
+            <span>Alter: {getAge()}</span>
+          </div>
+
+          {/* Vaccination Status */}
+          <div
+            className={`pet-status ${vaccinationStatus === 'overdue' ? 'pet-status-warning' : 'pet-status-success'}`}
+          >
+            <i
+              className={`bi ${vaccinationStatus === 'overdue' ? 'bi-exclamation-triangle' : 'bi-check-circle'}`}
+            ></i>
             <span>
-              {lastTreatment
-                ? `Letzter Termin: ${formatDate(lastTreatment)}`
-                : 'Letzter Termin: Keine Termine'}
+              {vaccinationStatus === 'overdue'
+                ? 'Impfung überfällig'
+                : 'Impfung aktuell'}
             </span>
           </div>
 
-          {/* Nächster Termin */}
-          <div className="pet-detail">
-            <i className="bi bi-calendar-event"></i>
-            <span>Nächster Termin: </span>
-            {nextAppointment ? (
-              <span>{formatDate(nextAppointment)}</span>
-            ) : (
-              <Link
-                to="/search"
-                search={{
-                  name: '',
-                  address: '',
-                  animalType: '',
-                  serviceType: '',
-                }}
-                className="book-link"
-              >
-                Vereinbaren
-              </Link>
-            )}
+          {/* Appointments */}
+          <div className="pet-appointments">
+            {/* Letzter Termin */}
+            <div className="pet-detail">
+              <i className="bi bi-calendar-check"></i>
+              <span>
+                {lastTreatment
+                  ? `Letzter Termin: ${formatDate(lastTreatment)}`
+                  : 'Letzter Termin: Keine Termine'}
+              </span>
+            </div>
+
+            {/* Nächster Termin */}
+            <div className="pet-detail">
+              <i className="bi bi-calendar-event"></i>
+              <span>Nächster Termin: </span>
+              {nextAppointment ? (
+                <span>{formatDate(nextAppointment)}</span>
+              ) : (
+                <Link
+                  to="/search"
+                  search={{
+                    name: '',
+                    address: '',
+                    animalType: '',
+                    serviceType: '',
+                  }}
+                  className="book-link"
+                >
+                  Vereinbaren
+                </Link>
+              )}
+            </div>
           </div>
         </div>
-      </div>
 
-      {showDeleteDialog && (
-        <AnimalDeleteDialog
-          hideDialogDeleteAnimal={handleCloseDelete}
-          animalDelete={animal}
-        />
-      )}
-    </div>
-  )
+        {showDeleteDialog && (
+          <AnimalDeleteDialog
+            hideDialogDeleteAnimal={handleCloseDelete}
+            animalDelete={animal}
+          />
+        )}
+      </div>
+    )
+  }
 }

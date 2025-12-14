@@ -86,12 +86,25 @@ animalsRouter.get("/:animalId/picture", requiresAuthentication, checkVerified, a
   res.sendFile(filepath);
 });
 
+animalsRouter.get("/unknownPicture", requiresAuthentication, checkVerified, async (req, res) => {
+  const filepath = await animalService.getPicturePath(undefined);
+  res.sendFile(filepath);
+});
+
 animalsRouter.post("/:animalId/picture", requiresAuthentication, checkVerified, upload.single("picture"), async (req, res) => {
   const animalId = PostgresIdSchema.parse(parseInt(req.params.animalId));
 
   await ensureUserCanAccessAnimal(req.userId!, animalId);
 
   await animalService.savePicture(animalId, req.file?.path ?? null);
+});
+
+animalsRouter.delete("/:animalId/picture", requiresAuthentication, checkVerified, async (req, res) => {
+  const animalId = PostgresIdSchema.parse(parseInt(req.params.animalId));
+
+  await ensureUserCanAccessAnimal(req.userId!, animalId);
+
+  await animalService.deletePicture(animalId);
 });
 
 animalsRouter.delete("/:animalId", requiresAuthentication, checkVerified, async (req, res) => {

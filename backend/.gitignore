@@ -153,3 +153,8 @@ vite.config.ts.timestamp-*
 .vite/
 
 package-lock.json
+
+public/uploads/animals/*
+!public/uploads/animals/.gitkeep
+
+.env

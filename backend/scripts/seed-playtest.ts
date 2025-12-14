@@ -153,6 +153,30 @@ async function generatePlaytest() {
 
       const [a, b, c] = await Promise.all([maya, bambi, playtester]);
 
+      const picture1 = prisma.animal.update({
+        where: {
+          id: a.id,
+        },
+        data: {
+          picturePath: "public/placeholders/bambisFace.png",
+        },
+        select: {
+          picturePath: true,
+        },
+      });
+
+      const picture2 = prisma.animal.update({
+        where: {
+          id: b.id,
+        },
+        data: {
+          picturePath: "public/placeholders/mayasFace.png",
+        },
+        select: {
+          picturePath: true,
+        },
+      });
+
       const con1 = prisma.personHasAnimal.create({
         data: {
           personId: c.id,
@@ -167,7 +191,7 @@ async function generatePlaytest() {
         }
       });
 
-      await Promise.all([con1, con2]);
+      await Promise.all([con1, con2, picture1, picture2]);
 
       await prisma.person_has_confirmation_code.create({
         data: {

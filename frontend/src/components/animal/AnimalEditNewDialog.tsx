@@ -1,4 +1,4 @@
-import {  useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   Button,
   Col,
@@ -15,8 +15,10 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { getAllAnimalTypes } from '../../api/AnimalTypeAPI'
 import {
   createAnimal,
+  deletePictureForAnimalId,
   editAnimal,
-  fetchAnimalPicture,
+  getPictureFromAnimal,
+  getPicturePlaceholderAnimal,
   uploadPictureForAnimalId,
 } from '../../api/AnimalsAPI'
 import {
@@ -29,9 +31,9 @@ import {
   compareDates,
   getDateStringFromDate,
 } from '../../utils/DateToStringFormat'
-import type {MultiValue} from 'react-select';
-import type {ChangeEvent} from 'react';
-import type {AddRacesToAnimalType, AnimalTypeType, AnimalUpdateType, AnimalracesType, AnimalsCreateType, AnimalsType, sexesType} from '../../../../shared/schemas/ZodSchemas';
+import type { MultiValue } from 'react-select';
+import type { ChangeEvent } from 'react';
+import type { AddRacesToAnimalType, AnimalTypeType, AnimalUpdateType, AnimalracesType, AnimalsCreateType, AnimalsType, sexesType } from '../../../../shared/schemas/ZodSchemas';
 import '../../styles/components/AnimalDialog.scss'
 
 type AnimalEditNewDialogProps = {
@@ -117,53 +119,72 @@ export function AnimalEditNewDialog({
   })
 
   // fetch animal picture
-  const { data: animalPictureData } = useQuery({
+  const { data: animalPictureData, isSuccess: isSuccessPictureData } = useQuery({
     queryKey: ['animalPicture', animalEdit?.id],
-    queryFn: () => fetchAnimalPicture(animalEdit!.id),
+    queryFn: () => getPictureFromAnimal(animalEdit!.id),
     enabled: animalEdit !== undefined,
+    staleTime: 0,
+  })
+  const { data: animalUnknownPictureData, isSuccess: isSuccessUnknownPictureData } = useQuery({
+    queryKey: ['animalUnknownPicture'],
+    queryFn: () => getPicturePlaceholderAnimal(),
     staleTime: 0,
   })
 
   // BEGIN IMAGE FORM
-  const [animalPictureURL, setAnimalPictureURL] = useState<string>(
-    animalPictureData ?? '/placeholders/animal-unknown.png',
-  )
+  const [animalPictureURL, setAnimalPictureURL] = useState<string | undefined>(undefined)
   const [selectedPictureFile, setSelectedPictureFile] = useState<File>()
+  const [pictureIsPlaceholder, setPictureIsPlaceholder] = useState<boolean>(false);
 
   useEffect(() => {
-    if (animalPictureData) {
+    if (isSuccessPictureData) {
       setAnimalPictureURL(animalPictureData)
+      setPictureIsPlaceholder(false)
+    } else if (isSuccessUnknownPictureData) {
+      setAnimalPictureURL(animalUnknownPictureData)
+      setPictureIsPlaceholder(true)
     }
-  }, [animalPictureData])
+    console.log(isSuccessPictureData)
+    console.log(animalPictureData)
+    console.log(isSuccessUnknownPictureData)
+  }, [animalPictureData, animalUnknownPictureData, isSuccessPictureData, isSuccessUnknownPictureData])
 
   useEffect(() => {
     if (selectedPictureFile) {
       const url = URL.createObjectURL(selectedPictureFile)
       setAnimalPictureURL(url)
+      setPictureIsPlaceholder(false);
       return () => URL.revokeObjectURL(url)
+    } else {
+      setAnimalPictureURL(animalUnknownPictureData ?? undefined);
+      setPictureIsPlaceholder(true);
     }
-  }, [selectedPictureFile])
+  }, [selectedPictureFile, animalUnknownPictureData])
 
   const handleFileSelect = (e: ChangeEvent<HTMLInputElement>) => {
-    console.log(e)
     if (e.target.files !== null) {
       const file: File | undefined = e.target.files[0]
-      if (file) {
-        if (!file.type.startsWith('image/')) {
-          setErrorText('Nur Bilder erlaubt.')
-          return
-        }
-
-        // 2MB max
-        if (file.size > 2 * 1024 * 1024) {
-          setErrorText('Datei darf maximal 2MB groß sein.')
-          return
-        }
-
-        setSelectedPictureFile(file)
-        setErrorText('')
+      if (!file.type.startsWith('image/')) {
+        setErrorText('Nur Bilder erlaubt.')
+        return
       }
+
+      // 2MB max
+      if (file.size > 2 * 1024 * 1024) {
+        setErrorText('Datei darf maximal 2MB groß sein.')
+        return
+      }
+
+      setSelectedPictureFile(file)
+      setErrorText('')
     }
+  }
+
+  const handleDeletePicture = () => {
+    setAnimalPictureURL(animalUnknownPictureData ?? undefined);
+    setPictureIsPlaceholder(true);
+    setSelectedPictureFile(undefined);
+    console.log(animalPictureURL)
   }
 
   // END IMAGE FORM
@@ -182,7 +203,7 @@ export function AnimalEditNewDialog({
       setName(animalEdit.name)
       if (animalEdit.dateOfBirth !== null) {
         if (animalEdit.dateOfBirthIsExact) {
-          ;(setDateOfBirthIsExact('Yes'),
+          ; (setDateOfBirthIsExact('Yes'),
             setDateOfBirth(getDateStringFromDate(animalEdit.dateOfBirth)))
         } else {
           const now = new Date()
@@ -230,8 +251,12 @@ export function AnimalEditNewDialog({
       if (animalEdit.timeOfDeath !== null) {
         setDateOfDeath(getDateStringFromDate(animalEdit.timeOfDeath))
       }
+      if(isSuccessPictureData && isSuccessUnknownPictureData){
+        setAnimalPictureURL(animalPictureData)
+        setPictureIsPlaceholder(false)
+      }
     }
-  }, [isSuccessAnimalType])
+  }, [isSuccessAnimalType, isSuccessPictureData, animalPictureData, isSuccessUnknownPictureData, animalUnknownPictureData])
 
   useEffect(() => {
     if (animalEdit !== undefined && isSuccessRacesEdit) {
@@ -321,11 +346,7 @@ export function AnimalEditNewDialog({
     onError: () => {
       setErrorText('Fehler beim Erstellen des Tieres')
     },
-    onSuccess: async (data) => {
-      // upload picture if selected
-      if (selectedPictureFile) {
-        await uploadPictureForAnimalId(data.id, selectedPictureFile)
-      }
+    onSuccess: (data) => {
       // add races to the created animal
       setErrorText('')
       const addRaces: AddRacesToAnimalType = {
@@ -333,7 +354,34 @@ export function AnimalEditNewDialog({
         animalraceids: racesIdNumbers,
       }
       mutateAddRacesToAnimal(addRaces)
+
+      // upload picture if selected
+      if (selectedPictureFile) {
+        mutateAddPictureAnimal(data.id);
+      }
     },
+  })
+
+  const { mutate: mutateAddPictureAnimal } = useMutation({
+    mutationFn: (animalId: number) => uploadPictureForAnimalId(animalId, selectedPictureFile ?? new File([], '')), // selectedPictureFile is always defined here (if condition before call mutation)
+    onError: () => {
+      setErrorText('Fehler beim Erstellen des Tieres')
+    },
+    onSuccess: () => {
+      setErrorText('')
+      queryClient.invalidateQueries({ queryKey: ['animals'] })
+      queryClient.invalidateQueries({ queryKey: ['animalPicture'] })
+      queryClient.invalidateQueries({ queryKey: ['animalUnknownPicture'] })
+    }
+  })
+
+  const { mutate: mutateDeletePicture } = useMutation({
+    mutationFn: (animalId: number) => deletePictureForAnimalId(animalId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['animals'] })
+      queryClient.invalidateQueries({ queryKey: ['animalPicture'] })
+      queryClient.invalidateQueries({ queryKey: ['animalUnknownPicture'] })
+    }
   })
 
   type AnimalEditPayload = {
@@ -347,14 +395,17 @@ export function AnimalEditNewDialog({
     onError: () => {
       setErrorText('Fehler beim Bearbeiten des Tieres')
     },
-    onSuccess: async (data) => {
-      // upload picture if selected
-      if (selectedPictureFile) {
-        await uploadPictureForAnimalId(data.id, selectedPictureFile)
-      }
+    onSuccess: (data) => {
       // animal was successful edited
       setErrorText('')
       mutateDeleteAllRaces(data.id)
+
+      // upload picture if selected
+      if (selectedPictureFile) {
+        mutateAddPictureAnimal(data.id);
+      } else {
+        mutateDeletePicture(data.id);
+      }
     },
   })
   const { mutate: mutateAddRacesToAnimal } = useMutation({
@@ -371,6 +422,8 @@ export function AnimalEditNewDialog({
       setErrorText('')
       hideDialogNewAnimal()
       queryClient.invalidateQueries({ queryKey: ['animals'] })
+      queryClient.invalidateQueries({ queryKey: ['animalPicture'] })
+      queryClient.invalidateQueries({ queryKey: ['animalUnknownPicture'] })
     },
   })
 
@@ -401,18 +454,21 @@ export function AnimalEditNewDialog({
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     e.preventDefault()
     const t = e.target
-    const name = t.name
+    const nameTarget = t.name
     const value = t.value
-    switch (name) {
+    switch (nameTarget) {
       case 'name':
         setName(value)
         break
       case 'animalType':
-        const selectedType = dataAnimalType?.find(
-          (type) => type.id === parseInt(value),
-        )
-        setAnimalTypeAnimal(selectedType)
-        break
+        {
+          const selectedType = dataAnimalType?.find(
+            (type) => type.id === parseInt(value),
+          )
+          setAnimalTypeAnimal(selectedType);
+          setSelectedRaces([]); // clear all selected races
+          break
+        }
       case 'dateOfBirth':
         setDateOfBirth(value)
         break
@@ -458,31 +514,35 @@ export function AnimalEditNewDialog({
         }
         break
       case 'height':
-        const valueHeight = value.replace(/[^0-9,]/g, '') // an input from letters is not allowed, only float numbers
-        const valueCompleteHeight = valueHeight.split(',') // check if there is only one ,
+        {
+          const valueHeight = value.replace(/[^0-9,]/g, '') // an input from letters is not allowed, only float numbers
+          const valueCompleteHeight = valueHeight.split(',') // check if there is only one ,
 
-        if (valueCompleteHeight.length <= 1) {
-          setHeight(valueHeight)
-        } else if (
-          valueCompleteHeight.length <= 2 &&
-          valueCompleteHeight[1].length <= 2
-        ) {
-          setHeight(valueHeight)
+          if (valueCompleteHeight.length <= 1) {
+            setHeight(valueHeight)
+          } else if (
+            valueCompleteHeight.length <= 2 &&
+            valueCompleteHeight[1].length <= 2
+          ) {
+            setHeight(valueHeight)
+          }
+          break
         }
-        break
       case 'weight':
-        const valueWeight = value.replace(/[^0-9,]/g, '') // an input from letters is not allowed, only numbers
-        const valueCompleteWeight = valueWeight.split(',') // check if there is only one ,
+        {
+          const valueWeight = value.replace(/[^0-9,]/g, '') // an input from letters is not allowed, only numbers
+          const valueCompleteWeight = valueWeight.split(',') // check if there is only one ,
 
-        if (valueCompleteWeight.length <= 1) {
-          setWeight(valueWeight)
-        } else if (
-          valueCompleteWeight.length <= 2 &&
-          valueCompleteWeight[1].length <= 2
-        ) {
-          setWeight(valueWeight)
+          if (valueCompleteWeight.length <= 1) {
+            setWeight(valueWeight)
+          } else if (
+            valueCompleteWeight.length <= 2 &&
+            valueCompleteWeight[1].length <= 2
+          ) {
+            setWeight(valueWeight)
+          }
+          break
         }
-        break
     }
     validate(false)
   }
@@ -646,6 +706,8 @@ export function AnimalEditNewDialog({
   }
 
   const handleSubmitAnimalDialog = () => {
+    queryClient.invalidateQueries({ queryKey: ['animalPicture'] })
+
     const allUndefined = validate(true)
     if (allUndefined) {
       // all Inputs are valid and correct
@@ -768,7 +830,7 @@ export function AnimalEditNewDialog({
         <Modal.Body>
           <Container>
             <Row className="justify-content-center mb-4">
-              <Col xs="auto" className="text-center">
+              <Col xs="auto" sm="auto" lg={9} className="text-center">
                 <Image
                   src={animalPictureURL}
                   roundedCircle
@@ -779,11 +841,14 @@ export function AnimalEditNewDialog({
                 />
                 <Form.Group>
                   <Form.Label>Tierbild ändern</Form.Label>
-                  <Form.Control
-                    type="file"
-                    accept="image/*"
-                    onChange={handleFileSelect}
-                  />
+                  <div className='flex-row'>
+                    <Form.Control
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileSelect}
+                    />
+                    <Button variant="danger" onClick={handleDeletePicture} disabled={pictureIsPlaceholder} className='button'><i className="bi bi-trash"></i></Button>
+                  </div>
                 </Form.Group>
               </Col>
             </Row>
