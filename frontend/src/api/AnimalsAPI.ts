@@ -23,20 +23,36 @@ export const getPictureURLForAnimalId = (animalId: number): string => {
   return import.meta.env.VITE_API_URL + '/animals/' + animalId + '/picture'
 }
 
-export const fetchAnimalPicture = async (
+export const getPictureFromAnimal = async (
   animalId: number,
-): Promise<string | null> => {
-  const url = getPictureURLForAnimalId(animalId)
-  const response = await fetch(url, {
+): Promise<string> => {
+  const response = await fetch(import.meta.env.VITE_API_URL + '/animals/' + animalId + '/picture', {
     credentials: 'include',
   })
 
   if (!response.ok) {
-    return null // No picture available
+    throw new Error('Failed to fetch getPictureFromAnimal')
   }
 
-  // Return the URL if the image exists
-  return url
+  // Return the URL from the image
+  const data = await response.blob();
+  const url = URL.createObjectURL(data);
+  return url;
+}
+
+export const getPicturePlaceholderAnimal = async (): Promise<string> => {
+  const response = await fetch(import.meta.env.VITE_API_URL + '/animals/unknownPicture', {
+    credentials: 'include',
+  })
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch getPicturePlaceholderAnimal')
+  }
+
+  // Return the URL from the image
+  const data = await response.blob();
+  const url = URL.createObjectURL(data);
+  return url;
 }
 
 export const uploadPictureForAnimalId = async (
@@ -56,6 +72,22 @@ export const uploadPictureForAnimalId = async (
   if (!response.ok) {
     throw Error('Could not upload image')
   }
+}
+
+export const deletePictureForAnimalId = async ( // picture is set to the pplaceholder image
+  animalId: number
+): Promise<void> => {
+  const targetURL =
+    import.meta.env.VITE_API_URL + '/animals/' + animalId + '/picture'
+  const response = await fetch(targetURL, {
+    method: 'DELETE',
+    credentials: 'include',
+  })
+
+  if (!response.ok) {
+    throw Error('Failed to fetch deletePictureForAnimalId')
+  }
+  return;
 }
 
 export const createAnimal = async (

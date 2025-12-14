@@ -196,18 +196,23 @@ export const animalService = {
     await prisma.animal.delete({ where: { id } });
   },
 
-  async getPicturePath(animalId: number): Promise<string> {
-    const found = await prisma.animal.findFirst({
-      where: {
-        id: animalId,
-      },
-      select: {
-        picturePath: true,
-      },
-    });
+  async getPicturePath(animalId?: number): Promise<string> {
+    if (animalId !== undefined) { // if animalId is undefined return the placeholder picture for animals
+      const found = await prisma.animal.findFirst({
+        where: {
+          id: animalId,
+        },
+        select: {
+          picturePath: true,
+        },
+      });
 
-    const filepath = found?.picturePath ?? "public/placeholders/animal-unknown.png";
-    return path.join(appRootDir, filepath);
+      const filepath = found?.picturePath ?? "public/placeholders/animal-unknown.png";
+      return path.join(appRootDir, filepath);
+    } else {
+      const filepath = "public/placeholders/animal-unknown.png";
+      return path.join(appRootDir, filepath);
+    }
   },
 
   async savePicture(animalId: number, fileOnDiskPath: string | null): Promise<void> {
@@ -224,8 +229,8 @@ export const animalService = {
     }
 
     if (old.picturePath) {
-      if (old.picturePath) {
-        const oldImagePath = path.join(appRootDir, old.picturePath);
+      const oldImagePath = path.join(appRootDir, old.picturePath);
+      if (!oldImagePath.includes("placeholders")) { // do not delete placeholder images
         fs.rm(oldImagePath);
       }
     }
@@ -236,6 +241,39 @@ export const animalService = {
       },
       data: {
         picturePath: fileOnDiskPath,
+      },
+      select: {
+        picturePath: true,
+      },
+    });
+  },
+
+  async deletePicture(animalId: number): Promise<void> {
+    const animal = await prisma.animal.findFirst({
+      where: {
+        id: animalId,
+      },
+      select: {
+        picturePath: true,
+      },
+    });
+    if (!animal) {
+      throw new ConstraintError(`No animal with given id exists.`, [{ path: "animalId", value: animalId }]);
+    }
+
+    if (animal.picturePath) {
+      const oldImagePath = path.join(appRootDir, animal.picturePath);
+      if (!oldImagePath.includes("placeholders")) { // do not delete placeholder images
+        fs.rm(oldImagePath);
+      }
+    }
+
+    await prisma.animal.update({
+      where: {
+        id: animalId,
+      },
+      data: {
+        picturePath: "public/placeholders/animal-unknown.png",
       },
       select: {
         picturePath: true,
