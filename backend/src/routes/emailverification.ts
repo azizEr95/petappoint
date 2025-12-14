@@ -1,11 +1,9 @@
 import express from 'express'
 import { emailService } from '../service/emailService';
-import { LoginType } from 'vetilib-shared/schemas/ZodSchemas';
-import { checkVerified, requiresAuthentication } from './authentication';
+import { requiresAuthentication } from './authentication';
 import { personService } from '../service/personService';
 import { ResourceNotFoundError } from '../exceptions/errors/ResourceNotFoundError';
 import { verifyCodeandCreateJWT, verifyJWT, verifyPasswordAndCreateJWT } from '../service/jwtService';
-
 
 
 /*
