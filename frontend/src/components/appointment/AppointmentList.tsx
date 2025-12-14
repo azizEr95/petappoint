@@ -1,4 +1,3 @@
-import { useNavigate } from '@tanstack/react-router'
 import { AppointmentCard } from './AppointmentCard'
 import type { AppointmentsType } from '../../../../shared/schemas/ZodSchemas'
 
@@ -15,7 +14,6 @@ export function AppointmentList({
   selectedAppointment,
   isPast,
 }: AppointmentListProps) {
-  const navigate = useNavigate()
 
   if (dataAppointments.length !== 0) {
     return (

@@ -2,24 +2,23 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import {
-  getVeterinaryPracticesById,
-  getFavoritesVeterinaryPractices,
   addFavoritesVeterinaryPractices,
   deleteFavoritesVeterinaryPractices,
+  getFavoritesVeterinaryPractices,
+  getVeterinaryPracticesById,
 } from '../../api/VeterinaryPracticeAPI'
 import {
   bookAppointment,
-  cancelAppointment,
   updateAppointmentNotes,
 } from '../../api/AppointmentsAPI'
 import {
   getAnimalsFromUser,
   getPictureURLForAnimalId,
 } from '../../api/AnimalsAPI'
-import { getServicesFromPractice } from '../../api/ServicesAPI'
+import { getServicesFromVeterinary } from '../../api/ServicesAPI'
 import { exportToCalendar } from '../../utils/calendarExport'
 import { useLoginContext } from '../../LoginContext'
-import { AppointmentDeleteDialog } from './AppointmentDeleteDialog' // 👈 Import
+import { AppointmentDeleteDialog } from './AppointmentDeleteDialog'
 import type {
   AnimalsType,
   AppointmentsType,
@@ -29,13 +28,11 @@ import type {
 
 type AppointmentDetailsProps = {
   appointment: AppointmentsType
-  onAppointmentCancelled?: () => void
   onShowCancelSuccess?: () => void
 }
 
 export function AppointmentDetails({
   appointment,
-  onAppointmentCancelled,
   onShowCancelSuccess,
 }: AppointmentDetailsProps) {
   const { login } = useLoginContext()
@@ -51,7 +48,7 @@ export function AppointmentDetails({
   >(undefined)
   const [isFavorite, setIsFavorite] = useState(false)
   const [isLoadingFavorite, setIsLoadingFavorite] = useState(false)
-  const [showCancelDialog, setShowCancelDialog] = useState(false) // 👈 Neu
+  const [showCancelDialog, setShowCancelDialog] = useState(false)
   const queryClient = useQueryClient()
   const navigate = useNavigate()
 
@@ -74,35 +71,15 @@ export function AppointmentDetails({
     enabled: futureAppointment,
   })
 
-  const { data: practiceServices } = useQuery<Array<ServiceType>>({
-    queryKey: ['services', practiceID],
-    queryFn: () => getServicesFromPractice(practiceID.toString()),
+  const { data: dataVeterinaryServices, isSuccess: isSuccessVeterinaryServices} = useQuery<Array<ServiceType>>({
+    queryKey: ['servicesVeterinary', appointment.veterinary.id],
+    queryFn: () => getServicesFromVeterinary(appointment.veterinary.id.toString()),
     enabled: futureAppointment,
   })
 
-  const cancelMutation = useMutation({
-    mutationFn: (id: number) => cancelAppointment(id),
-    onSuccess: () => {
-      if (onShowCancelSuccess) {
-        onShowCancelSuccess()
-      }
-      queryClient.invalidateQueries({ queryKey: ['appointmentsFuture'] })
-      queryClient.invalidateQueries({ queryKey: ['appointmentsPast'] })
-      queryClient.invalidateQueries({
-        predicate: (query) =>
-          query.queryKey[0]
-            ?.toString()
-            .startsWith('nextAvailableAppointments/') ?? false,
-      })
-      if (onAppointmentCancelled) {
-        onAppointmentCancelled()
-      }
-    },
-  })
-
   const notesMutation = useMutation({
-    mutationFn: ({ id, notes }: { id: number; notes: string | null }) =>
-      updateAppointmentNotes(id, notes),
+    mutationFn: ({ id, notesAppointment }: { id: number; notesAppointment: string | null }) =>
+      updateAppointmentNotes(id, notesAppointment),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['appointmentsFuture'] })
       queryClient.invalidateQueries({ queryKey: ['appointmentsPast'] })
@@ -160,7 +137,7 @@ export function AppointmentDetails({
 
   const handleNotesBlur = () => {
     if (notes !== (appointment.notes || '')) {
-      notesMutation.mutate({ id: appointment.id, notes: notes || null })
+      notesMutation.mutate({ id: appointment.id, notesAppointment: notes || null })
     }
   }
 
@@ -287,15 +264,6 @@ export function AppointmentDetails({
     setEditingService(false)
   }
 
-  const formatDate = (date: Date) => {
-    return date.toLocaleDateString('de-DE', {
-      weekday: 'long',
-      day: '2-digit',
-      month: 'long',
-      year: 'numeric',
-    })
-  }
-
   const formatTime = (date: Date) => {
     return date.toLocaleTimeString('de-DE', {
       hour: '2-digit',
@@ -305,6 +273,13 @@ export function AppointmentDetails({
 
   if (isSuccess) {
     const practice = data
+
+    let selectableServices: Array<ServiceType> = [];
+    if(isSuccessVeterinaryServices){
+      selectableServices = appointment.availableServices.length > 0 ? appointment.availableServices : dataVeterinaryServices;
+    } else {
+      selectableServices = appointment.availableServices;
+    }
 
     return (
       <div className="appointment-details">
@@ -365,12 +340,9 @@ export function AppointmentDetails({
             <button
               className="btn-action btn-cancel"
               onClick={handleCancel}
-              disabled={cancelMutation.isPending}
             >
               <i className="bi bi-x-circle"></i>
-              <span>
-                {cancelMutation.isPending ? 'Wird abgesagt...' : 'Absagen'}
-              </span>
+              <span>Absagen</span>
             </button>
           </div>
         )}
@@ -474,7 +446,7 @@ export function AppointmentDetails({
             <div className="info-item compact-row">
               <div className="compact-label">SERVICE</div>
               <div className="compact-value">
-                {editingService && practiceServices ? (
+                {editingService ? (
                   <select
                     className="edit-select-inline"
                     value={selectedServiceId || ''}
@@ -482,14 +454,14 @@ export function AppointmentDetails({
                     onKeyDown={handleServiceKeyDown}
                     disabled={updateAppointmentMutation.isPending}
                   >
-                    {practiceServices.map((service) => (
+                    {selectableServices.map((service) => (
                       <option key={service.id} value={service.id}>
                         {service.name}
                       </option>
                     ))}
                   </select>
                 ) : (
-                  practiceServices?.find((s) => s.id === selectedServiceId)
+                  selectableServices.find((s) => s.id === selectedServiceId)
                     ?.name || '-'
                 )}
               </div>
@@ -540,7 +512,7 @@ export function AppointmentDetails({
           <AppointmentDeleteDialog
             hideDialogDeleteAppointment={() => setShowCancelDialog(false)}
             appointmentDelete={appointment}
-            deleteMutation={cancelMutation}
+            onShowCancelSuccess={onShowCancelSuccess}
           />
         )}
       </div>
