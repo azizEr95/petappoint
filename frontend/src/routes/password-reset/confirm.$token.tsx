@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { Form } from 'react-bootstrap'
+import { PasswordInput } from '../../components/common/PasswordInput'
 import {
   confirmPasswordReset,
   verifyResetToken,
@@ -158,45 +159,33 @@ function PasswordResetConfirm() {
           <h1 className="auth-title">Neues Passwort erstellen</h1>
 
           <Form className="auth-form" onSubmit={handleSubmit}>
-            <div className="form-group">
-              <Form.Label htmlFor="password" className="form-label">
-                Neues Passwort *
-              </Form.Label>
-              <Form.Control
-                id="password"
-                type="password"
-                className="form-input"
-                placeholder="••••••••"
-                name="password"
-                onChange={handlePasswordChange}
-                value={password}
-                isInvalid={!!errors.password}
-                disabled={isPending}
-              />
-              <Form.Control.Feedback type="invalid">
-                {errors.password}
-              </Form.Control.Feedback>
-            </div>
+            <PasswordInput
+              id="password"
+              name="password"
+              value={password}
+              onChange={handlePasswordChange}
+              placeholder="••••••••"
+              isInvalid={!!errors.password}
+              error={errors.password}
+              className="form-group"
+              label="Neues Passwort *"
+              required
+              disabled={isPending}
+            />
 
-            <div className="form-group">
-              <Form.Label htmlFor="confirmPassword" className="form-label">
-                Passwort wiederholen *
-              </Form.Label>
-              <Form.Control
-                id="confirmPassword"
-                type="password"
-                className="form-input"
-                placeholder="••••••••"
-                name="confirmPassword"
-                onChange={handleConfirmPasswordChange}
-                value={confirmPassword}
-                isInvalid={!!errors.confirmPassword}
-                disabled={isPending}
-              />
-              <Form.Control.Feedback type="invalid">
-                {errors.confirmPassword}
-              </Form.Control.Feedback>
-            </div>
+            <PasswordInput
+              id="confirmPassword"
+              name="confirmPassword"
+              value={confirmPassword}
+              onChange={handleConfirmPasswordChange}
+              placeholder="••••••••"
+              isInvalid={!!errors.confirmPassword}
+              error={errors.confirmPassword}
+              className="form-group"
+              label="Passwort wiederholen *"
+              required
+              disabled={isPending}
+            />
 
             {error && (
               <div
