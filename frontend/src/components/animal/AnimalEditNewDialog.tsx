@@ -134,7 +134,8 @@ export function AnimalEditNewDialog({
   // BEGIN IMAGE FORM
   const [animalPictureURL, setAnimalPictureURL] = useState<string | undefined>(undefined)
   const [selectedPictureFile, setSelectedPictureFile] = useState<File>()
-  const [pictureIsPlaceholder, setPictureIsPlaceholder] = useState<boolean>(false);
+  const [pictureIsPlaceholder, setPictureIsPlaceholder] = useState<boolean>(false)
+  const [shouldDeletePicture, setShouldDeletePicture] = useState<boolean>(false)
 
   useEffect(() => {
     if (isSuccessPictureData) {
@@ -144,9 +145,6 @@ export function AnimalEditNewDialog({
       setAnimalPictureURL(animalUnknownPictureData)
       setPictureIsPlaceholder(true)
     }
-    console.log(isSuccessPictureData)
-    console.log(animalPictureData)
-    console.log(isSuccessUnknownPictureData)
   }, [animalPictureData, animalUnknownPictureData, isSuccessPictureData, isSuccessUnknownPictureData])
 
   useEffect(() => {
@@ -176,6 +174,7 @@ export function AnimalEditNewDialog({
       }
 
       setSelectedPictureFile(file)
+      setShouldDeletePicture(false)
       setErrorText('')
     }
   }
@@ -184,7 +183,7 @@ export function AnimalEditNewDialog({
     setAnimalPictureURL(animalUnknownPictureData ?? undefined);
     setPictureIsPlaceholder(true);
     setSelectedPictureFile(undefined);
-    console.log(animalPictureURL)
+    setShouldDeletePicture(true);
   }
 
   // END IMAGE FORM
@@ -254,9 +253,10 @@ export function AnimalEditNewDialog({
       if (animalEdit.timeOfDeath !== null) {
         setDateOfDeath(getDateStringFromDate(animalEdit.timeOfDeath))
       }
-      if(isSuccessPictureData && isSuccessUnknownPictureData){
+      if (isSuccessPictureData && isSuccessUnknownPictureData) {
         setAnimalPictureURL(animalPictureData)
         setPictureIsPlaceholder(false)
+        // setShouldDeletePicture(false)
       }
     }
   }, [isSuccessAnimalType, isSuccessPictureData, animalPictureData, isSuccessUnknownPictureData, animalUnknownPictureData])
@@ -357,11 +357,6 @@ export function AnimalEditNewDialog({
         animalraceids: racesIdNumbers,
       }
       mutateAddRacesToAnimal(addRaces)
-
-      // upload picture if selected
-      if (selectedPictureFile) {
-        mutateAddPictureAnimal(data.id);
-      }
     },
   })
 
@@ -372,6 +367,8 @@ export function AnimalEditNewDialog({
     },
     onSuccess: () => {
       setErrorText('')
+      setShouldDeletePicture(false)
+      hideDialogNewAnimal()
       queryClient.invalidateQueries({ queryKey: ['animals'] })
       queryClient.invalidateQueries({ queryKey: ['animalPicture'] })
       queryClient.invalidateQueries({ queryKey: ['animalUnknownPicture'] })
@@ -381,6 +378,9 @@ export function AnimalEditNewDialog({
   const { mutate: mutateDeletePicture } = useMutation({
     mutationFn: (animalId: number) => deletePictureForAnimalId(animalId),
     onSuccess: () => {
+      setErrorText('')
+      setShouldDeletePicture(false)
+      hideDialogNewAnimal()
       queryClient.invalidateQueries({ queryKey: ['animals'] })
       queryClient.invalidateQueries({ queryKey: ['animalPicture'] })
       queryClient.invalidateQueries({ queryKey: ['animalUnknownPicture'] })
@@ -400,17 +400,12 @@ export function AnimalEditNewDialog({
     },
     onSuccess: (data) => {
       // animal was successful edited
+      // edit animalraces, delete all first, then add selected ones
       setErrorText('')
       mutateDeleteAllRaces(data.id)
-
-      // upload picture if selected
-      if (selectedPictureFile) {
-        mutateAddPictureAnimal(data.id);
-      } else {
-        mutateDeletePicture(data.id);
-      }
     },
   })
+
   const { mutate: mutateAddRacesToAnimal } = useMutation({
     mutationFn: (animalID: AddRacesToAnimalType) => addRacesToAnimal(animalID),
     onError: () => {
@@ -420,13 +415,21 @@ export function AnimalEditNewDialog({
         setErrorText('Fehler beim Bearbeiten des Tieres')
       }
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       // animalraces was successful edited
-      setErrorText('')
-      hideDialogNewAnimal()
-      queryClient.invalidateQueries({ queryKey: ['animals'] })
-      queryClient.invalidateQueries({ queryKey: ['animalPicture'] })
-      queryClient.invalidateQueries({ queryKey: ['animalUnknownPicture'] })
+      // now handle picture upload/deletion
+      if (selectedPictureFile) {
+        mutateAddPictureAnimal(data.animalId);
+      } else if (shouldDeletePicture) {
+        mutateDeletePicture(data.animalId);
+      } else { // if neither: user didn't change picture, do nothing (keep existing)
+        setErrorText('')
+        setShouldDeletePicture(false)
+        hideDialogNewAnimal()
+        queryClient.invalidateQueries({ queryKey: ['animals'] })
+        queryClient.invalidateQueries({ queryKey: ['animalPicture'] })
+        queryClient.invalidateQueries({ queryKey: ['animalUnknownPicture'] })
+      }
     },
   })
 
@@ -678,7 +681,7 @@ export function AnimalEditNewDialog({
       }
 
       const weightNumber: number = parseFloat(weight.replace(',', '.'))
-      if (weightNumber >= 1000) {
+      if (weightNumber > 1000) {
         setValidationErrors((prevState) => ({
           ...prevState,
           weight: 'Bitte ein richtiges Gewicht angeben. (max 1000kg)',

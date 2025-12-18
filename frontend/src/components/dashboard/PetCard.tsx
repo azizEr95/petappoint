@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { getPictureFromAnimal } from '../../api/AnimalsAPI'
 import { AnimalDeleteDialog } from '../animal/AnimalDeleteDialog'
+import { mapMonthsToAgeRange } from '../../utils/AgeRangeMapper'
 import type { PetCardProps } from '../../types/dashboard'
 import '../../styles/components/dashboard/PetCard.scss'
 
@@ -39,6 +40,12 @@ export function PetCard({
     const months = now.getMonth() - birth.getMonth()
     const totalMonths = years * 12 + months
 
+    // If approximate age, return original range
+    if (!animal.dateOfBirthIsExact) {
+      return mapMonthsToAgeRange(totalMonths)
+    }
+
+    // Exact age display
     if (totalMonths < 12) {
       return `${totalMonths} Monat${totalMonths !== 1 ? 'e' : ''}`
     }
