@@ -2,7 +2,7 @@ import { useLocation, useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
 import '../../styles/routes/login.scss'
 import { useMutation } from '@tanstack/react-query'
-import { loginUser } from '../../api/LoginAPI'
+import { loginUser, newToken } from '../../api/LoginAPI'
 import { StatusBooking } from '../../types/booking'
 import { useLoginContext } from '../../LoginContext'
 import type { ChangeEvent, FormEvent } from 'react'
@@ -29,24 +29,37 @@ export function LoginForm({
   const selectedService = location.state.selectedService
 
   const { mutate: mutateLogin } = useMutation({
-    mutationFn: async () => {
-      const result = await loginUser(email, password)
-      if (result === false) {
-        throw new Error('Login failed')
-      }
-      return result
-    },
+    mutationFn: () => loginUser(email, password),
     onError: () => {
       setLogin(false)
       setErrorLogin('Email oder Password falsch')
     },
-    onSuccess: (data: LoginType | false) => {
+    onSuccess: (data: LoginType) => {
       setLogin(data)
-      if (setStatusBookingProcess !== undefined) {
-        setStatusBookingProcess(StatusBooking.selectAnimal)
-      } else {
-        navigate({ to: '/dashboard' })
+      if(data.verified === true){ // verfied, login successful
+        if (setStatusBookingProcess !== undefined) {
+          setStatusBookingProcess(StatusBooking.selectAnimal)
+        } else {
+          navigate({ to: '/dashboard' })
+        }
+      } else { // not verified, resend Verifcaation Email
+        if(appointment !== undefined){ // store appointment in localStorage to keep it after redirect in booking process, if undefined it is an normal login
+          localStorage.setItem('bookAppointment', JSON.stringify({ appointmentId: appointment.id, practiceId: appointment.veterinaryPractice.id }));
+        }
+        mutateNewCode();
       }
+    },
+  })
+
+  const { mutate: mutateNewCode } = useMutation({
+    mutationFn: () => newToken(),
+    onSuccess: () => {
+      navigate({
+        to: '/registration/verify-email',
+        state: {
+          appointment: appointment,
+        }
+      });
     },
   })
 
