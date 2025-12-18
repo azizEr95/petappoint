@@ -96,11 +96,15 @@ export function SearchField({
   const handleSearch = () => {
     setCurrentPageNumber?.(1);
     const sortedServiceTypes = searchFilter.serviceTypeIds?.sort((a,b) => a - b)
+    const searchName = searchTermName.trim();
+    const searchOrt = searchTermOrt.trim();
+    setSearchTermName(searchName);
+    setSearchTermOrt(searchOrt);
     navigate({
       to: '/search',
       search: {
-        name: searchTermName,
-        address: searchTermOrt,
+        name: searchName,
+        address: searchOrt,
         animalType: searchFilter.animalTypeIds?.join("-") ?? "",
         serviceType: sortedServiceTypes?.join("-") !== undefined ? sortedServiceTypes.join("-") : "",
       },
