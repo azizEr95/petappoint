@@ -33,7 +33,7 @@ export const routerExceptionHandler: ErrorRequestHandler = (err, req, res, next)
                 ? err.meta.target[0]
                 : err.meta.target;
             res.status(409).json({
-                error: `${field} is already in use`,
+                error: `${field} wird bereits verwendet`,
                 field,
             });
             return;
