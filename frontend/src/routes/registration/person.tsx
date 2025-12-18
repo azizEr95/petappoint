@@ -38,6 +38,24 @@ function PersonRegistration() {
   const [sex, setSex] = useState<sexesType | undefined>(undefined)
   const [errors, setErrors] = useState<{ [key: string]: string }>({})
 
+  // Password validation state
+  const [passwordRequirements, setPasswordRequirements] = useState({
+    minLength: false,
+    hasUpperCase: false,
+    hasNumber: false,
+    hasSpecialChar: false,
+  })
+
+  // Function to check password requirements
+  const checkPasswordRequirements = (pwd: string) => {
+    setPasswordRequirements({
+      minLength: pwd.length >= 8,
+      hasUpperCase: /[A-Z]/.test(pwd),
+      hasNumber: /[0-9]/.test(pwd),
+      hasSpecialChar: /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(pwd),
+    })
+  }
+
   // Helper function to calculate age
   const calculateAge = (birthDate: Date): number => {
     const today = new Date()
@@ -132,7 +150,7 @@ function PersonRegistration() {
     if (name === 'stadt') {
       if (!value.trim()) {
         error = 'Stadt ist erforderlich'
-      } else if (!/^[a-zA-ZäöüÄÖÜß '`-]+$/.test(value)) {
+      } else if (!/^[a-zA-ZäöüÄÖÜß '`-]+$/.test(stadt)) {
         error = 'Diese Zeichen sind in diesem Feld nicht erlaubt (Zahlen,/,.)'
       } else if (value.length < 3) {
         error = 'Stadt muss mindestens aus 3 Zeichen bestehen'
@@ -172,7 +190,7 @@ function PersonRegistration() {
       if (!value.trim()) {
         error = 'Passwort ist erforderlich'
       } else if (value.length < 8) {
-        error = 'Passwort muss mindestens aus 6 Zeichen bestehen'
+        error = 'Passwort muss mindestens aus 8 Zeichen bestehen'
       } else if (!/[A-Z]/.test(value)) {
         error = 'Passwort muss mindestens einen Großbuchstaben enthalten'
       } else if (!/[0-9]/.test(value)) {
@@ -326,8 +344,8 @@ function PersonRegistration() {
     
     if (!password.trim()) {
       newErrors.password = 'Passwort ist erforderlich'
-    } else if (password.length < 6) {
-      newErrors.password = 'Passwort muss mindestens aus 6 Zeichen bestehen'
+    } else if (password.length < 8) {
+      newErrors.password = 'Passwort muss mindestens aus 8 Zeichen bestehen'
     } else if (!/[A-Z]/.test(password)) {
       newErrors.password =
         'Passwort muss mindestens einen Großbuchstaben enthalten'
@@ -378,6 +396,18 @@ function PersonRegistration() {
     return Object.keys(newErrors).length === 0
   }
 
+  const scrollToFirstError = (errors: { [key: string]: string }) => {
+    const firstErrorKey = Object.keys(errors)[0]
+    if (firstErrorKey) {
+      const errorElement = document.querySelector(`[name="${firstErrorKey}"]`)
+      if (errorElement) {
+        errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        // Optional: Fokus auf das Feld setzen
+        ;(errorElement as HTMLElement).focus()
+      }
+    }
+  }
+
   const handleChange = (e: any) => {
     const t = e.target
     const name = t.name
@@ -416,6 +446,7 @@ function PersonRegistration() {
         break
       case 'password':
         setPassword(value)
+        checkPasswordRequirements(value)
         // Check confirmPassword when password changes
         if (confirmPassword && value !== confirmPassword) {
           setErrors({ ...errors, confirmPassword: 'Passwörter stimmen nicht überein' })
@@ -457,6 +488,10 @@ function PersonRegistration() {
 
     if (!validateForm()) {
       console.log('Formular enthält Fehler')
+      // Zum ersten Fehler scrollen
+      setTimeout(() => {
+        scrollToFirstError(errors)
+      }, 100)
       return
     }
 
@@ -638,6 +673,35 @@ function PersonRegistration() {
                   value={password}
                   isInvalid={!!errors.password}
                 />
+                
+                {/* Passwort-Anforderungen Anzeige */}
+                <div style={{ marginTop: '8px', fontSize: '14px' }}>
+                  <div style={{ 
+                    color: passwordRequirements.minLength ? '#28a745' : '#6c757d',
+                    marginBottom: '4px'
+                  }}>
+                    {passwordRequirements.minLength ? '✓' : '○'} Mindestens 8 Zeichen
+                  </div>
+                  <div style={{ 
+                    color: passwordRequirements.hasUpperCase ? '#28a745' : '#6c757d',
+                    marginBottom: '4px'
+                  }}>
+                    {passwordRequirements.hasUpperCase ? '✓' : '○'} Mindestens ein Großbuchstabe
+                  </div>
+                  <div style={{ 
+                    color: passwordRequirements.hasNumber ? '#28a745' : '#6c757d',
+                    marginBottom: '4px'
+                  }}>
+                    {passwordRequirements.hasNumber ? '✓' : '○'} Mindestens eine Zahl
+                  </div>
+                  <div style={{ 
+                    color: passwordRequirements.hasSpecialChar ? '#28a745' : '#6c757d',
+                    marginBottom: '4px'
+                  }}>
+                    {passwordRequirements.hasSpecialChar ? '✓' : '○'} Mindestens ein Sonderzeichen (!@#$%...)
+                  </div>
+                </div>
+                
                 <Form.Control.Feedback type="invalid">
                   {errors.password}
                 </Form.Control.Feedback>
