@@ -97,6 +97,7 @@ animalsRouter.post("/:animalId/picture", requiresAuthentication, checkVerified, 
   await ensureUserCanAccessAnimal(req.userId!, animalId);
 
   await animalService.savePicture(animalId, req.file?.path ?? null);
+  res.sendStatus(201);
 });
 
 animalsRouter.delete("/:animalId/picture", requiresAuthentication, checkVerified, async (req, res) => {
@@ -105,6 +106,7 @@ animalsRouter.delete("/:animalId/picture", requiresAuthentication, checkVerified
   await ensureUserCanAccessAnimal(req.userId!, animalId);
 
   await animalService.deletePicture(animalId);
+  res.sendStatus(204);
 });
 
 animalsRouter.delete("/:animalId", requiresAuthentication, checkVerified, async (req, res) => {
