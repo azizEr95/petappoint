@@ -341,6 +341,20 @@ function PersonRegistration() {
         newErrors.email = 'E-Mail enthält ungültige Zeichen'
       }
     }
+
+    if (!password.trim()) {
+      newErrors.password = 'Passwort ist erforderlich'
+    } else if (password.length < 8) {
+      newErrors.password = 'Passwort muss mindestens aus 8 Zeichen bestehen'
+    } else if (!/[A-Z]/.test(password)) {
+      newErrors.password =
+        'Passwort muss mindestens einen Großbuchstaben enthalten'
+    } else if (!/[0-9]/.test(password)) {
+      newErrors.password = 'Passwort muss mindestens eine Zahl enthalten'
+    } else if (!/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password)) {
+      newErrors.password =
+        'Passwort muss mindestens ein Sonderzeichen enthalten'
+    }
     
     if (!confirmPassword.trim()) {
       newErrors.confirmPassword = 'Passwort-Wiederholung ist erforderlich'
@@ -382,8 +396,8 @@ function PersonRegistration() {
     return Object.keys(newErrors).length === 0
   }
 
-  const scrollToFirstError = (errors: { [key: string]: string }) => {
-    const firstErrorKey = Object.keys(errors)[0]
+  const scrollToFirstError = (errorScroll: { [key: string]: string }) => {
+    const firstErrorKey = Object.keys(errorScroll)[0]
     if (firstErrorKey) {
       const errorElement = document.querySelector(`[name="${firstErrorKey}"]`)
       if (errorElement) {
