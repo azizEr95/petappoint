@@ -42,19 +42,10 @@ function ConfirmationComponent() {
   const state = location.state as any as LocationState | undefined
 
   // Validate state in useEffect to avoid navigation during render
-
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    if (
-      !state ||
-      !state.appointment ||
-      !state.selectedAnimal ||
-      !state.selectedService ||
-      !state.practice
-    ) {
-      console.log(state)
-      console.error('Invalid state in confirmation page:', state)
-      // navigate({ to: '/' })
+    if (!state || !state.appointment || !state.selectedAnimal ||!state.selectedService ||!state.practice) {
+      navigate({ to: '/' })
     } else {
       setStateLoaded(true)
     }

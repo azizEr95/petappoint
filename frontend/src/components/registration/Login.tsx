@@ -14,11 +14,13 @@ import type {
 type LoginProps = {
   setStatusBookingProcess?: (status: StatusBooking) => void // only if Login is in Booking Process
   appointment?: AppointmentsType
+  redirect?: string
 }
 
 export function LoginForm({
   setStatusBookingProcess,
   appointment,
+  redirect,
 }: LoginProps) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -40,8 +42,12 @@ export function LoginForm({
         if (setStatusBookingProcess !== undefined) {
           setStatusBookingProcess(StatusBooking.selectAnimal)
         } else {
-          navigate({ to: '/dashboard' })
-        }
+        if(redirect !== undefined){
+          navigate({ to: redirect })
+        } else {
+            navigate({ to: '/dashboard' })
+          }
+      }
       } else { // not verified, resend Verifcaation Email
         if(appointment !== undefined){ // store appointment in localStorage to keep it after redirect in booking process, if undefined it is an normal login
           localStorage.setItem('bookAppointment', JSON.stringify({ appointmentId: appointment.id, practiceId: appointment.veterinaryPractice.id }));
