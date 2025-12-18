@@ -18,7 +18,7 @@ export const veterinaryPracticeService = {
       where: { email: veterinaryPracticeRe.email },
     });
     if (existingPractice) {
-      throw new ConstraintError("Email already in use", [{ path: "email", value: veterinaryPracticeRe.email }]);
+      throw new ConstraintError("Email wird bereits verwendet", [{ path: "email", value: veterinaryPracticeRe.email }]);
     }
 
     return await prisma.veterinaryPractice.create({

@@ -21,7 +21,7 @@ export const personService = {
       where: { email: dataRe.email },
     });
     if (existingPerson) {
-      throw new ConstraintError("Email already in use", [{ path: "email", value: dataRe.email }]);
+      throw new ConstraintError("Email wird bereits verwendet", [{ path: "email", value: dataRe.email }]);
     }
 
     const created = await prisma.person.create({
@@ -136,7 +136,7 @@ export const personService = {
         where: { email: dataRe.email },
       });
       if (existingPerson && existingPerson.id !== dataRe.id) {
-        throw new ConstraintError("Email already in use", [{ path: "email", value: dataRe.email }]);
+        throw new ConstraintError("Email wird bereits verwendet", [{ path: "email", value: dataRe.email }]);
       }
     }
 
