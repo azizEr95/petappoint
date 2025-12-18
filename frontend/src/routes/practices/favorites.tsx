@@ -1,10 +1,12 @@
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import {  useEffect } from "react";
 import { getFavoritesVeterinaryPracticesDetails } from "../../api/VeterinaryPracticeAPI";
 import { FavoritePractice } from "../../components/practice/FavoritePractice";
 import { useLoginContext } from "../../LoginContext";
+import { isLoggedInAndVerified } from "../../utils/Authentication";
+import type {MouseEvent} from "react";
 import type { VeterinaryPracticesType } from "../../../../shared/schemas/ZodSchemas";
-import type { MouseEvent } from "react";
 
 export const Route = createFileRoute('/practices/favorites')({
   component: FavoritePracticesPage,
@@ -26,6 +28,17 @@ function FavoritePracticesPage() {
     queryFn: () => getFavoritesVeterinaryPracticesDetails(userId.toString()),
     enabled: userId !== -1,
   });
+
+  useEffect(() => {
+    if (!isLoggedInAndVerified(login)) {
+      navigate({
+        to: '/login',
+        search: {
+          redirect: '/practices/favorites',
+        },
+      })
+    }
+  }, [login])
 
   const openPraxisPage = (practiceId: number) => (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
