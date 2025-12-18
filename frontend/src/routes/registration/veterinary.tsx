@@ -3,7 +3,7 @@ import { useState } from 'react'
 import type { ChangeEvent, FormEvent } from 'react'
 import '../../styles/routes/veterinaryRegistration.scss'
 import { useMutation } from '@tanstack/react-query'
-import { Form, FormGroup } from 'react-bootstrap'
+import { Form, FormGroup, Alert } from 'react-bootstrap'
 import { PasswordInput } from '../../components/common/PasswordInput'
 import { createVeterinaryPractice } from '../../api/VeterinaryPracticeAPI'
 import {
@@ -320,11 +320,13 @@ function VeterinaryRegistration() {
   const { mutate: mutateCreatePractice } = useMutation({
     mutationFn: (practice: VeterinaryPracticesCreateType) =>
       createVeterinaryPractice(practice),
-    onError: (e) => {
-      console.log(e)
+    onError: (error: any) => {
+      setErrors({
+        ...errors,
+        [error.field || 'general']: error.message,
+      })
     },
     onSuccess: () => {
-      console.log('success')
       navigate({ to: '/' })
     },
   })
@@ -425,6 +427,12 @@ function VeterinaryRegistration() {
       <div className="auth-container">
         <div className="auth-card">
           <h1 className="auth-title">Praxis registrieren</h1>
+
+          {errors.general && (
+            <Alert variant="danger" className="mb-3">
+              {errors.general}
+            </Alert>
+          )}
 
           <Form className="auth-form" onSubmit={handleSubmit}>
             <div className="form-section">
