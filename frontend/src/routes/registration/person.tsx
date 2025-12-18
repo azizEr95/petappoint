@@ -6,6 +6,7 @@ import {
 import { useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { Form, FormGroup } from 'react-bootstrap'
+import { PasswordInput } from '../../components/common/PasswordInput'
 import { PersonsCreateSchema } from '../../../../shared/schemas/ZodSchemas'
 import '../../styles/routes/personRegistration.scss'
 import { personRegistration } from '../../api/LoginAPI'
@@ -624,43 +625,33 @@ function PersonRegistration() {
                 </Form.Control.Feedback>
               </FormGroup>
 
-              <FormGroup className="form-group">
-                <Form.Label htmlFor="password" className="form-label">
-                  Passwort *
-                </Form.Label>
-                <Form.Control
-                  id="CreatePersonPassword"
-                  type="password"
-                  placeholder="••••••••"
-                  name="password"
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  value={password}
-                  isInvalid={!!errors.password}
-                />
-                <Form.Control.Feedback type="invalid">
-                  {errors.password}
-                </Form.Control.Feedback>
-              </FormGroup>
+              <PasswordInput
+                id="CreatePersonPassword"
+                name="password"
+                value={password}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                placeholder="••••••••"
+                isInvalid={!!errors.password}
+                error={errors.password}
+                className="form-group"
+                label="Passwort *"
+                required
+              />
 
-              <FormGroup className="form-group">
-                <Form.Label htmlFor="confirmPassword" className="form-label">
-                  Passwort wiederholen *
-                </Form.Label>
-                <Form.Control
-                  id="CreatePersonConfirmPassword"
-                  type="password"
-                  placeholder="••••••••"
-                  name="confirmPassword"
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  value={confirmPassword}
-                  isInvalid={!!errors.confirmPassword}
-                />
-                <Form.Control.Feedback type="invalid">
-                  {errors.confirmPassword}
-                </Form.Control.Feedback>
-              </FormGroup>
+              <PasswordInput
+                id="CreatePersonConfirmPassword"
+                name="confirmPassword"
+                value={confirmPassword}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                placeholder="••••••••"
+                isInvalid={!!errors.confirmPassword}
+                error={errors.confirmPassword}
+                className="form-group"
+                label="Passwort wiederholen *"
+                required
+              />
             </div>
 
             <div className="form-section">
