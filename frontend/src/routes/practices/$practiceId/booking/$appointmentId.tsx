@@ -114,6 +114,13 @@ function BookingComponent() {
   })
 
   useEffect(() => {
+    if(isSuccessAppointment && dataAppointment.veterinaryPractice.id.toString() !== practiceId) {
+      // appointment does not belong to this practice, navigate back to practice
+      navigate({ to: '/practices/' + practiceId})
+    }
+  },[isSuccessAppointment, dataAppointment])
+
+  useEffect(() => {
     if (isSuccessAnimaltypesVeterinary) {
       if (filterTreatAnimaltypes.length === 0) {
         const allAnimaltypeIds = dataAnimaltypesVeterinary.map((animalType) => animalType.id);

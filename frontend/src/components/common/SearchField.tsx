@@ -12,12 +12,14 @@ type SearchFieldProps = {
     name: string | undefined,
     address: string | undefined,
   ) => void // if this is not undefined, then is this the SearchField on the LandingPage
+  setCurrentPageNumber?: (page: number) => void
 }
 
 export function SearchField({
   searchFilter,
   filterAnimal,
   handleChangeNameAddress,
+  setCurrentPageNumber
 }: SearchFieldProps) {
   const [searchTermName, setSearchTermName] = useState(searchFilter.name)
   const [searchTermOrt, setSearchTermOrt] = useState(searchFilter.address)
@@ -92,12 +94,17 @@ export function SearchField({
   }
 
   const handleSearch = () => {
+    setCurrentPageNumber?.(1);
     const sortedServiceTypes = searchFilter.serviceTypeIds?.sort((a,b) => a - b)
+    const searchName = searchTermName.trim();
+    const searchOrt = searchTermOrt.trim();
+    setSearchTermName(searchName);
+    setSearchTermOrt(searchOrt);
     navigate({
       to: '/search',
       search: {
-        name: searchTermName,
-        address: searchTermOrt,
+        name: searchName,
+        address: searchOrt,
         animalType: searchFilter.animalTypeIds?.join("-") ?? "",
         serviceType: sortedServiceTypes?.join("-") !== undefined ? sortedServiceTypes.join("-") : "",
       },

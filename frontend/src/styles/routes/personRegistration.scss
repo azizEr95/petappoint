@@ -4,3 +4,25 @@
 .auth-container {
   max-width: 650px;
 }
+
+// Password requirements styles
+.password-requirements {
+  margin-top: 8px;
+  font-size: 14px;
+}
+
+.password-requirement {
+  margin-bottom: 4px;
+  
+  &.valid {
+    color: #28a745;
+  }
+  
+  &.invalid {
+    color: #dc3545;
+  }
+  
+  &.neutral {
+    color: #6c757d;
+  }
+}

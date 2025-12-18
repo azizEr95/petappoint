@@ -9,9 +9,8 @@ import { ProfileEditDialog } from '../components/profile/ProfileEditDialog'
 import '../styles/routes/dashboard.scss'
 import { useLoginContext } from '../LoginContext'
 import { getPersonById, getPictureURLForPersonId } from '../api/PersonsAPI'
-import { getAppointmentsById } from '../api/AppointmentsAPI'
+import { isLoggedInAndVerified } from '../utils/Authentication'
 import type {
-  AppointmentsType,
   PersonsType,
 } from '../../../shared/schemas/ZodSchemas'
 
@@ -28,17 +27,26 @@ function Dashboard() {
   const [activeTab, setActiveTab] = useState<
     'appointments' | 'pets' | 'favorites'
   >('appointments')
-  if (!login) {
-    return
-  }
 
-  const userId = login.id
+  const userId = login ? login.id : -1; // userId is always !== -1
 
   const { data: user, isLoading: isLoadingUser } = useQuery<PersonsType>({
     queryKey: ['person', userId],
     queryFn: () => getPersonById(userId),
     retry: false,
+    enabled: userId !== -1,
   })
+
+  useEffect(() => {
+    if (!isLoggedInAndVerified(login)) {
+      navigate({
+        to: '/login',
+        search: {
+          redirect: '/dashboard',
+        },
+      })
+    }
+  }, [login])
 
   const handleEditProfile = () => {
     setShowEditProfileDialog(true)
@@ -143,7 +151,7 @@ function Dashboard() {
                 )}
               </div>
               <DashboardPetsSection userId={userId}
-              onAnimalsLoaded={setHasAnimals} />
+                onAnimalsLoaded={setHasAnimals} />
             </>
           )}
 
