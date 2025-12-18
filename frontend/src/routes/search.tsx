@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { SearchField } from '../components/common/SearchField'
 import { VeterinaryPracticeList } from '../components/practice/VeterinaryPracticeList'
 import { SearchFilter } from '../components/common/SearchFilter'
+import { stringToArray } from '../utils/ArrayStringFormat'
 import type {
   AppointmentFilterType,
   VeterinaryPracticeSearchQueryType,
@@ -27,19 +28,20 @@ export const Route = createFileRoute('/search')({
 
 function SearchComponent() {
   const { name, address, animalType, serviceType } = Route.useSearch()
-  // serviceType or animalType could be undefined if the route was called from outside
+  // serviceType or animalType are an empty string if the route was called from outside
    
   const [filterServiceType, setFilterServiceType] = useState<Array<number>>(
-    serviceType !== undefined ? stringToArray(serviceType.toString()) : [],
+    stringToArray(serviceType.toString()),
   )
    
   const [filterAnimalType, setFilterAnimalType] = useState<Array<number>>(
-    animalType !== undefined ? stringToArray(animalType.toString()) : [],
+    stringToArray(animalType.toString()),
   )
   const [totalResults, setTotalResults] = useState<number>(0)
   const [filterAnimal, setFilterAnimal] = useState<number | undefined>(
     undefined,
   )
+  const [page, setPage] = useState<number>(1) // current pageNumber for VeterinaryPracticeList
 
   const filterOptions: AppointmentFilterType = {
     animalTypeIds: filterAnimalType,
@@ -52,7 +54,7 @@ function SearchComponent() {
     address: address,
     animalTypeIds: filterAnimalType,
     serviceTypeIds: filterServiceType,
-    page: 1, // these page params are default
+    page: page, // these page params are default
     pageSize: 10,
   }
 
@@ -64,6 +66,7 @@ function SearchComponent() {
           <SearchField
             searchFilter={searchFilter}
             filterAnimal={filterOptions.animal}
+            setCurrentPageNumber={setPage} // wieder in Suche auf Seite 1 springen
           />
           <SearchFilter
             searchFilter={searchFilter}
@@ -73,6 +76,7 @@ function SearchComponent() {
             setFilterAnimal={setFilterAnimal}
             practicePage={null}
             landingPage={false}
+            setCurrentPageNumber={setPage} // wieder in Suche auf Seite 1 springen
           />
         </div>
       </div>
@@ -99,17 +103,10 @@ function SearchComponent() {
           searchOrt={address}
           filterOptions={filterOptions}
           onTotalChange={setTotalResults}
+          setCurrentPageNumber={setPage}
+          currentPageNumber={page}
         />
       </div>
     </>
   )
-}
-
-function stringToArray(text: string): Array<number> {
-  const array = Array.isArray(text) ? text : text.split('-')
-  return array
-    .map((s) => s.trim())
-    .filter((s) => s.length > 0)
-    .map(Number)
-    .filter((n) => !isNaN(n) && Number.isInteger(n))
 }
