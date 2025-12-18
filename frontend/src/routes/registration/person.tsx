@@ -342,20 +342,6 @@ function PersonRegistration() {
       }
     }
     
-    if (!password.trim()) {
-      newErrors.password = 'Passwort ist erforderlich'
-    } else if (password.length < 8) {
-      newErrors.password = 'Passwort muss mindestens aus 8 Zeichen bestehen'
-    } else if (!/[A-Z]/.test(password)) {
-      newErrors.password =
-        'Passwort muss mindestens einen Großbuchstaben enthalten'
-    } else if (!/[0-9]/.test(password)) {
-      newErrors.password = 'Passwort muss mindestens eine Zahl enthalten'
-    } else if (!/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password)) {
-      newErrors.password =
-        'Passwort muss mindestens ein Sonderzeichen enthalten'
-    }
-    
     if (!confirmPassword.trim()) {
       newErrors.confirmPassword = 'Passwort-Wiederholung ist erforderlich'
     } else if (confirmPassword !== password) {
@@ -701,10 +687,6 @@ function PersonRegistration() {
                     {passwordRequirements.hasSpecialChar ? '✓' : '○'} Mindestens ein Sonderzeichen (!@#$%...)
                   </div>
                 </div>
-                
-                <Form.Control.Feedback type="invalid">
-                  {errors.password}
-                </Form.Control.Feedback>
               </FormGroup>
 
               <FormGroup className="form-group">
