@@ -402,7 +402,6 @@ function PersonRegistration() {
       const errorElement = document.querySelector(`[name="${firstErrorKey}"]`)
       if (errorElement) {
         errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' })
-        // Optional: Fokus auf das Feld setzen
         ;(errorElement as HTMLElement).focus()
       }
     }
@@ -675,45 +674,41 @@ function PersonRegistration() {
                 />
                 
                 {/* Passwort-Anforderungen Anzeige */}
-                <div style={{ marginTop: '8px', fontSize: '14px' }}>
-                  <div style={{ 
-                    color: passwordRequirements.minLength 
-                      ? '#28a745' 
+                <div className="password-requirements">
+                  <div className={`password-requirement ${
+                    passwordRequirements.minLength 
+                      ? 'valid' 
                       : password.length > 0 
-                      ? '#dc3545' 
-                      : '#6c757d',
-                    marginBottom: '4px'
-                  }}>
+                      ? 'invalid' 
+                      : 'neutral'
+                  }`}>
                     {passwordRequirements.minLength ? '✓' : '○'} Mindestens 8 Zeichen
                   </div>
-                  <div style={{ 
-                    color: passwordRequirements.hasUpperCase 
-                      ? '#28a745' 
+                  <div className={`password-requirement ${
+                    passwordRequirements.hasUpperCase 
+                      ? 'valid' 
                       : password.length > 0 
-                      ? '#dc3545' 
-                      : '#6c757d',
-                    marginBottom: '4px'
-                  }}>
+                      ? 'invalid' 
+                      : 'neutral'
+                  }`}>
                     {passwordRequirements.hasUpperCase ? '✓' : '○'} Mindestens ein Großbuchstabe
                   </div>
-                  <div style={{ 
-                    color: passwordRequirements.hasNumber 
-                      ? '#28a745' 
+                  <div className={`password-requirement ${
+                    passwordRequirements.hasNumber 
+                      ? 'valid' 
                       : password.length > 0 
-                      ? '#dc3545' 
-                      : '#6c757d',
-                    marginBottom: '4px'
-                  }}>
+                      ? 'invalid' 
+                      : 'neutral'
+                  }`}>
                     {passwordRequirements.hasNumber ? '✓' : '○'} Mindestens eine Zahl
                   </div>
-                  <div style={{ 
-                    color: passwordRequirements.hasSpecialChar 
-                      ? '#28a745' 
+                  <div className={`password-requirement ${
+                    passwordRequirements.hasSpecialChar 
+                      ? 'valid' 
                       : password.length > 0 
-                      ? '#dc3545' 
-                      : '#6c757d',
-                    marginBottom: '4px'
-                  }}>
+                      ? 'invalid' 
+                      : 'neutral'
+                  }`}>
                     {passwordRequirements.hasSpecialChar ? '✓' : '○'} Mindestens ein Sonderzeichen (!@#$%...)
                   </div>
                 </div>
