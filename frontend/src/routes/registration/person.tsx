@@ -5,7 +5,7 @@ import {
 } from '@tanstack/react-router'
 import { useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
-import { Form, FormGroup } from 'react-bootstrap'
+import { Form, FormGroup, Alert } from 'react-bootstrap'
 import { PasswordInput } from '../../components/common/PasswordInput'
 import { PersonsCreateSchema } from '../../../../shared/schemas/ZodSchemas'
 import '../../styles/routes/personRegistration.scss'
@@ -501,6 +501,12 @@ function PersonRegistration() {
       <div className="auth-container">
         <div className="auth-card">
           <h1 className="auth-title">Registrierung</h1>
+
+          {errors.general && (
+            <Alert variant="danger" className="mb-3">
+              {errors.general}
+            </Alert>
+          )}
 
           <Form className="auth-form" onSubmit={handleSubmit}>
             <div className="form-section">
