@@ -42,6 +42,33 @@ export const updatePerson = async (
   return parsePerson(data)
 }
 
+export const updatePersonEmail = async (
+  personId: number,
+  newEmail: string,
+): Promise<PersonsType> => {
+  const updateEmail = { email: newEmail }
+
+  const requestOptions = {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(updateEmail),
+    credentials: 'include' as RequestCredentials,
+  }
+
+  const res = await fetch(
+    import.meta.env.VITE_API_URL + '/persons/' + personId + '/email',
+    requestOptions,
+  )
+  if (!res.ok) {
+    throw new Error('Failed to update person updatePersonEmail')
+  }
+
+  const data = await res.json()
+  return parsePerson(data)
+}
+
 export const getPictureURLForPersonId = (personId: number, cacheBust?: number): string => {
   const url = import.meta.env.VITE_API_URL + '/persons/' + personId + '/picture'
   return cacheBust ? `${url}?t=${cacheBust}` : url

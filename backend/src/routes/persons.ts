@@ -7,6 +7,7 @@ import { checkVerified, optionalAuthentication, requiresAuthentication } from ".
 import { AuthorizationError } from "../exceptions/errors/AuthorizationError";
 import multer from "multer";
 import { ConstraintError } from "../exceptions/errors/ConstraintError";
+import z from "zod";
 
 
 export const personsRouter = express.Router();
@@ -55,7 +56,7 @@ personsRouter.get('/:id/animals',
 );
 
 personsRouter.get("/:id/favorites",
-    requiresAuthentication, 
+    requiresAuthentication,
     async (req, res) => {
         const id = PostgresIdSchema.parse(parseInt(req.params.id));
 
@@ -127,7 +128,7 @@ personsRouter.delete("/:id/favorites/:practiceId",
 );
 
 personsRouter.get('/:id',
-    requiresAuthentication, 
+    requiresAuthentication,
     async (req, res) => {
         const id = PostgresIdSchema.parse(parseInt(req.params.id));
 
@@ -140,7 +141,7 @@ personsRouter.get('/:id',
     }
 );
 
-personsRouter.put('/:id',
+personsRouter.put('/:id', // only possible if user is verified
     requiresAuthentication,
     async (req, res) => {
         const id = PostgresIdSchema.parse(parseInt(req.params.id));
@@ -159,6 +160,26 @@ personsRouter.put('/:id',
         }
 
         const updatedPerson: PersonsType = await personService.update(validatedBody);
+        res.send(updatedPerson);
+    }
+);
+
+const EmailSchema = z.object({
+    email: z.email(),
+});
+
+personsRouter.put('/:id/email', // is possible if user is logged in but not verified, only editing email
+    requiresAuthentication,
+    async (req, res) => {
+        const id = PostgresIdSchema.parse(parseInt(req.params.id));
+
+        if (id !== req.userId!) {
+            throw new AuthorizationError(`person(${req.userId!}) tried to update profile of person(${id}).`);
+        }
+
+        const validatedBody = EmailSchema.parse(req.body); // only email
+
+        const updatedPerson: PersonsType = await personService.updateEmail(id, validatedBody.email);
         res.send(updatedPerson);
     }
 );
