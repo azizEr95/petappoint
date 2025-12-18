@@ -63,7 +63,7 @@ function PersonRegistration() {
     onSuccess: (data) => {
       setLogin(data)
       if(appointment !== undefined){
-        navigate({ 
+        navigate({
           to: '/registration/verify-email',
           state: {
             appointment: appointment
@@ -71,10 +71,16 @@ function PersonRegistration() {
         })
 
       } else {
-        navigate({ 
+        navigate({
           to: '/registration/verify-email',
         })
       }
+    },
+    onError: (error: any) => {
+      setErrors({
+        ...errors,
+        [error.field || 'general']: error.message,
+      })
     },
   })
 
