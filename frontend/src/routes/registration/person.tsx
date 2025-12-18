@@ -667,10 +667,9 @@ function PersonRegistration() {
                   onChange={handleChange}
                   onBlur={handleBlur}
                   placeholder="••••••••"
-                  isInvalid={!!errors.password}
-                  error={errors.password}
+                  isInvalid={!!errors.confirmPassword}
                   className="form-group"
-                  label="Passwort *"
+                  label="Passwort"
                   required
                 />
 
@@ -721,7 +720,7 @@ function PersonRegistration() {
                 isInvalid={!!errors.confirmPassword}
                 error={errors.confirmPassword}
                 className="form-group"
-                label="Passwort wiederholen *"
+                label="Passwort wiederholen"
                 required
               />
             </div>
