@@ -234,6 +234,9 @@ export function AnimalEditNewDialog({
             setAgeInMonth(6)
           }
         }
+      }else {
+        setDateOfBirthIsExact('No');
+        setAgeInMonth(-1);
       }
       setSexes(animalEdit.sex)
       if (animalEdit.weightInGram !== null) {
@@ -716,13 +719,17 @@ export function AnimalEditNewDialog({
       )
       const heightInCm = Math.floor(parseFloat(height.replace(',', '.')) * 100)
 
+      let dateOfBirthCreate: Date | null = null;
+      if(dateOfBirthIsExact === "Yes"){
+        dateOfBirthCreate = new Date(dateOfBirth);
+      } else if(dateOfBirthIsExact === "No" && ageInMonth !== -1){
+        new Date(dateOfBirthFromAgeInMonth)
+      }
+
       const animal: AnimalsCreateType = {
         name: name,
         sex: sex !== undefined ? sex : 'not_known',
-        dateOfBirth:
-          dateOfBirthIsExact === 'Yes'
-            ? new Date(dateOfBirth)
-            : new Date(dateOfBirthFromAgeInMonth),
+        dateOfBirth: dateOfBirthCreate,
         dateOfBirthIsExact: dateOfBirthIsExact === 'Yes' ? true : false,
         weightInGram: weightInGram,
         heightInCm: heightInCm,
@@ -970,7 +977,9 @@ export function AnimalEditNewDialog({
                   onChange={handleChange}
                   isInvalid={validationErrors.dateOfBirthIsExact !== undefined}
                 >
+                  
                   <option value={0}>Bitte auswählen</option>
+                  <option value={-1}>weiß ich nicht</option>
                   <option value={6}>jünger 6 Monate</option>
                   <option value={15}>6-24 Monate</option>
                   <option value={36}>2-4 Jahre</option>
