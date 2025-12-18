@@ -341,7 +341,7 @@ function PersonRegistration() {
         newErrors.email = 'E-Mail enthält ungültige Zeichen'
       }
     }
-
+    
     if (!password.trim()) {
       newErrors.password = 'Passwort ist erforderlich'
     } else if (password.length < 8) {
@@ -396,8 +396,8 @@ function PersonRegistration() {
     return Object.keys(newErrors).length === 0
   }
 
-  const scrollToFirstError = (errorScroll: { [key: string]: string }) => {
-    const firstErrorKey = Object.keys(errorScroll)[0]
+  const scrollToFirstError = (errors: { [key: string]: string }) => {
+    const firstErrorKey = Object.keys(errors)[0]
     if (firstErrorKey) {
       const errorElement = document.querySelector(`[name="${firstErrorKey}"]`)
       if (errorElement) {
@@ -677,25 +677,41 @@ function PersonRegistration() {
                 {/* Passwort-Anforderungen Anzeige */}
                 <div style={{ marginTop: '8px', fontSize: '14px' }}>
                   <div style={{ 
-                    color: passwordRequirements.minLength ? '#28a745' : '#6c757d',
+                    color: passwordRequirements.minLength 
+                      ? '#28a745' 
+                      : password.length > 0 
+                      ? '#dc3545' 
+                      : '#6c757d',
                     marginBottom: '4px'
                   }}>
                     {passwordRequirements.minLength ? '✓' : '○'} Mindestens 8 Zeichen
                   </div>
                   <div style={{ 
-                    color: passwordRequirements.hasUpperCase ? '#28a745' : '#6c757d',
+                    color: passwordRequirements.hasUpperCase 
+                      ? '#28a745' 
+                      : password.length > 0 
+                      ? '#dc3545' 
+                      : '#6c757d',
                     marginBottom: '4px'
                   }}>
                     {passwordRequirements.hasUpperCase ? '✓' : '○'} Mindestens ein Großbuchstabe
                   </div>
                   <div style={{ 
-                    color: passwordRequirements.hasNumber ? '#28a745' : '#6c757d',
+                    color: passwordRequirements.hasNumber 
+                      ? '#28a745' 
+                      : password.length > 0 
+                      ? '#dc3545' 
+                      : '#6c757d',
                     marginBottom: '4px'
                   }}>
                     {passwordRequirements.hasNumber ? '✓' : '○'} Mindestens eine Zahl
                   </div>
                   <div style={{ 
-                    color: passwordRequirements.hasSpecialChar ? '#28a745' : '#6c757d',
+                    color: passwordRequirements.hasSpecialChar 
+                      ? '#28a745' 
+                      : password.length > 0 
+                      ? '#dc3545' 
+                      : '#6c757d',
                     marginBottom: '4px'
                   }}>
                     {passwordRequirements.hasSpecialChar ? '✓' : '○'} Mindestens ein Sonderzeichen (!@#$%...)
