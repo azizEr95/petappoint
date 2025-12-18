@@ -397,8 +397,8 @@ function PersonRegistration() {
     return Object.keys(newErrors).length === 0
   }
 
-  const scrollToFirstError = (errors: { [key: string]: string }) => {
-    const firstErrorKey = Object.keys(errors)[0]
+  const scrollToFirstError = (errorsScroll: { [key: string]: string }) => {
+    const firstErrorKey = Object.keys(errorsScroll)[0]
     if (firstErrorKey) {
       const errorElement = document.querySelector(`[name="${firstErrorKey}"]`)
       if (errorElement) {
