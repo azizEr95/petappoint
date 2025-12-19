@@ -6,12 +6,13 @@ import {
 import { useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { Form, FormGroup } from 'react-bootstrap'
+import { PasswordInput } from '../../components/common/PasswordInput'
 import { PersonsCreateSchema } from '../../../../shared/schemas/ZodSchemas'
 import '../../styles/routes/personRegistration.scss'
 import { personRegistration } from '../../api/LoginAPI'
 import { useLoginContext } from '../../LoginContext'
-import type {PersonsCreateType, sexesType} from '../../../../shared/schemas/ZodSchemas';
-import type {FormEvent} from 'react';
+import type { PersonsCreateType, sexesType } from '../../../../shared/schemas/ZodSchemas';
+import type { FormEvent } from 'react';
 
 export const Route = createFileRoute('/registration/person')({
   component: PersonRegistration,
@@ -61,11 +62,11 @@ function PersonRegistration() {
     const today = new Date()
     let age = today.getFullYear() - birthDate.getFullYear()
     const monthDiff = today.getMonth() - birthDate.getMonth()
-    
+
     if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
       age--
     }
-    
+
     return age
   }
 
@@ -79,8 +80,8 @@ function PersonRegistration() {
     mutationFn: (person: PersonsCreateType) => personRegistration(person),
     onSuccess: (data) => {
       setLogin(data)
-      if(appointment !== undefined){
-        navigate({ 
+      if (appointment !== undefined) {
+        navigate({
           to: '/registration/verify-email',
           state: {
             appointment: appointment
@@ -88,7 +89,7 @@ function PersonRegistration() {
         })
 
       } else {
-        navigate({ 
+        navigate({
           to: '/registration/verify-email',
         })
       }
@@ -185,7 +186,7 @@ function PersonRegistration() {
         }
       }
     }
-    
+
     if (name === 'password') {
       if (!value.trim()) {
         error = 'Passwort ist erforderlich'
@@ -199,7 +200,7 @@ function PersonRegistration() {
         error = 'Passwort muss mindestens ein Sonderzeichen enthalten'
       }
     }
-    
+
     if (name === 'confirmPassword') {
       if (!value.trim()) {
         error = 'Passwort-Wiederholung ist erforderlich'
@@ -207,7 +208,7 @@ function PersonRegistration() {
         error = 'Passwörter stimmen nicht überein'
       }
     }
-    
+
     if (name === 'phone') {
       if (!value.trim()) {
         error = 'Telefon ist erforderlich'
@@ -220,14 +221,14 @@ function PersonRegistration() {
         }
       }
     }
-    
+
     if (name === 'dateOfBirth') {
       if (!value.trim()) {
         error = 'Geburtsdatum ist erforderlich'
       } else {
         const birthDate = new Date(value)
         const today = new Date()
-        
+
         // Check if date is in the future
         if (birthDate > today) {
           error = 'Geburtsdatum darf nicht in der Zukunft liegen'
@@ -239,7 +240,7 @@ function PersonRegistration() {
         }
       }
     }
-    
+
     if (name === 'sex') {
       if (!value) error = 'Geschlecht ist erforderlich'
     }
@@ -341,7 +342,7 @@ function PersonRegistration() {
         newErrors.email = 'E-Mail enthält ungültige Zeichen'
       }
     }
-    
+
     if (!password.trim()) {
       newErrors.password = 'Passwort ist erforderlich'
     } else if (password.length < 8) {
@@ -355,13 +356,13 @@ function PersonRegistration() {
       newErrors.password =
         'Passwort muss mindestens ein Sonderzeichen enthalten'
     }
-    
+
     if (!confirmPassword.trim()) {
       newErrors.confirmPassword = 'Passwort-Wiederholung ist erforderlich'
     } else if (confirmPassword !== password) {
       newErrors.confirmPassword = 'Passwörter stimmen nicht überein'
     }
-    
+
     if (!phone.trim()) {
       newErrors.phone = 'Telefon ist erforderlich'
     } else if (!/^[+]?[0-9]+$/.test(phone)) {
@@ -373,13 +374,13 @@ function PersonRegistration() {
         newErrors.phone = 'Telefon muss mindestens aus 6 Zahlen bestehen'
       }
     }
-    
+
     if (!dateOfBirth.trim()) {
       newErrors.dateOfBirth = 'Geburtsdatum ist erforderlich'
     } else {
       const birthDate = new Date(dateOfBirth)
       const today = new Date()
-      
+
       if (birthDate > today) {
         newErrors.dateOfBirth = 'Geburtsdatum darf nicht in der Zukunft liegen'
       } else {
@@ -389,20 +390,20 @@ function PersonRegistration() {
         }
       }
     }
-    
+
     if (!sex) newErrors.sex = 'Geschlecht ist erforderlich'
 
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
 
-  const scrollToFirstError = (errors: { [key: string]: string }) => {
-    const firstErrorKey = Object.keys(errors)[0]
+  const scrollToFirstError = (errorsScroll: { [key: string]: string }) => {
+    const firstErrorKey = Object.keys(errorsScroll)[0]
     if (firstErrorKey) {
       const errorElement = document.querySelector(`[name="${firstErrorKey}"]`)
       if (errorElement) {
         errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' })
-        ;(errorElement as HTMLElement).focus()
+          ; (errorElement as HTMLElement).focus()
       }
     }
   }
@@ -522,7 +523,7 @@ function PersonRegistration() {
     }
     mutateRegistration(person)
   }
-  
+
   return (
     <div className="auth-page">
       <div className="auth-container">
@@ -659,79 +660,69 @@ function PersonRegistration() {
               </FormGroup>
 
               <FormGroup className="form-group">
-                <Form.Label htmlFor="password" className="form-label">
-                  Passwort *
-                </Form.Label>
-                <Form.Control
+                <PasswordInput
                   id="CreatePersonPassword"
-                  type="password"
-                  placeholder="••••••••"
                   name="password"
+                  value={password}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  value={password}
-                  isInvalid={!!errors.password}
+                  placeholder="••••••••"
+                  isInvalid={!!errors.confirmPassword}
+                  className="form-group"
+                  label="Passwort"
+                  required
                 />
-                
+
                 {/* Passwort-Anforderungen Anzeige */}
                 <div className="password-requirements">
-                  <div className={`password-requirement ${
-                    passwordRequirements.minLength 
-                      ? 'valid' 
-                      : password.length > 0 
-                      ? 'invalid' 
-                      : 'neutral'
-                  }`}>
+                  <div className={`password-requirement ${passwordRequirements.minLength
+                      ? 'valid'
+                      : password.length > 0
+                        ? 'invalid'
+                        : 'neutral'
+                    }`}>
                     {passwordRequirements.minLength ? '✓' : '○'} Mindestens 8 Zeichen
                   </div>
-                  <div className={`password-requirement ${
-                    passwordRequirements.hasUpperCase 
-                      ? 'valid' 
-                      : password.length > 0 
-                      ? 'invalid' 
-                      : 'neutral'
-                  }`}>
+                  <div className={`password-requirement ${passwordRequirements.hasUpperCase
+                      ? 'valid'
+                      : password.length > 0
+                        ? 'invalid'
+                        : 'neutral'
+                    }`}>
                     {passwordRequirements.hasUpperCase ? '✓' : '○'} Mindestens ein Großbuchstabe
                   </div>
-                  <div className={`password-requirement ${
-                    passwordRequirements.hasNumber 
-                      ? 'valid' 
-                      : password.length > 0 
-                      ? 'invalid' 
-                      : 'neutral'
-                  }`}>
+                  <div className={`password-requirement ${passwordRequirements.hasNumber
+                      ? 'valid'
+                      : password.length > 0
+                        ? 'invalid'
+                        : 'neutral'
+                    }`}>
                     {passwordRequirements.hasNumber ? '✓' : '○'} Mindestens eine Zahl
                   </div>
-                  <div className={`password-requirement ${
-                    passwordRequirements.hasSpecialChar 
-                      ? 'valid' 
-                      : password.length > 0 
-                      ? 'invalid' 
-                      : 'neutral'
-                  }`}>
+                  <div className={`password-requirement ${passwordRequirements.hasSpecialChar
+                      ? 'valid'
+                      : password.length > 0
+                        ? 'invalid'
+                        : 'neutral'
+                    }`}>
                     {passwordRequirements.hasSpecialChar ? '✓' : '○'} Mindestens ein Sonderzeichen (!@#$%...)
                   </div>
                 </div>
               </FormGroup>
 
-              <FormGroup className="form-group">
-                <Form.Label htmlFor="confirmPassword" className="form-label">
-                  Passwort wiederholen *
-                </Form.Label>
-                <Form.Control
-                  id="CreatePersonConfirmPassword"
-                  type="password"
-                  placeholder="••••••••"
-                  name="confirmPassword"
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  value={confirmPassword}
-                  isInvalid={!!errors.confirmPassword}
-                />
-                <Form.Control.Feedback type="invalid">
-                  {errors.confirmPassword}
-                </Form.Control.Feedback>
-              </FormGroup>
+              <PasswordInput
+                id="CreatePersonConfirmPassword"
+                name="confirmPassword"
+                value={confirmPassword}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                placeholder="••••••••"
+                isInvalid={!!errors.confirmPassword}
+                error={errors.confirmPassword}
+                className="form-group"
+                label="Passwort wiederholen"
+                required
+              />
             </div>
 
             <div className="form-section">

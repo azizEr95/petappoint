@@ -256,7 +256,6 @@ export function AnimalEditNewDialog({
       if (isSuccessPictureData && isSuccessUnknownPictureData) {
         setAnimalPictureURL(animalPictureData)
         setPictureIsPlaceholder(false)
-        // setShouldDeletePicture(false)
       }
     }
   }, [isSuccessAnimalType, isSuccessPictureData, animalPictureData, isSuccessUnknownPictureData, animalUnknownPictureData])

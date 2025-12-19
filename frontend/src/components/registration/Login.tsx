@@ -5,6 +5,8 @@ import { useMutation } from '@tanstack/react-query'
 import { loginUser, newToken } from '../../api/LoginAPI'
 import { StatusBooking } from '../../types/booking'
 import { useLoginContext } from '../../LoginContext'
+import { Form } from 'react-bootstrap'
+import { PasswordInput } from '../common/PasswordInput'
 import type { ChangeEvent, FormEvent } from 'react'
 import type {
   AppointmentsType,
@@ -110,34 +112,28 @@ export function LoginForm({
         <h1 className="auth-title">Login</h1>
 
         <form className="auth-form" onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label htmlFor="email" className="form-label">
+          <Form.Group className="form-group">
+            <Form.Label htmlFor="email" className="form-label">
               E-Mail *
-            </label>
-            <input
+            </Form.Label>
+            <Form.Control
               id="email"
               type="email"
-              className="form-input"
               placeholder="ihre@email.de"
               name="email"
               onChange={handleChange}
               value={email}
               required
             />
-          </div>
+          </Form.Group>
 
-          <div className="form-group">
-            <label htmlFor="password" className="form-label">
-              Passwort *
-            </label>
-            <input
+          <Form.Group className="form-group">
+            <PasswordInput
               id="password"
-              type="password"
-              className="form-input"
-              placeholder="••••••••"
               name="password"
-              onChange={handleChange}
               value={password}
+              onChange={handleChange}
+              placeholder="••••••••"
               required
             />
             <div style={{ marginTop: '0.5rem' }}>
@@ -157,7 +153,7 @@ export function LoginForm({
                 Passwort vergessen?
               </button>
             </div>
-          </div>
+          </Form.Group>
           {errorLogin !== '' && <div>{errorLogin}</div>}
           <button type="submit" className="auth-button">
             Einloggen

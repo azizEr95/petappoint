@@ -4,10 +4,11 @@ import type { ChangeEvent, FormEvent } from 'react'
 import '../../styles/routes/veterinaryRegistration.scss'
 import { useMutation } from '@tanstack/react-query'
 import { Form, FormGroup } from 'react-bootstrap'
+import { PasswordInput } from '../../components/common/PasswordInput'
 import { createVeterinaryPractice } from '../../api/VeterinaryPracticeAPI'
 import {
   VeterinaryPracticeCreateSchema
-  
+
 } from '../../../../shared/schemas/ZodSchemas'
 import type {VeterinaryPracticesCreateType} from '../../../../shared/schemas/ZodSchemas';
 
@@ -488,24 +489,19 @@ function VeterinaryRegistration() {
                 </FormGroup>
               </div>
 
-              <FormGroup className="form-group">
-                <Form.Label htmlFor="password" className="form-label">
-                  Passwort *
-                </Form.Label>
-                <Form.Control
-                  id="password"
-                  type="password"
-                  placeholder="••••••••"
-                  name="password"
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  value={password}
-                  isInvalid={!!errors.password}
-                />
-                <Form.Control.Feedback type="invalid">
-                  {errors.password}
-                </Form.Control.Feedback>
-              </FormGroup>
+              <PasswordInput
+                id="password"
+                name="password"
+                value={password}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                placeholder="••••••••"
+                isInvalid={!!errors.password}
+                error={errors.password}
+                className="form-group"
+                label="Passwort *"
+                required
+              />
             </div>
 
             <div className="form-section">

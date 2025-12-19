@@ -10,6 +10,7 @@ import {
   Row,
 } from 'react-bootstrap'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { PasswordInput } from '../common/PasswordInput'
 import {
   getPictureURLForPersonId,
   updatePerson,
@@ -447,32 +448,32 @@ export function ProfileEditDialog({
             <>
               <Row>
                 <Col md={6}>
-                  <Form.Group className="mb-3">
-                    <Form.Label>Neues Passwort*</Form.Label>
-                    <Form.Control
-                      type="password"
-                      value={newPassword}
-                      onChange={(e) => setNewPassword(e.target.value)}
-                      isInvalid={!!validationErrors.newPassword}
-                    />
-                    <Form.Control.Feedback type="invalid">
-                      {validationErrors.newPassword}
-                    </Form.Control.Feedback>
-                  </Form.Group>
+                  <PasswordInput
+                    id="newPassword"
+                    name="newPassword"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder="••••••••"
+                    isInvalid={!!validationErrors.newPassword}
+                    error={validationErrors.newPassword}
+                    className="mb-3"
+                    label="Neues Passwort*"
+                    required
+                  />
                 </Col>
                 <Col md={6}>
-                  <Form.Group className="mb-3">
-                    <Form.Label>Passwort bestätigen*</Form.Label>
-                    <Form.Control
-                      type="password"
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      isInvalid={!!validationErrors.confirmPassword}
-                    />
-                    <Form.Control.Feedback type="invalid">
-                      {validationErrors.confirmPassword}
-                    </Form.Control.Feedback>
-                  </Form.Group>
+                  <PasswordInput
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="••••••••"
+                    isInvalid={!!validationErrors.confirmPassword}
+                    error={validationErrors.confirmPassword}
+                    className="mb-3"
+                    label="Passwort bestätigen*"
+                    required
+                  />
                 </Col>
               </Row>
             </>
