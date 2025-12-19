@@ -110,8 +110,10 @@ function PersonRegistration() {
         error = 'Vorname ist erforderlich'
       } else if (!/^[a-zA-ZäöüÄÖÜß '`-]+$/.test(value)) {
         error = 'Diese Zeichen sind in diesem Feld nicht erlaubt (Zahlen,/,.)'
-      } else if (value.length < 3) {
-        error = 'Vorname muss mindestens aus 3 Zeichen bestehen'
+      } else if (value.length < 2) {
+        error = 'Vorname muss mindestens aus 2 Zeichen bestehen'
+      } else if (value.length > 60) {
+        error = 'Vorname darf maximal 60 Zeichen lang sein'
       }
     }
 
@@ -120,8 +122,10 @@ function PersonRegistration() {
         error = 'Nachname ist erforderlich'
       } else if (!/^[a-zA-ZäöüÄÖÜß '`-]+$/.test(value)) {
         error = 'Diese Zeichen sind in diesem Feld nicht erlaubt (Zahlen,/,.)'
-      } else if (value.length < 3) {
-        error = 'Nachname muss mindestens aus 3 Zeichen bestehen'
+      } else if (value.length < 2) {
+        error = 'Nachname muss mindestens aus 2 Zeichen bestehen'
+      } else if (value.length > 60) {
+        error = 'Nachname darf maximal 60 Zeichen lang sein'
       }
     }
 
@@ -135,6 +139,8 @@ function PersonRegistration() {
           'Straße muss mindestens einen Buchstaben oder eine Zahl enthalten'
       } else if (value.length < 3) {
         error = 'Straße muss mindestens aus 3 Zeichen bestehen'
+      } else if (value.length > 80) {
+        error = 'Straße darf maximal 80 Zeichen lang sein'
       }
     }
 
@@ -143,6 +149,8 @@ function PersonRegistration() {
         error = 'Hausnummer ist erforderlich'
       } else if (!/^(?=.*[0-9])[a-zA-Z0-9]+$/.test(value)) {
         error = 'Hausnummer muss mindestens eine Zahl enthalten'
+      } else if (value.length > 10) {
+        error = 'Hausnummer darf maximal 10 Zeichen lang sein'
       }
     }
 
@@ -151,16 +159,22 @@ function PersonRegistration() {
         error = 'Postleitzahl ist erforderlich'
       } else if (!/^(?=.*[0-9])[a-zA-Z0-9]+$/.test(value)) {
         error = 'Postleitzahl muss mindestens eine Zahl enthalten'
+      } else if (value.length < 3) {
+        error = 'Postleitzahl muss mindestens aus 3 Zeichen bestehen'
+      } else if (value.length > 12) {
+        error = 'Postleitzahl darf maximal 12 Zeichen lang sein'
       }
     }
 
     if (name === 'stadt') {
       if (!value.trim()) {
         error = 'Stadt ist erforderlich'
-      } else if (!/^[a-zA-ZäöüÄÖÜß '`-]+$/.test(stadt)) {
+      } else if (!/^[a-zA-ZäöüÄÖÜß '`-]+$/.test(value)) {
         error = 'Diese Zeichen sind in diesem Feld nicht erlaubt (Zahlen,/,.)'
       } else if (value.length < 3) {
         error = 'Stadt muss mindestens aus 3 Zeichen bestehen'
+      } else if (value.length > 60) {
+        error = 'Stadt darf maximal 60 Zeichen lang sein'
       }
     }
 
@@ -171,12 +185,16 @@ function PersonRegistration() {
         error = 'Diese Zeichen sind in diesem Feld nicht erlaubt (Zahlen,/,.)'
       } else if (value.length < 3) {
         error = 'Land muss mindestens aus 3 Zeichen bestehen'
+      } else if (value.length > 150) {
+        error = 'Land darf maximal 150 Zeichen lang sein'
       }
     }
 
     if (name === 'email') {
       if (!value.trim()) {
         error = 'E-Mail ist erforderlich'
+      } else if (value.length > 100) {
+        error = 'E-Mail darf maximal 100 Zeichen lang sein'
       } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value)) {
         error = 'Bitte geben Sie eine gültige E-Mail-Adresse ein'
       } else if ((value.match(/@/g) || []).length !== 1) {
@@ -222,8 +240,10 @@ function PersonRegistration() {
         error = 'Telefon darf nur Zahlen und optional ein + am Anfang enthalten'
       } else {
         const numbers = value.replace('+', '')
-        if (numbers.length < 6) {
-          error = 'Telefon muss mindestens aus 6 Zahlen bestehen'
+        if (numbers.length < 5) {
+          error = 'Telefon muss mindestens aus 5 Zahlen bestehen'
+        } else if (numbers.length > 20) {
+          error = 'Telefon darf maximal 20 Zeichen lang sein'
         }
       }
     }
@@ -277,8 +297,10 @@ function PersonRegistration() {
     } else if (!/^[a-zA-ZäöüÄÖÜß '`-]+$/.test(firstName)) {
       newErrors.firstName =
         'Diese Zeichen sind in diesem Feld nicht erlaubt (Zahlen,/,.)'
-    } else if (firstName.length < 3) {
-      newErrors.firstName = 'Vorname muss mindestens aus 3 Zeichen bestehen'
+    } else if (firstName.length < 2) {
+      newErrors.firstName = 'Vorname muss mindestens aus 2 Zeichen bestehen'
+    } else if (firstName.length > 60) {
+      newErrors.firstName = 'Vorname darf maximal 60 Zeichen lang sein'
     }
 
     if (!lastName.trim()) {
@@ -286,8 +308,10 @@ function PersonRegistration() {
     } else if (!/^[a-zA-ZäöüÄÖÜß '`-]+$/.test(lastName)) {
       newErrors.lastName =
         'Diese Zeichen sind in diesem Feld nicht erlaubt (Zahlen,/,.)'
-    } else if (lastName.length < 3) {
-      newErrors.lastName = 'Nachname muss mindestens aus 3 Zeichen bestehen'
+    } else if (lastName.length < 2) {
+      newErrors.lastName = 'Nachname muss mindestens aus 2 Zeichen bestehen'
+    } else if (lastName.length > 60) {
+      newErrors.lastName = 'Nachname darf maximal 60 Zeichen lang sein'
     }
 
     if (!strasse.trim()) {
@@ -299,18 +323,26 @@ function PersonRegistration() {
         'Straße muss mindestens einen Buchstaben oder eine Zahl enthalten'
     } else if (strasse.length < 3) {
       newErrors.strasse = 'Straße muss mindestens aus 3 Zeichen bestehen'
+    } else if (strasse.length > 80) {
+      newErrors.strasse = 'Straße darf maximal 80 Zeichen lang sein'
     }
 
     if (!hausnr.trim()) {
       newErrors.hausnr = 'Hausnummer ist erforderlich'
     } else if (!/^(?=.*[0-9])[a-zA-Z0-9]+$/.test(hausnr)) {
       newErrors.hausnr = 'Hausnummer muss mindestens eine Zahl enthalten'
+    } else if (hausnr.length > 10) {
+      newErrors.hausnr = 'Hausnummer darf maximal 10 Zeichen lang sein'
     }
 
     if (!plz.trim()) {
       newErrors.plz = 'Postleitzahl ist erforderlich'
     } else if (!/^(?=.*[0-9])[a-zA-Z0-9]+$/.test(plz)) {
       newErrors.plz = 'Postleitzahl muss mindestens eine Zahl enthalten'
+    } else if (plz.length < 3) {
+      newErrors.plz = 'Postleitzahl muss mindestens aus 3 Zeichen bestehen'
+    } else if (plz.length > 12) {
+      newErrors.plz = 'Postleitzahl darf maximal 12 Zeichen lang sein'
     }
 
     if (!stadt.trim()) {
@@ -320,6 +352,8 @@ function PersonRegistration() {
         'Diese Zeichen sind in diesem Feld nicht erlaubt (Zahlen,/,.)'
     } else if (stadt.length < 3) {
       newErrors.stadt = 'Stadt muss mindestens aus 3 Zeichen bestehen'
+    } else if (stadt.length > 60) {
+      newErrors.stadt = 'Stadt darf maximal 60 Zeichen lang sein'
     }
 
     if (!land.trim()) {
@@ -329,10 +363,14 @@ function PersonRegistration() {
         'Diese Zeichen sind in diesem Feld nicht erlaubt (Zahlen,/,.)'
     } else if (land.length < 3) {
       newErrors.land = 'Land muss mindestens aus 3 Zeichen bestehen'
+    } else if (land.length > 150) {
+      newErrors.land = 'Land darf maximal 150 Zeichen lang sein'
     }
 
     if (!email.trim()) {
       newErrors.email = 'E-Mail ist erforderlich'
+    } else if (email.length > 100) {
+      newErrors.email = 'E-Mail darf maximal 100 Zeichen lang sein'
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
       newErrors.email = 'Bitte geben Sie eine gültige E-Mail-Adresse ein'
     } else if ((email.match(/@/g) || []).length !== 1) {
@@ -376,8 +414,10 @@ function PersonRegistration() {
         'Telefon darf nur Zahlen und optional ein + am Anfang enthalten'
     } else {
       const numbers = phone.replace('+', '')
-      if (numbers.length < 6) {
-        newErrors.phone = 'Telefon muss mindestens aus 6 Zahlen bestehen'
+      if (numbers.length < 5) {
+        newErrors.phone = 'Telefon muss mindestens aus 5 Zahlen bestehen'
+      } else if (numbers.length > 20) {
+        newErrors.phone = 'Telefon darf maximal 20 Zeichen lang sein'
       }
     }
 
@@ -403,8 +443,8 @@ function PersonRegistration() {
     return Object.keys(newErrors).length === 0
   }
 
-  const scrollToFirstError = (errorsScroll: { [key: string]: string }) => {
-    const firstErrorKey = Object.keys(errorsScroll)[0]
+  const scrollToFirstError = (errors: { [key: string]: string }) => {
+    const firstErrorKey = Object.keys(errors)[0]
     if (firstErrorKey) {
       const errorElement = document.querySelector(`[name="${firstErrorKey}"]`)
       if (errorElement) {
