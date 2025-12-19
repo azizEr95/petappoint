@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "vetilib": "npm --prefix ./db run db && npm-run-all buildProject migrateDB seed && npm-run-all --parallel startBackend startFrontend",
+    "startBackendFrontend": "npm-run-all --parallel startBackend startFrontend",
     "startBackend": "npm --prefix ./backend run start",
     "startFrontend": "npm --prefix ./frontend run dev",
     "buildProject": "npm --prefix ./backend install && npm --prefix ./frontend install",
@@ -11,12 +12,15 @@
     "seed": "npm --prefix ./backend run seed",
     "vetilib:detached": "docker-compose up --build -d",
     "stop": "docker-compose down",
+    "e2e-tests": "npx playwright test",
     "test": "npm run test:backend && npm run test:frontend",
     "test:backend": "cd backend && npm test",
     "test:frontend": "cd frontend && npm test",
     "prisma": "cd backend && npm run prisma"
   },
   "devDependencies": {
+    "@playwright/test": "^1.57.0",
+    "@types/node": "^25.0.3",
     "npm-run-all": "^4.1.5",
     "sass": "^1.61.0"
   },
