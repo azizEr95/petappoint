@@ -709,6 +709,7 @@ export const appointmentService = {
         },
         veterinarian: {
           include: {
+            person: true,
             veterinaryCanTreatAnimalTypes: true,
             veterinaryHasServices: {
               include: {
@@ -818,6 +819,8 @@ export const appointmentService = {
         },
         veterinary: {
           id: foundAppointment.veterinarian.id,
+          firstName: foundAppointment.veterinarian.person.firstName,
+          lastName: foundAppointment.veterinarian.person.lastName,
           infoEmail: foundAppointment.veterinarian.infoEmail,
           veterinaryPracticeId: foundAppointment.veterinaryPractice.id,
         },
