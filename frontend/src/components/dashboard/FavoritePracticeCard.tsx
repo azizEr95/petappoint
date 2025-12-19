@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { getVeterinaryPracticesById } from '../../api/VeterinaryPracticeAPI'
 import type { VeterinaryPracticesType } from '../../../../shared/schemas/ZodSchemas'
 import type { FavoritePracticeCardProps } from '../../types/dashboard'
@@ -7,10 +7,8 @@ import '../../styles/components/dashboard/FavoritePracticeCard.scss'
 
 export function FavoritePracticeCard({
   practiceId,
-  onRemove,
+  onRemove,å
 }: FavoritePracticeCardProps) {
-  const queryClient = useQueryClient()
-
   const {
     data: practice,
     isLoading,

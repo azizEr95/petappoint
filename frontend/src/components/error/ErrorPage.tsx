@@ -1,15 +1,14 @@
-import { ReactNode } from 'react'
 import { Link } from '@tanstack/react-router'
 
 interface ErrorPageProps {
   code: number
   title: string
   description: string
-  actions?: {
+  actions?: Array<{
     label: string
     href: string
     variant?: 'primary' | 'secondary'
-  }[]
+  }>
 }
 
 export default function ErrorPage({

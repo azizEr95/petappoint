@@ -11,7 +11,7 @@ export const veterinaryService = {
       where: { id },
       include: {
         appointments: true,
-        veterinarypractices: true,
+        veterinaryPractice: true,
         person: true,
         veterinaryHasServices: {
           include: {

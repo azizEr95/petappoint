@@ -6,6 +6,7 @@ import {
   VeterinaryPracticeSearchQueryType,
   VeterinaryPracticesType,
   VeterinaryPracticeSearchResultType,
+  VeterinariansType,
 } from "vetilib-shared/schemas/ZodSchemas";
 import { addressService } from "./addressService";
 import { ResourceNotFoundError } from "../exceptions/errors/ResourceNotFoundError";
@@ -285,4 +286,29 @@ export const veterinaryPracticeService = {
 
     return uniqueAnimalTypes;
   },
+
+  async getAllVeterinarians(praxisId: number): Promise<VeterinariansType[]> {
+    const found = await prisma.veterinarian.findMany({
+      where: {
+        fk_veterinarypracticeid: praxisId
+      },
+      select: {
+        id: true,
+        infoEmail: true,
+        person: {
+          select: {
+            firstName: true,
+            lastName: true,
+          }
+        }
+      }
+    });
+    return found.map(x => ({
+      id: x.id,
+      firstName: x.person.firstName,
+      lastName: x.person.lastName,
+      infoEmail: x.infoEmail,
+      veterinaryPracticeId: praxisId
+    }));
+  }
 };
