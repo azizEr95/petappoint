@@ -154,7 +154,11 @@ export function LoginForm({
               </button>
             </div>
           </Form.Group>
-          {errorLogin !== '' && <div>{errorLogin}</div>}
+          {errorLogin !== '' && (
+            <div className="error-message">
+              {errorLogin}
+            </div>
+          )}
           <button type="submit" className="auth-button">
             Einloggen
           </button>
