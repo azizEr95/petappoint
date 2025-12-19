@@ -158,7 +158,10 @@ export const createVeterinaryPractice = async (
     requestOptions,
   )
   if (!res.ok) {
-    throw new Error('Failed to fetch getVeterinaryPracticesById')
+    const errorData = await res.json().catch(() => ({}))
+    const error = new Error(errorData.error || 'Registration failed')
+    ;(error as any).field = errorData.field
+    throw error
   }
   const data = await res.json()
   return parsedVeterinaryPractice(data)

@@ -15,6 +15,13 @@ import { Prisma } from "../../generated/prisma";
 
 export const veterinaryPracticeService = {
   async create(veterinaryPracticeRe: VeterinaryPracticesCreateType): Promise<VeterinaryPracticesType> {
+    const existingPractice = await prisma.veterinaryPractice.findUnique({
+      where: { email: veterinaryPracticeRe.email },
+    });
+    if (existingPractice) {
+      throw new ConstraintError("Email wird bereits verwendet", [{ path: "email", value: veterinaryPracticeRe.email }]);
+    }
+
     return await prisma.veterinaryPractice.create({
       include: {
         address: true,

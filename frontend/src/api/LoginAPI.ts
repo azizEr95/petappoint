@@ -49,7 +49,10 @@ export const personRegistration = async (
     requestOptions,
   )
   if (!res.ok) {
-    throw new Error('Failed to fetch personRegistration')
+    const errorData = await res.json().catch(() => ({}))
+    const error = new Error(errorData.error || 'Registration failed')
+    ;(error as any).field = errorData.field
+    throw error
   }
 
   const data = await res.json()
