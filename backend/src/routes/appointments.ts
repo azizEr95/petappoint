@@ -87,7 +87,7 @@ appointmentRouter.put("/:id", requiresAuthentication, checkVerified, async (req,
     validatedData.serviceId
   );
   // send confirmation email
-  emailService.sendAppointmentEmail(req.userId!, bookedAppointment.id, "confirmation");
+   await emailService.sendAppointmentEmail(req.userId!, bookedAppointment.id, "confirmation");
   res.status(201).send(bookedAppointment);
 });
 
