@@ -262,6 +262,8 @@ function PersonRegistration() {
           const age = calculateAge(birthDate)
           if (age < 14) {
             error = 'Sie müssen mindestens 14 Jahre alt sein'
+          } else if (age > 120) {
+            error = 'Das Alter darf nicht mehr als 120 Jahre betragen'
           }
         }
       }
@@ -433,6 +435,8 @@ function PersonRegistration() {
         const age = calculateAge(birthDate)
         if (age < 14) {
           newErrors.dateOfBirth = 'Sie müssen mindestens 14 Jahre alt sein'
+        } else if (age > 120) {
+          newErrors.dateOfBirth = 'Das Alter darf nicht mehr als 120 Jahre betragen'
         }
       }
     }
