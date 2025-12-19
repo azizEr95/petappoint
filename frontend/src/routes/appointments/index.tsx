@@ -302,6 +302,7 @@ function Appointments() {
             )}
             {selectedAppointment && (
               <AppointmentDetails
+                key={selectedAppointment.id}
                 appointment={selectedAppointment}
                 onShowCancelSuccess={handleShowCancelSuccess}
               />

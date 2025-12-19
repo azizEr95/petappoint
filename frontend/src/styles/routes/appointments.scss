@@ -476,6 +476,17 @@
   }
 }
 
+@keyframes slideInFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
 // Appointment Details Sidebar
 .appointment-details {
   position: sticky;
@@ -487,6 +498,12 @@
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
   overflow: hidden;
+  animation: slideInFromRight 0.3s ease-out;
+  border: 2px solid transparent;
+
+  &:focus-within {
+    border-color: var(--color-primary-light);
+  }
 
   .cancel-success-notification {
     background: linear-gradient(135deg, #10b981 0%, #059669 100%);
