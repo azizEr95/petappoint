@@ -66,6 +66,12 @@ veterinaryPracticeRouter.get("/:id/appointments/available", optionalAuthenticati
   return res.send(availableAppointments);
 });
 
+veterinaryPracticeRouter.get('/:practiceId/veterinarians', optionalAuthentication, async (req, res) => {
+  const id: number = PostgresIdSchema.parse(parseInt(req.params.practiceId));
+  const veterinarians = await veterinaryPracticeService.getAllVeterinarians(id);
+  return res.send(veterinarians);
+});
+
 veterinaryPracticeRouter.get("/:id/appointments/booked", optionalAuthentication, async (req, res) => {
   const id: number = PostgresIdSchema.parse(parseInt(req.params.id));
 

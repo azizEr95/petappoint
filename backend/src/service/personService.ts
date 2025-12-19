@@ -347,7 +347,7 @@ export const personService = {
     if(!check) {
       throw new ResourceNotFoundError("User not found.","userId",userId);
     }
-    console.log(check.verified);
+    
     return check.verified
   },
   async updateVerified(userId: number,code: string): Promise<person_has_confirmation_code> {

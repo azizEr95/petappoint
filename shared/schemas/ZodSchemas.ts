@@ -1,4 +1,4 @@
-import { boolean, z } from "zod";
+import { z } from "zod";
 
 export const PostgresIdSchema = z.number().int();
 export type PostgresIdType = z.infer<typeof PostgresIdSchema>;
@@ -223,6 +223,8 @@ export type VeterinaryPracticesType = z.infer<typeof VeterinaryPracticeSchema>;
 //Veterinarians:
 export const VeterinariansSchema = z.object({
   id: PostgresIdSchema, //ist identisch zur Personen ID
+  firstName: z.string().min(2).max(60),
+  lastName: z.string().min(2).max(60),
   infoEmail: z.email().nullable(),
   veterinaryPracticeId: PostgresIdSchema.nullable(),
 });

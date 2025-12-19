@@ -21,7 +21,16 @@ export const appointmentService = {
             service: true,
           },
         },
-        veterinarian: true,
+        veterinarian: {
+          include: {
+            person: {
+              select: {
+                firstName: true,
+                lastName: true
+              }
+            }
+          }
+        },
         veterinaryPractice: {
           include: {
             address: true,
@@ -73,6 +82,8 @@ export const appointmentService = {
       },
       veterinary: {
         id: created.veterinarian.id,
+        firstName: created.veterinarian.person.firstName,
+        lastName: created.veterinarian.person.lastName,
         infoEmail: created.veterinarian.infoEmail,
         veterinaryPracticeId: created.veterinaryPractice.id,
       },
@@ -100,6 +111,12 @@ export const appointmentService = {
         },
         veterinarian: {
           include: {
+            person: {
+              select: {
+                firstName: true,
+                lastName: true
+              }
+            },
             veterinaryHasServices: {
               include: {
                 service: true,
@@ -158,6 +175,8 @@ export const appointmentService = {
       },
       veterinary: {
         id: foundAppointment.veterinarian.id,
+        firstName: foundAppointment.veterinarian.person.firstName,
+        lastName: foundAppointment.veterinarian.person.lastName,
         infoEmail: foundAppointment.veterinarian.infoEmail,
         veterinaryPracticeId: foundAppointment.veterinaryPractice.id,
       },
@@ -186,7 +205,16 @@ export const appointmentService = {
             service: true,
           },
         },
-        veterinarian: true,
+        veterinarian: {
+          include: {
+            person: {
+              select: {
+                firstName: true,
+                lastName: true
+              }
+            }
+          }
+        },
         veterinaryPractice: {
           include: {
             address: true,
@@ -266,6 +294,8 @@ export const appointmentService = {
       },
       veterinary: {
         id: foundAppointment.veterinarian.id,
+        firstName: foundAppointment.veterinarian.person.firstName,
+        lastName: foundAppointment.veterinarian.person.lastName,
         infoEmail: foundAppointment.veterinarian.infoEmail,
         veterinaryPracticeId: foundAppointment.veterinaryPractice.id,
       },
@@ -340,7 +370,16 @@ export const appointmentService = {
             service: true,
           },
         },
-        veterinarian: true,
+        veterinarian: {
+          include: {
+            person: {
+              select: {
+                firstName: true,
+                lastName: true
+              }
+            }
+          }
+        },
         veterinaryPractice: {
           include: {
             address: true,
@@ -384,6 +423,8 @@ export const appointmentService = {
       },
       veterinary: {
         id: foundAppointment.veterinarian.id,
+        firstName: foundAppointment.veterinarian.person.firstName,
+        lastName: foundAppointment.veterinarian.person.lastName,
         infoEmail: foundAppointment.veterinarian.infoEmail,
         veterinaryPracticeId: foundAppointment.veterinaryPractice.id,
       },
@@ -410,7 +451,16 @@ export const appointmentService = {
             service: true,
           },
         },
-        veterinarian: true,
+        veterinarian: {
+          include: {
+            person: {
+              select: {
+                firstName: true,
+                lastName: true
+              }
+            }
+          }
+        },
         veterinaryPractice: {
           include: {
             address: true,
@@ -487,6 +537,8 @@ export const appointmentService = {
       },
       veterinary: {
         id: foundAppointment.veterinarian.id,
+        firstName: foundAppointment.veterinarian.person.firstName,
+        lastName: foundAppointment.veterinarian.person.lastName,
         infoEmail: foundAppointment.veterinarian.infoEmail,
         veterinaryPracticeId: foundAppointment.veterinaryPractice.id,
       },
@@ -518,6 +570,12 @@ export const appointmentService = {
         },
         veterinarian: {
           include: {
+            person: {
+              select: {
+                firstName: true,
+                lastName: true
+              }
+            },
             veterinaryCanTreatAnimalTypes: true,
             veterinaryHasServices: {
               include: {
@@ -618,6 +676,8 @@ export const appointmentService = {
         },
         veterinary: {
           id: foundAppointment.veterinarian.id,
+          firstName: foundAppointment.veterinarian.person.firstName,
+          lastName: foundAppointment.veterinarian.person.lastName,
           infoEmail: foundAppointment.veterinarian.infoEmail,
           veterinaryPracticeId: foundAppointment.veterinaryPractice.id,
         },
@@ -785,7 +845,16 @@ export const appointmentService = {
     const appointments = await prisma.appointment.findMany({
       include: {
         animal: true,
-        veterinarian: true,
+        veterinarian: {
+          include: {
+            person: {
+              select: {
+                firstName: true,
+                lastName: true
+              }
+            }
+          }
+        },
         service: true,
         appointmentHasServices: {
           include: {
@@ -863,6 +932,8 @@ export const appointmentService = {
       },
       veterinary: {
         id: foundAppointment.veterinarian.id,
+        firstName: foundAppointment.veterinarian.person.firstName,
+        lastName: foundAppointment.veterinarian.person.lastName,
         infoEmail: foundAppointment.veterinarian.infoEmail,
         veterinaryPracticeId: foundAppointment.veterinaryPractice.id,
       },
@@ -897,7 +968,16 @@ export const appointmentService = {
             service: true,
           },
         },
-        veterinarian: true,
+        veterinarian: {
+          include: {
+            person: {
+              select: {
+                firstName: true,
+                lastName: true
+              }
+            }
+          }
+        },
         veterinaryPractice: {
           include: {
             address: true,
@@ -969,6 +1049,8 @@ export const appointmentService = {
       },
       veterinary: {
         id: foundAppointment.veterinarian.id,
+        firstName: foundAppointment.veterinarian.person.firstName,
+        lastName: foundAppointment.veterinarian.person.lastName,
         infoEmail: foundAppointment.veterinarian.infoEmail,
         veterinaryPracticeId: foundAppointment.veterinaryPractice.id,
       },
@@ -995,7 +1077,16 @@ export const appointmentService = {
             service: true,
           },
         },
-        veterinarian: true,
+        veterinarian: {
+          include: {
+            person: {
+              select: {
+                firstName: true,
+                lastName: true
+              }
+            }
+          }
+        },
         veterinaryPractice: {
           include: {
             address: true,
@@ -1039,6 +1130,8 @@ export const appointmentService = {
       },
       veterinary: {
         id: foundAppointment.veterinarian.id,
+        firstName: foundAppointment.veterinarian.person.firstName,
+        lastName: foundAppointment.veterinarian.person.lastName,
         infoEmail: foundAppointment.veterinarian.infoEmail,
         veterinaryPracticeId: foundAppointment.veterinaryPractice.id,
       },
@@ -1069,7 +1162,16 @@ export const appointmentService = {
             service: true,
           },
         },
-        veterinarian: true,
+        veterinarian: {
+          include: {
+            person: {
+              select: {
+                firstName: true,
+                lastName: true
+              }
+            }
+          }
+        },
         veterinaryPractice: {
           include: {
             address: true,
@@ -1115,6 +1217,8 @@ export const appointmentService = {
       },
       veterinary: {
         id: updated.veterinarian.id,
+        firstName: updated.veterinarian.person.firstName,
+        lastName: updated.veterinarian.person.lastName,
         infoEmail: updated.veterinarian.infoEmail,
         veterinaryPracticeId: updated.veterinaryPractice.id,
       },
@@ -1158,7 +1262,16 @@ export const appointmentService = {
             service: true,
           },
         },
-        veterinarian: true,
+        veterinarian: {
+          include: {
+            person: {
+              select: {
+                firstName: true,
+                lastName: true
+              }
+            }
+          }
+        },
         veterinaryPractice: {
           include: {
             address: true,
@@ -1209,6 +1322,8 @@ export const appointmentService = {
       },
       veterinary: {
         id: updated.veterinarian.id,
+        firstName: updated.veterinarian.person.firstName,
+        lastName: updated.veterinarian.person.lastName,
         infoEmail: updated.veterinarian.infoEmail,
         veterinaryPracticeId: updated.veterinaryPractice.id,
       },
@@ -1237,7 +1352,16 @@ export const appointmentService = {
             service: true,
           },
         },
-        veterinarian: true,
+        veterinarian: {
+          include: {
+            person: {
+              select: {
+                firstName: true,
+                lastName: true
+              }
+            }
+          }
+        },
         veterinaryPractice: {
           include: {
             address: true,
@@ -1286,6 +1410,8 @@ export const appointmentService = {
       },
       veterinary: {
         id: updated.veterinarian.id,
+        firstName: updated.veterinarian.person.firstName,
+        lastName: updated.veterinarian.person.lastName,
         infoEmail: updated.veterinarian.infoEmail,
         veterinaryPracticeId: updated.veterinaryPractice.id,
       },
@@ -1310,7 +1436,16 @@ export const appointmentService = {
             service: true,
           },
         },
-        veterinarian: true,
+        veterinarian: {
+          include: {
+            person:{
+              select:{
+                firstName: true,
+                lastName: true
+              }
+            }
+          }
+        },
         veterinaryPractice: {
           include: {
             address: true,
@@ -1356,6 +1491,8 @@ export const appointmentService = {
       },
       veterinary: {
         id: updated.veterinarian.id,
+        firstName: updated.veterinarian.person.firstName,
+        lastName: updated.veterinarian.person.lastName,
         infoEmail: updated.veterinarian.infoEmail,
         veterinaryPracticeId: updated.veterinaryPractice.id,
       },

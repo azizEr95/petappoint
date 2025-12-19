@@ -117,6 +117,17 @@ async function seedTestdata() {
       ],
     });
 
+    (await prisma.person.findMany()).forEach(async x => {
+      await prisma.person_has_confirmation_code.create({
+        data: {
+          code: '123456',
+          dateofcreation: new Date().toISOString(),
+          verified: true,
+          fk_personid: x.id
+        }
+      })
+    });
+
     const createdAnimalTypes = await prisma.animalType.createMany({
       data: [
         { name: "Hund" },
