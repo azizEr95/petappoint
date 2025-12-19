@@ -1,0 +1,100 @@
+image: node:latest
+
+stages:
+  - build-backend
+  - build-frontend
+  #- test
+  - e2e-test
+  - deploy
+
+build-backend:
+  stage: build-backend
+  before_script:
+    - cd backend
+  script:
+    - npm install
+  cache:
+    paths:
+      - backend/node_modules/
+
+build-frontend:
+  stage: build-frontend
+  before_script:
+    - cd frontend
+  script:
+    - npm install
+  cache:
+    paths:
+      - frontend/node_modules/
+
+#test:
+#  stage: test
+#  coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/
+#  dependencies:
+#    - build
+#  before_script:
+#    - cd backend
+#    - npm install
+#  script:
+#    - npm run test
+#  cache:
+#    paths:
+#      - ./backend/coverage
+#  artifacts:
+#    paths:
+#      - ./backend/coverage
+#    when: always
+#    reports:
+#      junit:
+#        - junit.xml
+#      coverage_report:
+#        coverage_format: cobertura
+#        path: backend/coverage/cobertura-coverage.xml
+
+e2e-tests:
+  stage: e2e-test
+  image: mcr.microsoft.com/playwright:v1.57.0-jammy
+  services:
+    - name: postgres:15
+      alias: db
+      variables:
+        POSTGRES_DB: vetilib-e2e-test
+        POSTGRES_USER: vetilib
+        POSTGRES_PASSWORD: 123
+  variables:
+    DATABASE_URL: "postgresql://vetilib:123@db-server:5432/vetilib-e2e-test"
+    CORS_ORIGIN: "http://localhost:3001"
+    HTTP_PORT: 3000
+    BREVO_API_KEY: "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"
+    JWT_SECRET: "mausibausi"
+    JWT_TTL: 900
+  dependencies:
+    - build-backend
+    - build-frontend
+  before_script:
+    - npm install --prefix backend
+    - npm install --prefix frontend
+    - npm install
+  script:
+    # - npm run prisma
+    - npm run e2e-tests
+  artifacts:
+    when: always
+    paths:
+      - playwright-report/
+      - test-results/
+    expire_in: 1 week
+
+pages:
+  stage: deploy
+  #dependencies:
+    #- test
+  script:
+      - mkdir .public
+      - cp -r coverage/* .public
+      - mv .public .public
+  artifacts:
+    paths:
+      - public
+  only:
+    - master

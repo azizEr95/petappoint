@@ -145,9 +145,6 @@ export function AnimalEditNewDialog({
       setAnimalPictureURL(animalUnknownPictureData)
       setPictureIsPlaceholder(true)
     }
-    console.log(isSuccessPictureData)
-    console.log(animalPictureData)
-    console.log(isSuccessUnknownPictureData)
   }, [animalPictureData, animalUnknownPictureData, isSuccessPictureData, isSuccessUnknownPictureData])
 
   useEffect(() => {
@@ -187,7 +184,6 @@ export function AnimalEditNewDialog({
     setPictureIsPlaceholder(true);
     setSelectedPictureFile(undefined);
     setShouldDeletePicture(true);
-    console.log(animalPictureURL)
   }
 
   // END IMAGE FORM
@@ -237,6 +233,9 @@ export function AnimalEditNewDialog({
             setAgeInMonth(6)
           }
         }
+      }else {
+        setDateOfBirthIsExact('No');
+        setAgeInMonth(-1);
       }
       setSexes(animalEdit.sex)
       if (animalEdit.weightInGram !== null) {
@@ -254,10 +253,9 @@ export function AnimalEditNewDialog({
       if (animalEdit.timeOfDeath !== null) {
         setDateOfDeath(getDateStringFromDate(animalEdit.timeOfDeath))
       }
-      if(isSuccessPictureData && isSuccessUnknownPictureData){
+      if (isSuccessPictureData && isSuccessUnknownPictureData) {
         setAnimalPictureURL(animalPictureData)
         setPictureIsPlaceholder(false)
-        setShouldDeletePicture(false)
       }
     }
   }, [isSuccessAnimalType, isSuccessPictureData, animalPictureData, isSuccessUnknownPictureData, animalUnknownPictureData])
@@ -358,11 +356,6 @@ export function AnimalEditNewDialog({
         animalraceids: racesIdNumbers,
       }
       mutateAddRacesToAnimal(addRaces)
-
-      // upload picture if selected
-      if (selectedPictureFile) {
-        mutateAddPictureAnimal(data.id);
-      }
     },
   })
 
@@ -373,6 +366,8 @@ export function AnimalEditNewDialog({
     },
     onSuccess: () => {
       setErrorText('')
+      setShouldDeletePicture(false)
+      hideDialogNewAnimal()
       queryClient.invalidateQueries({ queryKey: ['animals'] })
       queryClient.invalidateQueries({ queryKey: ['animalPicture'] })
       queryClient.invalidateQueries({ queryKey: ['animalUnknownPicture'] })
@@ -382,6 +377,9 @@ export function AnimalEditNewDialog({
   const { mutate: mutateDeletePicture } = useMutation({
     mutationFn: (animalId: number) => deletePictureForAnimalId(animalId),
     onSuccess: () => {
+      setErrorText('')
+      setShouldDeletePicture(false)
+      hideDialogNewAnimal()
       queryClient.invalidateQueries({ queryKey: ['animals'] })
       queryClient.invalidateQueries({ queryKey: ['animalPicture'] })
       queryClient.invalidateQueries({ queryKey: ['animalUnknownPicture'] })
@@ -401,18 +399,12 @@ export function AnimalEditNewDialog({
     },
     onSuccess: (data) => {
       // animal was successful edited
+      // edit animalraces, delete all first, then add selected ones
       setErrorText('')
       mutateDeleteAllRaces(data.id)
-
-      // handle picture upload/deletion
-      if (selectedPictureFile) {
-        mutateAddPictureAnimal(data.id);
-      } else if (shouldDeletePicture) {
-        mutateDeletePicture(data.id);
-      }
-      // if neither: user didn't change picture, do nothing (keep existing)
     },
   })
+
   const { mutate: mutateAddRacesToAnimal } = useMutation({
     mutationFn: (animalID: AddRacesToAnimalType) => addRacesToAnimal(animalID),
     onError: () => {
@@ -422,14 +414,21 @@ export function AnimalEditNewDialog({
         setErrorText('Fehler beim Bearbeiten des Tieres')
       }
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       // animalraces was successful edited
-      setErrorText('')
-      setShouldDeletePicture(false)
-      hideDialogNewAnimal()
-      queryClient.invalidateQueries({ queryKey: ['animals'] })
-      queryClient.invalidateQueries({ queryKey: ['animalPicture'] })
-      queryClient.invalidateQueries({ queryKey: ['animalUnknownPicture'] })
+      // now handle picture upload/deletion
+      if (selectedPictureFile) {
+        mutateAddPictureAnimal(data.animalId);
+      } else if (shouldDeletePicture) {
+        mutateDeletePicture(data.animalId);
+      } else { // if neither: user didn't change picture, do nothing (keep existing)
+        setErrorText('')
+        setShouldDeletePicture(false)
+        hideDialogNewAnimal()
+        queryClient.invalidateQueries({ queryKey: ['animals'] })
+        queryClient.invalidateQueries({ queryKey: ['animalPicture'] })
+        queryClient.invalidateQueries({ queryKey: ['animalUnknownPicture'] })
+      }
     },
   })
 
@@ -722,13 +721,17 @@ export function AnimalEditNewDialog({
       )
       const heightInCm = Math.floor(parseFloat(height.replace(',', '.')) * 100)
 
+      let dateOfBirthCreate: Date | null = null;
+      if(dateOfBirthIsExact === "Yes"){
+        dateOfBirthCreate = new Date(dateOfBirth);
+      } else if(dateOfBirthIsExact === "No" && ageInMonth !== -1){
+        new Date(dateOfBirthFromAgeInMonth)
+      }
+
       const animal: AnimalsCreateType = {
         name: name,
         sex: sex !== undefined ? sex : 'not_known',
-        dateOfBirth:
-          dateOfBirthIsExact === 'Yes'
-            ? new Date(dateOfBirth)
-            : new Date(dateOfBirthFromAgeInMonth),
+        dateOfBirth: dateOfBirthCreate,
         dateOfBirthIsExact: dateOfBirthIsExact === 'Yes' ? true : false,
         weightInGram: weightInGram,
         heightInCm: heightInCm,
@@ -976,7 +979,9 @@ export function AnimalEditNewDialog({
                   onChange={handleChange}
                   isInvalid={validationErrors.dateOfBirthIsExact !== undefined}
                 >
+                  
                   <option value={0}>Bitte auswählen</option>
+                  <option value={-1}>weiß ich nicht</option>
                   <option value={6}>jünger 6 Monate</option>
                   <option value={15}>6-24 Monate</option>
                   <option value={36}>2-4 Jahre</option>

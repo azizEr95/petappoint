@@ -1,8 +1,9 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { useEffect, useState } from 'react'
 import { DashboardPetsSection } from '../components/dashboard/DashboardPetsSection'
 import { useLoginContext } from '../LoginContext'
-import { useState } from 'react'
 import { AnimalEditNewDialog } from '../components/animal/AnimalEditNewDialog'
+import { isLoggedInAndVerified } from '../utils/Authentication'
 
 export const Route = createFileRoute('/animals')({
   component: Animals,
@@ -11,13 +12,21 @@ export const Route = createFileRoute('/animals')({
 function Animals() {
   const [showAnimalDialog, setShowAnimalDialog] = useState(false)
   const [hasAnimals, setHasAnimals] = useState(false)
-
   const { login } = useLoginContext()
-  if (!login) {
-    return
-  }
+  const navigate = useNavigate()
+  
+  useEffect(() => {
+    if (!isLoggedInAndVerified(login)) {
+      navigate({
+        to: '/login',
+        search: {
+          redirect: '/animals',
+        },
+      })
+    }
+  }, [login])
 
-  const userId = login.id
+  const userId = login ? login.id : -1; // userId is always !== -1
 
   const handleAddPet = () => {
     setShowAnimalDialog(true)

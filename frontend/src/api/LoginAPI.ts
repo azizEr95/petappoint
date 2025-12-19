@@ -7,7 +7,7 @@ import type {
 export const loginUser = async (
   email: string,
   password: string,
-): Promise<LoginType | false> => {
+): Promise<LoginType> => {
   const loginInfos = {
     email: email,
     password: password,
@@ -130,7 +130,7 @@ export const newToken = async (): Promise<void> => {
   )
 
   if (!res.ok) {
-    throw Error('Failed to fetch verifyEmail')
+    throw Error('Failed to fetch newToken')
   }
 
   return;

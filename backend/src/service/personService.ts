@@ -175,6 +175,39 @@ export const personService = {
     };
   },
 
+  async updateEmail(id: number, dataEmail: string): Promise<PersonsType> { // only updating the email
+
+      const existingPerson = await prisma.person.findUnique({
+        where: { email: dataEmail },
+      });
+      if (existingPerson && existingPerson.id !== id) {
+        throw new ConstraintError("Email already in use", [{ path: "email", value: dataEmail }]);
+      }
+
+    const updateData: any = {
+      email: dataEmail,
+    };
+
+    const updatedPerson = await prisma.person.update({
+      where: { id: id },
+      data: updateData,
+      include: {
+        address: true,
+      },
+    });
+
+    return {
+      id: updatedPerson.id,
+      firstName: updatedPerson.firstName,
+      lastName: updatedPerson.lastName,
+      sex: updatedPerson.sex,
+      dateOfBirth: updatedPerson.dateOfBirth,
+      address: updatedPerson.address,
+      phone: updatedPerson.phone,
+      email: updatedPerson.email,
+    };
+  },
+
   async favorizeVeterinaryPracticesByIds(personId: number, practiceIds: number[]): Promise<void> {
     practiceIds = practiceIds
       .map((x) => PostgresIdSchema.safeParse(x))

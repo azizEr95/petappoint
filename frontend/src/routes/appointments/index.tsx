@@ -5,17 +5,16 @@ import {
 } from '@tanstack/react-router'
 import { useEffect, useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { AppointmentList } from '../components/appointment/AppointmentList'
-import {
-  getFutureAppointmentsByUserId,
-  getPastAppointmentsByUserId,
-} from '../api/AppointmentsAPI'
-import { AppointmentDetails } from '../components/appointment/AppointmentDetails'
-import '../styles/routes/appointments.scss'
-import { useLoginContext } from '../LoginContext'
-import type { AppointmentsType } from '../../../shared/schemas/ZodSchemas'
+import { getFutureAppointmentsByUserId, getPastAppointmentsByUserId } from '../../api/AppointmentsAPI'
+import { AppointmentDetails } from '../../components/appointment/AppointmentDetails'
+import { AppointmentList } from '../../components/appointment/AppointmentList'
+import { useLoginContext } from '../../LoginContext'
+import { isLoggedInAndVerified } from '../../utils/Authentication'
+import type { AppointmentsType } from '../../../../shared/schemas/ZodSchemas'
+import '../../styles/routes/appointments.scss'
 
-export const Route = createFileRoute('/appointments')({
+
+export const Route = createFileRoute('/appointments/')({
   component: Appointments,
 })
 
@@ -85,6 +84,18 @@ function Appointments() {
       if (timer) clearTimeout(timer)
     }
   }, [])
+
+  useEffect(() => {
+    if (!isLoggedInAndVerified(login)) {
+      console.log("redirect")
+      navigate({
+        to: '/login',
+        search: {
+          redirect: '/appointments',
+        },
+      })
+    }
+  }, [login])
 
   // Create sorted copies (don't mutate original arrays)
   const sortedFuture = useMemo(
@@ -182,7 +193,7 @@ function Appointments() {
       <div className="appointments-tabs-wrapper">
         <div className="appointments-tabs">
           <button
-            className={`tab-button ${activeTab === 'upcoming' ? 'active' : ''}`}
+            className={`tab-button ${activeTab === `upcoming` ? `active` : ``}`}
             onClick={() => setActiveTab('upcoming')}
           >
             Bevorstehend
@@ -191,7 +202,7 @@ function Appointments() {
               ` (${dataFuture.length})`}
           </button>
           <button
-            className={`tab-button ${activeTab === 'past' ? 'active' : ''}`}
+            className={`tab-button ${activeTab === `past` ? `active` : ``}`}
             onClick={() => setActiveTab('past')}
           >
             Vergangen

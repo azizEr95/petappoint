@@ -11,8 +11,8 @@ import { PersonsCreateSchema } from '../../../../shared/schemas/ZodSchemas'
 import '../../styles/routes/personRegistration.scss'
 import { personRegistration } from '../../api/LoginAPI'
 import { useLoginContext } from '../../LoginContext'
-import type {PersonsCreateType, sexesType} from '../../../../shared/schemas/ZodSchemas';
-import type {FormEvent} from 'react';
+import type { PersonsCreateType, sexesType } from '../../../../shared/schemas/ZodSchemas';
+import type { FormEvent } from 'react';
 
 export const Route = createFileRoute('/registration/person')({
   component: PersonRegistration,
@@ -39,16 +39,34 @@ function PersonRegistration() {
   const [sex, setSex] = useState<sexesType | undefined>(undefined)
   const [errors, setErrors] = useState<{ [key: string]: string }>({})
 
+  // Password validation state
+  const [passwordRequirements, setPasswordRequirements] = useState({
+    minLength: false,
+    hasUpperCase: false,
+    hasNumber: false,
+    hasSpecialChar: false,
+  })
+
+  // Function to check password requirements
+  const checkPasswordRequirements = (pwd: string) => {
+    setPasswordRequirements({
+      minLength: pwd.length >= 8,
+      hasUpperCase: /[A-Z]/.test(pwd),
+      hasNumber: /[0-9]/.test(pwd),
+      hasSpecialChar: /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(pwd),
+    })
+  }
+
   // Helper function to calculate age
   const calculateAge = (birthDate: Date): number => {
     const today = new Date()
     let age = today.getFullYear() - birthDate.getFullYear()
     const monthDiff = today.getMonth() - birthDate.getMonth()
-    
+
     if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
       age--
     }
-    
+
     return age
   }
 
@@ -62,7 +80,7 @@ function PersonRegistration() {
     mutationFn: (person: PersonsCreateType) => personRegistration(person),
     onSuccess: (data) => {
       setLogin(data)
-      if(appointment !== undefined){
+      if (appointment !== undefined) {
         navigate({
           to: '/registration/verify-email',
           state: {
@@ -139,7 +157,7 @@ function PersonRegistration() {
     if (name === 'stadt') {
       if (!value.trim()) {
         error = 'Stadt ist erforderlich'
-      } else if (!/^[a-zA-ZäöüÄÖÜß '`-]+$/.test(value)) {
+      } else if (!/^[a-zA-ZäöüÄÖÜß '`-]+$/.test(stadt)) {
         error = 'Diese Zeichen sind in diesem Feld nicht erlaubt (Zahlen,/,.)'
       } else if (value.length < 3) {
         error = 'Stadt muss mindestens aus 3 Zeichen bestehen'
@@ -174,12 +192,12 @@ function PersonRegistration() {
         }
       }
     }
-    
+
     if (name === 'password') {
       if (!value.trim()) {
         error = 'Passwort ist erforderlich'
       } else if (value.length < 8) {
-        error = 'Passwort muss mindestens aus 6 Zeichen bestehen'
+        error = 'Passwort muss mindestens aus 8 Zeichen bestehen'
       } else if (!/[A-Z]/.test(value)) {
         error = 'Passwort muss mindestens einen Großbuchstaben enthalten'
       } else if (!/[0-9]/.test(value)) {
@@ -188,7 +206,7 @@ function PersonRegistration() {
         error = 'Passwort muss mindestens ein Sonderzeichen enthalten'
       }
     }
-    
+
     if (name === 'confirmPassword') {
       if (!value.trim()) {
         error = 'Passwort-Wiederholung ist erforderlich'
@@ -196,7 +214,7 @@ function PersonRegistration() {
         error = 'Passwörter stimmen nicht überein'
       }
     }
-    
+
     if (name === 'phone') {
       if (!value.trim()) {
         error = 'Telefon ist erforderlich'
@@ -209,14 +227,14 @@ function PersonRegistration() {
         }
       }
     }
-    
+
     if (name === 'dateOfBirth') {
       if (!value.trim()) {
         error = 'Geburtsdatum ist erforderlich'
       } else {
         const birthDate = new Date(value)
         const today = new Date()
-        
+
         // Check if date is in the future
         if (birthDate > today) {
           error = 'Geburtsdatum darf nicht in der Zukunft liegen'
@@ -228,7 +246,7 @@ function PersonRegistration() {
         }
       }
     }
-    
+
     if (name === 'sex') {
       if (!value) error = 'Geschlecht ist erforderlich'
     }
@@ -330,11 +348,11 @@ function PersonRegistration() {
         newErrors.email = 'E-Mail enthält ungültige Zeichen'
       }
     }
-    
+
     if (!password.trim()) {
       newErrors.password = 'Passwort ist erforderlich'
-    } else if (password.length < 6) {
-      newErrors.password = 'Passwort muss mindestens aus 6 Zeichen bestehen'
+    } else if (password.length < 8) {
+      newErrors.password = 'Passwort muss mindestens aus 8 Zeichen bestehen'
     } else if (!/[A-Z]/.test(password)) {
       newErrors.password =
         'Passwort muss mindestens einen Großbuchstaben enthalten'
@@ -344,13 +362,13 @@ function PersonRegistration() {
       newErrors.password =
         'Passwort muss mindestens ein Sonderzeichen enthalten'
     }
-    
+
     if (!confirmPassword.trim()) {
       newErrors.confirmPassword = 'Passwort-Wiederholung ist erforderlich'
     } else if (confirmPassword !== password) {
       newErrors.confirmPassword = 'Passwörter stimmen nicht überein'
     }
-    
+
     if (!phone.trim()) {
       newErrors.phone = 'Telefon ist erforderlich'
     } else if (!/^[+]?[0-9]+$/.test(phone)) {
@@ -362,13 +380,13 @@ function PersonRegistration() {
         newErrors.phone = 'Telefon muss mindestens aus 6 Zahlen bestehen'
       }
     }
-    
+
     if (!dateOfBirth.trim()) {
       newErrors.dateOfBirth = 'Geburtsdatum ist erforderlich'
     } else {
       const birthDate = new Date(dateOfBirth)
       const today = new Date()
-      
+
       if (birthDate > today) {
         newErrors.dateOfBirth = 'Geburtsdatum darf nicht in der Zukunft liegen'
       } else {
@@ -378,11 +396,22 @@ function PersonRegistration() {
         }
       }
     }
-    
+
     if (!sex) newErrors.sex = 'Geschlecht ist erforderlich'
 
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
+  }
+
+  const scrollToFirstError = (errorsScroll: { [key: string]: string }) => {
+    const firstErrorKey = Object.keys(errorsScroll)[0]
+    if (firstErrorKey) {
+      const errorElement = document.querySelector(`[name="${firstErrorKey}"]`)
+      if (errorElement) {
+        errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' })
+          ; (errorElement as HTMLElement).focus()
+      }
+    }
   }
 
   const handleChange = (e: any) => {
@@ -423,6 +452,7 @@ function PersonRegistration() {
         break
       case 'password':
         setPassword(value)
+        checkPasswordRequirements(value)
         // Check confirmPassword when password changes
         if (confirmPassword && value !== confirmPassword) {
           setErrors({ ...errors, confirmPassword: 'Passwörter stimmen nicht überein' })
@@ -464,6 +494,10 @@ function PersonRegistration() {
 
     if (!validateForm()) {
       console.log('Formular enthält Fehler')
+      // Zum ersten Fehler scrollen
+      setTimeout(() => {
+        scrollToFirstError(errors)
+      }, 100)
       return
     }
 
@@ -495,7 +529,7 @@ function PersonRegistration() {
     }
     mutateRegistration(person)
   }
-  
+
   return (
     <div className="auth-page">
       <div className="auth-container">
@@ -637,19 +671,56 @@ function PersonRegistration() {
                 </Form.Control.Feedback>
               </FormGroup>
 
-              <PasswordInput
-                id="CreatePersonPassword"
-                name="password"
-                value={password}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                placeholder="••••••••"
-                isInvalid={!!errors.password}
-                error={errors.password}
-                className="form-group"
-                label="Passwort *"
-                required
-              />
+              <FormGroup className="form-group">
+                <PasswordInput
+                  id="CreatePersonPassword"
+                  name="password"
+                  value={password}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  placeholder="••••••••"
+                  isInvalid={!!errors.confirmPassword}
+                  className="form-group"
+                  label="Passwort"
+                  required
+                />
+
+                {/* Passwort-Anforderungen Anzeige */}
+                <div className="password-requirements">
+                  <div className={`password-requirement ${passwordRequirements.minLength
+                      ? 'valid'
+                      : password.length > 0
+                        ? 'invalid'
+                        : 'neutral'
+                    }`}>
+                    {passwordRequirements.minLength ? '✓' : '○'} Mindestens 8 Zeichen
+                  </div>
+                  <div className={`password-requirement ${passwordRequirements.hasUpperCase
+                      ? 'valid'
+                      : password.length > 0
+                        ? 'invalid'
+                        : 'neutral'
+                    }`}>
+                    {passwordRequirements.hasUpperCase ? '✓' : '○'} Mindestens ein Großbuchstabe
+                  </div>
+                  <div className={`password-requirement ${passwordRequirements.hasNumber
+                      ? 'valid'
+                      : password.length > 0
+                        ? 'invalid'
+                        : 'neutral'
+                    }`}>
+                    {passwordRequirements.hasNumber ? '✓' : '○'} Mindestens eine Zahl
+                  </div>
+                  <div className={`password-requirement ${passwordRequirements.hasSpecialChar
+                      ? 'valid'
+                      : password.length > 0
+                        ? 'invalid'
+                        : 'neutral'
+                    }`}>
+                    {passwordRequirements.hasSpecialChar ? '✓' : '○'} Mindestens ein Sonderzeichen (!@#$%...)
+                  </div>
+                </div>
+              </FormGroup>
 
               <PasswordInput
                 id="CreatePersonConfirmPassword"
@@ -661,7 +732,7 @@ function PersonRegistration() {
                 isInvalid={!!errors.confirmPassword}
                 error={errors.confirmPassword}
                 className="form-group"
-                label="Passwort wiederholen *"
+                label="Passwort wiederholen"
                 required
               />
             </div>

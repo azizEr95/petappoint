@@ -66,6 +66,17 @@ veterinaryPracticeRouter.get("/:id/appointments/available", optionalAuthenticati
   return res.send(availableAppointments);
 });
 
+veterinaryPracticeRouter.get("/:id/appointments/booked", optionalAuthentication, async (req, res) => {
+  const id: number = PostgresIdSchema.parse(parseInt(req.params.id));
+
+  const parsedFilter = AppointmentFilterSchema.safeParse(req.query);
+  const availableAppointments: AppointmentsType[] = await appointmentService.getBookedAppointmentsForPractice(
+    id,
+    parsedFilter.data
+  );
+  return res.send(availableAppointments);
+});
+
 // TO-DO: erstellen von tierarztpraxen
 
 veterinaryPracticeRouter.post("/", requiresAuthentication, async (req, res, next) => {

@@ -1,12 +1,22 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { LoginForm } from '../components/registration/Login'
 
+type loginRedirect = {
+  redirect?: string;
+}
+
 export const Route = createFileRoute('/login')({
+  validateSearch: (
+    search: loginRedirect,
+  ): loginRedirect => {
+    return search
+  },
   component: Login,
 })
 
 function Login() {
   const navigate = useNavigate()
+  const { redirect } = Route.useSearch();
 
   return (
     <div className="auth-page">
@@ -14,6 +24,7 @@ function Login() {
         <LoginForm
           setStatusBookingProcess={undefined}
           appointment={undefined}
+          redirect={redirect}
         />
 
         <div className="auth-option-card">

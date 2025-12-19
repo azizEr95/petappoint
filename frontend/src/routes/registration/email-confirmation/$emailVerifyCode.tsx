@@ -1,25 +1,25 @@
-import { useMutation, useQuery } from '@tanstack/react-query'
-import { createFileRoute, useLocation, useNavigate } from '@tanstack/react-router'
-import { useEffect } from 'react'
-import { newToken, verifyEmail } from '../../../api/LoginAPI'
+import { useQuery } from '@tanstack/react-query'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { useEffect, useState } from 'react'
+import { verifyEmail } from '../../../api/LoginAPI'
 import { useLoginContext } from '../../../LoginContext'
 import { EmailVerificationCode } from '../../../components/registration/EmailVerificationCode'
 import '../../../styles/routes/emailVerification.scss'
-import type { LoginType } from '../../../../../shared/schemas/ZodSchemas'
+import { ChangeEmailDialog } from '../../../components/registration/ChangeEmailDialog'
+import { getPersonById } from '../../../api/PersonsAPI'
+import type { LoginType, PersonsType } from '../../../../../shared/schemas/ZodSchemas'
 
 export const Route = createFileRoute(
   '/registration/email-confirmation/$emailVerifyCode',
 )({
-  component: RouteComponent,
+  component: SuccessFailEmailVerification,
 })
 
-function RouteComponent() {
+function SuccessFailEmailVerification() {
   const { login, setLogin } = useLoginContext();
   const navigate = useNavigate();
-  const location = useLocation();
-  const appointment = location.state.appointment;
+  const [showEmailEditDialog, setShowEmailEditDialog] =  useState(false);
   const { emailVerifyCode } = Route.useParams();
-
 
   // verify email code
   const { isError: isErrorVerifyEmail, isSuccess: isSuccessVerifyEmail, isPending: isPendingVerifyEmail, data: dataVerifyEmail } = useQuery<
@@ -30,16 +30,12 @@ function RouteComponent() {
     retry: false,
   })
 
-  const { mutate: mutateNewCode } = useMutation({
-    mutationFn: () => newToken(),
-    onSuccess: () => {
-      navigate({
-        to: '/registration/verify-email',
-        state: {
-          appointment: appointment,
-        }
-      });
-    },
+  const userId = login ? login.id : -1;
+  const { data: dataUser, isSuccess: isSuccessUser } = useQuery<PersonsType>({
+    queryKey: ['person', userId],
+    queryFn: () => getPersonById(userId),
+    retry: false,
+    enabled: userId !== -1,
   })
 
   useEffect(() => { // if not verified go to start
@@ -79,7 +75,11 @@ function RouteComponent() {
 
   const handleNewCode = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    mutateNewCode();
+    setShowEmailEditDialog(true);
+  }
+
+  const hideEmailEditDialog = () => {
+    setShowEmailEditDialog(false);
   }
 
   if (isPendingVerifyEmail) {
@@ -102,12 +102,12 @@ function RouteComponent() {
             <div className="section2">Dieser Code ist ungültig.</div>
             <div className="section2">
               <button className="btn btn-primary" type="submit" onClick={handleNewCode}>
-                Neuen Code anfordern
+                Code erneut anfordern
               </button>
 
             </div>
             <EmailVerificationCode />
-
+            {isSuccessUser && showEmailEditDialog && <ChangeEmailDialog hideEmailEditDialog={hideEmailEditDialog} email={dataUser.email} />}
           </div>
         </div>
       </div>);

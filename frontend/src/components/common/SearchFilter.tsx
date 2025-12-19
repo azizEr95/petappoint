@@ -27,6 +27,7 @@ type SearchFilterProps = {
   setFilterAnimal: (animal: number | undefined) => void
   practicePage: VeterinaryPracticesType | null
   landingPage: boolean
+  setCurrentPageNumber?: (page: number) => void
 }
 
 export function SearchFilter({
@@ -37,6 +38,7 @@ export function SearchFilter({
   setFilterAnimal,
   practicePage,
   landingPage,
+  setCurrentPageNumber
 }: SearchFilterProps) {
   const navigate = useNavigate()
   const location = useLocation()
@@ -214,6 +216,7 @@ export function SearchFilter({
   }
 
   const handleSubmitFilterDialog = () => {
+    setCurrentPageNumber?.(1)
     const filteredServices = selectedServiceType.map((service) => service.value.id).sort((a,b) => a - b)
     setFilterServiceType(filteredServices)
     setFilterAnimalType(filterAnimalTypeLocal)

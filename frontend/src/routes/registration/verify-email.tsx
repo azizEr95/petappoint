@@ -1,8 +1,12 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import '../../styles/routes/_auth-shared.scss'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { useLoginContext } from '../../LoginContext'
 import { EmailVerificationCode } from '../../components/registration/EmailVerificationCode'
+import { getPersonById } from '../../api/PersonsAPI'
+import { ChangeEmailDialog } from '../../components/registration/ChangeEmailDialog'
+import type { PersonsType } from '../../../../shared/schemas/ZodSchemas'
 
 export const Route = createFileRoute('/registration/verify-email')({
   component: PendingConfirmation,
@@ -11,22 +15,31 @@ export const Route = createFileRoute('/registration/verify-email')({
 function PendingConfirmation() {
   const navigate = useNavigate();
   const { login } = useLoginContext();
-  // const location = useLocation();
-  // const user = location.state.person;
-  // const appointment = location.state.appointment;
-  
+  const [showEmailEditDialog, setShowEmailEditDialog] =  useState(false);
+
+  const userId = login ? login.id : -1;
+  const { data: dataUser, isSuccess: isSuccessUser } = useQuery<PersonsType>({
+    queryKey: ['person', userId],
+    queryFn: () => getPersonById(userId),
+    retry: false,
+    enabled: userId !== -1,
+  })
 
   useEffect(() => { // if not verified go to start
-    if(login !== false && login.verified) {
+    if (login !== false && login.verified) {
       navigate({ to: '/dashboard' });
-    } else if(login === false){
+    } else if (login === false) {
       navigate({ to: '/' });
     }
-  },[login]);
+  }, [login]);
 
-  // const handleChangeEmail = () => {
-  //   console.log('not implemented yet')
-  // }
+  const handleChangeEmail = () => {
+    setShowEmailEditDialog(true);
+  }
+
+  const hideEmailEditDialog = () => {
+    setShowEmailEditDialog(false);
+  }
 
   return (
     <div className="auth-page">
@@ -35,10 +48,10 @@ function PendingConfirmation() {
           <h1 className="auth-title">Bestätige deine E-Mail-Adresse</h1>
 
           {/* TODO: Feature folgt noch, noch nicht implentiert... */}
-          {/* {user !== undefined && (
+          {isSuccessUser && (
             <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
               <p style={{ color: '#6b7280', marginBottom: '1rem' }}>
-                Wir haben eine Bestätigungsmail an <strong>{user.email}</strong> versendet.
+                Wir haben eine Bestätigungsmail an <strong>{dataUser.email}</strong> versendet.
               </p>
               <button
                 type="button"
@@ -56,13 +69,14 @@ function PendingConfirmation() {
                 Vertippt? E-Mail-Adresse ändern
               </button>
             </div>
-          )} */}
+          )}
 
           <p style={{ textAlign: 'center', color: '#6b7280', marginBottom: '1.5rem' }}>
-            Klicke auf den Link in der E-Mail oder gib den 6-stelligen Code ein.
+            Bitte gib den 6-stelligen Code aus der Email hier ein.
           </p>
 
           <EmailVerificationCode />
+          {isSuccessUser && showEmailEditDialog && <ChangeEmailDialog hideEmailEditDialog={hideEmailEditDialog} email={dataUser.email} />}
         </div>
       </div>
     </div>
