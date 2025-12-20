@@ -250,10 +250,9 @@ export const AppointmentsSchema = z.object({
 export const AppointmentsCreateSchema = z.object({
   startTime: DateTimeSchema,
   endTime: DateTimeSchema,
-  animalId: PostgresIdSchema.nullable(),
   veterinaryId: PostgresIdSchema,
   veterinaryPracticeId: PostgresIdSchema,
-  serviceId: PostgresIdSchema.nullable(),
+  availableServiceIds: PostgresIdSchema.array().optional().default([]),
 });
 
 export const BookAppointmentSchema = z.object({
