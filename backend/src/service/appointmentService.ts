@@ -11,7 +11,7 @@ import { ResourceNotFoundError } from "../exceptions/errors/ResourceNotFoundErro
 import { ConstraintError } from "../exceptions/errors/ConstraintError";
 
 export const appointmentService = {
-  async create(data: AppointmentsCreateType): Promise<AppointmentsType> {
+  async create(data: AppointmentsCreateType): Promise<void> {
     const created = await prisma.appointment.create({
       include: {
         animal: true,
@@ -43,59 +43,16 @@ export const appointmentService = {
       data: {
         startTime: data.startTime,
         endTime: data.endTime,
-        animal: data.animalId ? { connect: { id: data.animalId } } : undefined,
         veterinarian: { connect: { id: data.veterinaryId } },
         veterinaryPractice: { connect: { id: data.veterinaryPracticeId } },
       },
     });
 
-    const availableServices = created.appointmentHasServices.flatMap((x) => x.service);
-    return {
-      id: created.id,
-      startTime: created.startTime,
-      endTime: created.endTime,
-      animal: created.animal
-        ? {
-          id: created.animal.id,
-          name: created.animal.name,
-          dateOfBirth: created.animal.dateOfBirth,
-          dateOfBirthIsExact: created.animal.dateOfBirthIsExact,
-          heightInCm: created.animal.heightInCm,
-          weightInGram: created.animal.weightInGram,
-          isCastrated: created.animal.isCastrated,
-          lifestyle: created.animal.lifestyle,
-          sex: created.animal.sex,
-          timeOfDeath: created.animal.timeOfDeath,
-          animalGroupId: created.animal.animalGroupId,
-          animalTypeId: created.animal.animalTypeId,
-        }
-        : null,
-      veterinaryPractice: {
-        id: created.veterinaryPractice.id,
-        address: created.veterinaryPractice.address,
-        email: created.veterinaryPractice.email,
-        info: created.veterinaryPractice.info,
-        infoEmail: created.veterinaryPractice.infoEmail,
-        name: created.veterinaryPractice.name,
-        phone: created.veterinaryPractice.phone,
-        website: created.veterinaryPractice.website,
-      },
-      veterinary: {
-        id: created.veterinarian.id,
-        firstName: created.veterinarian.person.firstName,
-        lastName: created.veterinarian.person.lastName,
-        infoEmail: created.veterinarian.infoEmail,
-        veterinaryPracticeId: created.veterinaryPractice.id,
-      },
-      service: created.service
-        ? {
-          id: created.service.id,
-          name: created.service.name,
-        }
-        : null,
-      availableServices: created.service ? availableServices : [],
-      notes: created.notes,
-    };
+    const appointmentId = created.id;
+    await prisma.appointmentHasService.createMany({
+      data: data.availableServiceIds.map(x => ({serviceId: x, appointmentId: appointmentId})),
+      skipDuplicates: true
+    });
   },
 
   async getById(id: number): Promise<AppointmentsType> {

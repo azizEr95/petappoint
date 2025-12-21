@@ -1,6 +1,6 @@
 import express from "express";
 import { appointmentService } from "../service/appointmentService";
-import { AppointmentsType, BookAppointmentSchema, PostgresIdSchema } from "vetilib-shared/schemas/ZodSchemas";
+import { AppointmentsCreateSchema, AppointmentsType, BookAppointmentSchema, PostgresIdSchema } from "vetilib-shared/schemas/ZodSchemas";
 import { checkVerified, optionalAuthentication, requiresAuthentication } from "./authentication";
 import { AuthorizationError } from "../exceptions/errors/AuthorizationError";
 import { animalService } from "../service/animalService";
@@ -113,4 +113,11 @@ appointmentRouter.patch("/:id/notes", requiresAuthentication, checkVerified, asy
   const updated = await appointmentService.updateNotes(appointmentId, notes || null);
 
   res.status(200).send(updated);
+});
+
+// TODO: Check authorization
+appointmentRouter.post('/', async (req, res) => {
+  const appointmentCreationData = AppointmentsCreateSchema.parse(req.body);
+  await appointmentService.create(appointmentCreationData);
+  return res.sendStatus(201);
 });
