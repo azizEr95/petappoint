@@ -126,13 +126,13 @@ function VeterinaryPractice() {
 
       <div className="praxis-layout">
         <div className="praxis-info-sidebar">
-          {practice.info && (
-            <div className="info-description">
+          <div className="info-description">
+            {practice.info && <>
               <p>{practice.info}</p>
               <br />
-              <p>Tierarten: {animalTypesString}</p>
-            </div>
-          )}
+            </>}
+            <p>Tierarten: {animalTypesString}</p>
+          </div>
 
           <div className="info-section">
             <div className="section-title">

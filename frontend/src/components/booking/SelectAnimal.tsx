@@ -55,8 +55,8 @@ export function SelectAnimal({
     enabled: userId !== undefined,
   })
 
-    // get all Animaltypes
-    const { isSuccess: isSuccessAnimalType, data: dataAnimalType } = useQuery<
+  // get all Animaltypes
+  const { isSuccess: isSuccessAnimalType, data: dataAnimalType } = useQuery<
     Array<AnimalTypeType>
   >({
     queryKey: ['allAnimalTypes'],
@@ -65,14 +65,14 @@ export function SelectAnimal({
   })
 
   useEffect(() => {
-    if(isSuccessAnimalType){
+    if (isSuccessAnimalType) {
       const x = dataAnimalType.filter((animalType) => {
         const foundAnimalType = filteredAnimalTypeId.find((y) => {
           if (animalType.id === y) {
             return true
           }
         })
-        if(foundAnimalType !== undefined){
+        if (foundAnimalType !== undefined) {
           return true
         } else {
           return false
@@ -80,7 +80,7 @@ export function SelectAnimal({
       })
       setFilterAnimalType(x);
     }
-  },[isSuccessAnimalType, dataAnimalType, filteredAnimalTypeId])
+  }, [isSuccessAnimalType, dataAnimalType, filteredAnimalTypeId])
 
   useEffect(() => {
     if (isSuccessAnimalUser) {
@@ -97,7 +97,7 @@ export function SelectAnimal({
             return true
           }
         })
-        if(foundSelect !== undefined){
+        if (foundSelect !== undefined) {
           return true
         } else {
           return false
@@ -109,7 +109,7 @@ export function SelectAnimal({
             return true
           }
         })
-        if(notFoundSelect !== undefined){
+        if (notFoundSelect !== undefined) {
           return false
         } else {
           return true
@@ -165,8 +165,8 @@ export function SelectAnimal({
   animals = dataAnimalUser
 
   let animaltypesString = ""
-  for(const type of filterAnimalType ?? []){
-    if(animaltypesString !== "")  {
+  for (const type of filterAnimalType ?? []) {
+    if (animaltypesString !== "") {
       animaltypesString = animaltypesString + ", "
     }
     animaltypesString = animaltypesString + type.name
@@ -175,7 +175,8 @@ export function SelectAnimal({
   return (
     <>
       <div className="select-animal">
-        <h5 className="section-title">Tier auswählen</h5>
+        <h5 className="section-title">Tier auswählen:</h5>
+        <div className='animaltypes-string'>({animaltypesString})</div>
         <div className="animal-list">
           {selectableAnimals.map((animal) => (
             <div

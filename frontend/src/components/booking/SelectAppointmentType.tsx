@@ -58,7 +58,7 @@ export function SelectAppointmentType({
     } else {
       setAppointmentServices(foundFilterServices)
     }
-  }, [isSuccessServices, dataServices, isErrorServices])
+  }, [isSuccessServices, dataServices, isErrorServices, foundFilterServices])
 
   useEffect(() => {
     if (

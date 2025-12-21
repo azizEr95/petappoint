@@ -68,11 +68,11 @@ export function VeterinaryPracticeCard({
               {practice.name}
               <FavoritePractice practice={practice} />
             </h3>
-            {practice.info && (<>
-              <p className="praxis-description">{practice.info}</p>
+            <>
+              {practice.info && <p className="praxis-description">{practice.info}</p>}
               {animalTypesString !== "" && <p>Tierarten: {animalTypesString}</p>}
             </>
-            )}
+
 
             <div className="praxis-details">
               <div className="detail-item">
