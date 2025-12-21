@@ -197,7 +197,7 @@ function BookingComponent() {
         setFoundFilteredServices(dataAppointment.availableServices);
       }
     }
-  }, [serviceType, isSuccessAppointment, dataAppointment, selectedService, isSuccessAllServices, dataAllServices, isSuccessServicesVeterinary, dataServicesVeterinary, dataAllServices])
+  }, [serviceType, isSuccessAppointment, dataAppointment, selectedService, isSuccessAllServices, dataAllServices, isSuccessServicesVeterinary, dataServicesVeterinary, dataAllServices, selectedAnimal])
 
   useEffect(() => {
     if (isPendingPractice || isPendingAppointment) {
@@ -234,11 +234,11 @@ function BookingComponent() {
   }, [isSuccessAnimal, dataAnimal])
 
   useEffect(() => {
-    if (status === StatusBooking.selectAnimal && selectedAnimal !== null && isSuccessAppointment && isSuccessPractice) {
-      // if animal was selected in filter book appointment immediately
+    if (status === StatusBooking.selectAppointmentType && selectedAppointmentType !== null && isSuccessAppointment && isSuccessPractice) {
+      // if service was selected in filter book appointment immediately
       handleBookAppoinment()
     }
-  }, [status, isSuccessAppointment, isSuccessPractice])
+  }, [status, isSuccessAppointment, isSuccessPractice, selectedService])
 
   const handleClickBack = () => {
     // einmal auf der seite zurueck

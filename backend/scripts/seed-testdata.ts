@@ -328,37 +328,7 @@ async function seedTestdata() {
           website: "https://www.alstertier.de",
           info: "Moderne Tierklinik mit 24h-Notdienst.",
           addressId: 2,
-        },
-        {
-          name: "Tiergesundheit München",
-          phone: "+49 89 111222",
-          infoEmail: "info@muenchentiere.de",
-          email: "praxis@muenchentiere.de",
-          password: "$2b$10$3aziu8mKSUNiJ7dGCGcKd.FZeiOSW2Nw5Ml0w7DhGWZtE3nR2Z6b2",
-          website: null,
-          info: "Praxis für Haustiere aller Art.",
-          addressId: 3,
-        },
-        {
-          name: "VetKöln - Tiermedizin am Rhein",
-          phone: "+49 221 333444",
-          infoEmail: "info@vetkoeln.de",
-          email: "praxis@vetkoeln.de",
-          password: "$2b$10$3aziu8mKSUNiJ7dGCGcKd.FZeiOSW2Nw5Ml0w7DhGWZtE3nR2Z6b2",
-          website: "https://www.vetkoeln.de",
-          info: "Spezialisiert auf Kleintiere und Exoten.",
-          addressId: 4,
-        },
-        {
-          name: "FrankfurtVet - Zentrum für Tiermedizin",
-          phone: "+49 69 555666",
-          infoEmail: "info@frankfurtvet.de",
-          email: "kontakt@frankfurtvet.de",
-          password: "$2b$10$3aziu8mKSUNiJ7dGCGcKd.FZeiOSW2Nw5Ml0w7DhGWZtE3nR2Z6b2",
-          website: "https://www.frankfurtvet.de",
-          info: "Tierärztliches Zentrum mit Chirurgie und Diagnostik.",
-          addressId: 5,
-        },
+        }
       ],
     });
 
@@ -366,7 +336,7 @@ async function seedTestdata() {
       data: [
         { id: 4, infoEmail: "maria@arzt.de", fk_veterinarypracticeid: 1 },
         { id: 2, infoEmail: "daniel@arzt.de", fk_veterinarypracticeid: 2 },
-        { id: 1, infoEmail: "hi@gmx.de", fk_veterinarypracticeid: 4 },
+        { id: 1, infoEmail: "hi@gmx.de", fk_veterinarypracticeid: 1 },
       ],
     });
 
@@ -390,8 +360,6 @@ async function seedTestdata() {
       data: [
         { personId: 1, veterinaryPracticeId: 1 },
         { personId: 2, veterinaryPracticeId: 2 },
-        { personId: 1, veterinaryPracticeId: 3 },
-        { personId: 4, veterinaryPracticeId: 3 },
       ],
     });
 

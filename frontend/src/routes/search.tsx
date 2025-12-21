@@ -30,13 +30,10 @@ function SearchComponent() {
   const { name, address, animalType, serviceType } = Route.useSearch()
   // serviceType or animalType are an empty string if the route was called from outside
    
-  const [filterServiceType, setFilterServiceType] = useState<Array<number>>(
-    stringToArray(serviceType.toString()),
-  )
-   
-  const [filterAnimalType, setFilterAnimalType] = useState<Array<number>>(
-    stringToArray(animalType.toString()),
-  )
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+  const [filterServiceType, setFilterServiceType] = useState<Array<number>>(serviceType !== undefined ? stringToArray(serviceType.toString()) : [])
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+  const [filterAnimalType, setFilterAnimalType] = useState<Array<number>>(animalType !== undefined ? stringToArray(animalType.toString()) : [])
   const [totalResults, setTotalResults] = useState<number>(0)
   const [filterAnimal, setFilterAnimal] = useState<number | undefined>(
     undefined,

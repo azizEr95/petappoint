@@ -31,15 +31,15 @@ async function seedAppointments() {
 
     const appointments: any[] = [];
     const now = new Date();
-    const appointmentHasService: any[] = [];
 
     // Generate ~1000 appointments across all practices
     // Even index (0,2,4...): appointments from tomorrow
     // Odd index (1,3,5...): appointments start in 2 weeks
     for (const [index, practice] of practices.entries()) {
       const practiceVets = vets.filter((v) => v.fk_veterinarypracticeid === practice.id);
-      const practiceServices = services;
-      const availableVets = practiceVets.length > 0 ? practiceVets : vets;
+      if(practiceVets.length === 0) {
+        continue;
+      }
 
       // Odd practices: start appointments in 2 weeks
       const startOffset = index % 2 === 1 ? 14 : 1;
@@ -68,7 +68,7 @@ async function seedAppointments() {
           const endTime = new Date(startTime);
           endTime.setMinutes(endTime.getMinutes() + 30 + Math.floor(Math.random() * 3) * 15);
 
-          const vet = availableVets[Math.floor(Math.random() * availableVets.length)];
+          const vet = practiceVets[Math.floor(Math.random() * practiceVets.length)];
 
           appointments.push({
             startTime,
@@ -87,20 +87,38 @@ async function seedAppointments() {
     const created = await prisma.appointment.createMany({
       data: appointments,
     });
-    const appointmentIDs = await prisma.appointment.findMany({
-      select: { id: true },
+    // Fetch appointments with their veterinaryId
+    const appointmentIDsWithVet = await prisma.appointment.findMany({
+      select: { id: true, veterinaryId: true },
     });
 
-    appointmentIDs.forEach((x) => {
-      appointmentHasService.push({
-        // add service for every appointment
-        appointmentId: x.id,
-        serviceId: 1,
+    const vetServices = await prisma.veterinaryHasService.findMany({
+      select: { veterinaryId: true, serviceId: true },
+    });
+    const vetServiceMap = new Map<number, number[]>();
+    for (const { veterinaryId, serviceId } of vetServices) {
+      const arr = vetServiceMap.get(veterinaryId) ?? [];
+      arr.push(serviceId);
+      vetServiceMap.set(veterinaryId, arr);
+    }
+
+    // Create appointment_has_service links for all services a vet offers
+    const appointmentHasService: { appointmentId: number, serviceId: number }[] = [];
+    for (const appt of appointmentIDsWithVet) {
+      const serviceIds = vetServiceMap.get(appt.veterinaryId) ?? [];
+      for (const sId of serviceIds) {
+        appointmentHasService.push({
+          appointmentId: appt.id,
+          serviceId: sId,
+        });
+      }
+    }
+
+    if (appointmentHasService.length > 0) {
+      await prisma.appointmentHasService.createMany({
+        data: appointmentHasService,
       });
-    });
-    const created2 = await prisma.appointmentHasService.createMany({
-      data: appointmentHasService,
-    });
+    }
 
     console.log(`✅ Created ${created.count} new appointments`);
     console.log(

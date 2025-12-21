@@ -372,56 +372,12 @@ async function seedPractices() {
 
     console.log(`✓ Added ${vetServices.length} service assignments`);
 
-    // veterinary_has_invitation (multi-practice)
-    const invitations: Array<{
-      veterinaryId: number;
-      veterinaryPracticeId: number;
-      dateOfInvitation: Date;
-    }> = [];
-
-    let multiPracticeCount = 0;
-
-    for (const vet of allVeterinarians) {
-      // 20-30% chance of working at multiple practices
-      if (Math.random() > 0.75) {
-        const sameCityPractices = practicesByCity.get(vet.city) || [];
-        const otherPractices = sameCityPractices.filter((p) => p !== vet.practiceId);
-
-        if (otherPractices.length > 0) {
-          // Add 1-2 additional practices
-          const additionalCount = Math.min(Math.floor(Math.random() * 2) + 1, otherPractices.length);
-
-          const additionalPractices = getRandomSubset(otherPractices, additionalCount, additionalCount);
-
-          additionalPractices.forEach((practiceId) => {
-            invitations.push({
-              veterinaryId: vet.id,
-              veterinaryPracticeId: practiceId,
-              dateOfInvitation: getRandomDateInLastMonths(6),
-            });
-          });
-
-          multiPracticeCount++;
-        }
-      }
-    }
-
-    if (invitations.length > 0) {
-      await prisma.veterinaryHasInvitation.createMany({
-        data: invitations,
-        skipDuplicates: true,
-      });
-    }
-
-    console.log(`✓ Added ${invitations.length} multi-practice assignments`);
-
     // ============================
     // Summary
     // ============================
     console.log("\n✅ Seeding complete!");
     console.log(`   🏥 Practices: ${createdPractices.length}`);
     console.log(`   👨‍⚕️ veterinarians: ${allVeterinarians.length}`);
-    console.log(`   👥 Multi-practice vets: ${multiPracticeCount}`);
     console.log(`   🐾 Animal type assignments: ${treatableTypes.length}`);
     console.log(`   💉 Service assignments: ${vetServices.length}`);
   } catch (error) {
