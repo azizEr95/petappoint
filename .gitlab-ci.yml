@@ -1,31 +1,31 @@
 image: node:latest
 
 stages:
-  - build-backend
-  - build-frontend
+  # - build-backend
+  # - build-frontend
   #- test
   - e2e-test
   - deploy
 
-build-backend:
-  stage: build-backend
-  before_script:
-    - cd backend
-  script:
-    - npm install
-  cache:
-    paths:
-      - backend/node_modules/
+# build-backend:
+#   stage: build-backend
+#   before_script:
+#     - cd backend
+#   script:
+#     - npm install
+#   cache:
+#     paths:
+#       - backend/node_modules/
 
-build-frontend:
-  stage: build-frontend
-  before_script:
-    - cd frontend
-  script:
-    - npm install
-  cache:
-    paths:
-      - frontend/node_modules/
+# build-frontend:
+#   stage: build-frontend
+#   before_script:
+#     - cd frontend
+#   script:
+#     - npm install
+#   cache:
+#     paths:
+#       - frontend/node_modules/
 
 #test:
 #  stage: test
@@ -68,9 +68,6 @@ e2e-tests:
     BREVO_API_KEY: "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"
     JWT_SECRET: "mausibausi"
     JWT_TTL: 900
-  dependencies:
-    - build-backend
-    - build-frontend
   before_script:
     - npm install --prefix backend
     - npm install --prefix frontend
