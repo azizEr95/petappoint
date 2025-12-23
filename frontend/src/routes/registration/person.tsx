@@ -5,12 +5,13 @@ import {
 } from '@tanstack/react-router'
 import { useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
-import { Form, FormGroup, Alert } from 'react-bootstrap'
+import { Alert, Form, FormGroup } from 'react-bootstrap'
 import { PasswordInput } from '../../components/common/PasswordInput'
 import { PersonsCreateSchema } from '../../../../shared/schemas/ZodSchemas'
 import '../../styles/routes/personRegistration.scss'
 import { personRegistration } from '../../api/LoginAPI'
 import { useLoginContext } from '../../LoginContext'
+import { scrollToFirstError } from '../../utils/Registration'
 import type { PersonsCreateType, sexesType } from '../../../../shared/schemas/ZodSchemas';
 import type { FormEvent } from 'react';
 
@@ -22,7 +23,6 @@ function PersonRegistration() {
   const navigate = useNavigate()
   const location = useLocation()
   const appointment = location.state.appointment
-  // const selectedService = location.state.selectedService
   const { setLogin } = useLoginContext()
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
@@ -102,360 +102,187 @@ function PersonRegistration() {
     },
   })
 
-  const validateField = (name: string, value: string) => {
-    let error = ''
+  const handleBlur = (e: any) => {
+    const name = e.target.name;
+    validateForm(name);
+  }
 
-    if (name === 'firstName') {
-      if (!value.trim()) {
-        error = 'Vorname ist erforderlich'
-      } else if (!/^[a-zA-ZäöüÄÖÜß '`-]+$/.test(value)) {
-        error = 'Diese Zeichen sind in diesem Feld nicht erlaubt (Zahlen,/,.)'
-      } else if (value.length < 2) {
-        error = 'Vorname muss mindestens aus 2 Zeichen bestehen'
-      } else if (value.length > 60) {
-        error = 'Vorname darf maximal 60 Zeichen lang sein'
+  const validateForm = (nameFormField: string | null) => {
+    const newErrors: { [key: string]: string } = { ...errors };
+
+    if (nameFormField === "firstName" || nameFormField === null) {
+      if (!firstName.trim()) {
+        newErrors.firstName = 'Vorname ist erforderlich';
+      } else if (!/^[a-zA-ZäöüÄÖÜß '`-]+$/.test(firstName)) {
+        newErrors.firstName =
+          'Diese Zeichen sind in diesem Feld nicht erlaubt (Zahlen,/,.)';
+      } else if (firstName.length < 2) {
+        newErrors.firstName = 'Vorname muss mindestens aus 2 Zeichen bestehen';
+      } else if (firstName.length > 60) {
+        newErrors.firstName = 'Vorname darf maximal 60 Zeichen lang sein';
       }
     }
 
-    if (name === 'lastName') {
-      if (!value.trim()) {
-        error = 'Nachname ist erforderlich'
-      } else if (!/^[a-zA-ZäöüÄÖÜß '`-]+$/.test(value)) {
-        error = 'Diese Zeichen sind in diesem Feld nicht erlaubt (Zahlen,/,.)'
-      } else if (value.length < 2) {
-        error = 'Nachname muss mindestens aus 2 Zeichen bestehen'
-      } else if (value.length > 60) {
-        error = 'Nachname darf maximal 60 Zeichen lang sein'
+    if (nameFormField === "lastName" || nameFormField === null) {
+      if (!lastName.trim()) {
+        newErrors.lastName = 'Nachname ist erforderlich';
+      } else if (!/^[a-zA-ZäöüÄÖÜß '`-]+$/.test(lastName)) {
+        newErrors.lastName =
+          'Diese Zeichen sind in diesem Feld nicht erlaubt (Zahlen,/,.)';
+      } else if (lastName.length < 2) {
+        newErrors.lastName = 'Nachname muss mindestens aus 2 Zeichen bestehen';
+      } else if (lastName.length > 60) {
+        newErrors.lastName = 'Nachname darf maximal 60 Zeichen lang sein';
       }
     }
 
-    if (name === 'strasse') {
-      if (!value.trim()) {
-        error = 'Straße ist erforderlich'
-      } else if (
-        !/^(?=.*[a-zA-ZäöüÄÖÜß0-9])[a-zA-ZäöüÄÖÜß0-9 '`.-]+$/.test(value)
-      ) {
-        error =
-          'Straße muss mindestens einen Buchstaben oder eine Zahl enthalten'
-      } else if (value.length < 3) {
-        error = 'Straße muss mindestens aus 3 Zeichen bestehen'
-      } else if (value.length > 80) {
-        error = 'Straße darf maximal 80 Zeichen lang sein'
+    if (nameFormField === "strasse" || nameFormField === null) {
+      if (!strasse.trim()) {
+        newErrors.strasse = 'Straße ist erforderlich';
+      } else if (!/^(?=.*[a-zA-ZäöüÄÖÜß0-9])[a-zA-ZäöüÄÖÜß0-9 '`.-]+$/.test(strasse)) {
+        newErrors.strasse =
+          'Straße muss mindestens einen Buchstaben oder eine Zahl enthalten';
+      } else if (strasse.length < 3) {
+        newErrors.strasse = 'Straße muss mindestens aus 3 Zeichen bestehen';
+      } else if (strasse.length > 80) {
+        newErrors.strasse = 'Straße darf maximal 80 Zeichen lang sein';
       }
     }
 
-    if (name === 'hausnr') {
-      if (!value.trim()) {
-        error = 'Hausnummer ist erforderlich'
-      } else if (!/^(?=.*[0-9])[a-zA-Z0-9]+$/.test(value)) {
-        error = 'Hausnummer muss mindestens eine Zahl enthalten'
-      } else if (value.length > 10) {
-        error = 'Hausnummer darf maximal 10 Zeichen lang sein'
+    if (nameFormField === "hausnr" || nameFormField === null) {
+      if (!hausnr.trim()) {
+        newErrors.hausnr = 'Hausnummer ist erforderlich';
+      } else if (!/^(?=.*[0-9])[a-zA-Z0-9]+$/.test(hausnr)) {
+        newErrors.hausnr = 'Hausnummer muss mindestens eine Zahl enthalten';
+      } else if (hausnr.length > 10) {
+        newErrors.hausnr = 'Hausnummer darf maximal 10 Zeichen lang sein';
       }
     }
 
-    if (name === 'plz') {
-      if (!value.trim()) {
-        error = 'Postleitzahl ist erforderlich'
-      } else if (!/^(?=.*[0-9])[a-zA-Z0-9]+$/.test(value)) {
-        error = 'Postleitzahl muss mindestens eine Zahl enthalten'
-      } else if (value.length < 3) {
-        error = 'Postleitzahl muss mindestens aus 3 Zeichen bestehen'
-      } else if (value.length > 12) {
-        error = 'Postleitzahl darf maximal 12 Zeichen lang sein'
+    if (nameFormField === "plz" || nameFormField === null) {
+      if (!plz.trim()) {
+        newErrors.plz = 'Postleitzahl ist erforderlich';
+      } else if (!/^(?=.*[0-9])[a-zA-Z0-9]+$/.test(plz)) {
+        newErrors.plz = 'Postleitzahl muss mindestens eine Zahl enthalten';
+      } else if (plz.length < 3) {
+        newErrors.plz = 'Postleitzahl muss mindestens aus 3 Zeichen bestehen';
+      } else if (plz.length > 12) {
+        newErrors.plz = 'Postleitzahl darf maximal 12 Zeichen lang sein';
       }
     }
 
-    if (name === 'stadt') {
-      if (!value.trim()) {
-        error = 'Stadt ist erforderlich'
-      } else if (!/^[a-zA-ZäöüÄÖÜß '`-]+$/.test(value)) {
-        error = 'Diese Zeichen sind in diesem Feld nicht erlaubt (Zahlen,/,.)'
-      } else if (value.length < 3) {
-        error = 'Stadt muss mindestens aus 3 Zeichen bestehen'
-      } else if (value.length > 60) {
-        error = 'Stadt darf maximal 60 Zeichen lang sein'
+    if (nameFormField === "stadt" || nameFormField === null) {
+      if (!stadt.trim()) {
+        newErrors.stadt = 'Stadt ist erforderlich';
+      } else if (!/^[a-zA-ZäöüÄÖÜß '`-]+$/.test(stadt)) {
+        newErrors.stadt =
+          'Diese Zeichen sind in diesem Feld nicht erlaubt (Zahlen,/,.)';
+      } else if (stadt.length < 3) {
+        newErrors.stadt = 'Stadt muss mindestens aus 3 Zeichen bestehen';
+      } else if (stadt.length > 60) {
+        newErrors.stadt = 'Stadt darf maximal 60 Zeichen lang sein';
       }
     }
 
-    if (name === 'land') {
-      if (!value.trim()) {
-        error = 'Land ist erforderlich'
-      } else if (!/^[a-zA-ZäöüÄÖÜß '`-]+$/.test(value)) {
-        error = 'Diese Zeichen sind in diesem Feld nicht erlaubt (Zahlen,/,.)'
-      } else if (value.length < 3) {
-        error = 'Land muss mindestens aus 3 Zeichen bestehen'
-      } else if (value.length > 150) {
-        error = 'Land darf maximal 150 Zeichen lang sein'
+    if (nameFormField === "land" || nameFormField === null) {
+      if (!land.trim()) {
+        newErrors.land = 'Land ist erforderlich';
+      } else if (!/^[a-zA-ZäöüÄÖÜß '`-]+$/.test(land)) {
+        newErrors.land =
+          'Diese Zeichen sind in diesem Feld nicht erlaubt (Zahlen,/,.)';
+      } else if (land.length < 3) {
+        newErrors.land = 'Land muss mindestens aus 3 Zeichen bestehen';
+      } else if (land.length > 150) {
+        newErrors.land = 'Land darf maximal 150 Zeichen lang sein';
       }
     }
 
-    if (name === 'email') {
-      if (!value.trim()) {
-        error = 'E-Mail ist erforderlich'
-      } else if (value.length > 100) {
-        error = 'E-Mail darf maximal 100 Zeichen lang sein'
-      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value)) {
-        error = 'Bitte geben Sie eine gültige E-Mail-Adresse ein'
-      } else if ((value.match(/@/g) || []).length !== 1) {
-        error = 'E-Mail darf nur ein @ enthalten'
+    if (nameFormField === "email" || nameFormField === null) {
+      if (!email.trim()) {
+        newErrors.email = 'E-Mail ist erforderlich';
+      } else if (email.length > 100) {
+        newErrors.email = 'E-Mail darf maximal 100 Zeichen lang sein';
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
+        newErrors.email = 'Bitte geben Sie eine gültige E-Mail-Adresse ein';
+      } else if ((email.match(/@/g) || []).length !== 1) {
+        newErrors.email = 'E-Mail darf nur ein @ enthalten';
       } else {
-        const beforeAt = value.split('@')[0]
+        const beforeAt = email.split('@')[0];
         if (!/[a-zA-Z]/.test(beforeAt)) {
-          error = 'E-Mail muss vor dem @ mindestens einen Buchstaben enthalten'
-        } else if (
-          !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value)
-        ) {
-          error = 'E-Mail enthält ungültige Zeichen'
+          newErrors.email =
+            'E-Mail muss vor dem @ mindestens einen Buchstaben enthalten';
+        } else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
+          newErrors.email = 'E-Mail enthält ungültige Zeichen';
         }
       }
     }
 
-    if (name === 'password') {
-      if (!value.trim()) {
-        error = 'Passwort ist erforderlich'
-      } else if (value.length < 8) {
-        error = 'Passwort muss mindestens aus 8 Zeichen bestehen'
-      } else if (!/[A-Z]/.test(value)) {
-        error = 'Passwort muss mindestens einen Großbuchstaben enthalten'
-      } else if (!/[0-9]/.test(value)) {
-        error = 'Passwort muss mindestens eine Zahl enthalten'
-      } else if (!/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(value)) {
-        error = 'Passwort muss mindestens ein Sonderzeichen enthalten'
+    if (nameFormField === "password" || nameFormField === null) {
+      if (!password.trim()) {
+        newErrors.password = 'Passwort ist erforderlich';
+      } else if (password.length < 8) {
+        newErrors.password = 'Passwort muss mindestens aus 8 Zeichen bestehen';
+      } else if (!/[A-Z]/.test(password)) {
+        newErrors.password =
+          'Passwort muss mindestens einen Großbuchstaben enthalten';
+      } else if (!/[0-9]/.test(password)) {
+        newErrors.password = 'Passwort muss mindestens eine Zahl enthalten';
+      } else if (!/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password)) {
+        newErrors.password =
+          'Passwort muss mindestens ein Sonderzeichen enthalten';
       }
     }
 
-    if (name === 'confirmPassword') {
-      if (!value.trim()) {
-        error = 'Passwort-Wiederholung ist erforderlich'
-      } else if (value !== password) {
-        error = 'Passwörter stimmen nicht überein'
+    if (nameFormField === "confirmPassword" || nameFormField === null) {
+      if (!confirmPassword.trim()) {
+        newErrors.confirmPassword = 'Passwort-Wiederholung ist erforderlich';
+      } else if (confirmPassword !== password) {
+        newErrors.confirmPassword = 'Passwörter stimmen nicht überein';
       }
     }
 
-    if (name === 'phone') {
-      if (!value.trim()) {
-        error = 'Telefon ist erforderlich'
-      } else if (!/^[+]?[0-9]+$/.test(value)) {
-        error = 'Telefon darf nur Zahlen und optional ein + am Anfang enthalten'
+    if (nameFormField === "phone" || nameFormField === null) {
+      if (!phone.trim()) {
+        newErrors.phone = 'Telefon ist erforderlich';
+      } else if (!/^[+]?[0-9]+$/.test(phone)) {
+        newErrors.phone =
+          'Telefon darf nur Zahlen und optional ein + am Anfang enthalten';
       } else {
-        const numbers = value.replace('+', '')
+        const numbers = phone.replace('+', '')
         if (numbers.length < 5) {
-          error = 'Telefon muss mindestens aus 5 Zahlen bestehen'
+          newErrors.phone = 'Telefon muss mindestens aus 5 Zahlen bestehen';
         } else if (numbers.length > 20) {
-          error = 'Telefon darf maximal 20 Zeichen lang sein'
+          newErrors.phone = 'Telefon darf maximal 20 Zeichen lang sein';
         }
       }
     }
 
-    if (name === 'dateOfBirth') {
-      if (!value.trim()) {
-        error = 'Geburtsdatum ist erforderlich'
+    if (nameFormField === "dateOfBirth" || nameFormField === null) {
+      if (!dateOfBirth.trim()) {
+        newErrors.dateOfBirth = 'Geburtsdatum ist erforderlich';
       } else {
-        const birthDate = new Date(value)
-        const today = new Date()
+        const birthDate = new Date(dateOfBirth);
+        const today = new Date();
 
-        // Check if date is in the future
         if (birthDate > today) {
-          error = 'Geburtsdatum darf nicht in der Zukunft liegen'
+          newErrors.dateOfBirth = 'Geburtsdatum darf nicht in der Zukunft liegen';
         } else {
-          const age = calculateAge(birthDate)
+          const age = calculateAge(birthDate);
           if (age < 14) {
-            error = 'Sie müssen mindestens 14 Jahre alt sein'
+            newErrors.dateOfBirth = 'Sie müssen mindestens 14 Jahre alt sein';
           } else if (age > 120) {
-            error = 'Das Alter darf nicht mehr als 120 Jahre betragen'
+            newErrors.dateOfBirth = 'Das Alter darf nicht mehr als 120 Jahre betragen';
           }
         }
       }
     }
 
-    if (name === 'sex') {
-      if (!value) error = 'Geschlecht ist erforderlich'
+    if (nameFormField === "sex" || nameFormField === null) {
+      if (!sex) newErrors.sex = 'Geschlecht ist erforderlich';
     }
-
-    return error
-  }
-
-  const handleBlur = (e: any) => {
-    const name = e.target.name
-    const value = e.target.value
-
-    const error = validateField(name, value)
-
-    if (error) {
-      setErrors({ ...errors, [name]: error })
-    } else {
-      const newErrors = { ...errors }
-      delete newErrors[name]
-      setErrors(newErrors)
-    }
-  }
-
-  const validateForm = () => {
-    const newErrors: { [key: string]: string } = {}
-
-    if (!firstName.trim()) {
-      newErrors.firstName = 'Vorname ist erforderlich'
-    } else if (!/^[a-zA-ZäöüÄÖÜß '`-]+$/.test(firstName)) {
-      newErrors.firstName =
-        'Diese Zeichen sind in diesem Feld nicht erlaubt (Zahlen,/,.)'
-    } else if (firstName.length < 2) {
-      newErrors.firstName = 'Vorname muss mindestens aus 2 Zeichen bestehen'
-    } else if (firstName.length > 60) {
-      newErrors.firstName = 'Vorname darf maximal 60 Zeichen lang sein'
-    }
-
-    if (!lastName.trim()) {
-      newErrors.lastName = 'Nachname ist erforderlich'
-    } else if (!/^[a-zA-ZäöüÄÖÜß '`-]+$/.test(lastName)) {
-      newErrors.lastName =
-        'Diese Zeichen sind in diesem Feld nicht erlaubt (Zahlen,/,.)'
-    } else if (lastName.length < 2) {
-      newErrors.lastName = 'Nachname muss mindestens aus 2 Zeichen bestehen'
-    } else if (lastName.length > 60) {
-      newErrors.lastName = 'Nachname darf maximal 60 Zeichen lang sein'
-    }
-
-    if (!strasse.trim()) {
-      newErrors.strasse = 'Straße ist erforderlich'
-    } else if (
-      !/^(?=.*[a-zA-ZäöüÄÖÜß0-9])[a-zA-ZäöüÄÖÜß0-9 '`.-]+$/.test(strasse)
-    ) {
-      newErrors.strasse =
-        'Straße muss mindestens einen Buchstaben oder eine Zahl enthalten'
-    } else if (strasse.length < 3) {
-      newErrors.strasse = 'Straße muss mindestens aus 3 Zeichen bestehen'
-    } else if (strasse.length > 80) {
-      newErrors.strasse = 'Straße darf maximal 80 Zeichen lang sein'
-    }
-
-    if (!hausnr.trim()) {
-      newErrors.hausnr = 'Hausnummer ist erforderlich'
-    } else if (!/^(?=.*[0-9])[a-zA-Z0-9]+$/.test(hausnr)) {
-      newErrors.hausnr = 'Hausnummer muss mindestens eine Zahl enthalten'
-    } else if (hausnr.length > 10) {
-      newErrors.hausnr = 'Hausnummer darf maximal 10 Zeichen lang sein'
-    }
-
-    if (!plz.trim()) {
-      newErrors.plz = 'Postleitzahl ist erforderlich'
-    } else if (!/^(?=.*[0-9])[a-zA-Z0-9]+$/.test(plz)) {
-      newErrors.plz = 'Postleitzahl muss mindestens eine Zahl enthalten'
-    } else if (plz.length < 3) {
-      newErrors.plz = 'Postleitzahl muss mindestens aus 3 Zeichen bestehen'
-    } else if (plz.length > 12) {
-      newErrors.plz = 'Postleitzahl darf maximal 12 Zeichen lang sein'
-    }
-
-    if (!stadt.trim()) {
-      newErrors.stadt = 'Stadt ist erforderlich'
-    } else if (!/^[a-zA-ZäöüÄÖÜß '`-]+$/.test(stadt)) {
-      newErrors.stadt =
-        'Diese Zeichen sind in diesem Feld nicht erlaubt (Zahlen,/,.)'
-    } else if (stadt.length < 3) {
-      newErrors.stadt = 'Stadt muss mindestens aus 3 Zeichen bestehen'
-    } else if (stadt.length > 60) {
-      newErrors.stadt = 'Stadt darf maximal 60 Zeichen lang sein'
-    }
-
-    if (!land.trim()) {
-      newErrors.land = 'Land ist erforderlich'
-    } else if (!/^[a-zA-ZäöüÄÖÜß '`-]+$/.test(land)) {
-      newErrors.land =
-        'Diese Zeichen sind in diesem Feld nicht erlaubt (Zahlen,/,.)'
-    } else if (land.length < 3) {
-      newErrors.land = 'Land muss mindestens aus 3 Zeichen bestehen'
-    } else if (land.length > 150) {
-      newErrors.land = 'Land darf maximal 150 Zeichen lang sein'
-    }
-
-    if (!email.trim()) {
-      newErrors.email = 'E-Mail ist erforderlich'
-    } else if (email.length > 100) {
-      newErrors.email = 'E-Mail darf maximal 100 Zeichen lang sein'
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
-      newErrors.email = 'Bitte geben Sie eine gültige E-Mail-Adresse ein'
-    } else if ((email.match(/@/g) || []).length !== 1) {
-      newErrors.email = 'E-Mail darf nur ein @ enthalten'
-    } else {
-      const beforeAt = email.split('@')[0]
-      if (!/[a-zA-Z]/.test(beforeAt)) {
-        newErrors.email =
-          'E-Mail muss vor dem @ mindestens einen Buchstaben enthalten'
-      } else if (
-        !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)
-      ) {
-        newErrors.email = 'E-Mail enthält ungültige Zeichen'
-      }
-    }
-
-    if (!password.trim()) {
-      newErrors.password = 'Passwort ist erforderlich'
-    } else if (password.length < 8) {
-      newErrors.password = 'Passwort muss mindestens aus 8 Zeichen bestehen'
-    } else if (!/[A-Z]/.test(password)) {
-      newErrors.password =
-        'Passwort muss mindestens einen Großbuchstaben enthalten'
-    } else if (!/[0-9]/.test(password)) {
-      newErrors.password = 'Passwort muss mindestens eine Zahl enthalten'
-    } else if (!/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password)) {
-      newErrors.password =
-        'Passwort muss mindestens ein Sonderzeichen enthalten'
-    }
-
-    if (!confirmPassword.trim()) {
-      newErrors.confirmPassword = 'Passwort-Wiederholung ist erforderlich'
-    } else if (confirmPassword !== password) {
-      newErrors.confirmPassword = 'Passwörter stimmen nicht überein'
-    }
-
-    if (!phone.trim()) {
-      newErrors.phone = 'Telefon ist erforderlich'
-    } else if (!/^[+]?[0-9]+$/.test(phone)) {
-      newErrors.phone =
-        'Telefon darf nur Zahlen und optional ein + am Anfang enthalten'
-    } else {
-      const numbers = phone.replace('+', '')
-      if (numbers.length < 5) {
-        newErrors.phone = 'Telefon muss mindestens aus 5 Zahlen bestehen'
-      } else if (numbers.length > 20) {
-        newErrors.phone = 'Telefon darf maximal 20 Zeichen lang sein'
-      }
-    }
-
-    if (!dateOfBirth.trim()) {
-      newErrors.dateOfBirth = 'Geburtsdatum ist erforderlich'
-    } else {
-      const birthDate = new Date(dateOfBirth)
-      const today = new Date()
-
-      if (birthDate > today) {
-        newErrors.dateOfBirth = 'Geburtsdatum darf nicht in der Zukunft liegen'
-      } else {
-        const age = calculateAge(birthDate)
-        if (age < 14) {
-          newErrors.dateOfBirth = 'Sie müssen mindestens 14 Jahre alt sein'
-        } else if (age > 120) {
-          newErrors.dateOfBirth = 'Das Alter darf nicht mehr als 120 Jahre betragen'
-        }
-      }
-    }
-
-    if (!sex) newErrors.sex = 'Geschlecht ist erforderlich'
 
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
-  }
-
-  const scrollToFirstError = (errors: { [key: string]: string }) => {
-    const firstErrorKey = Object.keys(errors)[0]
-    if (firstErrorKey) {
-      const errorElement = document.querySelector(`[name="${firstErrorKey}"]`)
-      if (errorElement) {
-        errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' })
-          ; (errorElement as HTMLElement).focus()
-      }
-    }
   }
 
   const handleChange = (e: any) => {
@@ -534,15 +361,15 @@ function PersonRegistration() {
   }
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+    e.preventDefault();
 
-    if (!validateForm()) {
-      console.log('Formular enthält Fehler')
+    if (!validateForm(null)) {
+      console.log('Formular enthält Fehler');
       // Zum ersten Fehler scrollen
       setTimeout(() => {
-        scrollToFirstError(errors)
-      }, 100)
-      return
+        scrollToFirstError(errors);
+      }, 100);
+      return;
     }
 
     const person: PersonsCreateType = {
@@ -732,34 +559,34 @@ function PersonRegistration() {
                 {/* Passwort-Anforderungen Anzeige */}
                 <div className="password-requirements">
                   <div className={`password-requirement ${passwordRequirements.minLength
-                      ? 'valid'
-                      : password.length > 0
-                        ? 'invalid'
-                        : 'neutral'
+                    ? 'valid'
+                    : password.length > 0
+                      ? 'invalid'
+                      : 'neutral'
                     }`}>
                     {passwordRequirements.minLength ? '✓' : '○'} Mindestens 8 Zeichen
                   </div>
                   <div className={`password-requirement ${passwordRequirements.hasUpperCase
-                      ? 'valid'
-                      : password.length > 0
-                        ? 'invalid'
-                        : 'neutral'
+                    ? 'valid'
+                    : password.length > 0
+                      ? 'invalid'
+                      : 'neutral'
                     }`}>
                     {passwordRequirements.hasUpperCase ? '✓' : '○'} Mindestens ein Großbuchstabe
                   </div>
                   <div className={`password-requirement ${passwordRequirements.hasNumber
-                      ? 'valid'
-                      : password.length > 0
-                        ? 'invalid'
-                        : 'neutral'
+                    ? 'valid'
+                    : password.length > 0
+                      ? 'invalid'
+                      : 'neutral'
                     }`}>
                     {passwordRequirements.hasNumber ? '✓' : '○'} Mindestens eine Zahl
                   </div>
                   <div className={`password-requirement ${passwordRequirements.hasSpecialChar
-                      ? 'valid'
-                      : password.length > 0
-                        ? 'invalid'
-                        : 'neutral'
+                    ? 'valid'
+                    : password.length > 0
+                      ? 'invalid'
+                      : 'neutral'
                     }`}>
                     {passwordRequirements.hasSpecialChar ? '✓' : '○'} Mindestens ein Sonderzeichen (!@#$%...)
                   </div>

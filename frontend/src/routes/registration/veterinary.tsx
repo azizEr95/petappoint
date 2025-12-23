@@ -1,295 +1,186 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { useState } from 'react'
-import type { ChangeEvent, FormEvent } from 'react'
-import '../../styles/routes/veterinaryRegistration.scss'
-import { useMutation } from '@tanstack/react-query'
-import { Form, FormGroup, Alert } from 'react-bootstrap'
-import { PasswordInput } from '../../components/common/PasswordInput'
-import { createVeterinaryPractice } from '../../api/VeterinaryPracticeAPI'
-import {
-  VeterinaryPracticeCreateSchema
-
-} from '../../../../shared/schemas/ZodSchemas'
-import type {VeterinaryPracticesCreateType} from '../../../../shared/schemas/ZodSchemas';
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { useState } from 'react';
+import '../../styles/routes/veterinaryRegistration.scss';
+import { useMutation } from '@tanstack/react-query';
+import { Alert, Form, FormGroup } from 'react-bootstrap';
+import { PasswordInput } from '../../components/common/PasswordInput';
+import { createVeterinaryPractice } from '../../api/VeterinaryPracticeAPI';
+import { scrollToFirstError } from '../../utils/Registration';
+import { VeterinaryPracticeCreateSchema } from '../../../../shared/schemas/ZodSchemas';
+import type { ChangeEvent, FormEvent } from 'react';
+import type { VeterinaryPracticesCreateType } from '../../../../shared/schemas/ZodSchemas';
 
 export const Route = createFileRoute('/registration/veterinary')({
   component: VeterinaryRegistration,
-})
+});
 
 function VeterinaryRegistration() {
-  const [name, setName] = useState('')
-  const [strasse, setStrasse] = useState('')
-  const [hausnr, setHausnr] = useState('')
-  const [plz, setPlz] = useState('')
-  const [stadt, setStadt] = useState('')
-  const [land, setLand] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [phone, setPhone] = useState('')
-  const [infoemail, setInfoemail] = useState('')
-  const [website, setWebsite] = useState('')
-  const [info, setInfo] = useState('')
-  const [errors, setErrors] = useState<{ [key: string]: string }>({})
-  const navigate = useNavigate()
+  const [name, setName] = useState('');
+  const [strasse, setStrasse] = useState('');
+  const [hausnr, setHausnr] = useState('');
+  const [plz, setPlz] = useState('');
+  const [stadt, setStadt] = useState('');
+  const [land, setLand] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [phone, setPhone] = useState('');
+  const [infoemail, setInfoemail] = useState('');
+  const [website, setWebsite] = useState('');
+  const [info, setInfo] = useState('');
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const navigate = useNavigate();
 
-  const validateField = (name: string, value: string) => {
-    let error = ''
+  // Password validation state
+  const [passwordRequirements, setPasswordRequirements] = useState({
+    minLength: false,
+    hasUpperCase: false,
+    hasNumber: false,
+    hasSpecialChar: false,
+  })
 
-    if (name === 'name') {
-      if (!value.trim()) {
-        error = 'Praxisname ist erforderlich'
-      } else if (!/^[a-zA-ZäöüÄÖÜß '`-]+$/.test(value)) {
-        error = 'Diese Zeichen sind in diesem Feld nicht erlaubt (Zahlen,/,.)'
-      } else if (value.length < 3) {
-        error = 'Praxisname muss mindestens aus 3 Zeichen bestehen'
+  // Function to check password requirements
+  const checkPasswordRequirements = (pwd: string) => {
+    setPasswordRequirements({
+      minLength: pwd.length >= 8,
+      hasUpperCase: /[A-Z]/.test(pwd),
+      hasNumber: /[0-9]/.test(pwd),
+      hasSpecialChar: /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(pwd),
+    })
+  }
+
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const nameBlur = e.target.name;
+    validateForm(nameBlur);
+  }
+
+  const validateForm = (nameFormField: string | null) => {
+    const newErrors: { [key: string]: string } = { ...errors }
+
+    if (nameFormField === "name" || nameFormField === null) {
+      if (!name.trim()) {
+        newErrors.name = 'Praxisname ist erforderlich'
+      } else if (!/^[a-zA-ZäöüÄÖÜß '`-]+$/.test(name)) {
+        newErrors.name =
+          'Diese Zeichen sind in diesem Feld nicht erlaubt (Zahlen,/,.)'
+      } else if (name.length < 3) {
+        newErrors.name = 'Praxisname muss mindestens aus 3 Zeichen bestehen'
       }
     }
 
-    if (name === 'strasse') {
-      if (!value.trim()) {
-        error = 'Straße ist erforderlich'
+    if (nameFormField === "strasse" || nameFormField === null) {
+      if (!strasse.trim()) {
+        newErrors.strasse = 'Straße ist erforderlich'
       } else if (
-        !/^(?=.*[a-zA-ZäöüÄÖÜß0-9])[a-zA-ZäöüÄÖÜß0-9 '`.-]+$/.test(value)
+        !/^(?=.*[a-zA-ZäöüÄÖÜß0-9])[a-zA-ZäöüÄÖÜß0-9 '`.-]+$/.test(strasse)
       ) {
-        error =
+        newErrors.strasse =
           'Straße muss mindestens einen Buchstaben oder eine Zahl enthalten'
-      } else if (value.length < 3) {
-        error = 'Straße muss mindestens aus 3 Zeichen bestehen'
+      } else if (strasse.length < 3) {
+        newErrors.strasse = 'Straße muss mindestens aus 3 Zeichen bestehen'
       }
     }
 
-    if (name === 'hausnr') {
-      if (!value.trim()) {
-        error = 'Hausnummer ist erforderlich'
-      } else if (!/^(?=.*[0-9])[a-zA-Z0-9]+$/.test(value)) {
-        error = 'Hausnummer muss mindestens eine Zahl enthalten'
+    if (nameFormField === "hausnr" || nameFormField === null) {
+      if (!hausnr.trim()) {
+        newErrors.hausnr = 'Hausnummer ist erforderlich'
+      } else if (!/^(?=.*[0-9])[a-zA-Z0-9]+$/.test(hausnr)) {
+        newErrors.hausnr = 'Hausnummer muss mindestens eine Zahl enthalten'
       }
     }
 
-    if (name === 'plz') {
-      if (!value.trim()) {
-        error = 'Postleitzahl ist erforderlich'
-      } else if (!/^(?=.*[0-9])[a-zA-Z0-9]+$/.test(value)) {
-        error = 'Postleitzahl muss mindestens eine Zahl enthalten'
+    if (nameFormField === "plz" || nameFormField === null) {
+      if (!plz.trim()) {
+        newErrors.plz = 'Postleitzahl ist erforderlich'
+      } else if (!/^(?=.*[0-9])[a-zA-Z0-9]+$/.test(plz)) {
+        newErrors.plz = 'Postleitzahl muss mindestens eine Zahl enthalten'
       }
     }
 
-    if (name === 'stadt') {
-      if (!value.trim()) {
-        error = 'Stadt ist erforderlich'
-      } else if (!/^[a-zA-ZäöüÄÖÜß '`-]+$/.test(value)) {
-        error = 'Diese Zeichen sind in diesem Feld nicht erlaubt (Zahlen,/,.)'
-      } else if (value.length < 3) {
-        error = 'Stadt muss mindestens aus 3 Zeichen bestehen'
+    if (nameFormField === "stadt" || nameFormField === null) {
+      if (!stadt.trim()) {
+        newErrors.stadt = 'Stadt ist erforderlich'
+      } else if (!/^[a-zA-ZäöüÄÖÜß '`-]+$/.test(stadt)) {
+        newErrors.stadt =
+          'Diese Zeichen sind in diesem Feld nicht erlaubt (Zahlen,/,.)'
+      } else if (stadt.length < 3) {
+        newErrors.stadt = 'Stadt muss mindestens aus 3 Zeichen bestehen'
       }
     }
 
-    if (name === 'land') {
-      if (!value.trim()) {
-        error = 'Land ist erforderlich'
-      } else if (!/^[a-zA-ZäöüÄÖÜß '`-]+$/.test(value)) {
-        error = 'Diese Zeichen sind in diesem Feld nicht erlaubt (Zahlen,/,.)'
-      } else if (value.length < 3) {
-        error = 'Land muss mindestens aus 3 Zeichen bestehen'
+    if (nameFormField === "land" || nameFormField === null) {
+      if (!land.trim()) {
+        newErrors.land = 'Land ist erforderlich'
+      } else if (!/^[a-zA-ZäöüÄÖÜß '`-]+$/.test(land)) {
+        newErrors.land =
+          'Diese Zeichen sind in diesem Feld nicht erlaubt (Zahlen,/,.)'
+      } else if (land.length < 3) {
+        newErrors.land = 'Land muss mindestens aus 3 Zeichen bestehen'
       }
     }
 
-    if (name === 'email') {
-      if (!value.trim()) {
-        error = 'E-Mail ist erforderlich'
-      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value)) {
-        error = 'Bitte geben Sie eine gültige E-Mail-Adresse ein'
-      } else if ((value.match(/@/g) || []).length !== 1) {
-        error = 'E-Mail darf nur ein @ enthalten'
+    if (nameFormField === "email" || nameFormField === null) {
+      if (!email.trim()) {
+        newErrors.email = 'E-Mail ist erforderlich'
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
+        newErrors.email = 'Bitte geben Sie eine gültige E-Mail-Adresse ein'
+      } else if ((email.match(/@/g) || []).length !== 1) {
+        newErrors.email = 'E-Mail darf nur ein @ enthalten'
       } else {
-        const beforeAt = value.split('@')[0]
+        const beforeAt = email.split('@')[0]
         if (!/[a-zA-Z]/.test(beforeAt)) {
-          error = 'E-Mail muss vor dem @ mindestens einen Buchstaben enthalten'
+          newErrors.email =
+            'E-Mail muss vor dem @ mindestens einen Buchstaben enthalten'
         } else if (
-          !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value)
+          !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)
         ) {
-          error = 'E-Mail enthält ungültige Zeichen'
+          newErrors.email = 'E-Mail enthält ungültige Zeichen'
         }
       }
     }
 
-    if (name === 'password') {
-      if (!value.trim()) {
-        error = 'Passwort ist erforderlich'
-      } else if (value.length < 6) {
-        error = 'Passwort muss mindestens aus 6 Zeichen bestehen'
-      } else if (!/[A-Z]/.test(value)) {
-        error = 'Passwort muss mindestens einen Großbuchstaben enthalten'
-      } else if (!/[0-9]/.test(value)) {
-        error = 'Passwort muss mindestens eine Zahl enthalten'
-      } else if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(value)) {
-        error = 'Passwort muss mindestens ein Sonderzeichen enthalten'
+    if (nameFormField === "password" || nameFormField === null) {
+      if (!password.trim()) {
+        newErrors.password = 'Passwort ist erforderlich'
+      } else if (password.length < 6) {
+        newErrors.password = 'Passwort muss mindestens aus 6 Zeichen bestehen'
+      } else if (!/[A-Z]/.test(password)) {
+        newErrors.password =
+          'Passwort muss mindestens einen Großbuchstaben enthalten'
+      } else if (!/[0-9]/.test(password)) {
+        newErrors.password = 'Passwort muss mindestens eine Zahl enthalten'
+      } else if (!/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password)) {
+        newErrors.password =
+          'Passwort muss mindestens ein Sonderzeichen enthalten'
       }
     }
 
-    if (name === 'phone') {
-      if (!value.trim()) {
-        error = 'Telefon ist erforderlich'
-      } else if (!/^[+]?[0-9]+$/.test(value)) {
-        error = 'Telefon darf nur Zahlen und optional ein + am Anfang enthalten'
+    if (nameFormField === "confirmPassword" || nameFormField === null) {
+      if (!confirmPassword.trim()) {
+        newErrors.confirmPassword = 'Passwort-Wiederholung ist erforderlich';
+      } else if (confirmPassword !== password) {
+        newErrors.confirmPassword = 'Passwörter stimmen nicht überein';
+      }
+    }
+
+    if (nameFormField === "phone" || nameFormField === null) {
+      if (!phone.trim()) {
+        newErrors.phone = 'Telefon ist erforderlich'
+      } else if (!/^[+]?[0-9]+$/.test(phone)) {
+        newErrors.phone =
+          'Telefon darf nur Zahlen und optional ein + am Anfang enthalten'
       } else {
-        const numbers = value.replace('+', '')
+        const numbers = phone.replace('+', '')
         if (numbers.length < 6) {
-          error = 'Telefon muss mindestens aus 6 Zahlen bestehen'
+          newErrors.phone = 'Telefon muss mindestens aus 6 Zahlen bestehen'
         }
       }
     }
 
-    if (name === 'infoemail') {
-      if (value.trim()) {
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value)) {
-          error = 'Bitte geben Sie eine gültige E-Mail-Adresse ein'
-        } else if ((value.match(/@/g) || []).length !== 1) {
-          error = 'E-Mail darf nur ein @ enthalten'
-        } else {
-          const beforeAt = value.split('@')[0]
-          if (!/[a-zA-Z]/.test(beforeAt)) {
-            error =
-              'E-Mail muss vor dem @ mindestens einen Buchstaben enthalten'
-          } else if (
-            !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value)
-          ) {
-            error = 'E-Mail enthält ungültige Zeichen'
-          }
-        }
-      }
-    }
-
-    if (name === 'website') {
-      if (value.trim()) {
-        if (!/^https?:\/\/.+\..+/.test(value)) {
-          error =
-            'Bitte geben Sie eine gültige URL ein (z.B. https://beispiel.de)'
-        }
-      }
-    }
-
-    return error
-  }
-
-  const handleBlur = (
-    e: React.FocusEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >,
-  ) => {
-    const name = e.target.name
-    const value = e.target.value
-
-    const error = validateField(name, value)
-
-    if (error) {
-      setErrors({ ...errors, [name]: error })
-    } else {
-      const newErrors = { ...errors }
-      delete newErrors[name]
-      setErrors(newErrors)
-    }
-  }
-
-  const validateForm = () => {
-    const newErrors: { [key: string]: string } = {}
-
-    if (!name.trim()) {
-      newErrors.name = 'Praxisname ist erforderlich'
-    } else if (!/^[a-zA-ZäöüÄÖÜß '`-]+$/.test(name)) {
-      newErrors.name =
-        'Diese Zeichen sind in diesem Feld nicht erlaubt (Zahlen,/,.)'
-    } else if (name.length < 3) {
-      newErrors.name = 'Praxisname muss mindestens aus 3 Zeichen bestehen'
-    }
-
-    if (!strasse.trim()) {
-      newErrors.strasse = 'Straße ist erforderlich'
-    } else if (
-      !/^(?=.*[a-zA-ZäöüÄÖÜß0-9])[a-zA-ZäöüÄÖÜß0-9 '`.-]+$/.test(strasse)
-    ) {
-      newErrors.strasse =
-        'Straße muss mindestens einen Buchstaben oder eine Zahl enthalten'
-    } else if (strasse.length < 3) {
-      newErrors.strasse = 'Straße muss mindestens aus 3 Zeichen bestehen'
-    }
-
-    if (!hausnr.trim()) {
-      newErrors.hausnr = 'Hausnummer ist erforderlich'
-    } else if (!/^(?=.*[0-9])[a-zA-Z0-9]+$/.test(hausnr)) {
-      newErrors.hausnr = 'Hausnummer muss mindestens eine Zahl enthalten'
-    }
-
-    if (!plz.trim()) {
-      newErrors.plz = 'Postleitzahl ist erforderlich'
-    } else if (!/^(?=.*[0-9])[a-zA-Z0-9]+$/.test(plz)) {
-      newErrors.plz = 'Postleitzahl muss mindestens eine Zahl enthalten'
-    }
-
-    if (!stadt.trim()) {
-      newErrors.stadt = 'Stadt ist erforderlich'
-    } else if (!/^[a-zA-ZäöüÄÖÜß '`-]+$/.test(stadt)) {
-      newErrors.stadt =
-        'Diese Zeichen sind in diesem Feld nicht erlaubt (Zahlen,/,.)'
-    } else if (stadt.length < 3) {
-      newErrors.stadt = 'Stadt muss mindestens aus 3 Zeichen bestehen'
-    }
-
-    if (!land.trim()) {
-      newErrors.land = 'Land ist erforderlich'
-    } else if (!/^[a-zA-ZäöüÄÖÜß '`-]+$/.test(land)) {
-      newErrors.land =
-        'Diese Zeichen sind in diesem Feld nicht erlaubt (Zahlen,/,.)'
-    } else if (land.length < 3) {
-      newErrors.land = 'Land muss mindestens aus 3 Zeichen bestehen'
-    }
-
-    if (!email.trim()) {
-      newErrors.email = 'E-Mail ist erforderlich'
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
-      newErrors.email = 'Bitte geben Sie eine gültige E-Mail-Adresse ein'
-    } else if ((email.match(/@/g) || []).length !== 1) {
-      newErrors.email = 'E-Mail darf nur ein @ enthalten'
-    } else {
-      const beforeAt = email.split('@')[0]
-      if (!/[a-zA-Z]/.test(beforeAt)) {
-        newErrors.email =
-          'E-Mail muss vor dem @ mindestens einen Buchstaben enthalten'
-      } else if (
-        !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)
-      ) {
-        newErrors.email = 'E-Mail enthält ungültige Zeichen'
-      }
-    }
-
-    if (!password.trim()) {
-      newErrors.password = 'Passwort ist erforderlich'
-    } else if (password.length < 6) {
-      newErrors.password = 'Passwort muss mindestens aus 6 Zeichen bestehen'
-    } else if (!/[A-Z]/.test(password)) {
-      newErrors.password =
-        'Passwort muss mindestens einen Großbuchstaben enthalten'
-    } else if (!/[0-9]/.test(password)) {
-      newErrors.password = 'Passwort muss mindestens eine Zahl enthalten'
-    } else if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
-      newErrors.password =
-        'Passwort muss mindestens ein Sonderzeichen enthalten'
-    }
-
-    if (!phone.trim()) {
-      newErrors.phone = 'Telefon ist erforderlich'
-    } else if (!/^[+]?[0-9]+$/.test(phone)) {
-      newErrors.phone =
-        'Telefon darf nur Zahlen und optional ein + am Anfang enthalten'
-    } else {
-      const numbers = phone.replace('+', '')
-      if (numbers.length < 6) {
-        newErrors.phone = 'Telefon muss mindestens aus 6 Zahlen bestehen'
-      }
-    }
-
-    if (infoemail.trim()) {
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(infoemail)) {
+    if (nameFormField === "infoemail" || nameFormField === null) {
+      if (!infoemail.trim()) {
+        newErrors.infoemail = 'E-Mail ist erforderlich'
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(infoemail)) {
         newErrors.infoemail = 'Bitte geben Sie eine gültige E-Mail-Adresse ein'
       } else if ((infoemail.match(/@/g) || []).length !== 1) {
         newErrors.infoemail = 'E-Mail darf nur ein @ enthalten'
@@ -306,10 +197,12 @@ function VeterinaryRegistration() {
       }
     }
 
-    if (website.trim()) {
-      if (!/^https?:\/\/.+\..+/.test(website)) {
-        newErrors.website =
-          'Bitte geben Sie eine gültige URL ein (z.B. https://beispiel.de)'
+    if (nameFormField === "website" || nameFormField === null) {
+      if (website.trim()) {
+        if (!/^https?:\/\/.+\..+/.test(website)) {
+          newErrors.website =
+            'Bitte geben Sie eine gültige URL ein (z.B. https://beispiel.de)'
+        }
       }
     }
 
@@ -327,7 +220,7 @@ function VeterinaryRegistration() {
       })
     },
     onSuccess: () => {
-      navigate({ to: '/' })
+      navigate({ to: '/dashboard' })
     },
   })
 
@@ -335,65 +228,78 @@ function VeterinaryRegistration() {
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
   ) => {
     const t = e.target
-    const name = t.name
+    const nameChange = t.name
     const value = t.value
 
-    if (errors[name]) {
+    if (errors[nameChange]) {
       const newErrors = { ...errors }
-      delete newErrors[name]
+      delete newErrors[nameChange]
       setErrors(newErrors)
     }
 
-    switch (name) {
+    switch (nameChange) {
       case 'name':
-        setName(value)
-        break
+        setName(value);
+        break;
       case 'strasse':
-        setStrasse(value)
-        break
+        setStrasse(value);
+        break;
       case 'hausnr':
-        setHausnr(value)
-        break
+        setHausnr(value);
+        break;
       case 'plz':
-        setPlz(value)
-        break
+        setPlz(value);
+        break;
       case 'stadt':
-        setStadt(value)
-        break
+        setStadt(value);
+        break;
       case 'land':
-        setLand(value)
-        break
+        setLand(value);
+        break;
       case 'email':
-        setEmail(value)
-        break
+        setEmail(value);
+        break;
       case 'password':
-        setPassword(value)
-        break
+        setPassword(value);
+        checkPasswordRequirements(value)
+        // Check confirmPassword when password changes
+        if (confirmPassword && value !== confirmPassword) {
+          setErrors({ ...errors, confirmPassword: 'Passwörter stimmen nicht überein' })
+        } else if (confirmPassword && value === confirmPassword) {
+          const newErrors = { ...errors }
+          delete newErrors.confirmPassword
+          setErrors(newErrors)
+        }
+        break;
+      case 'confirmPassword':
+        setConfirmPassword(value);
+        break;
       case 'phone':
         setPhone(value)
         break
       case 'infoemail':
-        setInfoemail(value)
-        break
+        setInfoemail(value);
+        break;
       case 'website':
-        setWebsite(value)
-        break
+        setWebsite(value);
+        break;
       case 'info':
-        setInfo(value)
-        break
+        setInfo(value);
+        break;
       default:
-        console.log(
-          'Error: Fehler beim Aendern von veterinaryRegistration State in handleChange',
-        )
+        console.log('Error: Fehler beim Aendern von veterinaryRegistration State in handleChange');
     }
   }
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+    e.preventDefault();
 
-    if (!validateForm()) {
-      console.log('Formular enthält Fehler')
-      return
+    if (!validateForm(null)) {
+      console.log('Formular enthält Fehler');
+      setTimeout(() => {
+        scrollToFirstError(errors);
+      }, 100);
+      return;
     }
 
     const practice: VeterinaryPracticesCreateType = {
@@ -402,7 +308,7 @@ function VeterinaryRegistration() {
       password: password,
       phone: phone,
       infoEmail: infoemail,
-      website: website,
+      website: website || null,
       info: info,
       address: {
         street: strasse + hausnr,
@@ -416,9 +322,8 @@ function VeterinaryRegistration() {
     try {
       VeterinaryPracticeCreateSchema.parse(practice)
       mutateCreatePractice(practice)
-      console.log('mutate')
-    } catch (e) {
-      console.log('Zod Error: veterinaryRegistration ' + e)
+    } catch (err) {
+      console.log('Zod Error: personRegistration' + err)
     }
   }
 
@@ -497,17 +402,69 @@ function VeterinaryRegistration() {
                 </FormGroup>
               </div>
 
+              <FormGroup className="form-group">
+                <PasswordInput
+                  id="password"
+                  name="password"
+                  value={password}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  placeholder="••••••••"
+                  isInvalid={!!errors.password}
+                  error={errors.password}
+                  className="form-group"
+                  label="Passwort"
+                  required
+                />
+
+                {/* Passwort-Anforderungen Anzeige */}
+                <div className="password-requirements">
+                  <div className={`password-requirement ${passwordRequirements.minLength
+                    ? 'valid'
+                    : password.length > 0
+                      ? 'invalid'
+                      : 'neutral'
+                    }`}>
+                    {passwordRequirements.minLength ? '✓' : '○'} Mindestens 8 Zeichen
+                  </div>
+                  <div className={`password-requirement ${passwordRequirements.hasUpperCase
+                    ? 'valid'
+                    : password.length > 0
+                      ? 'invalid'
+                      : 'neutral'
+                    }`}>
+                    {passwordRequirements.hasUpperCase ? '✓' : '○'} Mindestens ein Großbuchstabe
+                  </div>
+                  <div className={`password-requirement ${passwordRequirements.hasNumber
+                    ? 'valid'
+                    : password.length > 0
+                      ? 'invalid'
+                      : 'neutral'
+                    }`}>
+                    {passwordRequirements.hasNumber ? '✓' : '○'} Mindestens eine Zahl
+                  </div>
+                  <div className={`password-requirement ${passwordRequirements.hasSpecialChar
+                    ? 'valid'
+                    : password.length > 0
+                      ? 'invalid'
+                      : 'neutral'
+                    }`}>
+                    {passwordRequirements.hasSpecialChar ? '✓' : '○'} Mindestens ein Sonderzeichen (!@#$%...)
+                  </div>
+                </div>
+              </FormGroup>
+
               <PasswordInput
-                id="password"
-                name="password"
-                value={password}
+                id="CreateVeterinayrPracticeConfirmPassword"
+                name="confirmPassword"
+                value={confirmPassword}
                 onChange={handleChange}
                 onBlur={handleBlur}
                 placeholder="••••••••"
-                isInvalid={!!errors.password}
-                error={errors.password}
+                isInvalid={!!errors.confirmPassword}
+                error={errors.confirmPassword}
                 className="form-group"
-                label="Passwort *"
+                label="Passwort wiederholen"
                 required
               />
             </div>
