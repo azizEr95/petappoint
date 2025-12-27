@@ -1,20 +1,30 @@
 {
+  "private": true,
   "name": "vetilib-shared",
   "version": "1.0.0",
-  "description": "",
+  "description": "Contains shared code between backend and frontend",
   "license": "ISC",
   "author": "",
-  "type": "commonjs",
-  "main": "index.js",
+  "type": "module",
   "scripts": {
-    "build": "tsc",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc"
   },
   "dependencies": {
+    "vetilib": "file:..",
     "zod": "^4.1.12"
   },
   "devDependencies": {
     "@types/node": "^24.10.1",
-    "tsx": "^4.20.6"
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  },
+  "exports": {
+    ".": "./dist/index.js",
+    "./schemas/ZodSchemas": {
+      "types": "./dist/schemas/ZodSchemas.d.ts",
+      "import": "./dist/schemas/ZodSchemas.js",
+      "require": "./dist/schemas/ZodSchemas.js"
+    },
+    "./package.json": "./package.json"
   }
 }

@@ -4,8 +4,7 @@
     "**/*.tsx",
     "eslint.config.js",
     "prettier.config.js",
-    "vite.config.js",
-    "../shared/schemas/ZodSchemas.ts"
+    "vite.config.js"
   ],
 
   "compilerOptions": {

@@ -12,7 +12,7 @@ import { getPersonById, getPictureURLForPersonId } from '../api/PersonsAPI'
 import { isLoggedInAndVerified } from '../utils/Authentication'
 import type {
   PersonsType,
-} from '../../../shared/schemas/ZodSchemas'
+} from 'vetilib-shared/schemas/ZodSchemas'
 
 export const Route = createFileRoute('/dashboard')({
   component: Dashboard,

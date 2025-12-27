@@ -1,4 +1,4 @@
-import type { PersonsType } from '../../../shared/schemas/ZodSchemas'
+import type { PersonsType } from 'vetilib-shared/schemas/ZodSchemas'
 import '../../styles/components/dashboard/DashboardHeader.scss'
 
 type DashboardHeaderProps = {

@@ -16,7 +16,7 @@ import type {
   ServiceType,
   VeterinaryPracticeSearchQueryType,
   VeterinaryPracticesType,
-} from '../../../../shared/schemas/ZodSchemas'
+} from 'vetilib-shared/schemas/ZodSchemas'
 import '../../styles/components/common/SearchFilter.scss'
 
 type SearchFilterProps = {

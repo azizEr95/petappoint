@@ -6,9 +6,9 @@ import { Alert, Form, FormGroup } from 'react-bootstrap';
 import { PasswordInput } from '../../components/common/PasswordInput';
 import { createVeterinaryPractice } from '../../api/VeterinaryPracticeAPI';
 import { scrollToFirstError } from '../../utils/Registration';
-import { VeterinaryPracticeCreateSchema } from '../../../../shared/schemas/ZodSchemas';
+import { VeterinaryPracticeCreateSchema } from 'vetilib-shared/schemas/ZodSchemas';
 import type { ChangeEvent, FormEvent } from 'react';
-import type { VeterinaryPracticesCreateType } from '../../../../shared/schemas/ZodSchemas';
+import type { VeterinaryPracticesCreateType } from 'vetilib-shared/schemas/ZodSchemas';
 
 export const Route = createFileRoute('/registration/veterinary')({
   component: VeterinaryRegistration,

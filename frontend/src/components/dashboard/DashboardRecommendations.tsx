@@ -8,7 +8,7 @@ import {
 import type {
   AnimalsType,
   VeterinaryPracticeSearchResultType,
-} from '../../../../shared/schemas/ZodSchemas'
+} from 'vetilib-shared/schemas/ZodSchemas'
 import '../../styles/components/dashboard/DashboardRecommendations.scss'
 
 type DashboardRecommendationsProps = {

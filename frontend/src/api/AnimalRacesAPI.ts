@@ -1,11 +1,11 @@
 import {
   AddRacesToAnimalSchema,
   AnimalracesSchema,
-} from '../../../shared/schemas/ZodSchemas'
+} from 'vetilib-shared/schemas/ZodSchemas'
 import type {
   AddRacesToAnimalType,
   AnimalracesType,
-} from '../../../shared/schemas/ZodSchemas'
+} from 'vetilib-shared/schemas/ZodSchemas'
 
 export const getRacesByAnimalTypeID = async (
   animalTypeID: number | undefined,

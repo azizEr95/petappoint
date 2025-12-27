@@ -7,12 +7,12 @@ import { useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { Alert, Form, FormGroup } from 'react-bootstrap'
 import { PasswordInput } from '../../components/common/PasswordInput'
-import { PersonsCreateSchema } from '../../../../shared/schemas/ZodSchemas'
+import { PersonsCreateSchema } from 'vetilib-shared/schemas/ZodSchemas'
 import '../../styles/routes/personRegistration.scss'
 import { personRegistration } from '../../api/LoginAPI'
 import { useLoginContext } from '../../LoginContext'
 import { scrollToFirstError } from '../../utils/Registration'
-import type { PersonsCreateType, sexesType } from '../../../../shared/schemas/ZodSchemas';
+import type { PersonsCreateType, sexesType } from 'vetilib-shared/schemas/ZodSchemas';
 import type { FormEvent } from 'react';
 
 export const Route = createFileRoute('/registration/person')({

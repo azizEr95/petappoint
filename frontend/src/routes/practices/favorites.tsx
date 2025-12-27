@@ -6,7 +6,7 @@ import { FavoritePractice } from "../../components/practice/FavoritePractice";
 import { useLoginContext } from "../../LoginContext";
 import { isLoggedInAndVerified } from "../../utils/Authentication";
 import type {MouseEvent} from "react";
-import type { VeterinaryPracticesType } from "../../../../shared/schemas/ZodSchemas";
+import type { VeterinaryPracticesType } from "vetilib-shared/schemas/ZodSchemas";
 
 export const Route = createFileRoute('/practices/favorites')({
   component: FavoritePracticesPage,

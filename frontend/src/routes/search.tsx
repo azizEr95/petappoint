@@ -7,7 +7,7 @@ import { stringToArray } from '../utils/ArrayStringFormat'
 import type {
   AppointmentFilterType,
   VeterinaryPracticeSearchQueryType,
-} from '../../../shared/schemas/ZodSchemas'
+} from 'vetilib-shared/schemas/ZodSchemas'
 
 export type VeterinaryPracticeSearch = {
   // search, everything has to be a string

@@ -7,7 +7,7 @@ import {
   getFavoritesVeterinaryPractices,
 } from '../../api/VeterinaryPracticeAPI'
 import { useLoginContext } from '../../LoginContext'
-import type { VeterinaryPracticesType } from '../../../../shared/schemas/ZodSchemas'
+import type { VeterinaryPracticesType } from 'vetilib-shared/schemas/ZodSchemas'
 
 type FavoritePracticeProps = {
   practice: VeterinaryPracticesType

@@ -1,7 +1,7 @@
 import type {
   AnimalsType,
   PersonsType,
-} from '../../../shared/schemas/ZodSchemas'
+} from 'vetilib-shared/schemas/ZodSchemas'
 
 export type NotificationType = {
   id: number

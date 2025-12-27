@@ -85,7 +85,7 @@ export function DashboardFavoritesSection({
       {hasMoreFavorites && (
         <div className="favorites-footer">
           <Link
-            to="/favorites"
+            to="/practices/favorites"
             className="view-all-link"
           >
             Alle {favoriteIds.length} Favoriten anzeigen{' '}

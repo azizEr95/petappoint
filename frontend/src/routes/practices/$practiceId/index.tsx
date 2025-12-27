@@ -15,7 +15,7 @@ import type {
   AnimalTypeType,
   VeterinaryPracticeSearchQueryType,
   VeterinaryPracticesType,
-} from '../../../../../shared/schemas/ZodSchemas'
+} from 'vetilib-shared/schemas/ZodSchemas'
 
 export const Route = createFileRoute('/practices/$practiceId/')({
   component: VeterinaryPractice,

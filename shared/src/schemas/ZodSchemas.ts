@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "zod/v4";
 
 export const PostgresIdSchema = z.number().int();
 export type PostgresIdType = z.infer<typeof PostgresIdSchema>;
@@ -195,6 +195,8 @@ export const ServiceSchema = z.object({
   id: PostgresIdSchema,
   name: z.string().min(1).max(100),
 });
+
+export const ServiceSchemaArray = z.array(ServiceSchema);
 
 export type ServiceType = z.infer<typeof ServiceSchema>;
 

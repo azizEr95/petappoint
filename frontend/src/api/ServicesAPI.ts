@@ -1,6 +1,5 @@
-import z from "zod";
-import { ServiceSchema  } from "../../../shared/schemas/ZodSchemas";
-import type {ServiceType} from "../../../shared/schemas/ZodSchemas";
+import { ServiceSchemaArray } from "vetilib-shared/schemas/ZodSchemas";
+import type {ServiceType} from "vetilib-shared/schemas/ZodSchemas";
 
 
 export const getServicesFromPractice = async (
@@ -56,13 +55,14 @@ export const getAllAvailableServices = async (
   return parseServiceArray(data)
 }
 
-function parseServiceArray(serviceArray: Array<ServiceType>): Array<ServiceType> {
-    const parsed = z.array(ServiceSchema).safeParse(serviceArray);
+function parseServiceArray(serviceArray: any): Array<ServiceType> {
+    const parsed = ServiceSchemaArray.safeParse(serviceArray);
     if (parsed.error !== undefined) { // if Zod throws an Error print them
         console.log(parsed.error);
     }
     if (!parsed.success) {
         throw new Error(parsed.error.toString())
     }
+
     return parsed.data
 }

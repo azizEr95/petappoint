@@ -21,7 +21,7 @@ import type {ChangeEvent} from 'react';
 import type {
   PersonsType,
   PersonsUpdateType,
-} from '../../../../shared/schemas/ZodSchemas'
+} from 'vetilib-shared/schemas/ZodSchemas'
 import '../../styles/components/ProfileDialog.scss'
 
 type ProfileEditDialogProps = {

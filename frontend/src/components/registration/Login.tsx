@@ -2,16 +2,13 @@ import { useLocation, useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
 import '../../styles/routes/login.scss'
 import { useMutation } from '@tanstack/react-query'
+import { Form } from 'react-bootstrap'
 import { loginUser, newToken } from '../../api/LoginAPI'
 import { StatusBooking } from '../../types/booking'
 import { useLoginContext } from '../../LoginContext'
-import { Form } from 'react-bootstrap'
 import { PasswordInput } from '../common/PasswordInput'
 import type { ChangeEvent, FormEvent } from 'react'
-import type {
-  AppointmentsType,
-  LoginType,
-} from '../../../../shared/schemas/ZodSchemas'
+import type { AppointmentsType, LoginType } from 'vetilib-shared/schemas/ZodSchemas'
 
 type LoginProps = {
   setStatusBookingProcess?: (status: StatusBooking) => void // only if Login is in Booking Process

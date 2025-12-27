@@ -7,7 +7,7 @@ import { NextAvailableAppointments } from '../../../components/practice/NextAvai
 import { dateToInfosString } from '../../../utils/DateToStringFormat'
 import { isLoggedInAndVerified } from '../../../utils/Authentication'
 import { useLoginContext } from '../../../LoginContext'
-import type { AppointmentFilterType, AppointmentsType } from '../../../../../shared/schemas/ZodSchemas'
+import type { AppointmentFilterType, AppointmentsType } from 'vetilib-shared/schemas/ZodSchemas'
 
 
 export const Route = createFileRoute(
