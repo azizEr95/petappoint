@@ -1,4 +1,4 @@
-import type { AppointmentsType } from '../../../shared/schemas/ZodSchemas'
+import type { AppointmentsType } from 'vetilib-shared/schemas/ZodSchemas'
 
 export const exportToCalendar = (
   appointment: AppointmentsType,

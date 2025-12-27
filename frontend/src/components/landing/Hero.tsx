@@ -6,7 +6,7 @@ import { SearchFilter } from '../common/SearchFilter'
 import type {
   AppointmentFilterType,
   VeterinaryPracticeSearchQueryType,
-} from '../../../../shared/schemas/ZodSchemas'
+} from 'vetilib-shared/schemas/ZodSchemas'
 
 export default function Hero() {
   const [filterServiceType, setFilterServiceType] = useState<Array<number>>([])

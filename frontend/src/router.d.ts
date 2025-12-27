@@ -6,7 +6,7 @@ import type {
   PersonsType,
   ServiceType,
   VeterinaryPracticesType,
-} from '../../shared/schemas/ZodSchemas'
+} from 'vetilib-shared/schemas/ZodSchemas'
 
 // erweitert History State, damit Praxis auch als State uebergeben werden kann
 declare module '@tanstack/react-router' {

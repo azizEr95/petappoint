@@ -33,7 +33,7 @@ import {
 } from '../../utils/DateToStringFormat'
 import type { MultiValue } from 'react-select';
 import type { ChangeEvent } from 'react';
-import type { AddRacesToAnimalType, AnimalTypeType, AnimalUpdateType, AnimalracesType, AnimalsCreateType, AnimalsType, sexesType } from '../../../../shared/schemas/ZodSchemas';
+import type { AddRacesToAnimalType, AnimalTypeType, AnimalUpdateType, AnimalracesType, AnimalsCreateType, AnimalsType, sexesType } from 'vetilib-shared/schemas/ZodSchemas';
 import '../../styles/components/AnimalDialog.scss'
 
 type AnimalEditNewDialogProps = {

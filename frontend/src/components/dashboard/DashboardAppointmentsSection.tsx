@@ -6,7 +6,7 @@ import {
   getPastAppointmentsByUserId,
 } from '../../api/AppointmentsAPI'
 import { AppointmentCard } from '../appointment/AppointmentCard'
-import type { AppointmentsType } from '../../../../shared/schemas/ZodSchemas'
+import type { AppointmentsType } from 'vetilib-shared/schemas/ZodSchemas'
 import '../../styles/components/dashboard/DashboardAppointmentsSection.scss'
 
 type DashboardAppointmentsSectionProps = {

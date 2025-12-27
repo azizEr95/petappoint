@@ -1,7 +1,7 @@
 import { Button, Modal } from 'react-bootstrap'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { deleteAnimal } from '../../api/AnimalsAPI'
-import type { AnimalsType } from '../../../../shared/schemas/ZodSchemas'
+import type { AnimalsType } from 'vetilib-shared/schemas/ZodSchemas'
 
 type AnimalDeleteDialogProps = {
   hideDialogDeleteAnimal: () => void

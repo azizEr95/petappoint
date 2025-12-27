@@ -1,8 +1,8 @@
-import { LoginSchema } from '../../../shared/schemas/ZodSchemas'
+import { LoginSchema } from 'vetilib-shared/schemas/ZodSchemas'
 import type {
   LoginType,
   PersonsCreateType,
-} from '../../../shared/schemas/ZodSchemas'
+} from 'vetilib-shared/schemas/ZodSchemas'
 
 export const loginUser = async (
   email: string,

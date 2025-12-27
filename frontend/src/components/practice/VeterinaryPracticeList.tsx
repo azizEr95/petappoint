@@ -5,7 +5,7 @@ import { VeterinaryPracticeCard } from './VeterinaryPracticeCard'
 import type {
   AppointmentFilterType,
   VeterinaryPracticeSearchResultType,
-} from '../../../../shared/schemas/ZodSchemas'
+} from 'vetilib-shared/schemas/ZodSchemas'
 import '../../styles/components/practice/VeterinaryPracticeList.scss'
 
 type VeterinaryPracticeListProps = {

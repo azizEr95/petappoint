@@ -6,7 +6,7 @@ import { useLoginContext } from '../../LoginContext'
 import { EmailVerificationCode } from '../../components/registration/EmailVerificationCode'
 import { getPersonById } from '../../api/PersonsAPI'
 import { ChangeEmailDialog } from '../../components/registration/ChangeEmailDialog'
-import type { PersonsType } from '../../../../shared/schemas/ZodSchemas'
+import type { PersonsType } from 'vetilib-shared/schemas/ZodSchemas'
 
 export const Route = createFileRoute('/registration/verify-email')({
   component: PendingConfirmation,

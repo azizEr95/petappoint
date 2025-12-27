@@ -5,7 +5,7 @@ import type {
   AppointmentsType,
   ServiceType,
   VeterinaryPracticesType,
-} from '../../../../shared/schemas/ZodSchemas'
+} from 'vetilib-shared/schemas/ZodSchemas'
 
 type AppointmentCardProps = {
   appointment: AppointmentsType

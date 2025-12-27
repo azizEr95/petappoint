@@ -10,7 +10,7 @@ import { PetCard } from './PetCard'
 import type {
   AnimalsType,
   AppointmentsType,
-} from '../../../../shared/schemas/ZodSchemas'
+} from 'vetilib-shared/schemas/ZodSchemas'
 import '../../styles/components/dashboard/DashboardPetsSection.scss'
 
 type DashboardPetsSectionProps = {

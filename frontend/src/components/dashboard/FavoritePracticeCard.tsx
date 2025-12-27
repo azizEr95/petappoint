@@ -1,13 +1,13 @@
 import { Link } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
 import { getVeterinaryPracticesById } from '../../api/VeterinaryPracticeAPI'
-import type { VeterinaryPracticesType } from '../../../../shared/schemas/ZodSchemas'
+import type { VeterinaryPracticesType } from 'vetilib-shared/schemas/ZodSchemas'
 import type { FavoritePracticeCardProps } from '../../types/dashboard'
 import '../../styles/components/dashboard/FavoritePracticeCard.scss'
 
 export function FavoritePracticeCard({
   practiceId,
-  onRemove,å
+  onRemove,
 }: FavoritePracticeCardProps) {
   const {
     data: practice,

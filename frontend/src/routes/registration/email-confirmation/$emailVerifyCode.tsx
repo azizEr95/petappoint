@@ -7,7 +7,7 @@ import { EmailVerificationCode } from '../../../components/registration/EmailVer
 import '../../../styles/routes/emailVerification.scss'
 import { ChangeEmailDialog } from '../../../components/registration/ChangeEmailDialog'
 import { getPersonById } from '../../../api/PersonsAPI'
-import type { LoginType, PersonsType } from '../../../../../shared/schemas/ZodSchemas'
+import type { LoginType, PersonsType } from 'vetilib-shared/schemas/ZodSchemas'
 
 export const Route = createFileRoute(
   '/registration/email-confirmation/$emailVerifyCode',

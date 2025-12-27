@@ -24,7 +24,7 @@ import type {
   AppointmentsType,
   ServiceType,
   VeterinaryPracticesType,
-} from '../../../../../../shared/schemas/ZodSchemas'
+} from 'vetilib-shared/schemas/ZodSchemas'
 
 export const Route = createFileRoute(
   '/practices/$practiceId/booking/$appointmentId',

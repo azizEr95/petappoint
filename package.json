@@ -7,7 +7,7 @@
     "startBackendFrontend": "npm-run-all --parallel startBackend startFrontend",
     "startBackend": "npm --prefix ./backend run start",
     "startFrontend": "npm --prefix ./frontend run dev",
-    "buildProject": "npm --prefix ./backend install && npm --prefix ./frontend install",
+    "buildProject": "npm --prefix ./backend install && npm --prefix ./frontend install && npm --prefix ./shared install && npm --prefix ./shared run build",
     "migrateDB": "npm --prefix ./backend run prisma",
     "seed": "npm --prefix ./backend run seed",
     "vetilib:detached": "docker-compose up --build -d",

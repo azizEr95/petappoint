@@ -9,7 +9,7 @@ import type {
   AnimalTypeType,
   AppointmentFilterType,
   VeterinaryPracticesType,
-} from '../../../../shared/schemas/ZodSchemas'
+} from 'vetilib-shared/schemas/ZodSchemas'
 
 type VeterinaryPracticeCardProps = {
   practice: VeterinaryPracticesType
