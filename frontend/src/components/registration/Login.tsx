@@ -120,6 +120,7 @@ export function LoginForm({
               name="email"
               onChange={handleChange}
               value={email}
+              data-testid="email-input"
               required
             />
           </Form.Group>
@@ -156,7 +157,7 @@ export function LoginForm({
               {errorLogin}
             </div>
           )}
-          <button type="submit" className="auth-button">
+          <button type="submit" className="auth-button" data-testid="login-submit">
             Einloggen
           </button>
         </form>

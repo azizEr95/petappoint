@@ -17,6 +17,7 @@ type PasswordInputProps = {
   required?: boolean
   disabled?: boolean
   label?: string
+  testid?: string
 }
 
 export function PasswordInput({
@@ -32,6 +33,7 @@ export function PasswordInput({
   required = false,
   disabled = false,
   label,
+  testid = "password-input",
 }: PasswordInputProps) {
   const [showPassword, setShowPassword] = useState(false)
 
@@ -58,6 +60,7 @@ export function PasswordInput({
           value={value}
           isInvalid={isInvalid}
           disabled={disabled}
+          data-testid={testid}
         />
         <button
           type="button"

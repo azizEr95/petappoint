@@ -424,6 +424,7 @@ function PersonRegistration() {
                   </Form.Label>
                   <Form.Control
                     id="CreatePersonFirstName"
+                    data-testid="person-firstName-input"
                     type="text"
                     placeholder="Vorname"
                     name="firstName"
@@ -443,6 +444,7 @@ function PersonRegistration() {
                   </Form.Label>
                   <Form.Control
                     id="CreatePersonLastName"
+                    data-testid="person-lastName-input"
                     type="text"
                     placeholder="Nachname"
                     name="lastName"
@@ -464,6 +466,7 @@ function PersonRegistration() {
                   </Form.Label>
                   <Form.Control
                     id="CreatePersonDateOfBirth"
+                    data-testid="person-dateOfBirth-input"
                     type="date"
                     name="dateOfBirth"
                     onChange={handleChange}
@@ -483,6 +486,7 @@ function PersonRegistration() {
                   </Form.Label>
                   <Form.Select
                     id="CreatePersonSex"
+                    data-testid="person-sex-select"
                     name="sex"
                     onChange={handleChange}
                     onBlur={handleBlur}
@@ -510,6 +514,7 @@ function PersonRegistration() {
                 </Form.Label>
                 <Form.Control
                   id="CreatePersonEmail"
+                  data-testid="person-email-input"
                   type="email"
                   placeholder="ihre@email.de"
                   name="email"
@@ -529,6 +534,7 @@ function PersonRegistration() {
                 </Form.Label>
                 <Form.Control
                   id="CreatePersonPhone"
+                  data-testid="person-phone-input"
                   type="tel"
                   placeholder="+49 123 456789"
                   name="phone"
@@ -545,6 +551,7 @@ function PersonRegistration() {
               <FormGroup className="form-group">
                 <PasswordInput
                   id="CreatePersonPassword"
+                  testid="person-password-input"
                   name="password"
                   value={password}
                   onChange={handleChange}
@@ -595,6 +602,7 @@ function PersonRegistration() {
 
               <PasswordInput
                 id="CreatePersonConfirmPassword"
+                testid="person-confirmPassword-input"
                 name="confirmPassword"
                 value={confirmPassword}
                 onChange={handleChange}
@@ -618,6 +626,7 @@ function PersonRegistration() {
                   </Form.Label>
                   <Form.Control
                     id="CreatePersonStrasse"
+                    data-testid="person-strasse-input"
                     type="text"
                     placeholder="Musterstraße"
                     name="strasse"
@@ -637,6 +646,7 @@ function PersonRegistration() {
                   </Form.Label>
                   <Form.Control
                     id="CreatePersonHausnr"
+                    data-testid="person-hausnr-input"
                     type="text"
                     placeholder="1"
                     name="hausnr"
@@ -658,6 +668,7 @@ function PersonRegistration() {
                   </Form.Label>
                   <Form.Control
                     id="CreatePersonPlz"
+                    data-testid="person-plz-input"
                     type="text"
                     placeholder="12345"
                     name="plz"
@@ -677,6 +688,7 @@ function PersonRegistration() {
                   </Form.Label>
                   <Form.Control
                     id="CreatePersonStadt"
+                    data-testid="person-stadt-input"
                     type="text"
                     placeholder="Musterstadt"
                     name="stadt"
@@ -697,6 +709,7 @@ function PersonRegistration() {
                 </Form.Label>
                 <Form.Control
                   id="CreatePersonLand"
+                  data-testid="person-land-input"
                   type="text"
                   placeholder="Deutschland"
                   name="land"
@@ -711,7 +724,7 @@ function PersonRegistration() {
               </FormGroup>
             </div>
 
-            <button type="submit" className="auth-button">
+            <button type="submit" className="auth-button" data-testid="person-submit-button">
               Registrieren
             </button>
           </Form>

@@ -42,10 +42,10 @@ export function AnimalDeleteDialog({
       </Modal.Body>
 
       <Modal.Footer>
-        <Button variant="secondary" onClick={hideDialogDeleteAnimal}>
+        <Button variant="secondary" onClick={hideDialogDeleteAnimal} data-testid="animal-cancel-button">
           Abbrechen
         </Button>
-        <Button variant="danger" onClick={handleSubmitDeleteAnimal}>
+        <Button variant="danger" onClick={handleSubmitDeleteAnimal} data-testid="animal-delete-button">
           {animalDelete.name} löschen
         </Button>
       </Modal.Footer>

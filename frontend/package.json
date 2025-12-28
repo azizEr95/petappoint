@@ -4,9 +4,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
-    "serve": "vite preview",
-    "start": "tsc && vite build && vite preview",
+    "build": "vite build && tsc",
+    "preview": "vite preview",
+    "start": "vite build && tsc && vite preview",
     "test": "vitest run",
     "lint": "eslint",
     "format": "prettier",
