@@ -48,9 +48,7 @@ e2e-tests:
     VITE_PUBLIC_POSTHOG_KEY: $VITE_PUBLIC_POSTHOG_KEY
     VITE_PUBLIC_POSTHOG_HOST: "https://eu.i.posthog.com"
   before_script:
-    - npm ci --prefix backend # install dependencies for backend, frontend, e2e-tests and root folder
-    - npm ci --prefix frontend
-    - npm install --prefix e2e-tests
+    - npm run buildProject # install all and build shared
     - npm install
     - npx wait-on tcp:db:5432 --timeout 60000 # wait for database to be ready
     - cd backend
