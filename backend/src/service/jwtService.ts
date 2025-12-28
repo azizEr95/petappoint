@@ -1,4 +1,4 @@
-import { LoginType, PersonsAuthenticatedType } from "vetilib-shared/schemas/ZodSchemas";
+import { LoginType, AuthenticatedType, RoleEnum } from "vetilib-shared/schemas/ZodSchemas";
 import { login } from "./authenticationService";
 import { JsonWebTokenError, JwtPayload, sign, verify } from "jsonwebtoken";
 import { personService } from "./personService";
@@ -13,7 +13,7 @@ export async function verifyPasswordAndCreateJWT(email: string, password: string
         throw new Error("Umgebungsvariablen sind nicht richtig gesetzt");
     }
 
-    const findperson: PersonsAuthenticatedType | false = await login(email, password);
+    const findperson: AuthenticatedType | false = await login(email, password);
     if (!findperson) {
         return undefined;
     }
@@ -40,7 +40,7 @@ export async function verifyPasswordAndCreateJWT(email: string, password: string
     return jwtString;
 }
 
-export async function verifyCodeandCreateJWT(userId:number, code: string): Promise<string | undefined> {
+export async function verifyCodeandCreateJWT(role: RoleEnum, userId:number, code: string): Promise<string | undefined> {
     const secret = process.env.JWT_SECRET;
     const ttl = process.env.JWT_TTL;
     if (!secret || !ttl) {
@@ -58,7 +58,7 @@ export async function verifyCodeandCreateJWT(userId:number, code: string): Promi
     // hier füllen wir unsere Zugriffberechtigung aus
     const payload: JwtPayload = {
         sub: personID,
-        role: "person",
+        role: role,
         verified: verified
     }
 
@@ -84,9 +84,8 @@ export function verifyJWT(jwtString: string | undefined): LoginType {
     if (!jwtString) {
         throw new JsonWebTokenError("JSON Web Token ist ungültig");
     }
-    const payload = verify(jwtString, secret) as JwtPayload;//#endregion
-    
 
+    const payload = verify(jwtString, secret) as JwtPayload;
     const payloadID = payload.sub as string;
     const payloadRole = payload.role;
     const payloadEXP = payload.exp as number;

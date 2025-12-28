@@ -16,7 +16,7 @@ emailverificationRouter.get("/:sixdigitcode", requiresAuthentication,
         try {
             const code = req.params.sixdigitcode;
             const result = await emailService.checkVerificationandSetVerifiedStatus(req.userId!, code);
-            const jwt = await verifyCodeandCreateJWT(req.userId!, code);
+            const jwt = await verifyCodeandCreateJWT("person", req.userId!, code);
             if (!result) {
                 res.status(400).send("Code ist falsch oder abgelaufen");
                 return;

@@ -1,34 +1,51 @@
 import { prisma } from "../singletonPC";
 import bcrypt from "bcrypt";
-import { PersonsAuthenticatedType } from "vetilib-shared/schemas/ZodSchemas";
-/*
- * This Service acts as login layer
- */
+import { AuthenticatedType, PostgresIdType, RoleEnum } from "vetilib-shared/schemas/ZodSchemas";
 
-export async function login(email: string, password: string): Promise<PersonsAuthenticatedType | false> {
-  const foundPerson = await prisma.person.findFirst({
+type LoginCompareType = {
+  id: PostgresIdType,
+  password: string,
+  role: RoleEnum
+};
+
+async function findUserAndRole(email: string): Promise<LoginCompareType | null> {
+  const query = {
     where: {
-      email: email,
+      email: email
     },
     select: {
       id: true,
-      password: true,
-    },
-  });
+      password: true
+    }
+  };
+  const [person, veterinaryPractice] = await Promise.all([prisma.person.findFirst(query), prisma.veterinaryPractice.findFirst(query)]);
+  if (veterinaryPractice) {
+    return {...veterinaryPractice, role: "company" };
+  }
+  else if (person) {
+    return {...person, role: "person" };
+  } else {
+    return null;
+  }
+}
 
-  if (!foundPerson) {
+export async function login(email: string, password: string): Promise<AuthenticatedType | false> {
+  const loginCompare = await findUserAndRole(email);
+  if (!loginCompare) {
     return false;
   }
-  if (!(await checkPassword(password, foundPerson.password))) {
+
+  const isValidPassword = await checkPassword(password, loginCompare.password);
+  if (!isValidPassword) {
     return false;
   }
 
   return {
-    role: "person",
-    id: foundPerson.id,
+    role: loginCompare.role,
+    id: loginCompare.id,
   };
 }
 
-export async function checkPassword(password: string, hashedPassword: string): Promise<boolean> {
+async function checkPassword(password: string, hashedPassword: string): Promise<boolean> {
   return await bcrypt.compare(password, hashedPassword);
 }
