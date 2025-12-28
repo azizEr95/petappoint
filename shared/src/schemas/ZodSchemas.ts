@@ -153,18 +153,18 @@ export const PersonsUpdateSchema = PersonsCreateSchema.extend({
 export type PersonsUpdateType = z.infer<typeof PersonsUpdateSchema>;
 
 //person with authentication type
-export const RoleSchema = z.enum(["person"]);
+export const RoleSchema = z.enum(["person", "company"]);
 export type RoleEnum = z.infer<typeof RoleSchema>;
-export const PersonsAuthenticatedSchema = z.object({
+export const AuthenticatedSchema = z.object({
   role: RoleSchema,
   id: PostgresIdSchema,
 });
 
-export type PersonsAuthenticatedType = z.infer<typeof PersonsAuthenticatedSchema>;
+export type AuthenticatedType = z.infer<typeof AuthenticatedSchema>;
 
 export const loginValidator = z.object({
   email: z.email(),
-  password: z.string().max(100).min(8),
+  password: z.string().max(100).min(8)
 });
 
 export type LoginValidatorType = z.infer<typeof loginValidator>;
