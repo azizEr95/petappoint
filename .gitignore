@@ -8,6 +8,7 @@ CLAUDE.md
 /coverage/
 /dist/
 *.log
+.vscode/*
 
 # Logs
 logs
@@ -159,3 +160,10 @@ vite.config.ts.timestamp-*
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+/e2e-tests/test-results/
+/e2e-tests/playwright-report/
+/e2e-tests/blob-report/
+/e2e-tests/playwright/.cache/
+/e2e-tests/playwright/.auth/
+/e2e-tests/*.png
+/e2e-tests/results.xml

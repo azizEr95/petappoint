@@ -61,7 +61,7 @@ export function VeterinaryPracticeCard({
 
   return (
     <div className="praxis-card-modern">
-      <div className="card-content">
+      <div className="card-content" data-testid={`practice-card-${practice.id}`}>
         <div className="praxis-info-section">
           <div className="praxis-info-clickable" onClick={openPraxisPage}>
             <h3 className="praxis-name">

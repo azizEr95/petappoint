@@ -1,37 +1,13 @@
 image: node:latest
 
 stages:
-  # - build-backend
-  # - build-frontend
   #- test
   - e2e-test
   - deploy
 
-# build-backend:
-#   stage: build-backend
-#   before_script:
-#     - cd backend
-#   script:
-#     - npm install
-#   cache:
-#     paths:
-#       - backend/node_modules/
-
-# build-frontend:
-#   stage: build-frontend
-#   before_script:
-#     - cd frontend
-#   script:
-#     - npm install
-#   cache:
-#     paths:
-#       - frontend/node_modules/
-
 #test:
 #  stage: test
 #  coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/
-#  dependencies:
-#    - build
 #  before_script:
 #    - cd backend
 #    - npm install
@@ -62,24 +38,33 @@ e2e-tests:
         POSTGRES_USER: vetilib
         POSTGRES_PASSWORD: 123
   variables:
-    DATABASE_URL: "postgresql://vetilib:123@db-server:5432/vetilib-e2e-test"
+    DATABASE_URL: "postgresql://vetilib:123@db:5432/vetilib-e2e-test"
     CORS_ORIGIN: "http://localhost:3001"
     HTTP_PORT: 3000
-    BREVO_API_KEY: "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"
-    JWT_SECRET: "mausibausi"
+    BREVO_API_KEY: $BREVO_API_KEY
+    JWT_SECRET: $JWT_SECRET
     JWT_TTL: 900
+    VITE_API_URL: "http://localhost:3000/api"
+    VITE_PUBLIC_POSTHOG_KEY: $VITE_PUBLIC_POSTHOG_KEY
+    VITE_PUBLIC_POSTHOG_HOST: "https://eu.i.posthog.com"
   before_script:
-    - npm install --prefix backend
-    - npm install --prefix frontend
+    - npm ci --prefix backend # install dependencies for backend, frontend, e2e-tests and root folder
+    - npm ci --prefix frontend
+    - npm install --prefix e2e-tests
     - npm install
+    - npx wait-on tcp:db:5432 --timeout 60000 # wait for database to be ready
+    - cd backend
+    - npx prisma db push --schema=./prisma/schema.prisma # initialize database schema
+    - cd ..
   script:
-    # - npm run prisma
-    - npm run e2e-tests
+    - npm run e2e-tests:ci # run playwright tests, backend, frontend and seed-e2e-tests should be started in the test script
   artifacts:
     when: always
+    expose_as: 'Playwright-HTML-Report'
     paths:
-      - playwright-report/
-      - test-results/
+      - e2e-tests/playwright-report/
+    reports:
+      junit: e2e-tests/results.xml
     expire_in: 1 week
 
 pages:

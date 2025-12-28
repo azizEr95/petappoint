@@ -233,7 +233,7 @@ export function AnimalEditNewDialog({
             setAgeInMonth(6)
           }
         }
-      }else {
+      } else {
         setDateOfBirthIsExact('No');
         setAgeInMonth(-1);
       }
@@ -722,9 +722,9 @@ export function AnimalEditNewDialog({
       const heightInCm = Math.floor(parseFloat(height.replace(',', '.')) * 100)
 
       let dateOfBirthCreate: Date | null = null;
-      if(dateOfBirthIsExact === "Yes"){
+      if (dateOfBirthIsExact === "Yes") {
         dateOfBirthCreate = new Date(dateOfBirth);
-      } else if(dateOfBirthIsExact === "No" && ageInMonth !== -1){
+      } else if (dateOfBirthIsExact === "No" && ageInMonth !== -1) {
         new Date(dateOfBirthFromAgeInMonth)
       }
 
@@ -891,6 +891,7 @@ export function AnimalEditNewDialog({
                         value={animalTypeAnimal?.id || ''}
                         onChange={handleChange}
                         isInvalid={validationErrors.animalType !== undefined}
+                        data-testid="animal-type-select"
                       >
                         <option value="">Bitte auswählen</option>
                         {animaltypes.map((animaltype) => (
@@ -917,6 +918,7 @@ export function AnimalEditNewDialog({
                     onChange={handleChange}
                     value={name}
                     isInvalid={validationErrors.name !== undefined}
+                    data-testid="animal-name-input"
                   />
                   <Form.Control.Feedback type="invalid">
                     {validationErrors.name}
@@ -964,6 +966,7 @@ export function AnimalEditNewDialog({
                   onChange={handleChange}
                   value={dateOfBirth}
                   isInvalid={validationErrors.dateOfBirth !== undefined}
+                  data-testid="animal-dateOfBirth-input"
                 />
                 <Form.Control.Feedback type="invalid">
                   {validationErrors.dateOfBirth}
@@ -979,7 +982,7 @@ export function AnimalEditNewDialog({
                   onChange={handleChange}
                   isInvalid={validationErrors.dateOfBirthIsExact !== undefined}
                 >
-                  
+
                   <option value={0}>Bitte auswählen</option>
                   <option value={-1}>weiß ich nicht</option>
                   <option value={6}>jünger 6 Monate</option>
@@ -1006,6 +1009,7 @@ export function AnimalEditNewDialog({
                     value={sex}
                     onChange={handleChange}
                     isInvalid={validationErrors.sex !== undefined}
+                    data-testid="animal-sex-select"
                   >
                     <option value="">Bitte auswählen</option>
                     <option value={'male'}>männlich</option>
@@ -1026,6 +1030,7 @@ export function AnimalEditNewDialog({
                     value={castrated}
                     onChange={handleChange}
                     isInvalid={validationErrors.castrated !== undefined}
+                    data-testid="animal-castrated-select"
                   >
                     <option value="">Bitte auswählen</option>
                     <option value="castrated">kastriert</option>
@@ -1047,6 +1052,7 @@ export function AnimalEditNewDialog({
                     value={lifestyle}
                     onChange={handleChange}
                     isInvalid={validationErrors.lifestyle !== undefined}
+                    data-testid="animal-lifestyle-select"
                   >
                     <option value="">Bitte auswählen</option>
                     <option value="indoor">Indoor</option>
@@ -1069,6 +1075,7 @@ export function AnimalEditNewDialog({
                     onChange={handleChange}
                     value={height}
                     isInvalid={validationErrors.height !== undefined}
+                    data-testid="animal-height-input"
                   />
                   <Form.Control.Feedback type="invalid">
                     {validationErrors.height}
@@ -1088,6 +1095,7 @@ export function AnimalEditNewDialog({
                     onChange={handleChange}
                     value={weight}
                     isInvalid={validationErrors.weight !== undefined}
+                    data-testid="animal-weight-input"
                   />
                   <Form.Control.Feedback type="invalid">
                     {validationErrors.weight}
@@ -1128,6 +1136,7 @@ export function AnimalEditNewDialog({
                       options={raceOptions}
                       value={selectedRaces}
                       onChange={handleSelectRaces}
+                      data-testid="animal-races-input"
                     />
                   </Form.Group>
                 </Col>
@@ -1143,16 +1152,16 @@ export function AnimalEditNewDialog({
         </Modal.Body>
 
         <Modal.Footer>
-          <Button variant="secondary" onClick={hideDialogNewAnimal}>
+          <Button variant="secondary" onClick={hideDialogNewAnimal} data-testid="animal-cancel-button">
             Abbrechen
           </Button>
           {animalEdit === undefined && (
-            <Button variant="primary" onClick={handleSubmitAnimalDialog}>
+            <Button variant="primary" onClick={handleSubmitAnimalDialog} data-testid="animal-create-button">
               Tier anlegen
             </Button>
           )}
           {animalEdit !== undefined && (
-            <Button variant="primary" onClick={handleSubmitAnimalDialog}>
+            <Button variant="primary" onClick={handleSubmitAnimalDialog} data-testid="animal-save-button">
               Speichern
             </Button>
           )}

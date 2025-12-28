@@ -145,6 +145,7 @@ function Dashboard() {
                   <button
                     className="btn btn-primary btn-add-pet"
                     onClick={handleAddPet}
+                    data-testid="add-animal"
                   >
                     <i className="bi bi-plus-circle"></i> Tier hinzufügen
                   </button>

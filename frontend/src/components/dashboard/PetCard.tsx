@@ -61,7 +61,7 @@ export function PetCard({
   }
   if (isSuccessPictureData) {
     return (
-      <div className="pet-card">
+      <div className="pet-card" data-testid={"animal-card-" + animal.name}>
         <div className="pet-card-header">
           <div className="pet-image">
             <img
@@ -75,6 +75,7 @@ export function PetCard({
               className="pet-edit-btn"
               onClick={() => onEdit(animal)}
               title="Bearbeiten"
+              data-testid={"edit-animal-" + animal.name}
             >
               <i className="bi bi-pencil"></i>
             </button>
@@ -82,6 +83,7 @@ export function PetCard({
               className="pet-delete-btn"
               onClick={handleDelete}
               title="Löschen"
+              data-testid={"delete-animal-" + animal.name}
             >
               <i className="bi bi-trash"></i>
             </button>

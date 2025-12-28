@@ -114,7 +114,7 @@ export function DashboardPetsSection({ userId, onAnimalsLoaded }: DashboardPetsS
             Fügen Sie Ihr erstes Tier hinzu, um Termine zu buchen und Ihre
             Haustiere zu verwalten.
           </p>
-          <button className="btn btn-primary" onClick={handleAddPet}>
+          <button className="btn btn-primary" onClick={handleAddPet} data-testid="add-animal">
             <i className="bi bi-plus-circle"></i> Erstes Tier hinzufügen
           </button>
         </div>
