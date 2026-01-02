@@ -3,7 +3,7 @@ import { emailService } from '../service/emailService';
 import { requiresAuthentication } from './authentication';
 import { personService } from '../service/personService';
 import { ResourceNotFoundError } from '../exceptions/errors/ResourceNotFoundError';
-import { verifyCodeandCreateJWT, verifyJWT, verifyPasswordAndCreateJWT } from '../service/jwtService';
+import { verifyCodeAndCreateJWT, verifyJWT, verifyPasswordAndCreateJWT } from '../service/jwtService';
 
 
 /*
@@ -16,7 +16,7 @@ emailverificationRouter.get("/:sixdigitcode", requiresAuthentication,
         try {
             const code = req.params.sixdigitcode;
             const result = await emailService.checkVerificationandSetVerifiedStatus(req.userId!, code);
-            const jwt = await verifyCodeandCreateJWT("person", req.userId!, code);
+            const jwt = await verifyCodeAndCreateJWT("person", req.userId!, code);
             if (!result) {
                 res.status(400).send("Code ist falsch oder abgelaufen");
                 return;

@@ -13,6 +13,7 @@ import {
   PostgresIdSchema,
 } from "vetilib-shared/schemas/ZodSchemas";
 import { checkVerified, optionalAuthentication, requiresAuthentication } from "./authentication";
+import { createJWT, verifyJWT, verifyPasswordAndCreateJWT } from "../service/jwtService";
 
 export const veterinaryPracticeRouter = express.Router();
 
@@ -83,10 +84,27 @@ veterinaryPracticeRouter.get("/:id/appointments/booked", optionalAuthentication,
   return res.send(availableAppointments);
 });
 
-// TO-DO: erstellen von tierarztpraxen
-
-veterinaryPracticeRouter.post("/", requiresAuthentication, async (req, res, next) => {
+veterinaryPracticeRouter.post("/", optionalAuthentication,
+  async (req, res) => {
   const validatedBody = VeterinaryPracticeCreateSchema.parse(req.body);
-  const vetRes: VeterinaryPracticesType = await veterinaryPracticeService.create(validatedBody);
-  res.send(vetRes);
+  
+  const createdVeterinaryPractice: VeterinaryPracticesType = await veterinaryPracticeService.create(validatedBody);
+
+  // TODO: Email Confirmation
+  // TODO: Code verification for companies?
+  const jwt = await createJWT(createdVeterinaryPractice.id, "company", true);
+  if (!jwt) {
+    res.sendStatus(401);
+    return;
+  }
+
+  const userdata = verifyJWT(jwt);
+  res.cookie('access_token', jwt, {
+    httpOnly: true,
+    expires: new Date(userdata.exp * 1000),
+    secure: true,
+    sameSite: "none"
+  });
+
+  res.status(201).send(userdata);
 });
