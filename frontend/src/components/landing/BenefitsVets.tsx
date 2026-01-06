@@ -70,7 +70,7 @@ export default function BenefitsVets() {
           </div>
 
           <Link
-            to="/registration/veterinary"
+            to="/registration/veterinarypractice"
             className="btn btn-primary btn-lg px-5 py-3 mb-3 text-white"
           >
             <i className="bi bi-building me-2"></i>

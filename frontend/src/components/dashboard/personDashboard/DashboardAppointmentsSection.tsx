@@ -4,10 +4,10 @@ import { Link } from '@tanstack/react-router'
 import {
   getFutureAppointmentsByUserId,
   getPastAppointmentsByUserId,
-} from '../../api/AppointmentsAPI'
-import { AppointmentCard } from '../appointment/AppointmentCard'
+} from '../../../api/AppointmentsAPI'
+import { AppointmentCard } from '../../appointment/AppointmentCard'
 import type { AppointmentsType } from 'vetilib-shared/schemas/ZodSchemas'
-import '../../styles/components/dashboard/DashboardAppointmentsSection.scss'
+import '../../../styles/components/dashboard/DashboardAppointmentsSection.scss'
 
 type DashboardAppointmentsSectionProps = {
   userId: number

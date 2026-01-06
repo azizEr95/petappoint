@@ -15,7 +15,7 @@ import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as AnimalsRouteImport } from './routes/animals'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppointmentsIndexRouteImport } from './routes/appointments/index'
-import { Route as RegistrationVeterinaryRouteImport } from './routes/registration/veterinary'
+import { Route as RegistrationVeterinarypracticeRouteImport } from './routes/registration/veterinarypractice'
 import { Route as RegistrationVerifyEmailRouteImport } from './routes/registration/verify-email'
 import { Route as RegistrationPersonRouteImport } from './routes/registration/person'
 import { Route as PracticesFavoritesRouteImport } from './routes/practices/favorites'
@@ -57,11 +57,12 @@ const AppointmentsIndexRoute = AppointmentsIndexRouteImport.update({
   path: '/appointments/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const RegistrationVeterinaryRoute = RegistrationVeterinaryRouteImport.update({
-  id: '/registration/veterinary',
-  path: '/registration/veterinary',
-  getParentRoute: () => rootRouteImport,
-} as any)
+const RegistrationVeterinarypracticeRoute =
+  RegistrationVeterinarypracticeRouteImport.update({
+    id: '/registration/veterinarypractice',
+    path: '/registration/veterinarypractice',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const RegistrationVerifyEmailRoute = RegistrationVerifyEmailRouteImport.update({
   id: '/registration/verify-email',
   path: '/registration/verify-email',
@@ -129,7 +130,7 @@ export interface FileRoutesByFullPath {
   '/practices/favorites': typeof PracticesFavoritesRoute
   '/registration/person': typeof RegistrationPersonRoute
   '/registration/verify-email': typeof RegistrationVerifyEmailRoute
-  '/registration/veterinary': typeof RegistrationVeterinaryRoute
+  '/registration/veterinarypractice': typeof RegistrationVeterinarypracticeRoute
   '/appointments': typeof AppointmentsIndexRoute
   '/appointments/$appointmentId/reschedule': typeof AppointmentsAppointmentIdRescheduleRoute
   '/password-reset/confirm/$token': typeof PasswordResetConfirmTokenRoute
@@ -148,7 +149,7 @@ export interface FileRoutesByTo {
   '/practices/favorites': typeof PracticesFavoritesRoute
   '/registration/person': typeof RegistrationPersonRoute
   '/registration/verify-email': typeof RegistrationVerifyEmailRoute
-  '/registration/veterinary': typeof RegistrationVeterinaryRoute
+  '/registration/veterinarypractice': typeof RegistrationVeterinarypracticeRoute
   '/appointments': typeof AppointmentsIndexRoute
   '/appointments/$appointmentId/reschedule': typeof AppointmentsAppointmentIdRescheduleRoute
   '/password-reset/confirm/$token': typeof PasswordResetConfirmTokenRoute
@@ -168,7 +169,7 @@ export interface FileRoutesById {
   '/practices/favorites': typeof PracticesFavoritesRoute
   '/registration/person': typeof RegistrationPersonRoute
   '/registration/verify-email': typeof RegistrationVerifyEmailRoute
-  '/registration/veterinary': typeof RegistrationVeterinaryRoute
+  '/registration/veterinarypractice': typeof RegistrationVeterinarypracticeRoute
   '/appointments/': typeof AppointmentsIndexRoute
   '/appointments/$appointmentId/reschedule': typeof AppointmentsAppointmentIdRescheduleRoute
   '/password-reset/confirm/$token': typeof PasswordResetConfirmTokenRoute
@@ -189,7 +190,7 @@ export interface FileRouteTypes {
     | '/practices/favorites'
     | '/registration/person'
     | '/registration/verify-email'
-    | '/registration/veterinary'
+    | '/registration/veterinarypractice'
     | '/appointments'
     | '/appointments/$appointmentId/reschedule'
     | '/password-reset/confirm/$token'
@@ -208,7 +209,7 @@ export interface FileRouteTypes {
     | '/practices/favorites'
     | '/registration/person'
     | '/registration/verify-email'
-    | '/registration/veterinary'
+    | '/registration/veterinarypractice'
     | '/appointments'
     | '/appointments/$appointmentId/reschedule'
     | '/password-reset/confirm/$token'
@@ -227,7 +228,7 @@ export interface FileRouteTypes {
     | '/practices/favorites'
     | '/registration/person'
     | '/registration/verify-email'
-    | '/registration/veterinary'
+    | '/registration/veterinarypractice'
     | '/appointments/'
     | '/appointments/$appointmentId/reschedule'
     | '/password-reset/confirm/$token'
@@ -247,7 +248,7 @@ export interface RootRouteChildren {
   PracticesFavoritesRoute: typeof PracticesFavoritesRoute
   RegistrationPersonRoute: typeof RegistrationPersonRoute
   RegistrationVerifyEmailRoute: typeof RegistrationVerifyEmailRoute
-  RegistrationVeterinaryRoute: typeof RegistrationVeterinaryRoute
+  RegistrationVeterinarypracticeRoute: typeof RegistrationVeterinarypracticeRoute
   AppointmentsIndexRoute: typeof AppointmentsIndexRoute
   AppointmentsAppointmentIdRescheduleRoute: typeof AppointmentsAppointmentIdRescheduleRoute
   PasswordResetConfirmTokenRoute: typeof PasswordResetConfirmTokenRoute
@@ -300,11 +301,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppointmentsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/registration/veterinary': {
-      id: '/registration/veterinary'
-      path: '/registration/veterinary'
-      fullPath: '/registration/veterinary'
-      preLoaderRoute: typeof RegistrationVeterinaryRouteImport
+    '/registration/veterinarypractice': {
+      id: '/registration/veterinarypractice'
+      path: '/registration/veterinarypractice'
+      fullPath: '/registration/veterinarypractice'
+      preLoaderRoute: typeof RegistrationVeterinarypracticeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/registration/verify-email': {
@@ -391,7 +392,7 @@ const rootRouteChildren: RootRouteChildren = {
   PracticesFavoritesRoute: PracticesFavoritesRoute,
   RegistrationPersonRoute: RegistrationPersonRoute,
   RegistrationVerifyEmailRoute: RegistrationVerifyEmailRoute,
-  RegistrationVeterinaryRoute: RegistrationVeterinaryRoute,
+  RegistrationVeterinarypracticeRoute: RegistrationVeterinarypracticeRoute,
   AppointmentsIndexRoute: AppointmentsIndexRoute,
   AppointmentsAppointmentIdRescheduleRoute:
     AppointmentsAppointmentIdRescheduleRoute,

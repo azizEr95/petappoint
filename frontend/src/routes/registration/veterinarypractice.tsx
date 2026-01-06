@@ -3,14 +3,15 @@ import { useState } from 'react';
 import '../../styles/routes/veterinaryRegistration.scss';
 import { useMutation } from '@tanstack/react-query';
 import { Alert, Form, FormGroup } from 'react-bootstrap';
-import { PasswordInput } from '../../components/common/PasswordInput';
-import { createVeterinaryPractice } from '../../api/VeterinaryPracticeAPI';
-import { scrollToFirstError } from '../../utils/Registration';
 import { VeterinaryPracticeCreateSchema } from 'vetilib-shared/schemas/ZodSchemas';
+import { PasswordInput } from '../../components/common/PasswordInput';
+import { scrollToFirstError } from '../../utils/Registration';
 import type { ChangeEvent, FormEvent } from 'react';
 import type { VeterinaryPracticesCreateType } from 'vetilib-shared/schemas/ZodSchemas';
+import { veterinaryPracticeRegistration } from '@/api/LoginAPI';
+import { useLoginContext } from '@/LoginContext';
 
-export const Route = createFileRoute('/registration/veterinary')({
+export const Route = createFileRoute('/registration/veterinarypractice')({
   component: VeterinaryRegistration,
 });
 
@@ -30,6 +31,7 @@ function VeterinaryRegistration() {
   const [info, setInfo] = useState('');
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const navigate = useNavigate();
+  const { setLogin } = useLoginContext()
 
   // Password validation state
   const [passwordRequirements, setPasswordRequirements] = useState({
@@ -212,15 +214,16 @@ function VeterinaryRegistration() {
 
   const { mutate: mutateCreatePractice } = useMutation({
     mutationFn: (practice: VeterinaryPracticesCreateType) =>
-      createVeterinaryPractice(practice),
+      veterinaryPracticeRegistration(practice),
     onError: (error: any) => {
       setErrors({
         ...errors,
         [error.field || 'general']: error.message,
-      })
+      });
     },
-    onSuccess: () => {
-      navigate({ to: '/dashboard' })
+    onSuccess: (data) => {
+      setLogin(data);
+      navigate({ to: '/dashboard' });
     },
   })
 
@@ -295,7 +298,6 @@ function VeterinaryRegistration() {
     e.preventDefault();
 
     if (!validateForm(null)) {
-      console.log('Formular enthält Fehler');
       setTimeout(() => {
         scrollToFirstError(errors);
       }, 100);
@@ -578,7 +580,7 @@ function VeterinaryRegistration() {
               <div className="form-row equal-col">
                 <FormGroup className="form-group">
                   <Form.Label htmlFor="infoemail" className="form-label">
-                    Info E-Mail
+                    Info E-Mail *
                   </Form.Label>
                   <Form.Control
                     id="infoemail"

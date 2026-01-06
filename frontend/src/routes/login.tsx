@@ -32,7 +32,7 @@ function Login() {
           <button
             type="button"
             className="option-button"
-            onClick={() => navigate({ to: '/registration/veterinary' })}
+            onClick={() => navigate({ to: '/registration/veterinarypractice' })}
           >
             Als Praxis registrieren
           </button>
