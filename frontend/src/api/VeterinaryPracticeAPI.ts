@@ -5,7 +5,6 @@ import {
 import type {
   VeterinaryPracticeSearchQueryType,
   VeterinaryPracticeSearchResultType,
-  VeterinaryPracticesCreateType,
   VeterinaryPracticesType,
 } from 'vetilib-shared/schemas/ZodSchemas'
 
@@ -61,16 +60,8 @@ export const getVeterinaryPracticesById = async (
     throw new Error('Failed to fetch getVeterinaryPracticesById')
   }
 
-  const data = await res.json()
-  const parsed = VeterinaryPracticeSchema.safeParse(data)
-  if (parsed.error !== undefined) {
-    // if Zod throws an Error print them
-    console.log(parsed.error)
-  }
-  if (!parsed.success) {
-    throw new Error(parsed.error.toString())
-  }
-  return parsed.data
+  const data = await res.json();
+  return parsedVeterinaryPractice(data);
 }
 
 export const getFavoritesVeterinaryPractices = async (
@@ -86,6 +77,27 @@ export const getFavoritesVeterinaryPractices = async (
 
   const data = await res.json()
   return data
+}
+
+export const getFavoritesVeterinaryPracticesDetails = async (
+  userId: string,
+): Promise<Array<VeterinaryPracticesType>> => {
+  const favoriteIds = await getFavoritesVeterinaryPractices(userId);
+  if (favoriteIds.length === 0) {
+    return [];
+  }
+
+  const practicesPromises = favoriteIds.map(async (id) => {
+    try {
+      return await getVeterinaryPracticesById(id.toString());
+    } catch (error) {
+      console.error(`Fehler beim Laden der Praxis ${id}:`, error);
+      return null;
+    }
+  });
+
+  const practices = await Promise.all(practicesPromises);
+  return practices.filter((p): p is VeterinaryPracticesType => p !== null);
 }
 
 export const addFavoritesVeterinaryPractices = async (
@@ -142,58 +154,6 @@ export const deleteFavoritesVeterinaryPractices = async (
   return
 }
 
-export const createVeterinaryPractice = async (
-  practice: VeterinaryPracticesCreateType,
-): Promise<VeterinaryPracticesType> => {
-  const requestOptions = {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(practice),
-    credentials: 'include' as RequestCredentials,
-  }
-  const res = await fetch(
-    import.meta.env.VITE_API_URL + '/veterinary-practice/',
-    requestOptions,
-  )
-  if (!res.ok) {
-    const errorData = await res.json().catch(() => ({}))
-    const error = new Error(errorData.error || 'Registration failed')
-    ;(error as any).field = errorData.field
-    throw error
-  }
-  const data = await res.json()
-  return parsedVeterinaryPractice(data)
-}
-
-// NEUE FUNKTION FÜR FAVORITEN MIT DETAILS
-export const getFavoritesVeterinaryPracticesDetails = async (
-  userId: string,
-): Promise<VeterinaryPracticesType[]> => {
-  // 1. Hole die IDs der favorisierten Praxen
-  const favoriteIds = await getFavoritesVeterinaryPractices(userId);
-  
-  if (favoriteIds.length === 0) {
-    return [];
-  }
-
-  // 2. Hole die Details für jede Praxis
-  const practicesPromises = favoriteIds.map(async (id) => {
-    try {
-      return await getVeterinaryPracticesById(id.toString());
-    } catch (error) {
-      console.error(`Fehler beim Laden der Praxis ${id}:`, error);
-      return null;
-    }
-  });
-
-  const practices = await Promise.all(practicesPromises);
-  
-  // 3. Filtere null-Werte heraus (falls eine Praxis nicht geladen werden konnte)
-  return practices.filter((p): p is VeterinaryPracticesType => p !== null);
-}
-
 /*
  * change the date from the Appointment to Date Object and safeParse the object
  */
@@ -208,6 +168,5 @@ const parsedVeterinaryPractice = (
   if (!parsed.success) {
     throw new Error(parsed.error.toString())
   }
-  console.log('parse erfolgreich')
   return parsed.data
 }

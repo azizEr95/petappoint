@@ -23,7 +23,7 @@ export default function CTABanner() {
             Jetzt Termin finden
           </Link>
           <Link
-            to="/registration/veterinary"
+            to="/registration/veterinarypractice"
             className="btn btn-cta btn-cta-secondary"
           >
             <i className="bi bi-building me-2"></i>

@@ -3,9 +3,9 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   deleteFavoritesVeterinaryPractices,
   getFavoritesVeterinaryPractices,
-} from '../../api/VeterinaryPracticeAPI'
-import { FavoritePracticeCard } from './FavoritePracticeCard'
-import '../../styles/components/dashboard/DashboardFavoritesSection.scss'
+} from '../../../api/VeterinaryPracticeAPI'
+import { FavoritePracticeCard } from '../../practice/FavoritePracticeCard'
+import '../../../styles/components/dashboard/DashboardFavoritesSection.scss'
 
 type DashboardFavoritesSectionProps = {
   userId?: number

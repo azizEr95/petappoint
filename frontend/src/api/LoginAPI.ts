@@ -3,6 +3,7 @@ import type {
   LoginType,
   LoginValidatorType,
   PersonsCreateType,
+  VeterinaryPracticesCreateType,
 } from 'vetilib-shared/schemas/ZodSchemas'
 
 export const loginUser = async (
@@ -56,6 +57,31 @@ export const personRegistration = async (
     throw error
   }
 
+  const data = await res.json()
+  return parseLogin(data);
+}
+
+export const veterinaryPracticeRegistration = async (
+  practice: VeterinaryPracticesCreateType,
+): Promise<LoginType> => {
+  const requestOptions = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(practice),
+    credentials: 'include' as RequestCredentials,
+  }
+  const res = await fetch(
+    import.meta.env.VITE_API_URL + '/veterinary-practice/',
+    requestOptions,
+  )
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}))
+    const error = new Error(errorData.error || 'Registration failed')
+    ;(error as any).field = errorData.field
+    throw error
+  }
   const data = await res.json()
   return parseLogin(data);
 }

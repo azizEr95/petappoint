@@ -2,10 +2,18 @@ import { Link } from '@tanstack/react-router'
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { getPictureFromAnimal } from '../../api/AnimalsAPI'
-import { AnimalDeleteDialog } from '../animal/AnimalDeleteDialog'
 import { mapMonthsToAgeRange } from '../../utils/AgeRangeMapper'
-import type { PetCardProps } from '../../types/dashboard'
-import '../../styles/components/dashboard/PetCard.scss'
+import { AnimalDeleteDialog } from './AnimalDeleteDialog'
+import '../../styles/components/animal/PetCard.scss'
+import type { AnimalsType } from 'vetilib-shared/schemas/ZodSchemas'
+
+type PetCardProps = {
+  animal: AnimalsType
+  vaccinationStatus: 'overdue' | 'current'
+  lastTreatment?: Date
+  nextAppointment?: Date
+  onEdit: (animal: AnimalsType) => void
+}
 
 export function PetCard({
   animal,

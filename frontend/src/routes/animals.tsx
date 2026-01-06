@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
-import { DashboardPetsSection } from '../components/dashboard/DashboardPetsSection'
+import { DashboardPetsSection } from '../components/dashboard/personDashboard/DashboardPetsSection'
 import { useLoginContext } from '../LoginContext'
 import { AnimalEditNewDialog } from '../components/animal/AnimalEditNewDialog'
 import { isLoggedInAndVerified } from '../utils/Authentication'

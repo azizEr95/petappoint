@@ -1,17 +1,17 @@
 import { useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { getAnimalsFromUser } from '../../api/AnimalsAPI'
+import { getAnimalsFromUser } from '../../../api/AnimalsAPI'
 import {
   getFutureAppointmentsByUserId,
   getPastAppointmentsByUserId,
-} from '../../api/AppointmentsAPI'
-import { AnimalEditNewDialog } from '../animal/AnimalEditNewDialog'
-import { PetCard } from './PetCard'
+} from '../../../api/AppointmentsAPI'
+import { AnimalEditNewDialog } from '../../animal/AnimalEditNewDialog'
+import { PetCard } from '../../animal/PetCard'
 import type {
   AnimalsType,
   AppointmentsType,
 } from 'vetilib-shared/schemas/ZodSchemas'
-import '../../styles/components/dashboard/DashboardPetsSection.scss'
+import '../../../styles/components/dashboard/DashboardPetsSection.scss'
 
 type DashboardPetsSectionProps = {
   userId: number

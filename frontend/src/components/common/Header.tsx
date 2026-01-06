@@ -17,6 +17,39 @@ export default function Header() {
     },
   })
 
+  let linksHeader = <></>;
+  if (login && login.role === 'person') {
+    linksHeader = <>
+      <Link to="/dashboard" className="nav-link-clean">
+        Dashboard
+      </Link>
+      <Link to="/appointments" className="nav-link-clean">
+        Termine
+      </Link>
+      <Link to="/animals" className="nav-link-clean">
+        Tiere
+      </Link>
+    </>;
+  } else if (login && login.role === 'company') {
+    linksHeader = <>
+      <Link to="/dashboard" className="nav-link-clean">
+        Dashboard
+      </Link>
+    </>;
+  } else {
+    linksHeader = <>
+      <Link to="/" hash="how-it-works" className="nav-link-clean">
+        So funktioniert's
+      </Link>
+      <Link to="/" hash="for-vets" className="nav-link-clean">
+        Für Tierärzte
+      </Link>
+      <Link to="/" hash="contact" className="nav-link-clean">
+        Kontakt
+      </Link>
+    </>;
+  }
+
   return (
     <header className="header-clean">
       <div className="container">
@@ -27,31 +60,7 @@ export default function Header() {
           </Link>
 
           <div className="nav-links-clean">
-            {login ? (
-              <>
-                <Link to="/dashboard" className="nav-link-clean">
-                  Dashboard
-                </Link>
-                <Link to="/appointments" className="nav-link-clean">
-                  Termine
-                </Link>
-                <Link to="/animals" className="nav-link-clean">
-                  Tiere
-                </Link>
-              </>
-            ) : (
-              <>
-                <Link to="/" hash="how-it-works" className="nav-link-clean">
-                  So funktioniert's
-                </Link>
-                <Link to="/" hash="for-vets" className="nav-link-clean">
-                  Für Tierärzte
-                </Link>
-                <Link to="/" hash="contact" className="nav-link-clean">
-                  Kontakt
-                </Link>
-              </>
-            )}
+            {linksHeader}
           </div>
 
           <div className="nav-actions">

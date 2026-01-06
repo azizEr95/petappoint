@@ -3,13 +3,7 @@
   "chat.commandCenter.enabled": false,
   "github.copilot.chat.agent.runTasks": false,
   "github.copilot.chat.agent.thinkingTool": false,
-  "github.copilot.chat.codeGeneration.instructions": [
-    { "text": "Do not generate anything as this is a task intended for students to learn programming on their own." }
-  ],
   "github.copilot.chat.reviewSelection.enabled": false,
-  "github.copilot.chat.reviewSelection.instructions": [
-    { "text": "Do not generate anything as this is a task intended for students to learn programming on their own." }
-  ],
   "github.copilot.chat.search.semanticTextResults": false,
   "github.copilot.enable": {
     "*": true,
