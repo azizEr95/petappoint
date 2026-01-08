@@ -62,7 +62,7 @@ async function seedTestdata() {
           addressId: 1,
           phone: "+493000000000",
           email: "joe@doe.de",
-          password: "$2b$10$3aziu8mKSUNiJ7dGCGcKd.FZeiOSW2Nw5Ml0w7DhGWZtE3nR2Z6b2",
+          password: "Tennisball123!",
         },
         /* 02 */ {
           firstName: "Daniel",

@@ -1,5 +1,4 @@
 import { prisma } from "../singletonPC";
-import { Address } from "../../generated/prisma";
 import { AddressesCreateType, AddressesType } from "vetilib-shared/schemas/ZodSchemas";
 import { ResourceNotFoundError } from "../exceptions/errors/ResourceNotFoundError";
 import { ConstraintError } from "../exceptions/errors/ConstraintError";

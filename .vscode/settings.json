@@ -15,15 +15,5 @@
   "github.copilot.nextEditSuggestions.enabled": false,
   "github.copilot.renameSuggestions.triggerAutomatically": false,
   "github.copilot.selectedCompletionModel": "none",
-  "jest.runMode": {
-    "type": "on-save",
-    "testFileOnly": true,
-    "deferred": true
-  },
-  "jest.outputConfig": {
-    "revealOn": "demand",
-    "revealWithFocus": "none",
-    "clearOnRun": "none"
-  },
   "testing.automaticallyOpenTestResults": "neverOpen"
 }

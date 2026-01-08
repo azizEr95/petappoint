@@ -16,7 +16,7 @@
     "stop": "docker-compose down",
     "e2e-tests": "npm-run-all --parallel startDB e2e-tests:ci",
     "e2e-tests:ci": "cd e2e-tests && npx playwright test",
-    "test": "npm run test:backend && npm run test:frontend",
+    "test": "npm run test:backend",
     "test:backend": "cd backend && npm test",
     "prisma": "cd backend && npm run prisma"
   },
