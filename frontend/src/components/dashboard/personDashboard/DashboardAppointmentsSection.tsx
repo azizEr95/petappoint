@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { Link } from '@tanstack/react-router'
+import { Link, useNavigate } from '@tanstack/react-router'
 import {
   getFutureAppointmentsByUserId,
   getPastAppointmentsByUserId,
@@ -16,10 +16,8 @@ type DashboardAppointmentsSectionProps = {
 export function DashboardAppointmentsSection({
   userId,
 }: DashboardAppointmentsSectionProps) {
+  const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState<'upcoming' | 'past'>('upcoming')
-  const [selectedAppointment, setSelectedAppointment] = useState<
-    AppointmentsType | undefined
-  >()
 
   // Fetch upcoming appointments
   const { data: upcomingAppointments = [], isLoading: isLoadingUpcoming } =
@@ -37,8 +35,14 @@ export function DashboardAppointmentsSection({
   })
 
   const handleShowDetails = (appointment: AppointmentsType) => {
-    setSelectedAppointment(appointment)
-    // Could open a details modal here
+    navigate({
+      to: '/appointments',
+      state: {
+        selectedAppointmentId: appointment.id,
+        initialTab: activeTab,
+        fromDashboard: true,
+      },
+    })
   }
 
   const displayedUpcoming = upcomingAppointments.slice(0, 5)
@@ -86,7 +90,6 @@ export function DashboardAppointmentsSection({
                     key={appointment.id}
                     appointment={appointment}
                     handleShowDetailsAppointment={handleShowDetails}
-                    isActive={selectedAppointment?.id === appointment.id}
                     isPast={false}
                   />
                 ))}
@@ -127,7 +130,6 @@ export function DashboardAppointmentsSection({
                   key={appointment.id}
                   appointment={appointment}
                   handleShowDetailsAppointment={handleShowDetails}
-                  isActive={selectedAppointment?.id === appointment.id}
                   isPast={true}
                 />
               ))}
