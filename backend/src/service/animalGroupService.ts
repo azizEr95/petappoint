@@ -1,5 +1,4 @@
 import { prisma } from "../singletonPC";
-import { AnimalGroup } from "../../generated/prisma";
 import { ResourceNotFoundError } from "../exceptions/errors/ResourceNotFoundError";
 import { AnimalGroupCreateType, AnimalGroupType } from "vetilib-shared/schemas/ZodSchemas";
 
@@ -25,7 +24,7 @@ export const animalGroupService = {
 
   async update(data: AnimalGroupType): Promise<AnimalGroupType> {
     if (!data.id) {
-      throw new ResourceNotFoundError("ID is required for update", "id", data.id);
+      throw new ResourceNotFoundError(`Animal group with ID ${data.id} does not exist`, "id", data.id);
     }
 
     const updatedGroup = await prisma.animalGroup.update({ where: { id: data.id }, data: data });

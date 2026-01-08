@@ -79,7 +79,7 @@ npm run dev
 
 - `npm start` - Start dev server with hot reload
 - `npm run build` - Compile TypeScript
-- `npm test` - Run Jest tests
+- `npm test` - Run Vitest Integration tests
 - `npm run prisma` - Sync Prisma schema with database
 
 ### Frontend (from `frontend/`)
