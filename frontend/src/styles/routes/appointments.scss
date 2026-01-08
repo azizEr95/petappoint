@@ -241,6 +241,7 @@
   transition: all 0.3s ease;
   border: 2px solid transparent;
   border-left: 4px solid transparent;
+  position: relative;
 
   &:hover {
     transform: translateY(-2px);
@@ -324,6 +325,79 @@
 
       i {
         color: var(--color-primary-light);
+      }
+    }
+  }
+
+  // Card Action Buttons
+  .card-actions {
+    display: flex;
+    gap: 0.75rem;
+    position: absolute;
+    bottom: var(--spacing-md);
+    right: var(--spacing-md);
+    z-index: 10;
+
+    &.compact {
+      position: static;
+      margin-left: auto;
+      flex-shrink: 0;
+    }
+
+    .action-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      background: white;
+      border: 1.5px solid var(--color-border);
+      border-radius: 50%;
+      color: var(--color-text-light);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      padding: 0;
+
+      i {
+        font-size: 1.1rem;
+      }
+
+      @media (max-width: 768px) {
+        width: 44px;
+        height: 44px;
+
+        i {
+          font-size: 1.2rem;
+        }
+      }
+
+      &:hover {
+        background: var(--color-primary-pale);
+        border-color: var(--color-primary-light);
+        color: var(--color-primary);
+        transform: scale(1.1);
+      }
+
+      &.action-reschedule {
+        border-color: var(--color-primary-light);
+        color: var(--color-primary);
+
+        &:hover {
+          background: var(--color-primary);
+          color: white;
+          border-color: var(--color-primary);
+        }
+      }
+
+      &.action-cancel {
+        border-color: #fca5a5;
+        color: #dc2626;
+
+        &:hover {
+          background: #dc2626;
+          color: white;
+          border-color: #dc2626;
+        }
       }
     }
   }

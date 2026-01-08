@@ -1,6 +1,10 @@
+import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import { useNavigate } from '@tanstack/react-router'
 import { getVeterinaryPracticesById } from '../../api/VeterinaryPracticeAPI'
 import { getPictureURLForAnimalId } from '../../api/AnimalsAPI'
+import { exportToCalendar } from '../../utils/calendarExport'
+import { AppointmentDeleteDialog } from './AppointmentDeleteDialog'
 import type {
   AppointmentsType,
   ServiceType,
@@ -10,7 +14,7 @@ import type {
 type AppointmentCardProps = {
   appointment: AppointmentsType
   handleShowDetailsAppointment: (appointment: AppointmentsType) => void
-  isActive: boolean
+  isActive?: boolean
   isPast: boolean
   compact?: boolean
 }
@@ -23,6 +27,8 @@ export function AppointmentCard({
   compact = false,
 }: AppointmentCardProps) {
   const practiceID = appointment.veterinaryPractice.id
+  const navigate = useNavigate()
+  const [showCancelDialog, setShowCancelDialog] = useState(false)
 
   const { isError, isSuccess, data } = useQuery<VeterinaryPracticesType>({
     queryKey: ['veterinaryPractice', practiceID],
@@ -32,7 +38,7 @@ export function AppointmentCard({
   if (isError) {
     return (
       <div
-        className={`appointment-card ${isActive ? 'active' : ''}`}
+        className={`appointment-card ${isActive ?? false ? 'active' : ''}`}
         onClick={() => handleShowDetailsAppointment(appointment)}
       >
         <div className="card-header">
@@ -65,35 +71,65 @@ export function AppointmentCard({
       })
     }
 
-    if (compact) {
-      return (
-        <div
-          className={`appointment-card compact ${isActive ? 'active' : ''} ${isPast ? 'past' : 'upcoming'}`}
-          onClick={() => handleShowDetailsAppointment(appointment)}
-        >
-          <div className="compact-animal-image">
-            <img
-              src={getPictureURLForAnimalId(appointment.animal?.id || 0)}
-              alt={appointment.animal?.name || 'Tier'}
-              onError={(e) => {
-                e.currentTarget.src = '/logo192.png'
-              }}
-            />
-          </div>
-          <div className="compact-info">
-            <div className="compact-practice">{practice.name}</div>
-            <div className="compact-date">{formatDate(appointment.startTime)}</div>
-            {appointmentType && (
-              <div className="compact-service">{appointmentType.name}</div>
-            )}
-          </div>
-        </div>
+    const handleExportCalendar = (e: React.MouseEvent) => {
+      e.stopPropagation()
+      const appointmentType = appointment.availableServices.find(
+        (x) => x.id === appointment.service?.id,
+      )
+      const address = `${practice.address.street}, ${practice.address.cityCode} ${practice.address.city}`
+      exportToCalendar(
+        appointment,
+        practice.name,
+        address,
+        appointmentType?.name,
       )
     }
 
-    return (
+    const handleOpenMap = (e: React.MouseEvent) => {
+      e.stopPropagation()
+      const address = `${practice.address.street}, ${practice.address.cityCode} ${practice.address.city}`
+      const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`
+      window.open(mapsUrl, '_blank')
+    }
+
+    const handleReschedule = (e: React.MouseEvent) => {
+      e.stopPropagation()
+      navigate({
+        to: '/appointments/$appointmentId/reschedule',
+        params: { appointmentId: appointment.id.toString() },
+      })
+    }
+
+    const handleCancel = (e: React.MouseEvent) => {
+      e.stopPropagation()
+      setShowCancelDialog(true)
+    }
+
+    const card = compact ? (
       <div
-        className={`appointment-card ${isActive ? 'active' : ''} ${isPast ? 'past' : 'upcoming'}`}
+        className={`appointment-card compact ${isActive ?? false ? 'active' : ''} ${isPast ? 'past' : 'upcoming'}`}
+        onClick={() => handleShowDetailsAppointment(appointment)}
+      >
+        <div className="compact-animal-image">
+          <img
+            src={getPictureURLForAnimalId(appointment.animal?.id || 0)}
+            alt={appointment.animal?.name || 'Tier'}
+            onError={(e) => {
+              e.currentTarget.src = '/logo192.png'
+            }}
+          />
+        </div>
+        <div className="compact-info">
+          <div className="compact-practice">{practice.name}</div>
+          <div className="compact-date">{formatDate(appointment.startTime)}</div>
+          {appointmentType && (
+            <div className="compact-service">{appointmentType.name}</div>
+          )}
+        </div>
+      </div>
+    ) : (
+      <div
+        className={`appointment-card ${isActive ?? false ? 'active' : ''} ${isPast ? 'past' : 'upcoming'}`}
         onClick={() => handleShowDetailsAppointment(appointment)}
       >
         <div className="card-header">
@@ -118,7 +154,51 @@ export function AppointmentCard({
             <span>{appointment.animal?.name || 'Nicht zugewiesen'}</span>
           </div>
         </div>
+        {!isPast && !compact && (
+          <div className="card-actions">
+            <button
+              className="action-btn"
+              onClick={handleExportCalendar}
+              title="Zum Kalender hinzufügen"
+            >
+              <i className="bi bi-calendar-plus"></i>
+            </button>
+            <button
+              className="action-btn"
+              onClick={handleOpenMap}
+              title="Navigation öffnen"
+            >
+              <i className="bi bi-geo-alt"></i>
+            </button>
+            <button
+              className="action-btn action-reschedule"
+              onClick={handleReschedule}
+              title="Termin verschieben"
+            >
+              <i className="bi bi-calendar-event"></i>
+            </button>
+            <button
+              className="action-btn action-cancel"
+              onClick={handleCancel}
+              title="Termin absagen"
+            >
+              <i className="bi bi-x-circle"></i>
+            </button>
+          </div>
+        )}
       </div>
+    )
+
+    return (
+      <>
+        {card}
+        {showCancelDialog && (
+          <AppointmentDeleteDialog
+            hideDialogDeleteAppointment={() => setShowCancelDialog(false)}
+            appointmentDelete={appointment}
+          />
+        )}
+      </>
     )
   }
 
