@@ -244,19 +244,19 @@ function BookingComponent() {
     // einmal auf der seite zurueck
     switch (status) {
       case StatusBooking.selectAnimal:
-        setSelectedAnimal(null)
+        setSelectedAnimal(null);
         window.history.back();
         break
       case StatusBooking.selectAppointmentType:
-        setSelectedAppointmentType(null)
-        setStatus(StatusBooking.selectAnimal)
+        setSelectedAppointmentType(null);
+        setStatus(StatusBooking.selectAnimal);
         break
       case StatusBooking.login:
-        setStatus(StatusBooking.selectAnimal)
+        window.history.back();
         break
       default:
         setSelectedAnimal(null)
-        setStatus(StatusBooking.selectAnimal)
+        setStatus(StatusBooking.selectAnimal);
     }
   }
 
