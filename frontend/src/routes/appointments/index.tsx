@@ -27,13 +27,18 @@ function Appointments() {
   const [initialState] = useState(() => {
     const state = location.state as any
     return {
+      selectedAppointmentId: state?.selectedAppointmentId,
+      initialTab: state?.initialTab as 'upcoming' | 'past' | undefined,
+      fromDashboard: state?.fromDashboard === true,
       bookedAppointment: state?.appointment,
       justBooked: state?.justBooked === true,
       wasRescheduled: state?.wasRescheduled === true,
     }
   })
 
-  const [activeTab, setActiveTab] = useState<'upcoming' | 'past'>('upcoming')
+  const [activeTab, setActiveTab] = useState<'upcoming' | 'past'>(
+    initialState.initialTab || 'upcoming'
+  )
   const [selectedAppointment, setSelectedAppointment] = useState<
     AppointmentsType | undefined
   >(initialState.bookedAppointment)
@@ -166,6 +171,27 @@ function Appointments() {
       }
     }
   }, [activeTab, sortedFuture, sortedPast, selectedAppointment])
+
+  // Handle navigation from dashboard
+  useEffect(() => {
+    if (initialState.fromDashboard && initialState.selectedAppointmentId) {
+      if (isSuccessFuture && isSuccessPast) {
+        const currentList = initialState.initialTab === 'past' ? sortedPast : sortedFuture
+        const appt = currentList.find((a) => a.id === initialState.selectedAppointmentId)
+        if (appt) {
+          setSelectedAppointment(appt)
+        }
+      }
+    }
+  }, [
+    initialState.fromDashboard,
+    initialState.selectedAppointmentId,
+    initialState.initialTab,
+    isSuccessFuture,
+    isSuccessPast,
+    sortedFuture,
+    sortedPast,
+  ])
 
   const handleShowDetailsAppointment = (appointment: AppointmentsType) => {
     setSelectedAppointment(appointment)

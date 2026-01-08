@@ -21,5 +21,8 @@ declare module '@tanstack/react-router' {
     filterAnimalId?: number | undefined
     filterAnimalTypeId?: number | undefined
     person?: PersonsType
+    selectedAppointmentId?: number
+    initialTab?: 'upcoming' | 'past'
+    fromDashboard?: boolean
   }
 }
