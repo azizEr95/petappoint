@@ -4,42 +4,17 @@ import {
   AppointmentFilterType,
   AppointmentsCreateType,
   AppointmentsType,
-  ServiceType,
 } from "vetilib-shared/schemas/ZodSchemas";
 import { animalService } from "./animalService";
 import { ResourceNotFoundError } from "../exceptions/errors/ResourceNotFoundError";
 import { ConstraintError } from "../exceptions/errors/ConstraintError";
+import { APPOINTMENT_INCLUDE_BASE, APPOINTMENT_INCLUDE_WITH_VET_SERVICES } from "../helper/appointmentIncludes";
+import { mapToAppointment } from "../helper/mapToAppointment";
 
 export const appointmentService = {
   async create(data: AppointmentsCreateType): Promise<void> {
     const created = await prisma.appointment.create({
-      include: {
-        animal: true,
-        service: true,
-        appointmentHasServices: {
-          include: {
-            service: true,
-          },
-        },
-        veterinarian: {
-          include: {
-            person: {
-              select: {
-                firstName: true,
-                lastName: true
-              }
-            }
-          }
-        },
-        veterinaryPractice: {
-          include: {
-            address: true,
-          },
-          omit: {
-            password: true,
-          },
-        },
-      },
+      include: APPOINTMENT_INCLUDE_BASE,
       data: {
         startTime: data.startTime,
         endTime: data.endTime,
@@ -50,7 +25,7 @@ export const appointmentService = {
 
     const appointmentId = created.id;
     await prisma.appointmentHasService.createMany({
-      data: data.availableServiceIds.map(x => ({serviceId: x, appointmentId: appointmentId})),
+      data: data.availableServiceIds.map(x => ({ serviceId: x, appointmentId: appointmentId })),
       skipDuplicates: true
     });
   },
@@ -58,94 +33,14 @@ export const appointmentService = {
   async getById(id: number): Promise<AppointmentsType> {
     const foundAppointment = await prisma.appointment.findUnique({
       where: { id },
-      include: {
-        animal: true,
-        service: true,
-        appointmentHasServices: {
-          include: {
-            service: true,
-          },
-        },
-        veterinarian: {
-          include: {
-            person: {
-              select: {
-                firstName: true,
-                lastName: true
-              }
-            },
-            veterinaryHasServices: {
-              include: {
-                service: true,
-              },
-            },
-          },
-        },
-        veterinaryPractice: {
-          include: {
-            address: true,
-          },
-          omit: {
-            password: true,
-          },
-        },
-      },
+      include: APPOINTMENT_INCLUDE_WITH_VET_SERVICES,
     });
 
     if (!foundAppointment) {
       throw new Error(`Appointment not found with id: ${id}`);
     }
 
-    const availableServices: ServiceType[] =
-      foundAppointment.appointmentHasServices.length > 0
-        ? foundAppointment.appointmentHasServices.map((x) => x.service)
-        : foundAppointment.veterinarian.veterinaryHasServices.map((x) => x.service);
-    return {
-      id: foundAppointment.id,
-      startTime: foundAppointment.startTime,
-      endTime: foundAppointment.endTime,
-      animal: foundAppointment.animal
-        ? {
-          id: foundAppointment.animal.id,
-          name: foundAppointment.animal.name,
-          dateOfBirth: foundAppointment.animal.dateOfBirth,
-          dateOfBirthIsExact: foundAppointment.animal.dateOfBirthIsExact,
-          heightInCm: foundAppointment.animal.heightInCm,
-          weightInGram: foundAppointment.animal.weightInGram,
-          isCastrated: foundAppointment.animal.isCastrated,
-          lifestyle: foundAppointment.animal.lifestyle,
-          sex: foundAppointment.animal.sex,
-          timeOfDeath: foundAppointment.animal.timeOfDeath,
-          animalGroupId: foundAppointment.animal.animalGroupId,
-          animalTypeId: foundAppointment.animal.animalTypeId,
-        }
-        : null,
-      veterinaryPractice: {
-        id: foundAppointment.veterinaryPractice.id,
-        address: foundAppointment.veterinaryPractice.address,
-        email: foundAppointment.veterinaryPractice.email,
-        info: foundAppointment.veterinaryPractice.info,
-        infoEmail: foundAppointment.veterinaryPractice.infoEmail,
-        name: foundAppointment.veterinaryPractice.name,
-        phone: foundAppointment.veterinaryPractice.phone,
-        website: foundAppointment.veterinaryPractice.website,
-      },
-      veterinary: {
-        id: foundAppointment.veterinarian.id,
-        firstName: foundAppointment.veterinarian.person.firstName,
-        lastName: foundAppointment.veterinarian.person.lastName,
-        infoEmail: foundAppointment.veterinarian.infoEmail,
-        veterinaryPracticeId: foundAppointment.veterinaryPractice.id,
-      },
-      service: foundAppointment.service
-        ? {
-          id: foundAppointment.service.id,
-          name: foundAppointment.service.name,
-        }
-        : null,
-      availableServices: availableServices,
-      notes: foundAppointment.notes,
-    };
+    return mapToAppointment(foundAppointment);
   },
 
   async getAppointmentsByDateRange(
@@ -154,33 +49,7 @@ export const appointmentService = {
     filter?: AppointmentFilterType
   ): Promise<AppointmentsType[]> {
     const found = await prisma.appointment.findMany({
-      include: {
-        animal: true,
-        service: true,
-        appointmentHasServices: {
-          include: {
-            service: true,
-          },
-        },
-        veterinarian: {
-          include: {
-            person: {
-              select: {
-                firstName: true,
-                lastName: true
-              }
-            }
-          }
-        },
-        veterinaryPractice: {
-          include: {
-            address: true,
-          },
-          omit: {
-            password: true,
-          },
-        },
-      },
+      include: APPOINTMENT_INCLUDE_BASE,
       where: {
         startTime: {
           gte: startDate,
@@ -215,74 +84,27 @@ export const appointmentService = {
             },
           ],
         }),
-        //
       },
     });
 
-    return found.map((foundAppointment) => ({
-      id: foundAppointment.id,
-      startTime: foundAppointment.startTime,
-      endTime: foundAppointment.endTime,
-      animal: foundAppointment.animal
-        ? {
-          id: foundAppointment.animal.id,
-          name: foundAppointment.animal.name,
-          dateOfBirth: foundAppointment.animal.dateOfBirth,
-          dateOfBirthIsExact: foundAppointment.animal.dateOfBirthIsExact,
-          heightInCm: foundAppointment.animal.heightInCm,
-          weightInGram: foundAppointment.animal.weightInGram,
-          isCastrated: foundAppointment.animal.isCastrated,
-          lifestyle: foundAppointment.animal.lifestyle,
-          sex: foundAppointment.animal.sex,
-          timeOfDeath: foundAppointment.animal.timeOfDeath,
-          animalGroupId: foundAppointment.animal.animalGroupId,
-          animalTypeId: foundAppointment.animal.animalTypeId,
-        }
-        : null,
-      veterinaryPractice: {
-        id: foundAppointment.veterinaryPractice.id,
-        address: foundAppointment.veterinaryPractice.address,
-        email: foundAppointment.veterinaryPractice.email,
-        info: foundAppointment.veterinaryPractice.info,
-        infoEmail: foundAppointment.veterinaryPractice.infoEmail,
-        name: foundAppointment.veterinaryPractice.name,
-        phone: foundAppointment.veterinaryPractice.phone,
-        website: foundAppointment.veterinaryPractice.website,
-      },
-      veterinary: {
-        id: foundAppointment.veterinarian.id,
-        firstName: foundAppointment.veterinarian.person.firstName,
-        lastName: foundAppointment.veterinarian.person.lastName,
-        infoEmail: foundAppointment.veterinarian.infoEmail,
-        veterinaryPracticeId: foundAppointment.veterinaryPractice.id,
-      },
-      service: foundAppointment.service
-        ? {
-          id: foundAppointment.service.id,
-          name: foundAppointment.service.name,
-        }
-        : null,
-      availableServices: foundAppointment.serviceId
-        ? foundAppointment.appointmentHasServices.flatMap((x) => x.service)
-        : [],
-      notes: foundAppointment.notes,
-    }));
+    return found.map((foundAppointment) => mapToAppointment(foundAppointment));
   },
 
-  async getAppointmentsByVeterinary(veterinaryId: number, filter?: AppointmentFilterType, includePast: boolean = false, includeUnbooked: boolean = false): Promise<AppointmentsType[]> {
+  async getAppointmentsByVeterinary(
+    veterinaryId: number,
+    filter?: AppointmentFilterType,
+    includePast: boolean = false,
+    includeUnbooked: boolean = false
+  ): Promise<AppointmentsType[]> {
     const found = await prisma.appointment.findMany({
       where: {
         veterinaryId: veterinaryId,
-        // FILTER
-        ...(!includePast &&
-        {
+        ...(!includePast && {
           endTime: {
             gte: new Date()
           }
-        }
-        ),
-        ...(!includeUnbooked &&
-        {
+        }),
+        ...(!includeUnbooked && {
           NOT: {
             animalId: null,
             serviceId: null
@@ -303,8 +125,7 @@ export const appointmentService = {
             },
           },
         }),
-        ...(filter &&
-          filter.serviceTypeIds && {
+        ...(filter?.serviceTypeIds && {
           OR: [
             { serviceId: { in: filter.serviceTypeIds } },
             {
@@ -317,116 +138,19 @@ export const appointmentService = {
             },
           ],
         }),
-        //
       },
-      include: {
-        animal: true,
-        service: true,
-        appointmentHasServices: {
-          include: {
-            service: true,
-          },
-        },
-        veterinarian: {
-          include: {
-            person: {
-              select: {
-                firstName: true,
-                lastName: true
-              }
-            }
-          }
-        },
-        veterinaryPractice: {
-          include: {
-            address: true,
-          },
-          omit: {
-            password: true,
-          },
-        },
-      },
+      include: APPOINTMENT_INCLUDE_BASE,
     });
 
-    return found.map((foundAppointment) => ({
-      id: foundAppointment.id,
-      startTime: foundAppointment.startTime,
-      endTime: foundAppointment.endTime,
-      animal: foundAppointment.animal
-        ? {
-          id: foundAppointment.animal.id,
-          name: foundAppointment.animal.name,
-          dateOfBirth: foundAppointment.animal.dateOfBirth,
-          dateOfBirthIsExact: foundAppointment.animal.dateOfBirthIsExact,
-          heightInCm: foundAppointment.animal.heightInCm,
-          weightInGram: foundAppointment.animal.weightInGram,
-          isCastrated: foundAppointment.animal.isCastrated,
-          lifestyle: foundAppointment.animal.lifestyle,
-          sex: foundAppointment.animal.sex,
-          timeOfDeath: foundAppointment.animal.timeOfDeath,
-          animalGroupId: foundAppointment.animal.animalGroupId,
-          animalTypeId: foundAppointment.animal.animalTypeId,
-        }
-        : null,
-      veterinaryPractice: {
-        id: foundAppointment.veterinaryPractice.id,
-        address: foundAppointment.veterinaryPractice.address,
-        email: foundAppointment.veterinaryPractice.email,
-        info: foundAppointment.veterinaryPractice.info,
-        infoEmail: foundAppointment.veterinaryPractice.infoEmail,
-        name: foundAppointment.veterinaryPractice.name,
-        phone: foundAppointment.veterinaryPractice.phone,
-        website: foundAppointment.veterinaryPractice.website,
-      },
-      veterinary: {
-        id: foundAppointment.veterinarian.id,
-        firstName: foundAppointment.veterinarian.person.firstName,
-        lastName: foundAppointment.veterinarian.person.lastName,
-        infoEmail: foundAppointment.veterinarian.infoEmail,
-        veterinaryPracticeId: foundAppointment.veterinaryPractice.id,
-      },
-      service: foundAppointment.service
-        ? {
-          id: foundAppointment.service.id,
-          name: foundAppointment.service.name,
-        }
-        : null,
-      availableServices: foundAppointment.serviceId
-        ? foundAppointment.appointmentHasServices.flatMap((x) => x.service)
-        : [],
-      notes: foundAppointment.notes,
-    }));
+    return found.map((foundAppointment) => mapToAppointment(foundAppointment));
   },
 
-  async getForPractice(veterinaryPracticeId: number, filter?: AppointmentFilterType): Promise<AppointmentsType[]> {
+  async getForPractice(
+    veterinaryPracticeId: number,
+    filter?: AppointmentFilterType
+  ): Promise<AppointmentsType[]> {
     const found = await prisma.appointment.findMany({
-      include: {
-        animal: true,
-        service: true,
-        appointmentHasServices: {
-          include: {
-            service: true,
-          },
-        },
-        veterinarian: {
-          include: {
-            person: {
-              select: {
-                firstName: true,
-                lastName: true
-              }
-            }
-          }
-        },
-        veterinaryPractice: {
-          include: {
-            address: true,
-          },
-          omit: {
-            password: true,
-          },
-        },
-      },
+      include: APPOINTMENT_INCLUDE_BASE,
       where: {
         veterinaryPracticeId: veterinaryPracticeId,
         // FILTER
@@ -458,58 +182,10 @@ export const appointmentService = {
             },
           ],
         }),
-        //
       },
     });
 
-    return found.map((foundAppointment) => ({
-      id: foundAppointment.id,
-      startTime: foundAppointment.startTime,
-      endTime: foundAppointment.endTime,
-      animal: foundAppointment.animal
-        ? {
-          id: foundAppointment.animal.id,
-          name: foundAppointment.animal.name,
-          dateOfBirth: foundAppointment.animal.dateOfBirth,
-          dateOfBirthIsExact: foundAppointment.animal.dateOfBirthIsExact,
-          heightInCm: foundAppointment.animal.heightInCm,
-          weightInGram: foundAppointment.animal.weightInGram,
-          isCastrated: foundAppointment.animal.isCastrated,
-          lifestyle: foundAppointment.animal.lifestyle,
-          sex: foundAppointment.animal.sex,
-          timeOfDeath: foundAppointment.animal.timeOfDeath,
-          animalGroupId: foundAppointment.animal.animalGroupId,
-          animalTypeId: foundAppointment.animal.animalTypeId,
-        }
-        : null,
-      veterinaryPractice: {
-        id: foundAppointment.veterinaryPractice.id,
-        address: foundAppointment.veterinaryPractice.address,
-        email: foundAppointment.veterinaryPractice.email,
-        info: foundAppointment.veterinaryPractice.info,
-        infoEmail: foundAppointment.veterinaryPractice.infoEmail,
-        name: foundAppointment.veterinaryPractice.name,
-        phone: foundAppointment.veterinaryPractice.phone,
-        website: foundAppointment.veterinaryPractice.website,
-      },
-      veterinary: {
-        id: foundAppointment.veterinarian.id,
-        firstName: foundAppointment.veterinarian.person.firstName,
-        lastName: foundAppointment.veterinarian.person.lastName,
-        infoEmail: foundAppointment.veterinarian.infoEmail,
-        veterinaryPracticeId: foundAppointment.veterinaryPractice.id,
-      },
-      service: foundAppointment.service
-        ? {
-          id: foundAppointment.service.id,
-          name: foundAppointment.service.name,
-        }
-        : null,
-      availableServices: foundAppointment.serviceId
-        ? foundAppointment.appointmentHasServices.flatMap((x) => x.service)
-        : [],
-      notes: foundAppointment.notes,
-    }));
+    return found.map((foundAppointment) => mapToAppointment(foundAppointment));
   },
 
   async getAvailableAppointmentsForPractice(
@@ -517,39 +193,7 @@ export const appointmentService = {
     filter?: AppointmentFilterType
   ): Promise<AppointmentsType[]> {
     const found = await prisma.appointment.findMany({
-      include: {
-        animal: true,
-        service: true,
-        appointmentHasServices: {
-          include: {
-            service: true,
-          },
-        },
-        veterinarian: {
-          include: {
-            person: {
-              select: {
-                firstName: true,
-                lastName: true
-              }
-            },
-            veterinaryCanTreatAnimalTypes: true,
-            veterinaryHasServices: {
-              include: {
-                service: true,
-              },
-            },
-          },
-        },
-        veterinaryPractice: {
-          include: {
-            address: true,
-          },
-          omit: {
-            password: true,
-          },
-        },
-      },
+      include: APPOINTMENT_INCLUDE_WITH_VET_SERVICES,
       where: {
         veterinaryPracticeId: veterinaryPracticeId,
         animalId: null,
@@ -589,65 +233,10 @@ export const appointmentService = {
             },
           ],
         }),
-        //
       },
     });
 
-    return found.map((foundAppointment) => {
-      let availableServices: ServiceType[] =
-        foundAppointment.appointmentHasServices.length > 0
-          ? foundAppointment.appointmentHasServices.map((x) => x.service)
-          : foundAppointment.veterinarian.veterinaryHasServices.map((x) => x.service);
-      if (filter && filter.serviceTypeIds && filter.serviceTypeIds.length > 0) {
-        availableServices = availableServices.filter((x) => filter.serviceTypeIds?.includes(x.id));
-      }
-      return {
-        id: foundAppointment.id,
-        startTime: foundAppointment.startTime,
-        endTime: foundAppointment.endTime,
-        animal: foundAppointment.animal
-          ? {
-            id: foundAppointment.animal.id,
-            name: foundAppointment.animal.name,
-            dateOfBirth: foundAppointment.animal.dateOfBirth,
-            dateOfBirthIsExact: foundAppointment.animal.dateOfBirthIsExact,
-            heightInCm: foundAppointment.animal.heightInCm,
-            weightInGram: foundAppointment.animal.weightInGram,
-            isCastrated: foundAppointment.animal.isCastrated,
-            lifestyle: foundAppointment.animal.lifestyle,
-            sex: foundAppointment.animal.sex,
-            timeOfDeath: foundAppointment.animal.timeOfDeath,
-            animalGroupId: foundAppointment.animal.animalGroupId,
-            animalTypeId: foundAppointment.animal.animalTypeId,
-          }
-          : null,
-        veterinaryPractice: {
-          id: foundAppointment.veterinaryPractice.id,
-          address: foundAppointment.veterinaryPractice.address,
-          email: foundAppointment.veterinaryPractice.email,
-          info: foundAppointment.veterinaryPractice.info,
-          infoEmail: foundAppointment.veterinaryPractice.infoEmail,
-          name: foundAppointment.veterinaryPractice.name,
-          phone: foundAppointment.veterinaryPractice.phone,
-          website: foundAppointment.veterinaryPractice.website,
-        },
-        veterinary: {
-          id: foundAppointment.veterinarian.id,
-          firstName: foundAppointment.veterinarian.person.firstName,
-          lastName: foundAppointment.veterinarian.person.lastName,
-          infoEmail: foundAppointment.veterinarian.infoEmail,
-          veterinaryPracticeId: foundAppointment.veterinaryPractice.id,
-        },
-        service: foundAppointment.service
-          ? {
-            id: foundAppointment.service.id,
-            name: foundAppointment.service.name,
-          }
-          : null,
-        availableServices: availableServices,
-        notes: foundAppointment.notes,
-      };
-    });
+    return found.map((foundAppointment) => mapToAppointment(foundAppointment));
   },
 
   async getBookedAppointmentsForPractice(
@@ -656,43 +245,14 @@ export const appointmentService = {
     includePast: boolean = false
   ): Promise<AppointmentsType[]> {
     const found = await prisma.appointment.findMany({
-      include: {
-        animal: true,
-        service: true,
-        appointmentHasServices: {
-          include: {
-            service: true,
-          },
-        },
-        veterinarian: {
-          include: {
-            person: true,
-            veterinaryCanTreatAnimalTypes: true,
-            veterinaryHasServices: {
-              include: {
-                service: true,
-              },
-            },
-          },
-        },
-        veterinaryPractice: {
-          include: {
-            address: true,
-          },
-          omit: {
-            password: true,
-          },
-        },
-      },
+      include: APPOINTMENT_INCLUDE_WITH_VET_SERVICES,
       where: {
         veterinaryPracticeId: veterinaryPracticeId,
         NOT: {
           animalId: null,
           serviceId: null
         },
-        // FILTER
-        ...(!includePast &&
-        {
+        ...(!includePast && {
           endTime: {
             gte: new Date()
           }
@@ -732,68 +292,16 @@ export const appointmentService = {
             },
           ],
         }),
-        //
       },
     });
 
-    return found.map((foundAppointment) => {
-      let availableServices: ServiceType[] =
-        foundAppointment.appointmentHasServices.length > 0
-          ? foundAppointment.appointmentHasServices.map((x) => x.service)
-          : foundAppointment.veterinarian.veterinaryHasServices.map((x) => x.service);
-      if (filter && filter.serviceTypeIds && filter.serviceTypeIds.length > 0) {
-        availableServices = availableServices.filter((x) => filter.serviceTypeIds?.includes(x.id));
-      }
-      return {
-        id: foundAppointment.id,
-        startTime: foundAppointment.startTime,
-        endTime: foundAppointment.endTime,
-        animal: foundAppointment.animal
-          ? {
-            id: foundAppointment.animal.id,
-            name: foundAppointment.animal.name,
-            dateOfBirth: foundAppointment.animal.dateOfBirth,
-            dateOfBirthIsExact: foundAppointment.animal.dateOfBirthIsExact,
-            heightInCm: foundAppointment.animal.heightInCm,
-            weightInGram: foundAppointment.animal.weightInGram,
-            isCastrated: foundAppointment.animal.isCastrated,
-            lifestyle: foundAppointment.animal.lifestyle,
-            sex: foundAppointment.animal.sex,
-            timeOfDeath: foundAppointment.animal.timeOfDeath,
-            animalGroupId: foundAppointment.animal.animalGroupId,
-            animalTypeId: foundAppointment.animal.animalTypeId,
-          }
-          : null,
-        veterinaryPractice: {
-          id: foundAppointment.veterinaryPractice.id,
-          address: foundAppointment.veterinaryPractice.address,
-          email: foundAppointment.veterinaryPractice.email,
-          info: foundAppointment.veterinaryPractice.info,
-          infoEmail: foundAppointment.veterinaryPractice.infoEmail,
-          name: foundAppointment.veterinaryPractice.name,
-          phone: foundAppointment.veterinaryPractice.phone,
-          website: foundAppointment.veterinaryPractice.website,
-        },
-        veterinary: {
-          id: foundAppointment.veterinarian.id,
-          firstName: foundAppointment.veterinarian.person.firstName,
-          lastName: foundAppointment.veterinarian.person.lastName,
-          infoEmail: foundAppointment.veterinarian.infoEmail,
-          veterinaryPracticeId: foundAppointment.veterinaryPractice.id,
-        },
-        service: foundAppointment.service
-          ? {
-            id: foundAppointment.service.id,
-            name: foundAppointment.service.name,
-          }
-          : null,
-        availableServices: availableServices,
-        notes: foundAppointment.notes,
-      };
-    });
+    return found.map((foundAppointment) => mapToAppointment(foundAppointment));
   },
 
-  async getPastAppointmentsForPerson(personId: number, filter?: AppointmentFilterType): Promise<AppointmentsType[]> {
+  async getPastAppointmentsForPerson(
+    personId: number,
+    filter?: AppointmentFilterType
+  ): Promise<AppointmentsType[]> {
     const now = new Date();
     const animals = await animalService.getByPersonId(personId);
 
@@ -803,156 +311,13 @@ export const appointmentService = {
 
     const animalIds = animals.map((a) => a.id);
     const appointments = await prisma.appointment.findMany({
-      include: {
-        animal: true,
-        veterinarian: {
-          include: {
-            person: {
-              select: {
-                firstName: true,
-                lastName: true
-              }
-            }
-          }
-        },
-        service: true,
-        appointmentHasServices: {
-          include: {
-            service: true,
-          },
-        },
-        veterinaryPractice: {
-          include: {
-            address: true,
-          },
-          omit: {
-            password: true,
-          },
-        },
-      },
-      where: {
-        animalId: {
-          in: animalIds, // in the list
-        },
-        startTime: {
-          lt: now, // less than
-        },
-        // FILTER
-        ...(filter &&
-          filter.animalTypeIds && {
-          veterinaryPractice: {
-            veterinarians: {
-              some: {
-                veterinaryCanTreatAnimalTypes: {
-                  some: {
-                    animalTypeId: { in: filter.animalTypeIds },
-                  },
-                },
-              },
-            },
-          },
-        }),
-        ...(filter &&
-          filter.serviceTypeIds && {
-          serviceId: { in: filter.serviceTypeIds },
-        }),
-        //
-      },
-    });
-
-    return appointments.map((foundAppointment) => ({
-      id: foundAppointment.id,
-      startTime: foundAppointment.startTime,
-      endTime: foundAppointment.endTime,
-      animal: foundAppointment.animal
-        ? {
-          id: foundAppointment.animal.id,
-          name: foundAppointment.animal.name,
-          dateOfBirth: foundAppointment.animal.dateOfBirth,
-          dateOfBirthIsExact: foundAppointment.animal.dateOfBirthIsExact,
-          heightInCm: foundAppointment.animal.heightInCm,
-          weightInGram: foundAppointment.animal.weightInGram,
-          isCastrated: foundAppointment.animal.isCastrated,
-          lifestyle: foundAppointment.animal.lifestyle,
-          sex: foundAppointment.animal.sex,
-          timeOfDeath: foundAppointment.animal.timeOfDeath,
-          animalGroupId: foundAppointment.animal.animalGroupId,
-          animalTypeId: foundAppointment.animal.animalTypeId,
-        }
-        : null,
-      veterinaryPractice: {
-        id: foundAppointment.veterinaryPractice.id,
-        address: foundAppointment.veterinaryPractice.address,
-        email: foundAppointment.veterinaryPractice.email,
-        info: foundAppointment.veterinaryPractice.info,
-        infoEmail: foundAppointment.veterinaryPractice.infoEmail,
-        name: foundAppointment.veterinaryPractice.name,
-        phone: foundAppointment.veterinaryPractice.phone,
-        website: foundAppointment.veterinaryPractice.website,
-      },
-      veterinary: {
-        id: foundAppointment.veterinarian.id,
-        firstName: foundAppointment.veterinarian.person.firstName,
-        lastName: foundAppointment.veterinarian.person.lastName,
-        infoEmail: foundAppointment.veterinarian.infoEmail,
-        veterinaryPracticeId: foundAppointment.veterinaryPractice.id,
-      },
-      service: foundAppointment.service
-        ? {
-          id: foundAppointment.service.id,
-          name: foundAppointment.service.name,
-        }
-        : null,
-      availableServices: foundAppointment.serviceId
-        ? foundAppointment.appointmentHasServices.flatMap((x) => x.service)
-        : [],
-      notes: foundAppointment.notes,
-    }));
-  },
-
-  async getFutureAppointmentsForPerson(personId: number, filter?: AppointmentFilterType): Promise<AppointmentsType[]> {
-    const now = new Date();
-    const animals = await animalService.getByPersonId(personId);
-
-    if (animals.length == 0) {
-      return [];
-    }
-
-    const animalIds = animals.map((a) => a.id);
-    const appointments = await prisma.appointment.findMany({
-      include: {
-        animal: true,
-        service: true,
-        appointmentHasServices: {
-          include: {
-            service: true,
-          },
-        },
-        veterinarian: {
-          include: {
-            person: {
-              select: {
-                firstName: true,
-                lastName: true
-              }
-            }
-          }
-        },
-        veterinaryPractice: {
-          include: {
-            address: true,
-          },
-          omit: {
-            password: true,
-          },
-        },
-      },
+      include: APPOINTMENT_INCLUDE_BASE,
       where: {
         animalId: {
           in: animalIds,
         },
         startTime: {
-          gt: now, // greater than
+          lt: now,
         },
         // FILTER
         ...(filter &&
@@ -973,139 +338,64 @@ export const appointmentService = {
           filter.serviceTypeIds && {
           serviceId: { in: filter.serviceTypeIds },
         }),
-        //
       },
     });
 
-    return appointments.map((foundAppointment) => ({
-      id: foundAppointment.id,
-      startTime: foundAppointment.startTime,
-      endTime: foundAppointment.endTime,
-      animal: foundAppointment.animal
-        ? {
-          id: foundAppointment.animal.id,
-          name: foundAppointment.animal.name,
-          dateOfBirth: foundAppointment.animal.dateOfBirth,
-          dateOfBirthIsExact: foundAppointment.animal.dateOfBirthIsExact,
-          heightInCm: foundAppointment.animal.heightInCm,
-          weightInGram: foundAppointment.animal.weightInGram,
-          isCastrated: foundAppointment.animal.isCastrated,
-          lifestyle: foundAppointment.animal.lifestyle,
-          sex: foundAppointment.animal.sex,
-          timeOfDeath: foundAppointment.animal.timeOfDeath,
-          animalGroupId: foundAppointment.animal.animalGroupId,
-          animalTypeId: foundAppointment.animal.animalTypeId,
-        }
-        : null,
-      veterinaryPractice: {
-        id: foundAppointment.veterinaryPractice.id,
-        address: foundAppointment.veterinaryPractice.address,
-        email: foundAppointment.veterinaryPractice.email,
-        info: foundAppointment.veterinaryPractice.info,
-        infoEmail: foundAppointment.veterinaryPractice.infoEmail,
-        name: foundAppointment.veterinaryPractice.name,
-        phone: foundAppointment.veterinaryPractice.phone,
-        website: foundAppointment.veterinaryPractice.website,
+    return appointments.map((foundAppointment) => mapToAppointment(foundAppointment));
+  },
+
+  async getFutureAppointmentsForPerson(
+    personId: number,
+    filter?: AppointmentFilterType
+  ): Promise<AppointmentsType[]> {
+    const now = new Date();
+    const animals = await animalService.getByPersonId(personId);
+
+    if (animals.length == 0) {
+      return [];
+    }
+
+    const animalIds = animals.map((a) => a.id);
+    const appointments = await prisma.appointment.findMany({
+      include: APPOINTMENT_INCLUDE_BASE,
+      where: {
+        animalId: {
+          in: animalIds,
+        },
+        startTime: {
+          gt: now,
+        },
+        // FILTER
+        ...(filter &&
+          filter.animalTypeIds && {
+          veterinaryPractice: {
+            veterinarians: {
+              some: {
+                veterinaryCanTreatAnimalTypes: {
+                  some: {
+                    animalTypeId: { in: filter.animalTypeIds },
+                  },
+                },
+              },
+            },
+          },
+        }),
+        ...(filter &&
+          filter.serviceTypeIds && {
+          serviceId: { in: filter.serviceTypeIds },
+        }),
       },
-      veterinary: {
-        id: foundAppointment.veterinarian.id,
-        firstName: foundAppointment.veterinarian.person.firstName,
-        lastName: foundAppointment.veterinarian.person.lastName,
-        infoEmail: foundAppointment.veterinarian.infoEmail,
-        veterinaryPracticeId: foundAppointment.veterinaryPractice.id,
-      },
-      service: foundAppointment.service
-        ? {
-          id: foundAppointment.service.id,
-          name: foundAppointment.service.name,
-        }
-        : null,
-      availableServices: foundAppointment.serviceId
-        ? foundAppointment.appointmentHasServices.flatMap((x) => x.service)
-        : [],
-      notes: foundAppointment.notes,
-    }));
+    });
+
+    return appointments.map((foundAppointment) => mapToAppointment(foundAppointment));
   },
 
   async getAll(): Promise<AppointmentsType[]> {
     const found = await prisma.appointment.findMany({
-      include: {
-        animal: true,
-        service: true,
-        appointmentHasServices: {
-          include: {
-            service: true,
-          },
-        },
-        veterinarian: {
-          include: {
-            person: {
-              select: {
-                firstName: true,
-                lastName: true
-              }
-            }
-          }
-        },
-        veterinaryPractice: {
-          include: {
-            address: true,
-          },
-          omit: {
-            password: true,
-          },
-        },
-      },
+      include: APPOINTMENT_INCLUDE_BASE,
     });
 
-    return found.map((foundAppointment) => ({
-      id: foundAppointment.id,
-      startTime: foundAppointment.startTime,
-      endTime: foundAppointment.endTime,
-      animal: foundAppointment.animal
-        ? {
-          id: foundAppointment.animal.id,
-          name: foundAppointment.animal.name,
-          dateOfBirth: foundAppointment.animal.dateOfBirth,
-          dateOfBirthIsExact: foundAppointment.animal.dateOfBirthIsExact,
-          heightInCm: foundAppointment.animal.heightInCm,
-          weightInGram: foundAppointment.animal.weightInGram,
-          isCastrated: foundAppointment.animal.isCastrated,
-          lifestyle: foundAppointment.animal.lifestyle,
-          sex: foundAppointment.animal.sex,
-          timeOfDeath: foundAppointment.animal.timeOfDeath,
-          animalGroupId: foundAppointment.animal.animalGroupId,
-          animalTypeId: foundAppointment.animal.animalTypeId,
-        }
-        : null,
-      veterinaryPractice: {
-        id: foundAppointment.veterinaryPractice.id,
-        address: foundAppointment.veterinaryPractice.address,
-        email: foundAppointment.veterinaryPractice.email,
-        info: foundAppointment.veterinaryPractice.info,
-        infoEmail: foundAppointment.veterinaryPractice.infoEmail,
-        name: foundAppointment.veterinaryPractice.name,
-        phone: foundAppointment.veterinaryPractice.phone,
-        website: foundAppointment.veterinaryPractice.website,
-      },
-      veterinary: {
-        id: foundAppointment.veterinarian.id,
-        firstName: foundAppointment.veterinarian.person.firstName,
-        lastName: foundAppointment.veterinarian.person.lastName,
-        infoEmail: foundAppointment.veterinarian.infoEmail,
-        veterinaryPracticeId: foundAppointment.veterinaryPractice.id,
-      },
-      service: foundAppointment.service
-        ? {
-          id: foundAppointment.service.id,
-          name: foundAppointment.service.name,
-        }
-        : null,
-      availableServices: foundAppointment.service
-        ? foundAppointment.appointmentHasServices.flatMap((x) => x.service)
-        : [],
-      notes: foundAppointment.notes,
-    }));
+    return found.map((foundAppointment) => mapToAppointment(foundAppointment));
   },
 
   async update(data: Appointment): Promise<AppointmentsType> {
@@ -1114,94 +404,29 @@ export const appointmentService = {
     }
 
     const updated = await prisma.appointment.update({
-      include: {
-        animal: true,
-        service: true,
-        appointmentHasServices: {
-          include: {
-            service: true,
-          },
-        },
-        veterinarian: {
-          include: {
-            person: {
-              select: {
-                firstName: true,
-                lastName: true
-              }
-            }
-          }
-        },
-        veterinaryPractice: {
-          include: {
-            address: true,
-          },
-          omit: {
-            password: true,
-          },
-        },
-      },
+      include: APPOINTMENT_INCLUDE_BASE,
       where: { id: data.id },
       data: data,
     });
 
-    return {
-      id: updated.id,
-      startTime: updated.startTime,
-      endTime: updated.endTime,
-      animal: updated.animal
-        ? {
-          id: updated.animal.id,
-          name: updated.animal.name,
-          dateOfBirth: updated.animal.dateOfBirth,
-          dateOfBirthIsExact: updated.animal.dateOfBirthIsExact,
-          heightInCm: updated.animal.heightInCm,
-          weightInGram: updated.animal.weightInGram,
-          isCastrated: updated.animal.isCastrated,
-          lifestyle: updated.animal.lifestyle,
-          sex: updated.animal.sex,
-          timeOfDeath: updated.animal.timeOfDeath,
-          animalGroupId: updated.animal.animalGroupId,
-          animalTypeId: updated.animal.animalTypeId,
-        }
-        : null,
-      veterinaryPractice: {
-        id: updated.veterinaryPractice.id,
-        address: updated.veterinaryPractice.address,
-        email: updated.veterinaryPractice.email,
-        info: updated.veterinaryPractice.info,
-        infoEmail: updated.veterinaryPractice.infoEmail,
-        name: updated.veterinaryPractice.name,
-        phone: updated.veterinaryPractice.phone,
-        website: updated.veterinaryPractice.website,
-      },
-      veterinary: {
-        id: updated.veterinarian.id,
-        firstName: updated.veterinarian.person.firstName,
-        lastName: updated.veterinarian.person.lastName,
-        infoEmail: updated.veterinarian.infoEmail,
-        veterinaryPracticeId: updated.veterinaryPractice.id,
-      },
-      service: updated.service
-        ? {
-          id: updated.service.id,
-          name: updated.service.name,
-        }
-        : null,
-      availableServices: updated.service ? updated.appointmentHasServices.flatMap((x) => x.service) : [],
-      notes: updated.notes,
-    };
+    return mapToAppointment(updated);
   },
 
-  async updateAppointmentAsPerson(id: number, animalId: number, serviceId: number): Promise<AppointmentsType> {
-    // check if appointment is available
+  async updateAppointmentAsPerson(
+    id: number,
+    animalId: number,
+    serviceId: number
+  ): Promise<AppointmentsType> {
     const appointment = await prisma.appointment.findUnique({
-      where: {
-        id: id,
-      },
+      where: { id },
     });
+
     if (!appointment) {
-      throw new ResourceNotFoundError(`Appointment with id(${id}) does not exist`, "id", id);
+      throw new ResourceNotFoundError(
+        `Appointment with id(${id}) does not exist`,
+        "id",
+        id
+      );
     }
 
     if (appointment.animalId) {
@@ -1214,88 +439,15 @@ export const appointmentService = {
     }
 
     const updated = await prisma.appointment.update({
-      include: {
-        animal: true,
-        service: true,
-        appointmentHasServices: {
-          include: {
-            service: true,
-          },
-        },
-        veterinarian: {
-          include: {
-            person: {
-              select: {
-                firstName: true,
-                lastName: true
-              }
-            }
-          }
-        },
-        veterinaryPractice: {
-          include: {
-            address: true,
-          },
-          omit: {
-            password: true,
-          },
-        },
-      },
-      where: {
-        id: id,
-      },
+      include: APPOINTMENT_INCLUDE_BASE,
+      where: { id },
       data: {
         animalId: animalId,
         serviceId: serviceId,
       },
     });
 
-    return {
-      id: updated.id,
-      startTime: updated.startTime,
-      endTime: updated.endTime,
-      animal: updated.animal
-        ? {
-          id: updated.animal.id,
-          name: updated.animal.name,
-          dateOfBirth: updated.animal.dateOfBirth,
-          dateOfBirthIsExact: updated.animal.dateOfBirthIsExact,
-          heightInCm: updated.animal.heightInCm,
-          weightInGram: updated.animal.weightInGram,
-          isCastrated: updated.animal.isCastrated,
-          lifestyle: updated.animal.lifestyle,
-          sex: updated.animal.sex,
-          timeOfDeath: updated.animal.timeOfDeath,
-          animalGroupId: updated.animal.animalGroupId,
-          animalTypeId: updated.animal.animalTypeId,
-        }
-        : null,
-      veterinaryPractice: {
-        id: updated.veterinaryPractice.id,
-        address: updated.veterinaryPractice.address,
-        email: updated.veterinaryPractice.email,
-        info: updated.veterinaryPractice.info,
-        infoEmail: updated.veterinaryPractice.infoEmail,
-        name: updated.veterinaryPractice.name,
-        phone: updated.veterinaryPractice.phone,
-        website: updated.veterinaryPractice.website,
-      },
-      veterinary: {
-        id: updated.veterinarian.id,
-        firstName: updated.veterinarian.person.firstName,
-        lastName: updated.veterinarian.person.lastName,
-        infoEmail: updated.veterinarian.infoEmail,
-        veterinaryPracticeId: updated.veterinaryPractice.id,
-      },
-      service: updated.service
-        ? {
-          id: updated.service.id,
-          name: updated.service.name,
-        }
-        : null,
-      availableServices: updated.service ? updated.appointmentHasServices.flatMap((x) => x.service) : [],
-      notes: updated.notes,
-    };
+    return mapToAppointment(updated);
   },
 
   async delete(id: number): Promise<void> {
@@ -1304,33 +456,7 @@ export const appointmentService = {
 
   async cancelAppointmentAsPerson(id: number): Promise<AppointmentsType> {
     const updated = await prisma.appointment.update({
-      include: {
-        animal: true,
-        service: true,
-        appointmentHasServices: {
-          include: {
-            service: true,
-          },
-        },
-        veterinarian: {
-          include: {
-            person: {
-              select: {
-                firstName: true,
-                lastName: true
-              }
-            }
-          }
-        },
-        veterinaryPractice: {
-          include: {
-            address: true,
-          },
-          omit: {
-            password: true,
-          },
-        },
-      },
+      include: APPOINTMENT_INCLUDE_BASE,
       where: { id },
       data: {
         animalId: null,
@@ -1338,143 +464,79 @@ export const appointmentService = {
       },
     });
 
-    return {
-      id: updated.id,
-      startTime: updated.startTime,
-      endTime: updated.endTime,
-      animal: updated.animal
-        ? {
-          id: updated.animal.id,
-          name: updated.animal.name,
-          dateOfBirth: updated.animal.dateOfBirth,
-          dateOfBirthIsExact: updated.animal.dateOfBirthIsExact,
-          heightInCm: updated.animal.heightInCm,
-          weightInGram: updated.animal.weightInGram,
-          isCastrated: updated.animal.isCastrated,
-          lifestyle: updated.animal.lifestyle,
-          sex: updated.animal.sex,
-          timeOfDeath: updated.animal.timeOfDeath,
-          animalGroupId: updated.animal.animalGroupId,
-          animalTypeId: updated.animal.animalTypeId,
-        }
-        : null,
-      veterinaryPractice: {
-        id: updated.veterinaryPractice.id,
-        address: updated.veterinaryPractice.address,
-        email: updated.veterinaryPractice.email,
-        info: updated.veterinaryPractice.info,
-        infoEmail: updated.veterinaryPractice.infoEmail,
-        name: updated.veterinaryPractice.name,
-        phone: updated.veterinaryPractice.phone,
-        website: updated.veterinaryPractice.website,
-      },
-      veterinary: {
-        id: updated.veterinarian.id,
-        firstName: updated.veterinarian.person.firstName,
-        lastName: updated.veterinarian.person.lastName,
-        infoEmail: updated.veterinarian.infoEmail,
-        veterinaryPracticeId: updated.veterinaryPractice.id,
-      },
-      service: updated.service
-        ? {
-          id: updated.service.id,
-          name: updated.service.name,
-        }
-        : null,
-      availableServices: updated.service ? updated.appointmentHasServices.flatMap((x) => x.service) : [],
-      notes: updated.notes,
-    };
+    return mapToAppointment(updated);
   },
 
   async updateNotes(id: number, notes: string | null): Promise<AppointmentsType> {
     const updated = await prisma.appointment.update({
-      include: {
-        animal: true,
-        service: true,
-        appointmentHasServices: {
-          include: {
-            service: true,
-          },
-        },
-        veterinarian: {
-          include: {
-            person:{
-              select:{
-                firstName: true,
-                lastName: true
-              }
-            }
-          }
-        },
-        veterinaryPractice: {
-          include: {
-            address: true,
-          },
-          omit: {
-            password: true,
-          },
-        },
-      },
+      include: APPOINTMENT_INCLUDE_BASE,
       where: { id },
       data: { notes },
     });
 
-    return {
-      id: updated.id,
-      startTime: updated.startTime,
-      endTime: updated.endTime,
-      animal: updated.animal
-        ? {
-          id: updated.animal.id,
-          name: updated.animal.name,
-          dateOfBirth: updated.animal.dateOfBirth,
-          dateOfBirthIsExact: updated.animal.dateOfBirthIsExact,
-          heightInCm: updated.animal.heightInCm,
-          weightInGram: updated.animal.weightInGram,
-          isCastrated: updated.animal.isCastrated,
-          lifestyle: updated.animal.lifestyle,
-          sex: updated.animal.sex,
-          timeOfDeath: updated.animal.timeOfDeath,
-          animalGroupId: updated.animal.animalGroupId,
-          animalTypeId: updated.animal.animalTypeId,
-        }
-        : null,
-      veterinaryPractice: {
-        id: updated.veterinaryPractice.id,
-        address: updated.veterinaryPractice.address,
-        email: updated.veterinaryPractice.email,
-        info: updated.veterinaryPractice.info,
-        infoEmail: updated.veterinaryPractice.infoEmail,
-        name: updated.veterinaryPractice.name,
-        phone: updated.veterinaryPractice.phone,
-        website: updated.veterinaryPractice.website,
-      },
-      veterinary: {
-        id: updated.veterinarian.id,
-        firstName: updated.veterinarian.person.firstName,
-        lastName: updated.veterinarian.person.lastName,
-        infoEmail: updated.veterinarian.infoEmail,
-        veterinaryPracticeId: updated.veterinaryPractice.id,
-      },
-      service: updated.service
-        ? {
-          id: updated.service.id,
-          name: updated.service.name,
-        }
-        : null,
-      availableServices: updated.service ? updated.appointmentHasServices.flatMap((x) => x.service) : [],
-      notes: updated.notes,
-    };
+    return mapToAppointment(updated);
   },
 
-  async canPersonAccessAppointment(personId: number, appointmentId: number): Promise<boolean> {
+  async updateAvailableAppointment(
+    id: number,
+    data: {
+      startTime?: Date;
+      endTime?: Date;
+      veterinaryId?: number;
+      availableServiceIds?: number[];
+    }
+  ): Promise<AppointmentsType> {
+
+    const foundAppointment = await prisma.appointment.findUnique({
+      where: { id },
+    });
+
+    if (!foundAppointment) {
+      throw new ResourceNotFoundError(`Appointment with id(${id}) does not exist`, "updateAvailableAppointment");
+    }
+
+    if (foundAppointment.animalId !== undefined) {
+      throw new Error(`Cannot update a booked appointment`)
+    }
+
+    if (foundAppointment.startTime < new Date()) {
+      throw new Error(`Cannot update a past appointment`)
+    }
+
+    if (data.availableServiceIds !== undefined && data.availableServiceIds.length > 0) {
+      await prisma.appointmentHasService.deleteMany({
+        where: { appointmentId: foundAppointment.id },
+      });
+
+      await prisma.appointmentHasService.createMany({
+        data: data.availableServiceIds.map(serviceId => ({
+          serviceId,
+          appointmentId: id,
+        })),
+        skipDuplicates: true,
+      });
+    }
+
+    const updated = await prisma.appointment.update({
+      include: APPOINTMENT_INCLUDE_BASE,
+      where: { id: foundAppointment.id },
+      data: {
+        startTime: data.startTime ? data.startTime : foundAppointment.startTime,
+        endTime: data.endTime ? data.endTime : foundAppointment.endTime,
+        veterinaryId: data.veterinaryId ? data.veterinaryId : foundAppointment.veterinaryId,
+      }
+    });
+
+    return mapToAppointment(updated);
+  },
+
+  async canPersonAccessAppointment(
+    personId: number,
+    appointmentId: number
+  ): Promise<boolean> {
     const appointment = await prisma.appointment.findUnique({
-      where: {
-        id: appointmentId,
-      },
-      select: {
-        animalId: true,
-      },
+      where: { id: appointmentId },
+      select: { animalId: true },
     });
 
     if (!appointment) {
@@ -1488,14 +550,13 @@ export const appointmentService = {
     return animalService.canPersonAccessAnimal(personId, appointment.animalId);
   },
 
-  async canPersonEditAppointment(personId: number, appointmentId: number): Promise<boolean> {
+  async canPersonEditAppointment(
+    personId: number,
+    appointmentId: number
+  ): Promise<boolean> {
     const appointment = await prisma.appointment.findUnique({
-      where: {
-        id: appointmentId,
-      },
-      select: {
-        animalId: true,
-      },
+      where: { id: appointmentId },
+      select: { animalId: true },
     });
 
     if (!appointment) {
