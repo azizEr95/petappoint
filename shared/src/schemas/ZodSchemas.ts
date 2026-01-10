@@ -257,6 +257,13 @@ export const AppointmentsCreateSchema = z.object({
   availableServiceIds: PostgresIdSchema.array().optional().default([]),
 });
 
+export const AvailableAppointmentSchema = z.object({
+  startTime: DateTimeSchema.optional(),
+  endTime: DateTimeSchema.optional(),
+  veterinaryId: PostgresIdSchema.optional(),
+  availableServiceIds: PostgresIdSchema.array().optional().default([]),
+})
+
 export const BookAppointmentSchema = z.object({
   id: PostgresIdSchema,
   animalId: PostgresIdSchema,
@@ -264,6 +271,7 @@ export const BookAppointmentSchema = z.object({
 });
 
 export type AppointmentsUpdateAsPersonType = z.infer<typeof BookAppointmentSchema>;
+export type UpdateAvailableAppointment = z.infer<typeof AvailableAppointmentSchema>;
 export type AppointmentsCreateType = z.infer<typeof AppointmentsCreateSchema>;
 export type AppointmentsType = z.infer<typeof AppointmentsSchema>;
 
