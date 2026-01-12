@@ -225,3 +225,11 @@ CREATE TABLE IF NOT EXISTS person_has_confirmation_code(
   verified BOOLEAN NOT NULL,
   PRIMARY KEY (fk_personId)
 );
+
+CREATE TABLE IF NOT EXISTS veterinarypractices_has_confirmation_code(
+  fk_veterinaryPracticeId INTEGER NOT NULL REFERENCES veterinarypractices(id) ON DELETE CASCADE,
+  code char(6) NOT NULL ,
+  dateOfCreation DATE NOT NULL,
+  verified BOOLEAN NOT NULL,
+  PRIMARY KEY (fk_veterinaryPracticeId)
+);

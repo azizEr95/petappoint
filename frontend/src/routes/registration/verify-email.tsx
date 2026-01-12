@@ -6,7 +6,8 @@ import { useLoginContext } from '../../LoginContext'
 import { EmailVerificationCode } from '../../components/registration/EmailVerificationCode'
 import { getPersonById } from '../../api/PersonsAPI'
 import { ChangeEmailDialog } from '../../components/registration/ChangeEmailDialog'
-import type { PersonsType } from 'vetilib-shared/schemas/ZodSchemas'
+import type { PersonsType, VeterinaryPracticesType } from 'vetilib-shared/schemas/ZodSchemas'
+import { getVeterinaryPracticesById } from '@/api/VeterinaryPracticeAPI'
 
 export const Route = createFileRoute('/registration/verify-email')({
   component: PendingConfirmation,
@@ -15,14 +16,21 @@ export const Route = createFileRoute('/registration/verify-email')({
 function PendingConfirmation() {
   const navigate = useNavigate();
   const { login } = useLoginContext();
-  const [showEmailEditDialog, setShowEmailEditDialog] =  useState(false);
+  const [showEmailEditDialog, setShowEmailEditDialog] = useState(false);
+  const [email, setEmail] = useState<string>("");
 
-  const userId = login ? login.id : -1;
+  const id = login ? login.id : -1;
   const { data: dataUser, isSuccess: isSuccessUser } = useQuery<PersonsType>({
-    queryKey: ['person', userId],
-    queryFn: () => getPersonById(userId),
+    queryKey: ['person', id],
+    queryFn: () => getPersonById(id),
     retry: false,
-    enabled: userId !== -1,
+    enabled: id !== -1 && login && login.role === 'person',
+  })
+  const { data: dataPractice, isSuccess: isSuccessPractice } = useQuery<VeterinaryPracticesType>({
+    queryKey: ['practice', id],
+    queryFn: () => getVeterinaryPracticesById(id.toString()),
+    retry: false,
+    enabled: id !== -1 && login && login.role === 'company',
   })
 
   useEffect(() => { // if not verified go to start
@@ -32,6 +40,14 @@ function PendingConfirmation() {
       navigate({ to: '/' });
     }
   }, [login]);
+
+  useEffect(() => {
+    if (isSuccessUser && login && login.role === 'person') {
+      setEmail(dataUser.email);
+    } else if (isSuccessPractice && login && login.role === 'company') {
+      setEmail(dataPractice.email);
+    }
+  }, [dataUser, dataPractice, isSuccessPractice, isSuccessUser]);
 
   const handleChangeEmail = () => {
     setShowEmailEditDialog(true);
@@ -46,12 +62,10 @@ function PendingConfirmation() {
       <div className="auth-container">
         <div className="auth-card">
           <h1 className="auth-title">Bestätige deine E-Mail-Adresse</h1>
-
-          {/* TODO: Feature folgt noch, noch nicht implentiert... */}
-          {isSuccessUser && (
+          {email !== "" && (
             <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
               <p style={{ color: '#6b7280', marginBottom: '1rem' }}>
-                Wir haben eine Bestätigungsmail an <strong>{dataUser.email}</strong> versendet.
+                Wir haben eine Bestätigungsmail an <strong>{email}</strong> versendet.
               </p>
               <button
                 type="button"
@@ -76,7 +90,7 @@ function PendingConfirmation() {
           </p>
 
           <EmailVerificationCode />
-          {isSuccessUser && showEmailEditDialog && <ChangeEmailDialog hideEmailEditDialog={hideEmailEditDialog} email={dataUser.email} />}
+          {isSuccessUser && showEmailEditDialog && <ChangeEmailDialog hideEmailEditDialog={hideEmailEditDialog} email={email} />}
         </div>
       </div>
     </div>

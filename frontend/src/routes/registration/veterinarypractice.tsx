@@ -223,7 +223,9 @@ function VeterinaryRegistration() {
     },
     onSuccess: (data) => {
       setLogin(data);
-      navigate({ to: '/dashboard' });
+      navigate({
+        to: '/registration/verify-email',
+      })
     },
   })
 

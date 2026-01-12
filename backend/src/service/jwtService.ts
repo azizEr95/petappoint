@@ -2,6 +2,8 @@ import { LoginType, AuthenticatedType, RoleEnum } from "vetilib-shared/schemas/Z
 import { login } from "./authenticationService";
 import { JsonWebTokenError, JwtPayload, sign, verify } from "jsonwebtoken";
 import { personService } from "./personService";
+import { veterinaryPracticeRouter } from "src/routes/veterinaryPractice";
+import { veterinaryPracticeService } from "./veterinaryPracticeService";
 
 export async function createJWT(subjectId: number, role: RoleEnum, isVerified: boolean) {
     // JwtPayload ist ein TypeScript-Type, der die Standard-Felder definiert
@@ -24,22 +26,34 @@ export async function createJWT(subjectId: number, role: RoleEnum, isVerified: b
 }
 
 export async function verifyPasswordAndCreateJWT(email: string, password: string): Promise<string | undefined> {
-    const findperson: AuthenticatedType | false = await login(email, password);
-    if (!findperson) {
+    const finduser: AuthenticatedType | false = await login(email, password);
+    if (!finduser) {
         return undefined;
     }
+    let verified: boolean;
 
-    const verified = await personService.checkVerified(findperson.id);
-    return createJWT(findperson.id, findperson.role, verified);
+    if (finduser.role === "company") {
+        verified = await veterinaryPracticeService.checkVerified(finduser.id);
+    } else {
+        verified = await personService.checkVerified(finduser.id);
+    }
+    return createJWT(finduser.id, finduser.role, verified);
 }
 
 export async function verifyCodeAndCreateJWT(role: RoleEnum, userId: number, code: string): Promise<string | undefined> {
-    const check = await personService.checkConfirmationCodeExists(userId, code);
+    let check: boolean;
+    let verified: boolean;
+    if (role === "company") {
+        check = await veterinaryPracticeService.checkConfirmationCodeExists(userId, code);
+        verified = await veterinaryPracticeService.checkVerified(userId);
+    } else {
+        check = await personService.checkConfirmationCodeExists(userId, code);
+        verified = await personService.checkVerified(userId);
+    }
     if (!check) {
         return undefined;
     }
-
-    const verified = await personService.checkVerified(userId);
+    
     return createJWT(userId, role, verified);
 }
 

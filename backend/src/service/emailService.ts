@@ -3,17 +3,22 @@ import fs from 'fs';
 import path from 'path';
 import { SendSmtpEmail } from "@getbrevo/brevo";
 import { emailServiceSetup } from "../singletonEmail";
-import { PersonsType } from 'vetilib-shared/schemas/ZodSchemas';
+import { PersonsType, VeterinariansType, VeterinaryPracticesType } from 'vetilib-shared/schemas/ZodSchemas';
 import { personService } from './personService';
-import { person_has_confirmation_code } from '../../generated/prisma';
+import { person_has_confirmation_code, VeterinaryPractice, veterinarypractices_has_confirmation_code } from '../../generated/prisma';
 import { appointmentService } from './appointmentService';
 import { dateFormatter } from '../utils/dateFormatter';
+import { veterinaryPracticeService } from './veterinaryPracticeService';
 
 
-// types 
 const sender = {
     name: "vetilib",
     email: "aziz.erol@outlook.de"
+}
+
+type userDataMail = {
+    name: string,
+    email: string
 }
 
 // instance of Brevo email API
@@ -62,12 +67,20 @@ export async function sendPasswordResetEmail(
 export const emailService = {
     async sendConfirmationEmail(user: PersonsType) {
 
-        //template 
-        const templatePath = path.join(__dirname, `../../templates/email/confirmationEmail.html`);
-        const templateSource = fs.readFileSync(templatePath, 'utf-8');
+        let generatedCode: string;
+        // confirmation Code generator
+        generatedCode = randomGenerator().toString().padStart(6, "0");
 
-        // Handlebars compiles our Template
-        const template = Handlebars.compile(templateSource);
+        const createdEntry = await personService.createConfirmationCode(user.id, generatedCode);
+        const userData: userDataMail = {
+            name: user.firstName,
+            email: user.email
+        }
+
+        await sendConfirmationEmail(userData, createdEntry.code);
+    },
+
+    async sendConfirmationEmailVetPractices(user: VeterinaryPracticesType) {
 
         let generatedCode: string;
 
@@ -75,30 +88,14 @@ export const emailService = {
         // confirmation Code generator
         generatedCode = randomGenerator().toString().padStart(6, "0");
 
-        const createdEntry = await personService.createConfirmationCode(user.id, generatedCode);
+        const createdEntry = await veterinaryPracticeService.createConfirmationCode(user.id, generatedCode);
 
-
-        // using jwttoken to verify through link/button click and a random 6 digit code as one time password for every user 
-        const data = {
-            firstName: user.firstName,
-            confirmationCode: createdEntry.code,
-            year: new Date().getFullYear()
-        };
-        // render template
-        const htmlContent = template(data);
-
-        const message = new SendSmtpEmail();
-        message.subject = "Bitte bestätige deine Email-Adresse!";
-        message.htmlContent = htmlContent;
-        message.sender = sender;
-        message.to = [{ email: user.email }];
-
-        try {
-            const result = await emailAPI.sendTransacEmail(message);
-            return result;
-        } catch (error) {
-            throw new Error("sending Confirmation Email didnt work");
+        const userData: userDataMail = {
+            name: user.name,
+            email: user.email
         }
+
+        await sendConfirmationEmail(userData, createdEntry.code);
     },
 
     async sendAppointmentEmail(userid: number, appointmentId: number, type: string) {
@@ -110,27 +107,27 @@ export const emailService = {
         switch (type) {
             case "confirmation":
                 emailtype = "appointmentConfirmation";
-                appointmentData  = {
+                appointmentData = {
                     firstName: user.firstName,
-                    appointmentDate: dateFormatter(appointment.startTime,"date"),
-                    appointmentTime: dateFormatter(appointment.startTime,"time"),
+                    appointmentDate: dateFormatter(appointment.startTime, "date"),
+                    appointmentTime: dateFormatter(appointment.startTime, "time"),
                     patientName: appointment.animal?.name ?? "",
                     serviceName: appointment.service?.name ?? "",
                     location: appointment.veterinaryPractice.address.street,
                     appointmentLink: `${process.env.PROD === "true" ? process.env.PROD_SERVER : process.env.DEV_SERVER}/appointments/`,
-                    cancellationDeadline: dateFormatter(new Date(new Date().setDate(appointment.startTime.getDate() - 1)),"date"), //horrible fix but works
+                    cancellationDeadline: dateFormatter(new Date(new Date().setDate(appointment.startTime.getDate() - 1)), "date"), //horrible fix but works
                     supportEmail: appointment.veterinaryPractice.email,
                     supportPhone: appointment.veterinaryPractice.phone,
                     clinicName: appointment.veterinaryPractice.name
                 }
                 message.subject = "Dein Termin wurde erfolgreich gebucht!";
                 break;
-            case "termination": 
+            case "termination":
                 emailtype = "appointmentTermination";
                 appointmentData = {
                     firstName: user.firstName,
-                    appointmentDate: dateFormatter(appointment.startTime,"date"),
-                    appointmentTime: dateFormatter(appointment.startTime,"time"),
+                    appointmentDate: dateFormatter(appointment.startTime, "date"),
+                    appointmentTime: dateFormatter(appointment.startTime, "time"),
                     patientName: appointment.animal?.name ?? "",
                     serviceName: appointment.service?.name ?? "",
                     supportEmail: appointment.veterinaryPractice.email,
@@ -143,7 +140,7 @@ export const emailService = {
                 break;
         }
 
-        if(!emailtype){
+        if (!emailtype) {
             throw new Error("mailtype not set!");
         }
         //template 
@@ -173,11 +170,53 @@ export const emailService = {
     * conditions: 15 min timer and code needs to be in db 
     */
 
-    async checkVerificationandSetVerifiedStatus(userId: number, code: string): Promise<person_has_confirmation_code | false> {
-        try {
-            return await personService.updateVerified(userId,code);
-        } catch (error) {
-            return false;   
-        } 
+    async checkVerificationandSetVerifiedStatus(userId: number, code: string, role: "person" | "company" | undefined): Promise<person_has_confirmation_code | veterinarypractices_has_confirmation_code | false> {
+        if (role === "person") {
+            try {
+                return await personService.updateVerified(userId, code);
+            } catch (error) {
+                return false;
+            }
+        } else {
+            try {
+                return await veterinaryPracticeService.updateVerified(userId,code);
+            } catch (error) {
+                return false;
+            }
+        }
     },
+
+
+}
+
+async function sendConfirmationEmail(userData: userDataMail, code: string) {
+    //template 
+    const templatePath = path.join(__dirname, `../../templates/email/confirmationEmail.html`);
+    const templateSource = fs.readFileSync(templatePath, 'utf-8');
+
+    // Handlebars compiles our Template
+    const template = Handlebars.compile(templateSource);
+
+    // random 6 digit code as one time password for every user 
+    const data = {
+        firstName: userData.name,
+        confirmationCode: code,
+        year: new Date().getFullYear()
+    };
+
+    // render template
+    const htmlContent = template(data);
+
+    const message = new SendSmtpEmail();
+    message.subject = "Bitte bestätige deine Email-Adresse!";
+    message.htmlContent = htmlContent;
+    message.sender = sender;
+    message.to = [{ email: userData.email }];
+
+    try {
+        const result = await emailAPI.sendTransacEmail(message);
+        return result;
+    } catch (error) {
+        throw new Error("sending Confirmation Email didnt work");
+    }
 }
