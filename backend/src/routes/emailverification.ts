@@ -3,7 +3,9 @@ import { emailService } from '../service/emailService';
 import { requiresAuthentication } from './authentication';
 import { personService } from '../service/personService';
 import { ResourceNotFoundError } from '../exceptions/errors/ResourceNotFoundError';
-import { verifyCodeAndCreateJWT, verifyJWT, verifyPasswordAndCreateJWT } from '../service/jwtService';
+import { createJWT, verifyCodeAndCreateJWT, verifyJWT, verifyPasswordAndCreateJWT } from '../service/jwtService';
+import { person_has_confirmation_code, veterinarypractices_has_confirmation_code } from 'generated/prisma';
+import { create } from 'domain';
 
 
 /*
@@ -15,7 +17,20 @@ emailverificationRouter.get("/:sixdigitcode", requiresAuthentication,
     async (req, res) => {
         try {
             const code = req.params.sixdigitcode;
-            const result = await emailService.checkVerificationandSetVerifiedStatus(req.userId!, code);
+            const result: person_has_confirmation_code | veterinarypractices_has_confirmation_code | false = await emailService.checkVerificationandSetVerifiedStatus(req.userId!, code, req.role!);
+            if (req.role! === "company") {
+                const jwtCompany = await verifyCodeAndCreateJWT("company",req.userId!,code);
+
+                const logRes = verifyJWT(jwtCompany);
+                res.cookie("access_token", jwtCompany), {
+                    httpOnly: true,
+                    expires: new Date(logRes.exp * 1000),
+                    secure: true,
+                    sameSite: "none"
+                }
+                res.send(logRes);
+                return;
+            }
             const jwt = await verifyCodeAndCreateJWT("person", req.userId!, code);
             if (!result) {
                 res.status(400).send("Code ist falsch oder abgelaufen");

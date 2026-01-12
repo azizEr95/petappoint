@@ -14,6 +14,7 @@ import {
 } from "vetilib-shared/schemas/ZodSchemas";
 import { checkVerified, optionalAuthentication, requiresAuthentication } from "./authentication";
 import { createJWT, verifyJWT, verifyPasswordAndCreateJWT } from "../service/jwtService";
+import { emailService } from "../service/emailService";
 
 export const veterinaryPracticeRouter = express.Router();
 
@@ -92,7 +93,8 @@ veterinaryPracticeRouter.post("/", optionalAuthentication,
 
   // TODO: Email Confirmation
   // TODO: Code verification for companies?
-  const jwt = await createJWT(createdVeterinaryPractice.id, "company", true);
+  await emailService.sendConfirmationEmailVetPractices(createdVeterinaryPractice)
+  const jwt = await verifyPasswordAndCreateJWT(validatedBody.email,validatedBody.password);
   if (!jwt) {
     res.sendStatus(401);
     return;

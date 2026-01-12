@@ -11,7 +11,8 @@ import {
 import { addressService } from "./addressService";
 import { ResourceNotFoundError } from "../exceptions/errors/ResourceNotFoundError";
 import { ConstraintError } from "../exceptions/errors/ConstraintError";
-import { Prisma } from "../../generated/prisma";
+import { Prisma, veterinarypractices_has_confirmation_code } from "../../generated/prisma";
+import { resolveSoa } from "dns";
 
 async function checkCreateEmailConstraint(veterinaryPracticeRe: VeterinaryPracticesCreateType) {
   const query = {
@@ -27,7 +28,7 @@ async function checkCreateEmailConstraint(veterinaryPracticeRe: VeterinaryPracti
   if (existingPerson) {
     throw new ConstraintError("Email wird bereits verwendet", [{ path: "email", value: veterinaryPracticeRe.email }]);
   }
-  
+
   if (existingPractice) {
     throw new ConstraintError("Email wird bereits verwendet", [{ path: "email", value: veterinaryPracticeRe.email }]);
   }
@@ -332,5 +333,60 @@ export const veterinaryPracticeService = {
       infoEmail: x.infoEmail,
       veterinaryPracticeId: praxisId
     }));
+  },
+
+  async checkConfirmationCodeExists(vetPracId: number, generatedCode: string): Promise<boolean> {
+    const found = await prisma.veterinarypractices_has_confirmation_code.findFirst({where: {
+      fk_veterinarypracticeid: vetPracId,
+      code: generatedCode,
+      dateofcreation: {
+        gte: new Date(new Date().valueOf() - 15 * 60000)
+      }
+    }});
+    return !!found;
+  },
+
+  async createConfirmationCode(userId: number, generatedCode: string): Promise<veterinarypractices_has_confirmation_code> {
+      const created = await prisma.veterinarypractices_has_confirmation_code.upsert({
+       where: {
+          fk_veterinarypracticeid: userId
+       },
+       update: {
+          code: generatedCode,
+          dateofcreation: new Date().toISOString()
+       },
+       create:{
+          fk_veterinarypracticeid: userId,
+          code: generatedCode,
+          dateofcreation: new Date().toISOString(),
+          verified: false
+       }
+      });
+      return created;
+    },
+
+  async checkVerified(vetPracId: number): Promise<boolean> {
+    const check = await prisma.veterinarypractices_has_confirmation_code.findUnique({
+      where: {
+        fk_veterinarypracticeid: vetPracId
+      }
+    });
+    if(!check){
+      throw new ResourceNotFoundError("Pracice not found.","practiceId",vetPracId);
+    }
+    return check.verified;
+  },
+  
+  async updateVerified(vetPracId: number, code: string): Promise<veterinarypractices_has_confirmation_code> {
+    const practice = await prisma.veterinarypractices_has_confirmation_code.update({
+      where: {
+        fk_veterinarypracticeid: vetPracId,
+        code: code
+      },
+      data: {
+        verified: true
+      }
+    });
+    return practice;
   }
 };
