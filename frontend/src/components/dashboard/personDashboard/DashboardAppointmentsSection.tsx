@@ -8,6 +8,7 @@ import {
 import { AppointmentCard } from '../../appointment/AppointmentCard'
 import type { AppointmentsType } from 'vetilib-shared/schemas/ZodSchemas'
 import '../../../styles/components/dashboard/DashboardAppointmentsSection.scss'
+import { SuccessNotificationToast } from '@/components/SuccessNotificationToast'
 
 type DashboardAppointmentsSectionProps = {
   userId: number
@@ -17,7 +18,8 @@ export function DashboardAppointmentsSection({
   userId,
 }: DashboardAppointmentsSectionProps) {
   const navigate = useNavigate()
-  const [activeTab, setActiveTab] = useState<'upcoming' | 'past'>('upcoming')
+  const [activeTab, setActiveTab] = useState<'upcoming' | 'past'>('upcoming');
+  const [showCancelSuccess, setShowCancelSuccess] = useState<boolean>(false);
 
   // Fetch upcoming appointments
   const { data: upcomingAppointments = [], isLoading: isLoadingUpcoming } =
@@ -91,6 +93,7 @@ export function DashboardAppointmentsSection({
                     appointment={appointment}
                     handleShowDetailsAppointment={handleShowDetails}
                     isPast={false}
+                    onShowCancelSuccess={() => setShowCancelSuccess(true)}
                   />
                 ))}
               </div>
@@ -143,6 +146,13 @@ export function DashboardAppointmentsSection({
           </>
         )}
       </div>
+
+      {/* show succes Notifications in the right corner */}
+      {showCancelSuccess && (
+        <SuccessNotificationToast
+          message={'Ihr Termin wurde erfolgreich abgesagt.'}
+          onClose={() => setShowCancelSuccess(false)} />
+      )}
     </div>
   )
 }

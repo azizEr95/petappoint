@@ -12,6 +12,7 @@ import { useLoginContext } from '../../LoginContext'
 import { isLoggedInAndVerified } from '../../utils/Authentication'
 import type { AppointmentsType } from 'vetilib-shared/schemas/ZodSchemas'
 import '../../styles/routes/appointments.scss'
+import { SuccessNotificationToast } from '@/components/SuccessNotificationToast'
 
 
 export const Route = createFileRoute('/appointments/')({
@@ -46,7 +47,7 @@ function Appointments() {
     initialState.justBooked,
   )
   const [hasJustBooked, setHasJustBooked] = useState(initialState.justBooked)
-  const [showCancelSuccess, setShowCancelSuccess] = useState(false)
+  const [showCancelSuccess, setShowCancelSuccess] = useState<boolean>(false)
 
   const userID = login ? login.id : undefined
 
@@ -74,12 +75,7 @@ function Appointments() {
     let timer: NodeJS.Timeout | undefined
 
     if (initialState.justBooked) {
-      setActiveTab('upcoming')
-      setShowSuccessNotification(true)
-      // Auto-dismiss after 5 seconds
-      timer = setTimeout(() => {
-        setShowSuccessNotification(false)
-      }, 5000)
+      setShowSuccessNotification(true);
     }
 
     // Clear state to prevent re-triggering on navigation
@@ -107,8 +103,8 @@ function Appointments() {
     () =>
       dataFuture
         ? [...dataFuture].sort(
-            (a, b) => a.startTime.getTime() - b.startTime.getTime(),
-          )
+          (a, b) => a.startTime.getTime() - b.startTime.getTime(),
+        )
         : [],
     [dataFuture],
   )
@@ -116,8 +112,8 @@ function Appointments() {
     () =>
       dataPast
         ? [...dataPast].sort(
-            (a, b) => b.startTime.getTime() - a.startTime.getTime(),
-          )
+          (a, b) => b.startTime.getTime() - a.startTime.getTime(),
+        )
         : [],
     [dataPast],
   )
@@ -197,14 +193,6 @@ function Appointments() {
     setSelectedAppointment(appointment)
   }
 
-  const handleShowCancelSuccess = () => {
-    setShowCancelSuccess(true)
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-    setTimeout(() => {
-      setShowCancelSuccess(false)
-    }, 5000)
-  }
-
   const currentData = activeTab === 'upcoming' ? sortedFuture : sortedPast
   const isCurrentError = activeTab === 'upcoming' ? isErrorFuture : isErrorPast
   const isCurrentSuccess =
@@ -261,19 +249,8 @@ function Appointments() {
         </div>
       )}
 
-      {isCurrentSuccess && currentData.length === 0 && (
-        <div className="empty-state-centered">
-          <AppointmentList
-            dataAppointments={currentData}
-            handleShowDetailsAppointment={handleShowDetailsAppointment}
-            selectedAppointment={selectedAppointment}
-            isPast={activeTab === 'past'}
-          />
-        </div>
-      )}
-
-      {isCurrentSuccess && currentData.length > 0 && (
-        <div className="appointments-layout">
+      {isCurrentSuccess && (
+        <div className={currentData.length === 0 ? "empty-state-centered" : "appointments-layout"}>
           <div className="appointments-list-section">
             <AppointmentList
               dataAppointments={currentData}
@@ -284,58 +261,24 @@ function Appointments() {
           </div>
 
           <div className="appointments-details-column">
-            {showSuccessNotification && (
-              <div className="booking-success-notification">
-                <div className="notification-icon">
-                  <i className="bi bi-check-circle-fill"></i>
-                </div>
-                <div className="notification-content">
-                  <h3>
-                    {initialState.wasRescheduled
-                      ? 'Termin erfolgreich verschoben!'
-                      : 'Termin erfolgreich gebucht!'}
-                  </h3>
-                  <p>
-                    {initialState.wasRescheduled
-                      ? 'Ihr Termin wurde verschoben und der alte Termin wurde abgesagt.'
-                      : 'Ihr Termin wurde bestätigt und erscheint nun in Ihrer Übersicht.'}
-                  </p>
-                </div>
-                <button
-                  className="notification-close"
-                  onClick={() => setShowSuccessNotification(false)}
-                >
-                  <i className="bi bi-x"></i>
-                </button>
-              </div>
-            )}
-            {showCancelSuccess && (
-              <div className="booking-success-notification">
-                <div className="notification-icon">
-                  <i className="bi bi-check-circle-fill"></i>
-                </div>
-                <div className="notification-content">
-                  <h3>Termin erfolgreich abgesagt</h3>
-                  <p>Der Termin wurde aus Ihrer Übersicht entfernt.</p>
-                </div>
-                <button
-                  className="notification-close"
-                  onClick={() => setShowCancelSuccess(false)}
-                >
-                  <i className="bi bi-x"></i>
-                </button>
-              </div>
-            )}
-            {selectedAppointment && (
+            {selectedAppointment && currentData.length > 0 && (
               <AppointmentDetails
                 key={selectedAppointment.id}
                 appointment={selectedAppointment}
-                onShowCancelSuccess={handleShowCancelSuccess}
+                onShowCancelSuccess={() => setShowCancelSuccess(true)}
               />
             )}
           </div>
         </div>
       )}
+
+      {/* show succes Notifications in the right corner */}
+      {(showSuccessNotification || showCancelSuccess) &&
+        <SuccessNotificationToast
+          message={showCancelSuccess ? 'Ihr Termin wurde erfolgreich abgesagt.' : (initialState.wasRescheduled ? 'Ihr Termin wurde erfolgreich verschoben.' : 'Ihr Termin wurde erfolgreich gebucht.')}
+          onClose={showCancelSuccess ? () => setShowCancelSuccess(false) : () => setShowSuccessNotification(false)} />
+
+      }
     </div>
   )
 }
