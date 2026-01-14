@@ -1,10 +1,9 @@
 import express from "express";
-import { JsonWebTokenError } from "jsonwebtoken";
 import { verifyJWT, verifyPasswordAndCreateJWT } from "../service/jwtService";
 import { loginValidator } from "vetilib-shared/schemas/ZodSchemas";
 import { optionalAuthentication } from "./authentication";
 import { personService } from "../service/personService";
-//import { optionalAuthentication } from "./authentication";
+import { veterinaryPracticeService } from "../service/veterinaryPracticeService";
 
 export const loginRouter = express.Router();
 
@@ -16,10 +15,14 @@ loginRouter.post("/",
         if (!jwtString) {
             return res.sendStatus(401);
         }
-    
+
         const logRes = verifyJWT(jwtString);
 
-        logRes.verified = await personService.checkVerified(logRes.id);
+        if (logRes.role === "company") {
+            logRes.verified = await veterinaryPracticeService.checkVerified(logRes.id);
+        } else {
+            logRes.verified = await personService.checkVerified(logRes.id);
+        }
 
         res.cookie("access_token", jwtString, {
             httpOnly: true,
