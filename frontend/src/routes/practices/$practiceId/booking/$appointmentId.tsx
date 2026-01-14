@@ -25,6 +25,7 @@ import type {
   ServiceType,
   VeterinaryPracticesType,
 } from 'vetilib-shared/schemas/ZodSchemas'
+import { useTitle } from '@/utils/useTitle'
 
 export const Route = createFileRoute(
   '/practices/$practiceId/booking/$appointmentId',
@@ -33,6 +34,7 @@ export const Route = createFileRoute(
 })
 
 function BookingComponent() {
+  useTitle('Termin buchen')
   const navigate = useNavigate()
   const location = useLocation()
   const { login } = useLoginContext()

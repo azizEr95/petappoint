@@ -10,12 +10,14 @@ import type { ChangeEvent, FormEvent } from 'react';
 import type { VeterinaryPracticesCreateType } from 'vetilib-shared/schemas/ZodSchemas';
 import { veterinaryPracticeRegistration } from '@/api/LoginAPI';
 import { useLoginContext } from '@/LoginContext';
+import { useTitle } from '@/utils/useTitle';
 
 export const Route = createFileRoute('/registration/veterinarypractice')({
   component: VeterinaryRegistration,
 });
 
 function VeterinaryRegistration() {
+  useTitle("Registrierung Praxis");
   const [name, setName] = useState('');
   const [strasse, setStrasse] = useState('');
   const [hausnr, setHausnr] = useState('');

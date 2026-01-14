@@ -16,12 +16,14 @@ import type {
   VeterinaryPracticeSearchQueryType,
   VeterinaryPracticesType,
 } from 'vetilib-shared/schemas/ZodSchemas'
+import { useTitle } from '@/utils/useTitle'
 
 export const Route = createFileRoute('/practices/$practiceId/')({
   component: VeterinaryPractice,
 })
 
 function VeterinaryPractice() {
+  // useTitle is called later with practice name
   const navigate = useNavigate()
   const location = useLocation()
   const { practiceId } = Route.useParams()
@@ -79,6 +81,7 @@ function VeterinaryPractice() {
   }
 
   let practice: VeterinaryPracticesType | undefined = undefined;
+  useTitle(isSuccessPractice ? dataPractice.name : 'Praxis');
   if (isSuccessPractice) {
     practice = dataPractice
   }

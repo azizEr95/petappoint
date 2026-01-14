@@ -8,6 +8,7 @@ import type {
   AppointmentFilterType,
   VeterinaryPracticeSearchQueryType,
 } from 'vetilib-shared/schemas/ZodSchemas'
+import { useTitle } from '@/utils/useTitle'
 
 export type VeterinaryPracticeSearch = {
   // search, everything has to be a string
@@ -27,6 +28,7 @@ export const Route = createFileRoute('/search')({
 })
 
 function SearchComponent() {
+  useTitle('Suche');
   const { name, address, animalType, serviceType } = Route.useSearch()
   // serviceType or animalType are an empty string if the route was called from outside
    

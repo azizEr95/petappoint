@@ -8,6 +8,7 @@ import '../../../styles/routes/emailVerification.scss'
 import { ChangeEmailDialog } from '../../../components/registration/ChangeEmailDialog'
 import { getPersonById } from '../../../api/PersonsAPI'
 import type { LoginType, PersonsType } from 'vetilib-shared/schemas/ZodSchemas'
+import { useTitle } from '@/utils/useTitle'
 
 export const Route = createFileRoute(
   '/registration/email-confirmation/$emailVerifyCode',
@@ -16,6 +17,7 @@ export const Route = createFileRoute(
 })
 
 function SuccessFailEmailVerification() {
+  useTitle('E-Mail Verifizierung');
   const { login, setLogin } = useLoginContext();
   const navigate = useNavigate();
   const [showEmailEditDialog, setShowEmailEditDialog] =  useState(false);
