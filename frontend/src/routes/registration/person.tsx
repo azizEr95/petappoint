@@ -14,12 +14,14 @@ import { useLoginContext } from '../../LoginContext'
 import { scrollToFirstError } from '../../utils/Registration'
 import type { PersonsCreateType, sexesType } from 'vetilib-shared/schemas/ZodSchemas';
 import type { FormEvent } from 'react';
+import { useTitle } from '@/utils/useTitle'
 
 export const Route = createFileRoute('/registration/person')({
   component: PersonRegistration,
 })
 
 function PersonRegistration() {
+  useTitle("Registrierung Person");
   const navigate = useNavigate()
   const location = useLocation()
   const appointment = location.state.appointment

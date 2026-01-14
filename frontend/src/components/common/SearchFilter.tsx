@@ -88,7 +88,7 @@ export function SearchFilter({
     queryKey: ['animals', userId],
     queryFn: () => getAnimalsFromUser(userId),
     retry: false,
-    enabled: userId !== -1, // only get animals if the user is logged in
+    enabled: userId !== -1 && login && login.role === "person", // only get animals if the user is logged in
   })
 
   useEffect(() => {

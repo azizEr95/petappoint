@@ -25,6 +25,7 @@ import type {
   ServiceType,
   VeterinaryPracticesType,
 } from 'vetilib-shared/schemas/ZodSchemas'
+import { useTitle } from '@/utils/useTitle'
 
 export const Route = createFileRoute(
   '/practices/$practiceId/booking/$appointmentId',
@@ -33,6 +34,7 @@ export const Route = createFileRoute(
 })
 
 function BookingComponent() {
+  useTitle('Termin buchen')
   const navigate = useNavigate()
   const location = useLocation()
   const { login } = useLoginContext()
@@ -136,7 +138,7 @@ function BookingComponent() {
     queryKey: ['animal', userId],
     queryFn: () => getAnimalsFromUser(userId ?? -1),
     retry: false,
-    enabled: userId !== undefined,
+    enabled: userId !== undefined && login && login.role === "person",
   })
 
   useEffect(() => {

@@ -17,6 +17,7 @@ type AppointmentCardProps = {
   isActive?: boolean
   isPast: boolean
   compact?: boolean
+  onShowCancelSuccess?: () => void
 }
 
 export function AppointmentCard({
@@ -25,10 +26,12 @@ export function AppointmentCard({
   isActive,
   isPast,
   compact = false,
+  onShowCancelSuccess // this function is important if it is possible here to cancel an appointment
 }: AppointmentCardProps) {
   const practiceID = appointment.veterinaryPractice.id
   const navigate = useNavigate()
   const [showCancelDialog, setShowCancelDialog] = useState(false)
+
 
   const { isError, isSuccess, data } = useQuery<VeterinaryPracticesType>({
     queryKey: ['veterinaryPractice', practiceID],
@@ -73,7 +76,7 @@ export function AppointmentCard({
 
     const handleExportCalendar = (e: React.MouseEvent) => {
       e.stopPropagation()
-      const appointmentType = appointment.availableServices.find(
+      const appointmentService = appointment.availableServices.find(
         (x) => x.id === appointment.service?.id,
       )
       const address = `${practice.address.street}, ${practice.address.cityCode} ${practice.address.city}`
@@ -81,7 +84,7 @@ export function AppointmentCard({
         appointment,
         practice.name,
         address,
-        appointmentType?.name,
+        appointmentService?.name,
       )
     }
 
@@ -154,7 +157,7 @@ export function AppointmentCard({
             <span>{appointment.animal?.name || 'Nicht zugewiesen'}</span>
           </div>
         </div>
-        {!isPast && !compact && (
+        {!isPast && (
           <div className="card-actions">
             <button
               className="action-btn"
@@ -196,6 +199,7 @@ export function AppointmentCard({
           <AppointmentDeleteDialog
             hideDialogDeleteAppointment={() => setShowCancelDialog(false)}
             appointmentDelete={appointment}
+            onShowCancelSuccess={onShowCancelSuccess}
           />
         )}
       </>

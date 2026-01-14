@@ -4,12 +4,14 @@ import { useMutation } from '@tanstack/react-query'
 import { Form } from 'react-bootstrap'
 import { requestPasswordReset } from '../../api/PasswordResetAPI'
 import '../../styles/routes/_auth-shared.scss'
+import { useTitle } from '@/utils/useTitle'
 
 export const Route = createFileRoute('/password-reset/request')({
   component: PasswordResetRequest,
 })
 
 function PasswordResetRequest() {
+  useTitle('Passwort zurücksetzen');
   const navigate = useNavigate()
   const [email, setEmail] = useState('')
   const [emailError, setEmailError] = useState('')

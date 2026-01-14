@@ -6,6 +6,7 @@ import { useLoginContext } from '../../LoginContext'
 import { EmailVerificationCode } from '../../components/registration/EmailVerificationCode'
 import { getPersonById } from '../../api/PersonsAPI'
 import { ChangeEmailDialog } from '../../components/registration/ChangeEmailDialog'
+import { useTitle } from '@/utils/useTitle'
 import type { PersonsType, VeterinaryPracticesType } from 'vetilib-shared/schemas/ZodSchemas'
 import { getVeterinaryPracticesById } from '@/api/VeterinaryPracticeAPI'
 
@@ -14,6 +15,7 @@ export const Route = createFileRoute('/registration/verify-email')({
 })
 
 function PendingConfirmation() {
+  useTitle('E-Mail Verifizierung');
   const navigate = useNavigate();
   const { login } = useLoginContext();
   const [showEmailEditDialog, setShowEmailEditDialog] = useState(false);

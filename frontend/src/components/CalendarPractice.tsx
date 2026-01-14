@@ -3,6 +3,7 @@ import moment from 'moment'
 import { Calendar, Views, momentLocalizer } from 'react-big-calendar'
 import type { View } from 'react-big-calendar';
 import 'react-big-calendar/lib/css/react-big-calendar.css'
+import type { AppointmentsType } from "vetilib-shared/schemas/ZodSchemas";
 
 // Deutsches Locale manuell definieren
 moment.defineLocale('de', {
@@ -28,33 +29,22 @@ moment.defineLocale('de', {
 moment.locale('de')
 const localizer = momentLocalizer(moment)
 
-const myEventsList = [
-    {
-        id: 1,
-        title: 'Beispiel Termin 1',
-        start: new Date(2026, 0, 15, 10, 0),
-        end: new Date(2026, 0, 15, 11, 0),
-    },
-    {
-        id: 2,
-        title: 'Beispiel Termin 2',
-        start: new Date(2026, 0, 20, 14, 30),
-        end: new Date(2026, 0, 20, 15, 30),
-    },
-]
+type CalendarPracticeProps = {
+    data: Array<AppointmentsType> | undefined
+}
 
 // alle Termine die hier angezeigt werden sollen muessen hier uebergeben werden als Props
-export function CalendarPractice() {
-    const [view, setView] = useState<View>(Views.DAY)
+export function CalendarPractice({ data }: CalendarPracticeProps) {
+    const [view, setView] = useState<View>(Views.WEEK)
     const [date, setDate] = useState(new Date())
 
     return <>
         <Calendar
             localizer={localizer}
             culture="de"
-            events={myEventsList}
-            startAccessor="start"
-            endAccessor="end"
+            events={data || []} // Use data prop for events
+            startAccessor="startTime" 
+            endAccessor="endTime"
             style={{ height: 500 }}
             selectable
             view={view}
@@ -92,7 +82,7 @@ export function CalendarPractice() {
             }}
             onSelectEvent={(event) => {
                 console.log("Termin angeklickt:", event);
-                alert(`Patient: ${event.title}`);
+                alert(`Patient: ${event}`);
             }}
             onSelectSlot={(slotInfo) => {
                 console.log("Leeres Feld angeklickt bei:", slotInfo.start);

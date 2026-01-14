@@ -8,12 +8,14 @@ import {
   verifyResetToken,
 } from '../../api/PasswordResetAPI'
 import '../../styles/routes/_auth-shared.scss'
+import { useTitle } from '@/utils/useTitle'
 
 export const Route = createFileRoute('/password-reset/confirm/$token')({
   component: PasswordResetConfirm,
 })
 
 function PasswordResetConfirm() {
+  useTitle('Passwort zurücksetzen');
   const { token } = Route.useParams()
   const navigate = useNavigate()
   const [password, setPassword] = useState('')

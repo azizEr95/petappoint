@@ -7,12 +7,14 @@ import { useLoginContext } from "../../LoginContext";
 import { isLoggedInAndVerified } from "../../utils/Authentication";
 import type {MouseEvent} from "react";
 import type { VeterinaryPracticesType } from "vetilib-shared/schemas/ZodSchemas";
+import { useTitle } from "@/utils/useTitle";
 
 export const Route = createFileRoute('/practices/favorites')({
   component: FavoritePracticesPage,
 })
 
 function FavoritePracticesPage() {
+  useTitle('Meine Favoriten');
   const { login } = useLoginContext();
   const queryClient = useQueryClient();
   const navigate = useNavigate();

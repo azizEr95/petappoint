@@ -8,6 +8,7 @@ import { dateToInfosString } from '../../../utils/DateToStringFormat'
 import { isLoggedInAndVerified } from '../../../utils/Authentication'
 import { useLoginContext } from '../../../LoginContext'
 import type { AppointmentFilterType, AppointmentsType } from 'vetilib-shared/schemas/ZodSchemas'
+import { useTitle } from '@/utils/useTitle'
 
 
 export const Route = createFileRoute(
@@ -17,6 +18,7 @@ export const Route = createFileRoute(
 })
 
 function RescheduleAppointment() {
+    useTitle('Termin verschieben');
     const navigate = useNavigate()
     const { login } = useLoginContext()
     const { appointmentId } = Route.useParams()
@@ -43,7 +45,7 @@ function RescheduleAppointment() {
                 navigate({ to: '/' })
             }
         }
-        if(isSuccess && appointment.animal === null) {
+        if (isSuccess && appointment.animal === null) {
             if (isLoggedInAndVerified(login)) {
                 navigate({ to: '/appointments' })
             } else {

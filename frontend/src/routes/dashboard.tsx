@@ -4,6 +4,7 @@ import { DashboardPerson } from "@/components/dashboard/personDashboard/Dashboar
 import { useLoginContext } from "@/LoginContext";
 import { DashboardPractice } from "@/components/dashboard/practiceDashboard/DashboardPractice";
 import { isLoggedInAndVerified } from "@/utils/Authentication";
+import { useTitle } from "@/utils/useTitle";
 
 
 export const Route = createFileRoute('/dashboard')({
@@ -11,6 +12,7 @@ export const Route = createFileRoute('/dashboard')({
 })
 
 function Dashboard() {
+  useTitle('Dashboard');
   const { login } = useLoginContext();
   const navigate = useNavigate();
 

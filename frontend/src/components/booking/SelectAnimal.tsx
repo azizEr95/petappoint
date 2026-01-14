@@ -52,7 +52,7 @@ export function SelectAnimal({
     queryKey: ['animals', userId],
     queryFn: () => getAnimalsFromUser(userId ?? -1), // always defined if enabled
     retry: false,
-    enabled: userId !== undefined,
+    enabled: userId !== undefined && login && login.role === "person", // only get animals if the user is logged in
   })
 
   // get all Animaltypes
