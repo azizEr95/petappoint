@@ -8,12 +8,14 @@ import BenefitsVets from '../components/landing/BenefitsVets'
 import Testimonials from '../components/landing/Testimonials'
 import FAQ from '../components/landing/FAQ'
 import CTABanner from '../components/landing/CTABanner'
+import { useTitle } from '@/utils/useTitle'
 
 export const Route = createFileRoute('/')({
   component: App,
 })
 
 function App() {
+  useTitle('Startseite');
   const { login } = useLoginContext()
 
   return (

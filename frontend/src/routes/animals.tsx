@@ -4,12 +4,14 @@ import { DashboardPetsSection } from '../components/dashboard/personDashboard/Da
 import { useLoginContext } from '../LoginContext'
 import { AnimalEditNewDialog } from '../components/animal/AnimalEditNewDialog'
 import { isLoggedInAndVerified } from '../utils/Authentication'
+import { useTitle } from '@/utils/useTitle'
 
 export const Route = createFileRoute('/animals')({
   component: Animals,
 })
 
 function Animals() {
+  useTitle('Meine Tiere');
   const [showAnimalDialog, setShowAnimalDialog] = useState(false)
   const [hasAnimals, setHasAnimals] = useState(false)
   const { login } = useLoginContext()

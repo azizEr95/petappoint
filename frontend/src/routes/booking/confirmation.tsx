@@ -14,6 +14,7 @@ import type {
   ServiceType,
   VeterinaryPracticesType,
 } from 'vetilib-shared/schemas/ZodSchemas'
+import { useTitle } from '@/utils/useTitle'
 
 export const Route = createFileRoute('/booking/confirmation')({
   component: ConfirmationComponent,
@@ -29,6 +30,7 @@ type LocationState = {
 }
 
 function ConfirmationComponent() {
+  useTitle('Termin bestätigen');
   const navigate = useNavigate()
   const location = useLocation()
   const [isSubmitting, setIsSubmitting] = useState(false)

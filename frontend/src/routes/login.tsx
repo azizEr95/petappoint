@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { LoginForm } from '../components/registration/Login'
+import { useTitle } from '@/utils/useTitle';
 
 type loginRedirect = {
   redirect?: string;
@@ -15,6 +16,7 @@ export const Route = createFileRoute('/login')({
 })
 
 function Login() {
+  useTitle('Login');
   const navigate = useNavigate()
   const { redirect } = Route.useSearch();
 

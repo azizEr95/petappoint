@@ -13,6 +13,7 @@ import { isLoggedInAndVerified } from '../../utils/Authentication'
 import type { AppointmentsType } from 'vetilib-shared/schemas/ZodSchemas'
 import '../../styles/routes/appointments.scss'
 import { SuccessNotificationToast } from '@/components/SuccessNotificationToast'
+import { useTitle } from '@/utils/useTitle'
 
 
 export const Route = createFileRoute('/appointments/')({
@@ -20,6 +21,7 @@ export const Route = createFileRoute('/appointments/')({
 })
 
 function Appointments() {
+  useTitle('Meine Termine');
   const { login } = useLoginContext()
   const location = useLocation()
   const navigate = useNavigate()
