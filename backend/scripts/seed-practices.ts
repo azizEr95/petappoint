@@ -257,19 +257,52 @@ async function seedPractices() {
         },
       });
 
+      await prisma.veterinarypractices_has_confirmation_code.create({
+        data: {
+          code: "222222",
+          dateofcreation: new Date(),
+          verified: true,
+          fk_veterinarypracticeid: practice.id
+        }
+      });
+
       createdPractices.push({ id: practice.id, city: city.name });
     }
+    // add one more practice
+    const practice = await prisma.veterinaryPractice.create({
+        data: {
+          name: "Katzentierarztpraxis",
+          phone: generateRandomPhone(),
+          infoEmail: "info@katzentierarztpraxis.de",
+          email: "info@katzentierarztpraxis.de",
+          password: "VetPractice123!",
+          website: `https://www.katzentierarztpraxis.de`,
+          info: "Moderne Tierarztpraxis mit umfassendem Leistungsspektrum fuer Katzen.",
+          address: {
+            create: {
+              street: "Katzenstr. 10",
+              cityCode: "12345",
+              city: "Berlin",
+              country: "Deutschland",
+              longitude: 0.0,
+              latitude: 0.0,
+            },
+          },
+        },
+      });
+
+      await prisma.veterinarypractices_has_confirmation_code.create({
+        data: {
+          code: "222222",
+          dateofcreation: new Date(),
+          verified: true,
+          fk_veterinarypracticeid: practice.id
+        }
+      });
+
+      createdPractices.push({ id: practice.id, city: "Berlin" });
 
     console.log(`✅ Created ${createdPractices.length} practices`);
-
-    // Group practices by city for multi-practice veterinarians
-    const practicesByCity = new Map<string, number[]>();
-    createdPractices.forEach((p) => {
-      if (!practicesByCity.has(p.city)) {
-        practicesByCity.set(p.city, []);
-      }
-      practicesByCity.get(p.city)!.push(p.id);
-    });
 
     // ============================
     // Phase 3: Generate veterinarians

@@ -21,6 +21,7 @@ import { Route as RegistrationPersonRouteImport } from './routes/registration/pe
 import { Route as PracticesFavoritesRouteImport } from './routes/practices/favorites'
 import { Route as PasswordResetRequestRouteImport } from './routes/password-reset/request'
 import { Route as BookingConfirmationRouteImport } from './routes/booking/confirmation'
+import { Route as AppointmentsCreateRouteImport } from './routes/appointments/create'
 import { Route as PracticesPracticeIdIndexRouteImport } from './routes/practices/$practiceId/index'
 import { Route as RegistrationEmailConfirmationEmailVerifyCodeRouteImport } from './routes/registration/email-confirmation/$emailVerifyCode'
 import { Route as PasswordResetConfirmTokenRouteImport } from './routes/password-reset/confirm.$token'
@@ -88,6 +89,11 @@ const BookingConfirmationRoute = BookingConfirmationRouteImport.update({
   path: '/booking/confirmation',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppointmentsCreateRoute = AppointmentsCreateRouteImport.update({
+  id: '/appointments/create',
+  path: '/appointments/create',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PracticesPracticeIdIndexRoute =
   PracticesPracticeIdIndexRouteImport.update({
     id: '/practices/$practiceId/',
@@ -125,6 +131,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
   '/search': typeof SearchRoute
+  '/appointments/create': typeof AppointmentsCreateRoute
   '/booking/confirmation': typeof BookingConfirmationRoute
   '/password-reset/request': typeof PasswordResetRequestRoute
   '/practices/favorites': typeof PracticesFavoritesRoute
@@ -144,6 +151,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
   '/search': typeof SearchRoute
+  '/appointments/create': typeof AppointmentsCreateRoute
   '/booking/confirmation': typeof BookingConfirmationRoute
   '/password-reset/request': typeof PasswordResetRequestRoute
   '/practices/favorites': typeof PracticesFavoritesRoute
@@ -164,6 +172,7 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
   '/search': typeof SearchRoute
+  '/appointments/create': typeof AppointmentsCreateRoute
   '/booking/confirmation': typeof BookingConfirmationRoute
   '/password-reset/request': typeof PasswordResetRequestRoute
   '/practices/favorites': typeof PracticesFavoritesRoute
@@ -185,6 +194,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/login'
     | '/search'
+    | '/appointments/create'
     | '/booking/confirmation'
     | '/password-reset/request'
     | '/practices/favorites'
@@ -204,6 +214,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/login'
     | '/search'
+    | '/appointments/create'
     | '/booking/confirmation'
     | '/password-reset/request'
     | '/practices/favorites'
@@ -223,6 +234,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/login'
     | '/search'
+    | '/appointments/create'
     | '/booking/confirmation'
     | '/password-reset/request'
     | '/practices/favorites'
@@ -243,6 +255,7 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRoute
   LoginRoute: typeof LoginRoute
   SearchRoute: typeof SearchRoute
+  AppointmentsCreateRoute: typeof AppointmentsCreateRoute
   BookingConfirmationRoute: typeof BookingConfirmationRoute
   PasswordResetRequestRoute: typeof PasswordResetRequestRoute
   PracticesFavoritesRoute: typeof PracticesFavoritesRoute
@@ -343,6 +356,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BookingConfirmationRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/appointments/create': {
+      id: '/appointments/create'
+      path: '/appointments/create'
+      fullPath: '/appointments/create'
+      preLoaderRoute: typeof AppointmentsCreateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/practices/$practiceId/': {
       id: '/practices/$practiceId/'
       path: '/practices/$practiceId'
@@ -387,6 +407,7 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardRoute: DashboardRoute,
   LoginRoute: LoginRoute,
   SearchRoute: SearchRoute,
+  AppointmentsCreateRoute: AppointmentsCreateRoute,
   BookingConfirmationRoute: BookingConfirmationRoute,
   PasswordResetRequestRoute: PasswordResetRequestRoute,
   PracticesFavoritesRoute: PracticesFavoritesRoute,
