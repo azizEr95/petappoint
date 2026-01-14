@@ -11,7 +11,7 @@ async function generatePlaytest() {
         email: 'admin@berlin.de',
         infoEmail: 'impfzentrum@berlin.de',
         name: 'Katzen Impfzentrum',
-        password: 'asbudiasbdisabdiosa23',
+        password: 'VetPractice123!',
         phone: '+4930123456789',
         address: {
           create: {
@@ -25,6 +25,15 @@ async function generatePlaytest() {
         },
       }
     })
+
+    await prisma.veterinarypractices_has_confirmation_code.create({
+        data: {
+          code: "222222",
+          dateofcreation: new Date(),
+          verified: true,
+          fk_veterinarypracticeid: impfzentrum.id
+        }
+      });
 
     const impferPerson = await prisma.person.create({
       data: {

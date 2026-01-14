@@ -136,7 +136,7 @@ function BookingComponent() {
     queryKey: ['animal', userId],
     queryFn: () => getAnimalsFromUser(userId ?? -1),
     retry: false,
-    enabled: userId !== undefined,
+    enabled: userId !== undefined && login && login.role === "person",
   })
 
   useEffect(() => {

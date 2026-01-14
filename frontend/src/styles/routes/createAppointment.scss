@@ -1,0 +1,13 @@
+.appointment-time-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.appointment-start-time {
+  flex: 1;
+  margin-right: 10px; // Moved from inline style
+}
+
+.appointment-end-time {
+  flex: 1;
+}

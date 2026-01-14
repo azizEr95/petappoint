@@ -68,7 +68,7 @@ export function AppointmentDetails({
   const { data: userAnimals } = useQuery<Array<AnimalsType>>({
     queryKey: ['animals', userID],
     queryFn: () => getAnimalsFromUser(userID),
-    enabled: futureAppointment,
+    enabled: futureAppointment && login.role === "person",
   })
 
   const { data: dataVeterinaryServices, isSuccess: isSuccessVeterinaryServices} = useQuery<Array<ServiceType>>({

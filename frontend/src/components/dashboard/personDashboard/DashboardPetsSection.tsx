@@ -12,6 +12,7 @@ import type {
   AppointmentsType,
 } from 'vetilib-shared/schemas/ZodSchemas'
 import '../../../styles/components/dashboard/DashboardPetsSection.scss'
+import { useLoginContext } from '@/LoginContext'
 
 type DashboardPetsSectionProps = {
   userId: number
@@ -19,6 +20,7 @@ type DashboardPetsSectionProps = {
 }
 
 export function DashboardPetsSection({ userId, onAnimalsLoaded }: DashboardPetsSectionProps) {
+  const { login } = useLoginContext()
   const [showAnimalDialog, setShowAnimalDialog] = useState(false)
   const [editAnimal, setEditAnimal] = useState<AnimalsType | undefined>(
     undefined,
@@ -28,6 +30,7 @@ export function DashboardPetsSection({ userId, onAnimalsLoaded }: DashboardPetsS
   const { data: animals = [], isLoading } = useQuery<Array<AnimalsType>>({
     queryKey: ['animals', userId],
     queryFn: () => getAnimalsFromUser(userId),
+    enabled: login && login.role === "person"
   })
 
   useEffect(() => {
