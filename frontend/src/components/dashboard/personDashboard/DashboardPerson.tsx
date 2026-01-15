@@ -54,7 +54,6 @@ export function DashboardPerson() {
         navigate({
             to: '/search',
             search: {
-                name: '',
                 address: '',
                 animalType: '',
                 serviceType: '',

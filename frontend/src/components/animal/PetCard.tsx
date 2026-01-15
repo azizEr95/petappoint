@@ -141,7 +141,6 @@ export function PetCard({
                 <Link
                   to="/search"
                   search={{
-                    name: '',
                     address: '',
                     animalType: '',
                     serviceType: '',

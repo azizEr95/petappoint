@@ -207,7 +207,6 @@ export function AppointmentDetails({
     navigate({
       to: '/search',
       search: {
-        name: data?.name || '',
         address: data?.address.city || '',
         animalType: '',
         serviceType: '',
