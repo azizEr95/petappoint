@@ -17,13 +17,6 @@ loginRouter.post("/",
         }
 
         const logRes = verifyJWT(jwtString);
-
-        if (logRes.role === "company") {
-            logRes.verified = await veterinaryPracticeService.checkVerified(logRes.id);
-        } else {
-            logRes.verified = await personService.checkVerified(logRes.id);
-        }
-
         res.cookie("access_token", jwtString, {
             httpOnly: true,
             // läuft zu dem Datum und zu der Zeit ab
