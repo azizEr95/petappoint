@@ -115,7 +115,6 @@ export function DashboardAppointmentsSection({
             <Link
               to="/search"
               search={{
-                name: '',
                 address: '',
                 animalType: '',
                 serviceType: '',

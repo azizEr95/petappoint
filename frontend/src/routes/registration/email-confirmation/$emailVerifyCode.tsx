@@ -56,9 +56,8 @@ function SuccessFailEmailVerification() {
           localStorage.removeItem("bookAppointment");
           const appointmentStorage = JSON.parse(appointmentUnparse) as { practiceId: number, appointmentId: number };
           navigate({
-            to: "/practices/$practiceId/booking/$appointmentId",
+            to: "/booking/$appointmentId",
             params: {
-              practiceId: appointmentStorage.practiceId.toString(),
               appointmentId: appointmentStorage.appointmentId.toString()
             }
           });

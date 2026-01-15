@@ -93,7 +93,7 @@ function FavoritePracticesPage() {
         <p style={{ color: '#666', marginTop: '2rem' }}>Noch keine Praxen favorisiert.</p>
         <Link 
           to="/search" 
-          search={{ name: '', address: '', animalType: '', serviceType: '' }}
+          search={{ address: '', animalType: '', serviceType: '' }}
           style={{
             display: 'inline-block',
             marginTop: '1rem',

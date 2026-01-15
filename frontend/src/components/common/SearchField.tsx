@@ -103,7 +103,6 @@ export function SearchField({
     navigate({
       to: '/search',
       search: {
-        name: searchName,
         address: searchOrt,
         animalType: searchFilter.animalTypeIds?.join("-") ?? "",
         serviceType: sortedServiceTypes?.join("-") !== undefined ? sortedServiceTypes.join("-") : "",

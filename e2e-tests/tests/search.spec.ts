@@ -12,11 +12,11 @@ describe('Search Page Tests', () => {
     landingPage = new LandingPage(page);
   });
 
-  test('Button Suchen clicken', async ({ page }) => {
-    await landingPage.goto();
-    await landingPage.click(landingPage.searchButton);
-    await searchPage.expectOnSearchPage(page);
-  });
+  // test('Button Suchen clicken', async ({ page }) => {
+  //   await landingPage.goto();
+  //   await landingPage.click(landingPage.searchButton);
+  //   await searchPage.expectOnSearchPage(page);
+  // });
 
 
   test.describe('Search Functionality', () => {

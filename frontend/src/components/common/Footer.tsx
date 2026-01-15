@@ -47,7 +47,6 @@ export default function Footer() {
                 <Link
                   to="/search"
                   search={{
-                    name: '',
                     address: '',
                     animalType: '',
                     serviceType: '',

@@ -5,12 +5,12 @@ import {
   useNavigate,
 } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
-import { NextAvailableAppointments } from '../../../components/practice/NextAvailableAppointments'
-import '../../../styles/routes/praxisPage.scss'
-import { getVeterinaryPracticesById } from '../../../api/VeterinaryPracticeAPI'
-import { SearchFilter } from '../../../components/common/SearchFilter'
-import { getAnimaltypesFromPractice } from '../../../api/AnimalTypeAPI'
-import { FavoritePractice } from '../../../components/practice/FavoritePractice'
+import { NextAvailableAppointments } from '../../components/practice/NextAvailableAppointments'
+import '../../styles/routes/praxisPage.scss'
+import { getVeterinaryPracticesById } from '../../api/VeterinaryPracticeAPI'
+import { SearchFilter } from '../../components/common/SearchFilter'
+import { getAnimaltypesFromPractice } from '../../api/AnimalTypeAPI'
+import { FavoritePractice } from '../../components/practice/FavoritePractice'
 import type {
   AnimalTypeType,
   VeterinaryPracticeSearchQueryType,
@@ -18,7 +18,7 @@ import type {
 } from 'vetilib-shared/schemas/ZodSchemas'
 import { useTitle } from '@/utils/useTitle'
 
-export const Route = createFileRoute('/practices/$practiceId/')({
+export const Route = createFileRoute('/practices/$practiceId')({
   component: VeterinaryPractice,
 })
 

@@ -59,7 +59,7 @@ export function DashboardFavoritesSection({
         </p>
         <Link
           to="/search"
-          search={{ name: '', address: '', animalType: '', serviceType: '' }}
+          search={{ address: '', animalType: '', serviceType: '' }}
           className="btn btn-primary"
         >
           <i className="bi bi-search"></i> Praxen suchen

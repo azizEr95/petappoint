@@ -156,7 +156,6 @@ function ConfirmationComponent() {
     navigate({
       to: '/search',
       search: {
-        name: '',
         address: '',
         animalType: '',
         serviceType: '',

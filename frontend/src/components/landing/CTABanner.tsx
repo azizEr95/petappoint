@@ -16,7 +16,7 @@ export default function CTABanner() {
         <div className="cta-buttons">
           <Link
             to="/search"
-            search={{ name: '', address: '', animalType: '', serviceType: '' }}
+            search={{ address: '', animalType: '', serviceType: '' }}
             className="btn btn-cta btn-cta-primary"
           >
             <i className="bi bi-search me-2"></i>
