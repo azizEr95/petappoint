@@ -3,72 +3,60 @@ import {
   useLocation,
   useNavigate,
 } from '@tanstack/react-router'
-import '../../../../styles/routes/bookingPage.scss'
+import '../../styles/routes/bookingPage.scss'
 import { useEffect, useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
-import { SelectAppointmentType } from '../../../../components/booking/SelectAppointmentType'
-import { SelectAnimal } from '../../../../components/booking/SelectAnimal'
-import BookingStepper from '../../../../components/booking/BookingStepper'
-import { getVeterinaryPracticesById } from '../../../../api/VeterinaryPracticeAPI'
-import { getAppointmentsById } from '../../../../api/AppointmentsAPI'
-import { dateToInfosString } from '../../../../utils/DateToStringFormat'
-import { useLoginContext } from '../../../../LoginContext'
-import { getAnimalsFromUser } from '../../../../api/AnimalsAPI'
-import { getAllAvailableServices, getServicesFromVeterinary } from '../../../../api/ServicesAPI'
-import { LoginForm } from '../../../../components/registration/Login'
-import { StatusBooking } from '../../../../types/booking'
-import { getAnimaltypesFromVeterinary } from '../../../../api/AnimalTypeAPI'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { Button } from 'react-bootstrap'
+import { SelectAppointmentType } from '../../components/booking/SelectAppointmentType'
+import { SelectAnimal } from '../../components/booking/SelectAnimal'
+import BookingStepper from '../../components/booking/BookingStepper'
+import { getAppointmentsById } from '../../api/AppointmentsAPI'
+import { dateToInfosString } from '../../utils/DateToStringFormat'
+import { useLoginContext } from '../../LoginContext'
+import { getAnimalsFromUser } from '../../api/AnimalsAPI'
+import { getAllAvailableServices, getServicesFromVeterinary } from '../../api/ServicesAPI'
+import { LoginForm } from '../../components/registration/Login'
+import { StatusBooking } from '../../types/booking'
+import { getAnimaltypesFromVeterinary } from '../../api/AnimalTypeAPI'
+import { AnimalEditNewDialog } from '../../components/animal/AnimalEditNewDialog'
 import type {
   AnimalTypeType,
   AnimalsType,
   AppointmentsType,
   ServiceType,
-  VeterinaryPracticesType,
 } from 'vetilib-shared/schemas/ZodSchemas'
 import { useTitle } from '@/utils/useTitle'
 
-export const Route = createFileRoute(
-  '/practices/$practiceId/booking/$appointmentId',
-)({
+export const Route = createFileRoute('/booking/$appointmentId')({
   component: BookingComponent,
 })
 
 function BookingComponent() {
-  useTitle('Termin buchen')
+  useTitle('Termin buchen');
   const navigate = useNavigate()
   const location = useLocation()
+  const queryClient = useQueryClient()
   const { login } = useLoginContext()
   const serviceType = location.state.serviceType
   const animalId = location.state.filterAnimalId
   const animalTypeId = location.state.filterAnimalTypeId
   const selectedService = location.state.selectedService
-  const { practiceId, appointmentId } = Route.useParams()
+  const { appointmentId } = Route.useParams()
   const [selectedAppointmentType, setSelectedAppointmentType] =
     useState<ServiceType | null>(null)
-  const [selectedAnimal, setSelectedAnimal] = useState<AnimalsType | null>(null) // aktuell ausgewaehltes Tier, bei null ist keins ausgewaehlt
+  const [selectedAnimal, setSelectedAnimal] = useState<AnimalsType | null>(null)
   const [status, setStatus] = useState<StatusBooking>(
     StatusBooking.selectAnimal,
-  ) // State in the booking prozess, controls what is displayed
+  )
   const [foundFilteredServices, setFoundFilteredServices] =
-    useState<Array<ServiceType> | null>(null) // if an filter was selected save which services have to been shown and available
+    useState<Array<ServiceType> | null>(null)
   const [notFoundFilteredServices, setNotFoundFilteredServices] =
-    useState<Array<ServiceType> | null>(null) // if filter was selected all services from the filter that are not available
+    useState<Array<ServiceType> | null>(null)
   const [filterTreatAnimaltypes, setFilterTreatAnimaltypes] = useState<Array<number>>(animalTypeId !== undefined ? [animalTypeId] : []);
   const [userId, setUserId] = useState(login ? login.id : undefined)
+  const [showCreateAnimalDialog, setShowCreateAnimalDialog] = useState(false)
 
-  // load VeterinaryPractice:
-  const {
-    isError: isErrorPractice,
-    isSuccess: isSuccessPractice,
-    isPending: isPendingPractice,
-    data: dataPractice,
-  } = useQuery<VeterinaryPracticesType>({
-    queryKey: ['veterinaryPractices', practiceId],
-    queryFn: () => getVeterinaryPracticesById(practiceId),
-    retry: false,
-  })
-
-  // load Appointment:
+  // load Appointment (contains practice info via veterinaryPractice relation):
   const {
     isError: isErrorAppointment,
     isSuccess: isSuccessAppointment,
@@ -81,7 +69,7 @@ function BookingComponent() {
   })
 
   const appointment: AppointmentsType | undefined = dataAppointment
-  const practice: VeterinaryPracticesType | undefined = dataPractice
+  const practice = appointment?.veterinaryPractice
 
   // load all Services
   const {
@@ -99,7 +87,7 @@ function BookingComponent() {
     data: dataServicesVeterinary,
   } = useQuery<Array<ServiceType>>({
     queryKey: ['allServicesVeterinary', appointment?.veterinary.id],
-    queryFn: () => getServicesFromVeterinary(appointment?.veterinary.id.toString() ?? ""), // appointment is always defined if enabled
+    queryFn: () => getServicesFromVeterinary(appointment?.veterinary.id.toString() ?? ""),
     retry: false,
     enabled: appointment !== undefined,
   })
@@ -110,17 +98,10 @@ function BookingComponent() {
     data: dataAnimaltypesVeterinary,
   } = useQuery<Array<AnimalTypeType>>({
     queryKey: ['allAnimaltypesVeterinary', appointment?.veterinary.id],
-    queryFn: () => getAnimaltypesFromVeterinary(appointment?.veterinary.id.toString() ?? ""), // appointment is always defined if enabled
+    queryFn: () => getAnimaltypesFromVeterinary(appointment?.veterinary.id.toString() ?? ""),
     retry: false,
     enabled: appointment !== undefined,
   })
-
-  useEffect(() => {
-    if(isSuccessAppointment && dataAppointment.veterinaryPractice.id.toString() !== practiceId) {
-      // appointment does not belong to this practice, navigate back to practice
-      navigate({ to: '/practices/' + practiceId})
-    }
-  },[isSuccessAppointment, dataAppointment])
 
   useEffect(() => {
     if (isSuccessAnimaltypesVeterinary) {
@@ -138,12 +119,29 @@ function BookingComponent() {
     queryKey: ['animal', userId],
     queryFn: () => getAnimalsFromUser(userId ?? -1),
     retry: false,
-    enabled: userId !== undefined && login && login.role === "person",
+    enabled: userId !== undefined,
   })
 
   useEffect(() => {
     setUserId(login ? login.id : undefined)
   }, [login])
+
+  // Determine if user needs to create animal (only when in selectAnimal status)
+  useEffect(() => {
+    if (userId !== undefined && isSuccessAnimal && status === StatusBooking.selectAnimal) {
+      const hasMatchingAnimal = dataAnimal.some(
+        (animal) => filterTreatAnimaltypes.includes(animal.animalTypeId)
+      )
+
+      if (dataAnimal.length === 0 || !hasMatchingAnimal) {
+        // No animals or wrong type - need to create
+        setStatus(StatusBooking.createAnimal)
+      } else {
+        // Has matching animals - stay in select animal
+        setShowCreateAnimalDialog(false)
+      }
+    }
+  }, [userId, isSuccessAnimal, dataAnimal, filterTreatAnimaltypes, status])
 
   useEffect(() => {
     if (userId === undefined && status === StatusBooking.selectAnimal) {
@@ -167,22 +165,18 @@ function BookingComponent() {
       const uniqueService = new Set(serviceType)
       const foundService = dataAppointment.availableServices.filter(
         (avaService) => {
-          // all services that are filtered and for this appointment are available
           return uniqueService.has(avaService.id)
         },
       )
       const setFoundService = new Set(foundService.map((s) => s.id));
       const notFoundService = dataAllServices.filter(
         (avaService) => {
-          // all services that are filtered and for this appointment not available
-          // should be from all services from the veterinary
           return uniqueService.has(avaService.id) && !setFoundService.has(avaService.id);
         },
       )
       setFoundFilteredServices(foundService)
       setNotFoundFilteredServices(notFoundService);
       if (foundService.length === 1 && serviceType.length === 1) {
-        // if only one ServiceType was selected, skip SelectAppointmentType component
         setFoundFilteredServices(null)
         setSelectedAppointmentType(foundService[0])
         if (login) {
@@ -191,28 +185,25 @@ function BookingComponent() {
           setStatus(StatusBooking.login)
         }
       }
-      if (foundService.length === 0 && isSuccessServicesVeterinary) { // no services found, set all services from the veterinary
+      if (foundService.length === 0 && isSuccessServicesVeterinary) {
         setFoundFilteredServices(dataServicesVeterinary);
       }
-    } else if (serviceType?.length === 0) { // if no filter was selected, show all available services
+    } else if (serviceType?.length === 0) {
       if (isSuccessAppointment) {
         setFoundFilteredServices(dataAppointment.availableServices);
       }
     }
-  }, [serviceType, isSuccessAppointment, dataAppointment, selectedService, isSuccessAllServices, dataAllServices, isSuccessServicesVeterinary, dataServicesVeterinary, dataAllServices, selectedAnimal])
+  }, [serviceType, isSuccessAppointment, dataAppointment, selectedService, isSuccessAllServices, dataAllServices, isSuccessServicesVeterinary, dataServicesVeterinary, selectedAnimal])
 
   useEffect(() => {
-    if (isPendingPractice || isPendingAppointment) {
+    if (isPendingAppointment) {
       return
     }
 
-    if (isErrorPractice || isErrorAppointment) {
+    if (isErrorAppointment) {
       navigate({ to: '/' })
     }
   }, [
-    isErrorPractice,
-    isSuccessPractice,
-    isPendingPractice,
     isErrorAppointment,
     isSuccessAppointment,
     isPendingAppointment,
@@ -225,7 +216,6 @@ function BookingComponent() {
       })
       if (animal !== undefined) {
         setSelectedAnimal(animal)
-        // Skip to service selection if animal is pre-selected
         if (login) {
           setStatus(StatusBooking.selectAppointmentType)
         } else {
@@ -236,14 +226,12 @@ function BookingComponent() {
   }, [isSuccessAnimal, dataAnimal])
 
   useEffect(() => {
-    if (status === StatusBooking.selectAppointmentType && selectedAppointmentType !== null && isSuccessAppointment && isSuccessPractice) {
-      // if service was selected in filter book appointment immediately
+    if (status === StatusBooking.selectAppointmentType && selectedAppointmentType !== null && isSuccessAppointment) {
       handleBookAppoinment()
     }
-  }, [status, isSuccessAppointment, isSuccessPractice, selectedService])
+  }, [status, isSuccessAppointment, selectedService])
 
   const handleClickBack = () => {
-    // einmal auf der seite zurueck
     switch (status) {
       case StatusBooking.selectAnimal:
         setSelectedAnimal(null);
@@ -252,6 +240,10 @@ function BookingComponent() {
       case StatusBooking.selectAppointmentType:
         setSelectedAppointmentType(null);
         setStatus(StatusBooking.selectAnimal);
+        break
+      case StatusBooking.createAnimal:
+        setShowCreateAnimalDialog(false);
+        window.history.back();
         break
       case StatusBooking.login:
         window.history.back();
@@ -265,9 +257,8 @@ function BookingComponent() {
   const handleSelectAppointmentType = (appointmentType: ServiceType) => {
     setSelectedAppointmentType(appointmentType)
 
-    // Navigate to confirmation page with all booking data
     if (selectedAnimal === null) {
-      navigate({ to: '/practices/' + practiceId + '/booking/' + appointmentId })
+      navigate({ to: '/booking/$appointmentId', params: { appointmentId } })
       return
     }
 
@@ -284,10 +275,8 @@ function BookingComponent() {
 
   const handleBookAppoinment = () => {
     if (selectedAnimal === null || selectedAppointmentType === null) {
-      // no animal or appointmentType was selected, booking is not possible
-      navigate({ to: '/practices/' + practiceId + '/booking/' + appointmentId })
+      navigate({ to: '/booking/$appointmentId', params: { appointmentId } })
     } else {
-      // Navigate to confirmation page with all booking data
       navigate({
         to: '/booking/confirmation',
         state: {
@@ -304,6 +293,14 @@ function BookingComponent() {
     setSelectedAnimal(animal)
   }
 
+  const handleAnimalCreated = () => {
+    // Refetch animals after creation
+    queryClient.invalidateQueries({ queryKey: ['animals', userId] })
+    // Dialog will close automatically via AnimalEditNewDialog's hideDialogNewAnimal
+    setShowCreateAnimalDialog(false)
+    // Status will transition automatically via useEffect when animals are refetched
+  }
+
   const handleSelectAnimal = () => {
     if (selectedAnimal === null) {
       return
@@ -311,7 +308,7 @@ function BookingComponent() {
     navigate({
       state: {
         selectedAnimal: selectedAnimal,
-        serviceType: serviceType // only to save in state
+        serviceType: serviceType
       }
     })
 
@@ -322,10 +319,9 @@ function BookingComponent() {
     }
   }
 
-  if (!isSuccessAppointment || !isSuccessPractice || appointment === undefined || practice === undefined) {
+  if (!isSuccessAppointment || appointment === undefined || practice === undefined) {
     return <></>
   }
-
 
   let currentDisplay
   let submitButton
@@ -352,6 +348,32 @@ function BookingComponent() {
           </button>
         </div>
       )
+      currentStep = 1
+      break
+    case StatusBooking.createAnimal:
+      currentDisplay = (
+        <div className="create-animal-section">
+          <h5 className="section-title">
+            {dataAnimal?.length === 0
+              ? 'Neues Tier anlegen'
+              : `Tier vom benötigten Typ erforderlich`}
+          </h5>
+          <p className="section-description">
+            {dataAnimal?.length === 0
+              ? 'Du hast noch keine Tiere angelegt. Bitte erstelle ein neues Tier, um fortzufahren.'
+              : 'Für diesen Termin benötigst du ein Tier von einem anderen Typ. Bitte erstelle ein neues Tier oder wähle einen anderen Termin.'}
+          </p>
+          <Button
+            variant="primary"
+            onClick={() => setShowCreateAnimalDialog(true)}
+            className="mt-3"
+          >
+            <i className="bi bi-plus-circle me-2"></i>
+            Neues Tier anlegen
+          </Button>
+        </div>
+      )
+      submitButton = null
       currentStep = 1
       break
     case StatusBooking.login:
@@ -396,7 +418,7 @@ function BookingComponent() {
         <h1>Termin buchen</h1>
       </div>
 
-      {status !== StatusBooking.login && (
+      {status !== StatusBooking.login && status !== StatusBooking.createAnimal && status !== StatusBooking.booked && (
         <BookingStepper currentStep={currentStep} />
       )}
 
@@ -457,6 +479,15 @@ function BookingComponent() {
           </div>
         </div>
       </div>
+
+      {status === StatusBooking.createAnimal && showCreateAnimalDialog && (
+        <AnimalEditNewDialog
+          hideDialogNewAnimal={() => setShowCreateAnimalDialog(false)}
+          animalEdit={undefined}
+          preselectedAnimalTypeId={filterTreatAnimaltypes.length > 0 ? filterTreatAnimaltypes[0] : undefined}
+          onAnimalCreated={handleAnimalCreated}
+        />
+      )}
     </div>
   )
 }

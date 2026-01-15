@@ -108,11 +108,10 @@ export function NextAvailableAppointments({
       } else {
         appointmentTypeId = null
       }
-      // navigiert zur Buchungsseite fuer den Termin
+      // navigate to booking page for appointment
       navigate({
-        to: '/practices/$practiceId/booking/$appointmentId',
+        to: '/booking/$appointmentId',
         params: {
-          practiceId: termin.veterinaryPractice.id.toString(),
           appointmentId: termin.id.toString(),
         },
         state: {

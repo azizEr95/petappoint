@@ -226,7 +226,6 @@ export function SearchFilter({
       navigate({
         to: '/search',
         search: {
-          name: searchFilter.name,
           address: searchFilter.address,
           animalType: filterAnimalTypeLocal.join('-'),
           serviceType: filteredServices.join('-'),
