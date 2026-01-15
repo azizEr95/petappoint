@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SearchRouteImport } from './routes/search'
+import { Route as ProfilRouteImport } from './routes/profil'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as AnimalsRouteImport } from './routes/animals'
@@ -31,6 +32,11 @@ import { Route as AppointmentsAppointmentIdRescheduleRouteImport } from './route
 const SearchRoute = SearchRouteImport.update({
   id: '/search',
   path: '/search',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfilRoute = ProfilRouteImport.update({
+  id: '/profil',
+  path: '/profil',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -128,6 +134,7 @@ export interface FileRoutesByFullPath {
   '/animals': typeof AnimalsRoute
   '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
+  '/profil': typeof ProfilRoute
   '/search': typeof SearchRoute
   '/appointments/create': typeof AppointmentsCreateRoute
   '/booking/$appointmentId': typeof BookingAppointmentIdRoute
@@ -148,6 +155,7 @@ export interface FileRoutesByTo {
   '/animals': typeof AnimalsRoute
   '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
+  '/profil': typeof ProfilRoute
   '/search': typeof SearchRoute
   '/appointments/create': typeof AppointmentsCreateRoute
   '/booking/$appointmentId': typeof BookingAppointmentIdRoute
@@ -169,6 +177,7 @@ export interface FileRoutesById {
   '/animals': typeof AnimalsRoute
   '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
+  '/profil': typeof ProfilRoute
   '/search': typeof SearchRoute
   '/appointments/create': typeof AppointmentsCreateRoute
   '/booking/$appointmentId': typeof BookingAppointmentIdRoute
@@ -191,6 +200,7 @@ export interface FileRouteTypes {
     | '/animals'
     | '/dashboard'
     | '/login'
+    | '/profil'
     | '/search'
     | '/appointments/create'
     | '/booking/$appointmentId'
@@ -211,6 +221,7 @@ export interface FileRouteTypes {
     | '/animals'
     | '/dashboard'
     | '/login'
+    | '/profil'
     | '/search'
     | '/appointments/create'
     | '/booking/$appointmentId'
@@ -231,6 +242,7 @@ export interface FileRouteTypes {
     | '/animals'
     | '/dashboard'
     | '/login'
+    | '/profil'
     | '/search'
     | '/appointments/create'
     | '/booking/$appointmentId'
@@ -252,6 +264,7 @@ export interface RootRouteChildren {
   AnimalsRoute: typeof AnimalsRoute
   DashboardRoute: typeof DashboardRoute
   LoginRoute: typeof LoginRoute
+  ProfilRoute: typeof ProfilRoute
   SearchRoute: typeof SearchRoute
   AppointmentsCreateRoute: typeof AppointmentsCreateRoute
   BookingAppointmentIdRoute: typeof BookingAppointmentIdRoute
@@ -275,6 +288,13 @@ declare module '@tanstack/react-router' {
       path: '/search'
       fullPath: '/search'
       preLoaderRoute: typeof SearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profil': {
+      id: '/profil'
+      path: '/profil'
+      fullPath: '/profil'
+      preLoaderRoute: typeof ProfilRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -404,6 +424,7 @@ const rootRouteChildren: RootRouteChildren = {
   AnimalsRoute: AnimalsRoute,
   DashboardRoute: DashboardRoute,
   LoginRoute: LoginRoute,
+  ProfilRoute: ProfilRoute,
   SearchRoute: SearchRoute,
   AppointmentsCreateRoute: AppointmentsCreateRoute,
   BookingAppointmentIdRoute: BookingAppointmentIdRoute,
