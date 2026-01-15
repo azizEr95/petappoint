@@ -36,7 +36,7 @@ async function checkCreateEmailConstraint(veterinaryPracticeRe: VeterinaryPracti
 
 export const veterinaryPracticeService = {
   async create(veterinaryPracticeRe: VeterinaryPracticesCreateType): Promise<VeterinaryPracticesType> {
-    checkCreateEmailConstraint(veterinaryPracticeRe);
+    await checkCreateEmailConstraint(veterinaryPracticeRe);
 
     return await prisma.veterinaryPractice.create({
       include: {
