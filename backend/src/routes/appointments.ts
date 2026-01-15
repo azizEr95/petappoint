@@ -24,6 +24,13 @@ async function ensureUserCanEditAppointment(personId: number, appointmentId: num
   }
 }
 
+async function ensureCompanyCanDeleteAppointment(companyId: number, appointmentId: number) {
+  const hasAccess = await appointmentService.canCompanyDeleteAppointment(companyId, appointmentId);
+  if (!hasAccess) {
+    throw new AuthorizationError(`Company(${companyId}) has no access to delete appointment(${appointmentId}).`);
+  }
+}
+
 appointmentRouter.get("/all", requiresAuthentication, checkVerified, async (_req, res) => {
   const allAppointments: AppointmentsType[] = await appointmentService.getAll();
   res.send(allAppointments);
@@ -79,7 +86,7 @@ appointmentRouter.put("/:id", requiresAuthentication, checkVerified, async (req,
     ]);
   }
 
-  ensureUserCanEditAppointment(req.userId!, validatedData.id);
+  await ensureUserCanEditAppointment(req.userId!, validatedData.id);
 
   const bookedAppointment = await appointmentService.updateAppointmentAsPerson(
     validatedData.id,
@@ -94,21 +101,32 @@ appointmentRouter.put("/:id", requiresAuthentication, checkVerified, async (req,
 appointmentRouter.delete("/:id", requiresAuthentication, checkVerified, async (req, res) => {
   const appointmentId = PostgresIdSchema.parse(parseInt(req.params.id));
 
-  ensureUserCanEditAppointment(req.userId!, appointmentId);
+  switch(req.role!) {
+    case 'person': {
+      await ensureUserCanEditAppointment(req.userId!, appointmentId);
 
-  // sending termination mail
-  await emailService.sendAppointmentEmail(req.userId!, appointmentId, "termination");
+      // sending termination mail
+      await emailService.sendAppointmentEmail(req.userId!, appointmentId, "termination");
 
-  await appointmentService.cancelAppointmentAsPerson(appointmentId);
+      await appointmentService.cancelAppointmentAsPerson(appointmentId);
 
-  res.sendStatus(204);
+      return res.sendStatus(204);
+    }
+    case 'company': {
+      await ensureCompanyCanDeleteAppointment(req.userId!, appointmentId);
+      await appointmentService.delete(appointmentId);
+      return res.sendStatus(204);
+    }
+    default: break;
+  }
+  res.sendStatus(500);
 });
 
 appointmentRouter.patch("/:id/notes", requiresAuthentication, checkVerified, async (req, res) => {
   const appointmentId = PostgresIdSchema.parse(parseInt(req.params.id));
   const notes = z.string().min(1).max(1000).optional().parse(req.body);
 
-  ensureUserCanEditAppointment(req.userId!, appointmentId);
+  await ensureUserCanEditAppointment(req.userId!, appointmentId);
 
   const updated = await appointmentService.updateNotes(appointmentId, notes || null);
 
