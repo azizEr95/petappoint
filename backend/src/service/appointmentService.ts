@@ -530,6 +530,23 @@ export const appointmentService = {
     return mapToAppointment(updated);
   },
 
+  async canCompanyDeleteAppointment(companyId: number, appointmentId: number): Promise<boolean> {
+    const appointment = await prisma.appointment.findUnique({
+      where: {
+        id: appointmentId
+      },
+      select: {
+        veterinaryPracticeId: true
+      }
+    });
+
+    if (!appointment) {
+      throw new ResourceNotFoundError(`No appointment found with id: ${appointmentId}`, 'appointmentId', appointmentId);
+    }
+
+    return appointment.veterinaryPracticeId === companyId;
+  },
+
   async canPersonAccessAppointment(
     personId: number,
     appointmentId: number
