@@ -67,8 +67,8 @@ function VeterinaryRegistration() {
       } else if (!/^[a-zA-ZäöüÄÖÜß '`-]+$/.test(name)) {
         newErrors.name =
           'Diese Zeichen sind in diesem Feld nicht erlaubt (Zahlen,/,.)'
-      } else if (name.length < 3) {
-        newErrors.name = 'Praxisname muss mindestens aus 3 Zeichen bestehen'
+      } else if (name.length < 5) {
+        newErrors.name = 'Praxisname muss mindestens aus 5 Zeichen bestehen'
       }
     }
 
@@ -118,8 +118,8 @@ function VeterinaryRegistration() {
       } else if (!/^[a-zA-ZäöüÄÖÜß '`-]+$/.test(land)) {
         newErrors.land =
           'Diese Zeichen sind in diesem Feld nicht erlaubt (Zahlen,/,.)'
-      } else if (land.length < 3) {
-        newErrors.land = 'Land muss mindestens aus 3 Zeichen bestehen'
+      } else if (land.length < 5) {
+        newErrors.land = 'Land muss mindestens aus 5 Zeichen bestehen'
       }
     }
 
