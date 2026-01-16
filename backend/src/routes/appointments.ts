@@ -1,6 +1,6 @@
 import express from "express";
 import { appointmentService } from "../service/appointmentService";
-import { AppointmentsCreateSchema, AppointmentsType, BookAppointmentSchema, PostgresIdSchema, AvailableAppointmentSchema } from "vetilib-shared/schemas/ZodSchemas";
+import { AppointmentsCreateSchema, AppointmentsType, BookAppointmentSchema, PostgresIdSchema, AvailableAppointmentSchema, AppointmentsCreateType } from "vetilib-shared/schemas/ZodSchemas";
 import { checkVerified, optionalAuthentication, requiresAuthentication } from "./authentication";
 import { AuthorizationError } from "../exceptions/errors/AuthorizationError";
 import { animalService } from "../service/animalService";
@@ -94,7 +94,7 @@ appointmentRouter.put("/:id", requiresAuthentication, checkVerified, async (req,
     validatedData.serviceId
   );
   // send confirmation email
-   await emailService.sendAppointmentEmail(req.userId!, bookedAppointment.id, "confirmation");
+  await emailService.sendAppointmentEmail(req.userId!, bookedAppointment.id, "confirmation");
   res.status(201).send(bookedAppointment);
 });
 
@@ -122,6 +122,13 @@ appointmentRouter.delete("/:id", requiresAuthentication, checkVerified, async (r
   res.sendStatus(500);
 });
 
+appointmentRouter.patch("/:id", requiresAuthentication, checkVerified, async (req, res) => {
+  const appointmentId = PostgresIdSchema.parse(parseInt(req.params.id));
+  const validatedData = AvailableAppointmentSchema.parse(req.body);
+  const updated = await appointmentService.updateAvailableAppointment(appointmentId, validatedData);
+  res.status(200).send(updated);
+});
+
 appointmentRouter.patch("/:id/notes", requiresAuthentication, checkVerified, async (req, res) => {
   const appointmentId = PostgresIdSchema.parse(parseInt(req.params.id));
   const notes = z.string().min(1).max(1000).optional().parse(req.body);
@@ -133,16 +140,15 @@ appointmentRouter.patch("/:id/notes", requiresAuthentication, checkVerified, asy
   res.status(200).send(updated);
 });
 
-appointmentRouter.patch(":id/available", requiresAuthentication, checkVerified, async (req, res) => {
-  const appointmentId = PostgresIdSchema.parse(parseInt(req.params.id));
-  const validatedData = AvailableAppointmentSchema.parse(req.body);
-  const updated = await appointmentService.updateAvailableAppointment(appointmentId, validatedData);
-  res.status(200).send(updated);
-});
-
 // TODO: Check authorization
 appointmentRouter.post('/', async (req, res) => {
-  const appointmentCreationData = AppointmentsCreateSchema.parse(req.body);
-  await appointmentService.create(appointmentCreationData);
-  return res.sendStatus(201);
+  if (!req.body.endDate) {
+    const appointmentCreationData = AppointmentsCreateSchema.parse(req.body);
+    await appointmentService.create(appointmentCreationData);
+    return res.sendStatus(201);
+  } else {
+    const appointmentCreationData = AppointmentsCreateSchema.parse(req.body);
+    await appointmentService.createWeeklyAppointments(appointmentCreationData, req.body.endDate);
+    return res.sendStatus(201);
+  }
 });
