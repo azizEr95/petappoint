@@ -13,6 +13,7 @@ import type {
   AnimalsType,
   ServiceType,
 } from 'vetilib-shared/schemas/ZodSchemas'
+import Select from "react-select"
 
 export default function Hero() {
   const navigate = useNavigate()
@@ -108,6 +109,16 @@ export default function Hero() {
 
   const hasAnimals = userAnimals.length > 0
 
+  // react-select options
+  const animalTypeOptions = animalTypes.map(type => ({
+    value: type.id,
+    label: type.name
+  }))
+
+  const selectedAnimalTypeOption = animalTypeOptions.find(
+    option => option.value === filterAnimalType[0]
+  ) || null
+
   return (
     <section
       id="hero"
@@ -146,22 +157,71 @@ export default function Hero() {
                     ))}
                   </Form.Control>
                 ) : (
-                  <Form.Control
-                    as="select"
-                    value={filterAnimalType[0] || ''}
-                    onChange={(e) =>
-                      setFilterAnimalType(
-                        e.target.value ? [parseInt(e.target.value)] : [],
-                      )
+                  <Select
+                    options={animalTypeOptions}
+                    value={selectedAnimalTypeOption}
+                    onChange={(option) => 
+                      setFilterAnimalType(option ? [option.value] : [])
                     }
-                  >
-                    <option value="">Tierart auswählen</option>
-                    {animalTypes.map((type) => (
-                      <option key={type.id} value={type.id}>
-                        {type.name}
-                      </option>
-                    ))}
-                  </Form.Control>
+                    placeholder="Tierart auswählen"
+                    isClearable
+                    isSearchable
+                    noOptionsMessage={() => "Keine Tierart gefunden"}
+                    menuPortalTarget={document.body}
+                    menuPosition="fixed"
+                    styles={{
+                      control: (base) => ({
+                        ...base,
+                        minHeight: '38px',
+                        borderRadius: '0.375rem',
+                        border: '1px solid #dee2e6',
+                        boxShadow: 'none',
+                        '&:hover': {
+                          border: '1px solid #dee2e6'
+                        }
+                      }),
+                      valueContainer: (base) => ({
+                        ...base,
+                        padding: '0.375rem 0.75rem'
+                      }),
+                      placeholder: (base) => ({
+                        ...base,
+                        textAlign: 'left'
+                      }),
+                      input: (base) => ({
+                        ...base,
+                        margin: 0,
+                        padding: 0
+                      }),
+                      indicatorSeparator: () => ({
+                        display: 'none'
+                      }),
+                      dropdownIndicator: (base) => ({
+                        ...base,
+                        padding: '0.375rem 0.5rem'
+                      }),
+                      menuPortal: (base) => ({
+                        ...base,
+                        zIndex: 9999
+                      }),
+                      menu: (base) => ({
+                        ...base,
+                        zIndex: 9999
+                      }),
+                      option: (base, state) => ({
+                        ...base,
+                        backgroundColor: state.isSelected 
+                          ? '#0d6efd' 
+                          : state.isFocused 
+                          ? '#e9ecef' 
+                          : 'white',
+                        color: state.isSelected ? 'white' : '#212529',
+                        cursor: 'pointer',
+                        padding: '0.375rem 0.75rem',
+                        textAlign: 'left'
+                      })
+                    }}
+                  />
                 )}
               </Form.Group>
 
