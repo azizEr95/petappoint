@@ -1,16 +1,19 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
-import { useState } from 'react';
-import '../../styles/routes/veterinaryRegistration.scss';
-import { useMutation } from '@tanstack/react-query';
+import Select from 'react-select';
+import { useMemo, useState } from 'react';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { Alert, Form, FormGroup } from 'react-bootstrap';
 import { VeterinaryPracticeCreateSchema } from 'vetilib-shared/schemas/ZodSchemas';
 import { PasswordInput } from '../../components/common/PasswordInput';
 import { scrollToFirstError } from '../../utils/Registration';
+import type {SingleValue} from 'react-select';
 import type { ChangeEvent, FormEvent } from 'react';
-import type { VeterinaryPracticesCreateType } from 'vetilib-shared/schemas/ZodSchemas';
+import type { CountryType, VeterinaryPracticesCreateType } from 'vetilib-shared/schemas/ZodSchemas';
 import { veterinaryPracticeRegistration } from '@/api/LoginAPI';
 import { useLoginContext } from '@/LoginContext';
 import { useTitle } from '@/utils/useTitle';
+import { getAllCountries } from '@/api/CountriesAPI';
+import '../../styles/routes/veterinaryRegistration.scss';
 
 export const Route = createFileRoute('/registration/veterinarypractice')({
   component: VeterinaryRegistration,
@@ -23,7 +26,7 @@ function VeterinaryRegistration() {
   const [hausnr, setHausnr] = useState('');
   const [plz, setPlz] = useState('');
   const [stadt, setStadt] = useState('');
-  const [land, setLand] = useState('');
+  const [land, setLand] = useState<CountryType>();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -33,7 +36,7 @@ function VeterinaryRegistration() {
   const [info, setInfo] = useState('');
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const navigate = useNavigate();
-  const { setLogin } = useLoginContext()
+  const { setLogin } = useLoginContext();
 
   // Password validation state
   const [passwordRequirements, setPasswordRequirements] = useState({
@@ -41,7 +44,7 @@ function VeterinaryRegistration() {
     hasUpperCase: false,
     hasNumber: false,
     hasSpecialChar: false,
-  })
+  });
 
   // Function to check password requirements
   const checkPasswordRequirements = (pwd: string) => {
@@ -50,15 +53,20 @@ function VeterinaryRegistration() {
       hasUpperCase: /[A-Z]/.test(pwd),
       hasNumber: /[0-9]/.test(pwd),
       hasSpecialChar: /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(pwd),
-    })
-  }
+    });
+  };
 
   const handleBlur = (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const nameBlur = e.target.name;
     validateForm(nameBlur);
-  }
+  };
 
-  const validateForm = (nameFormField: string | null) => {
+  const { data: dataCountries, isSuccess: isSuccessCountries } = useQuery({
+    queryKey: ['allCountries'],
+    queryFn: () => getAllCountries(),
+  });
+
+  const validateForm = (nameFormField: string | null): VeterinaryPracticesCreateType | null => {
     const newErrors: { [key: string]: string } = { ...errors }
 
     if (nameFormField === "name" || nameFormField === null) {
@@ -113,13 +121,8 @@ function VeterinaryRegistration() {
     }
 
     if (nameFormField === "land" || nameFormField === null) {
-      if (!land.trim()) {
+      if (!land) {
         newErrors.land = 'Land ist erforderlich'
-      } else if (!/^[a-zA-ZäöüÄÖÜß '`-]+$/.test(land)) {
-        newErrors.land =
-          'Diese Zeichen sind in diesem Feld nicht erlaubt (Zahlen,/,.)'
-      } else if (land.length < 5) {
-        newErrors.land = 'Land muss mindestens aus 5 Zeichen bestehen'
       }
     }
 
@@ -210,8 +213,28 @@ function VeterinaryRegistration() {
       }
     }
 
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length !== 0  || land === undefined) {
+      return null;
+    }
+
+    return {
+      name: name,
+      email: email,
+      password: password,
+      phone: phone,
+      infoEmail: infoemail,
+      website: website || null,
+      info: info,
+      address: {
+        street: strasse + hausnr,
+        cityCode: plz,
+        city: stadt,
+        country: land.id,
+        longitude: 0,
+        latitude: 0,
+      },
+    }
   }
 
   const { mutate: mutateCreatePractice } = useMutation({
@@ -227,21 +250,21 @@ function VeterinaryRegistration() {
       setLogin(data);
       navigate({
         to: '/registration/verify-email',
-      })
+      });
     },
-  })
+  });
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
   ) => {
-    const t = e.target
-    const nameChange = t.name
-    const value = t.value
+    const t = e.target;
+    const nameChange = t.name;
+    const value = t.value;
 
     if (errors[nameChange]) {
-      const newErrors = { ...errors }
-      delete newErrors[nameChange]
-      setErrors(newErrors)
+      const newErrors = { ...errors };
+      delete newErrors[nameChange];
+      setErrors(newErrors);
     }
 
     switch (nameChange) {
@@ -260,30 +283,27 @@ function VeterinaryRegistration() {
       case 'stadt':
         setStadt(value);
         break;
-      case 'land':
-        setLand(value);
-        break;
       case 'email':
         setEmail(value);
         break;
       case 'password':
         setPassword(value);
-        checkPasswordRequirements(value)
+        checkPasswordRequirements(value);
         // Check confirmPassword when password changes
         if (confirmPassword && value !== confirmPassword) {
-          setErrors({ ...errors, confirmPassword: 'Passwörter stimmen nicht überein' })
+          setErrors({ ...errors, confirmPassword: 'Passwörter stimmen nicht überein' });
         } else if (confirmPassword && value === confirmPassword) {
-          const newErrors = { ...errors }
-          delete newErrors.confirmPassword
-          setErrors(newErrors)
+          const newErrors = { ...errors };
+          delete newErrors.confirmPassword;
+          setErrors(newErrors);
         }
         break;
       case 'confirmPassword':
         setConfirmPassword(value);
         break;
       case 'phone':
-        setPhone(value)
-        break
+        setPhone(value);
+        break;
       case 'infoemail':
         setInfoemail(value);
         break;
@@ -296,40 +316,47 @@ function VeterinaryRegistration() {
       default:
         console.log('Error: Fehler beim Aendern von veterinaryRegistration State in handleChange');
     }
-  }
+  };
+
+  const handleCountryChange = (selectedOption: SingleValue<{ value: CountryType; label: string }>) => {
+    if (selectedOption) {
+      setLand(selectedOption.value);
+      if (errors.land) {
+        const newErrors = { ...errors };
+        delete newErrors.land;
+        setErrors(newErrors);
+      }
+    } else {
+      setLand(undefined);
+    }
+  };
+
+  const countryOptions = useMemo(() => {
+    if (!isSuccessCountries) {
+      return [];
+    }
+    return dataCountries.map((country: CountryType) => ({
+      value: country,
+      label: country.name,
+    }));
+  }, [isSuccessCountries, dataCountries]);
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!validateForm(null)) {
+    const practice = validateForm(null);
+    if (!practice) {
       setTimeout(() => {
         scrollToFirstError(errors);
       }, 100);
       return;
     }
 
-    const practice: VeterinaryPracticesCreateType = {
-      name: name,
-      email: email,
-      password: password,
-      phone: phone,
-      infoEmail: infoemail,
-      website: website || null,
-      info: info,
-      address: {
-        street: strasse + hausnr,
-        cityCode: plz,
-        city: stadt,
-        country: land,
-        longitude: 0,
-        latitude: 0,
-      },
-    }
     try {
-      VeterinaryPracticeCreateSchema.parse(practice)
-      mutateCreatePractice(practice)
+      VeterinaryPracticeCreateSchema.parse(practice);
+      mutateCreatePractice(practice);
     } catch (err) {
-      console.log('Zod Error: personRegistration' + err)
+      console.log('Zod Error: veterinaryRegistration' + err);
     }
   }
 
@@ -562,19 +589,29 @@ function VeterinaryRegistration() {
                 <Form.Label htmlFor="land" className="form-label">
                   Land *
                 </Form.Label>
-                <Form.Control
-                  id="land"
-                  type="text"
-                  placeholder="Deutschland"
-                  name="land"
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  value={land}
-                  isInvalid={!!errors.land}
-                />
-                <Form.Control.Feedback type="invalid">
-                  {errors.land}
-                </Form.Control.Feedback>
+                {isSuccessCountries && (
+                  <Select
+                    inputId="land"
+                    options={countryOptions}
+                    value={land ? countryOptions.find((opt) => opt.value.id === land.id) : null}
+                    onChange={handleCountryChange}
+                    placeholder="Land auswählen..."
+                    isClearable
+                    isSearchable
+                    noOptionsMessage={() => "Keine Länder gefunden"}
+                    styles={{
+                      control: (base) => ({
+                        ...base,
+                        borderColor: errors.land ? '#dc3545' : base.borderColor,
+                      })
+                    }}
+                  />
+                )}
+                {errors.land && (
+                  <div className="invalid-feedback d-block">
+                    {errors.land}
+                  </div>
+                )}
               </FormGroup>
             </div>
 

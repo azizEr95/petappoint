@@ -4,6 +4,15 @@ import { prisma } from "../src/singletonPC";
 async function generatePlaytest() {
   const numberOfPlaytesters = 100;
   try {
+    const germany = await prisma.countries.findFirst({
+      where: {
+        name: "Deutschland"
+      }
+    });
+    if (!germany) {
+      throw new Error("Germany not found");
+    }
+    
     console.log("🌱 Seeding Impfer...");
 
     const impfzentrum = await prisma.veterinaryPractice.create({
@@ -17,7 +26,7 @@ async function generatePlaytest() {
           create: {
             city: 'Berlin',
             cityCode: '13347',
-            country: 'Deutschland',
+            fk_country: germany.id,
             latitude: 1.0,
             longitude: 1.0,
             street: 'Impfstraße 5'

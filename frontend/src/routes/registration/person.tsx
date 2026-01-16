@@ -2,19 +2,22 @@ import {
   createFileRoute,
   useLocation,
   useNavigate,
-} from '@tanstack/react-router'
-import { useState } from 'react'
-import { useMutation } from '@tanstack/react-query'
-import { Alert, Form, FormGroup } from 'react-bootstrap'
-import { PersonsCreateSchema } from 'vetilib-shared/schemas/ZodSchemas'
-import { PasswordInput } from '../../components/common/PasswordInput'
-import '../../styles/routes/personRegistration.scss'
-import { personRegistration } from '../../api/LoginAPI'
-import { useLoginContext } from '../../LoginContext'
-import { scrollToFirstError } from '../../utils/Registration'
-import type { PersonsCreateType, sexesType } from 'vetilib-shared/schemas/ZodSchemas';
+} from '@tanstack/react-router';
+import Select from 'react-select';
+import { useMemo, useState } from 'react';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { Alert, Form, FormGroup } from 'react-bootstrap';
+import { PersonsCreateSchema } from 'vetilib-shared/schemas/ZodSchemas';
+import { PasswordInput } from '../../components/common/PasswordInput';
+import '../../styles/routes/personRegistration.scss';
+import { personRegistration } from '../../api/LoginAPI';
+import { useLoginContext } from '../../LoginContext';
+import { scrollToFirstError } from '../../utils/Registration';
+import type {SingleValue} from 'react-select';
+import type { CountryType, PersonsCreateType, sexesType } from 'vetilib-shared/schemas/ZodSchemas';
 import type { FormEvent } from 'react';
-import { useTitle } from '@/utils/useTitle'
+import { useTitle } from '@/utils/useTitle';
+import { getAllCountries } from '@/api/CountriesAPI';
 
 export const Route = createFileRoute('/registration/person')({
   component: PersonRegistration,
@@ -22,24 +25,24 @@ export const Route = createFileRoute('/registration/person')({
 
 function PersonRegistration() {
   useTitle("Registrierung Person");
-  const navigate = useNavigate()
-  const location = useLocation()
-  const appointment = location.state.appointment
-  const { setLogin } = useLoginContext()
-  const [firstName, setFirstName] = useState('')
-  const [lastName, setLastName] = useState('')
-  const [strasse, setStrasse] = useState('')
-  const [hausnr, setHausnr] = useState('')
-  const [plz, setPlz] = useState('')
-  const [stadt, setStadt] = useState('')
-  const [land, setLand] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
-  const [phone, setPhone] = useState('')
-  const [dateOfBirth, setDateOfBirth] = useState('')
-  const [sex, setSex] = useState<sexesType | undefined>(undefined)
-  const [errors, setErrors] = useState<{ [key: string]: string }>({})
+  const navigate = useNavigate();
+  const location = useLocation();
+  const appointment = location.state.appointment;
+  const { setLogin } = useLoginContext();
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [strasse, setStrasse] = useState('');
+  const [hausnr, setHausnr] = useState('');
+  const [plz, setPlz] = useState('');
+  const [stadt, setStadt] = useState('');
+  const [land, setLand] = useState<CountryType>();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [phone, setPhone] = useState('');
+  const [dateOfBirth, setDateOfBirth] = useState('');
+  const [sex, setSex] = useState<sexesType | undefined>(undefined);
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   // Password validation state
   const [passwordRequirements, setPasswordRequirements] = useState({
@@ -47,7 +50,12 @@ function PersonRegistration() {
     hasUpperCase: false,
     hasNumber: false,
     hasSpecialChar: false,
-  })
+  });
+
+  const { data: dataCountries, isSuccess: isSuccessCountries } = useQuery({
+    queryKey: ['allCountries'],
+    queryFn: () => getAllCountries(),
+  });
 
   // Function to check password requirements
   const checkPasswordRequirements = (pwd: string) => {
@@ -56,60 +64,60 @@ function PersonRegistration() {
       hasUpperCase: /[A-Z]/.test(pwd),
       hasNumber: /[0-9]/.test(pwd),
       hasSpecialChar: /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(pwd),
-    })
-  }
+    });
+  };
 
   // Helper function to calculate age
   const calculateAge = (birthDate: Date): number => {
-    const today = new Date()
-    let age = today.getFullYear() - birthDate.getFullYear()
-    const monthDiff = today.getMonth() - birthDate.getMonth()
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
 
     if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-      age--
+      age--;
     }
 
-    return age
-  }
+    return age;
+  };
 
   // Get max date (today) in YYYY-MM-DD format
   const getMaxDate = (): string => {
-    const today = new Date()
-    return today.toISOString().split('T')[0]
-  }
+    const today = new Date();
+    return today.toISOString().split('T')[0];
+  };
 
   const { mutate: mutateRegistration } = useMutation({
     mutationFn: (person: PersonsCreateType) => personRegistration(person),
     onSuccess: (data) => {
-      setLogin(data)
+      setLogin(data);
       if (appointment !== undefined) {
         navigate({
           to: '/registration/verify-email',
           state: {
             appointment: appointment
           }
-        })
+        });
 
       } else {
         navigate({
           to: '/registration/verify-email',
-        })
+        });
       }
     },
     onError: (error: any) => {
       setErrors({
         ...errors,
         [error.field || 'general']: error.message,
-      })
+      });
     },
-  })
+  });
 
   const handleBlur = (e: any) => {
     const name = e.target.name;
     validateForm(name);
-  }
+  };
 
-  const validateForm = (nameFormField: string | null) => {
+  const validateForm = (nameFormField: string | null): PersonsCreateType | null => {
     const newErrors: { [key: string]: string } = { ...errors };
 
     if (nameFormField === "firstName" || nameFormField === null) {
@@ -187,15 +195,8 @@ function PersonRegistration() {
     }
 
     if (nameFormField === "land" || nameFormField === null) {
-      if (!land.trim()) {
+      if (!land) {
         newErrors.land = 'Land ist erforderlich';
-      } else if (!/^[a-zA-ZäöüÄÖÜß '`-]+$/.test(land)) {
-        newErrors.land =
-          'Diese Zeichen sind in diesem Feld nicht erlaubt (Zahlen,/,.)';
-      } else if (land.length < 3) {
-        newErrors.land = 'Land muss mindestens aus 3 Zeichen bestehen';
-      } else if (land.length > 150) {
-        newErrors.land = 'Land darf maximal 150 Zeichen lang sein';
       }
     }
 
@@ -284,97 +285,11 @@ function PersonRegistration() {
     }
 
     setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
-
-  const handleChange = (e: any) => {
-    const t = e.target
-    const name = t.name
-    const value = t.value
-
-    if (errors[name]) {
-      const newErrors = { ...errors }
-      delete newErrors[name]
-      setErrors(newErrors)
+    if (Object.keys(newErrors).length !== 0 || land === undefined) {
+      return null;
     }
 
-    switch (name) {
-      case 'firstName':
-        setFirstName(value)
-        break
-      case 'lastName':
-        setLastName(value)
-        break
-      case 'strasse':
-        setStrasse(value)
-        break
-      case 'hausnr':
-        setHausnr(value)
-        break
-      case 'plz':
-        setPlz(value)
-        break
-      case 'stadt':
-        setStadt(value)
-        break
-      case 'land':
-        setLand(value)
-        break
-      case 'email':
-        setEmail(value)
-        break
-      case 'password':
-        setPassword(value)
-        checkPasswordRequirements(value)
-        // Check confirmPassword when password changes
-        if (confirmPassword && value !== confirmPassword) {
-          setErrors({ ...errors, confirmPassword: 'Passwörter stimmen nicht überein' })
-        } else if (confirmPassword && value === confirmPassword) {
-          const newErrors = { ...errors }
-          delete newErrors.confirmPassword
-          setErrors(newErrors)
-        }
-        break
-      case 'confirmPassword':
-        setConfirmPassword(value)
-        break
-      case 'phone':
-        setPhone(value)
-        break
-      case 'dateOfBirth':
-        setDateOfBirth(value)
-        break
-      case 'sex':
-        if (value === '') {
-          setSex('not_known')
-        } else if (value === 'male') {
-          setSex('male')
-        } else if (value === 'female') {
-          setSex(value)
-        } else if (value === 'not_applicable') {
-          setSex(value)
-        }
-        break
-      default:
-        console.log(
-          'Error: Fehler beim Aendern von personRegistration State in handleChange',
-        )
-    }
-  }
-
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    if (!validateForm(null)) {
-      console.log('Formular enthält Fehler');
-      // Zum ersten Fehler scrollen
-      setTimeout(() => {
-        scrollToFirstError(errors);
-      }, 100);
-      return;
-    }
-
-    const person: PersonsCreateType = {
+    return {
       firstName: firstName,
       lastName: lastName,
       email: email,
@@ -386,21 +301,128 @@ function PersonRegistration() {
         street: strasse + hausnr,
         cityCode: plz,
         city: stadt,
-        country: land,
+        country: land.id,
         latitude: 0,
         longitude: 0,
       },
+    }
+  }
+
+  const handleChange = (e: any) => {
+    const t = e.target;
+    const name = t.name;
+    const value = t.value;
+
+    if (errors[name]) {
+      const newErrors = { ...errors };
+      delete newErrors[name];
+      setErrors(newErrors);
+    }
+
+    switch (name) {
+      case 'firstName':
+        setFirstName(value);
+        break;
+      case 'lastName':
+        setLastName(value);
+        break;
+      case 'strasse':
+        setStrasse(value);
+        break;
+      case 'hausnr':
+        setHausnr(value);
+        break;
+      case 'plz':
+        setPlz(value);
+        break;
+      case 'stadt':
+        setStadt(value);
+        break;
+      case 'email':
+        setEmail(value);
+        break;
+      case 'password':
+        setPassword(value);
+        checkPasswordRequirements(value);
+        // Check confirmPassword when password changes
+        if (confirmPassword && value !== confirmPassword) {
+          setErrors({ ...errors, confirmPassword: 'Passwörter stimmen nicht überein' });
+        } else if (confirmPassword && value === confirmPassword) {
+          const newErrors = { ...errors };
+          delete newErrors.confirmPassword;
+          setErrors(newErrors);
+        }
+        break;
+      case 'confirmPassword':
+        setConfirmPassword(value);
+        break;
+      case 'phone':
+        setPhone(value);
+        break;
+      case 'dateOfBirth':
+        setDateOfBirth(value);
+        break;
+      case 'sex':
+        if (value === '') {
+          setSex('not_known');
+        } else if (value === 'male') {
+          setSex('male');
+        } else if (value === 'female') {
+          setSex(value);
+        } else if (value === 'not_applicable') {
+          setSex(value);
+        }
+        break;
+      default:
+        console.log(
+          'Error: Fehler beim Aendern von personRegistration State in handleChange',
+        );
+    }
+  };
+
+  const handleCountryChange = (selectedOption: SingleValue<{ value: CountryType; label: string }>) => {
+    if (selectedOption) {
+      setLand(selectedOption.value);
+      if (errors.land) {
+        const newErrors = { ...errors };
+        delete newErrors.land;
+        setErrors(newErrors);
+      }
+    } else {
+      setLand(undefined);
+    }
+  };
+
+  const countryOptions = useMemo(() => {
+    if (!isSuccessCountries) {
+      return [];
+    }
+    return dataCountries.map((country: CountryType) => ({
+      value: country,
+      label: country.name,
+    }));
+  }, [isSuccessCountries, dataCountries]);
+
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const person = validateForm(null);
+    if (!person) {
+      setTimeout(() => {
+        scrollToFirstError(errors);
+      }, 100);
+      return;
     }
 
     try {
       PersonsCreateSchema.parse({
         ...person,
         dateOfBirth: person.dateOfBirth.toISOString(),
-      })
+      });
     } catch (err) {
-      console.log('Zod Error: personRegistration' + err)
+      console.log('Zod Error: personRegistration' + err);
     }
-    mutateRegistration(person)
+    mutateRegistration(person);
   }
 
   return (
@@ -705,25 +727,32 @@ function PersonRegistration() {
                 </FormGroup>
               </div>
 
-              <FormGroup className="form-group">
+              {isSuccessCountries && <FormGroup className="form-group">
                 <Form.Label htmlFor="land" className="form-label">
                   Land *
                 </Form.Label>
-                <Form.Control
-                  id="CreatePersonLand"
-                  data-testid="person-land-input"
-                  type="text"
-                  placeholder="Deutschland"
-                  name="land"
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  value={land}
-                  isInvalid={!!errors.land}
+                <Select
+                  inputId="land"
+                  options={countryOptions}
+                  value={land ? countryOptions.find((opt) => opt.value.id === land.id) : null}
+                  onChange={handleCountryChange}
+                  placeholder="Land auswählen..."
+                  isClearable
+                  isSearchable
+                  noOptionsMessage={() => "Keine Länder gefunden"}
+                  styles={{
+                    control: (base) => ({
+                      ...base,
+                      borderColor: errors.land ? '#dc3545' : base.borderColor,
+                    })
+                  }}
                 />
-                <Form.Control.Feedback type="invalid">
-                  {errors.land}
-                </Form.Control.Feedback>
-              </FormGroup>
+                {errors.land && (
+                  <div className="invalid-feedback d-block">
+                    {errors.land}
+                  </div>
+                )}
+              </FormGroup>}
             </div>
 
             <button type="submit" className="auth-button" data-testid="person-submit-button">

@@ -51,7 +51,6 @@ export class PersonRegistrationPage extends AbstractPage {
         hausnr: string;
         plz: string;
         stadt: string;
-        land: string;
     }) {
         await this.firstNameInput.fill(data.firstName);
         await this.lastNameInput.fill(data.lastName);
@@ -65,7 +64,7 @@ export class PersonRegistrationPage extends AbstractPage {
         await this.hausnrInput.fill(data.hausnr);
         await this.plzInput.fill(data.plz);
         await this.stadtInput.fill(data.stadt);
-        await this.landInput.fill(data.land);
+        // country input is select and currently not filled
     }
 
     async expectOnRegistrationPage() {

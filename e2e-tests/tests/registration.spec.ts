@@ -45,7 +45,6 @@ test.describe('Person Registration', () => {
             hausnr: '123',
             plz: '12345',
             stadt: 'Berlin',
-            land: 'Deutschland'
         });
 
         await registrationPage.click(registrationPage.submitButton);
