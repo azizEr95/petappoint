@@ -10,9 +10,10 @@ import { ResourceNotFoundError } from "../exceptions/errors/ResourceNotFoundErro
 import { ConstraintError } from "../exceptions/errors/ConstraintError";
 import { APPOINTMENT_INCLUDE_BASE, APPOINTMENT_INCLUDE_WITH_VET_SERVICES } from "../helper/appointmentIncludes";
 import { mapToAppointment } from "../helper/mapToAppointment";
+import { createDateTime } from "../helper/createDateTime"
 
 export const appointmentService = {
-  async create(data: AppointmentsCreateType): Promise<void> {
+  async create(data: AppointmentsCreateType): Promise<AppointmentsType> {
     const created = await prisma.appointment.create({
       include: APPOINTMENT_INCLUDE_BASE,
       data: {
@@ -28,7 +29,60 @@ export const appointmentService = {
       data: data.availableServiceIds.map(x => ({ serviceId: x, appointmentId: appointmentId })),
       skipDuplicates: true
     });
+    return mapToAppointment(created);
   },
+
+  async createWeeklyAppointments(data: AppointmentsCreateType, endDate: Date): Promise<AppointmentsType[]> {
+
+    if (!endDate || !data.endTime || !data.startTime) {
+      throw new Error("Zeiten müssen hier angegeben werden")
+    }
+    const differenceInMs = endDate.getTime() - data.startTime.getTime();
+    const diffDays = differenceInMs / (1000 * 60 * 60 * 24);
+    const diffWeeks = Math.floor(diffDays / 7);
+
+    const appointmentsToCreate = []
+
+    for (let week = 0; week <= diffWeeks; week++) {
+      const weekStartTime = new Date(data.startTime);
+      weekStartTime.setDate(weekStartTime.getDate() + (week * 7));
+
+      const weekEndTime = new Date(data.endTime);
+      weekEndTime.setDate(weekEndTime.getDate() + (week * 7));
+
+      appointmentsToCreate.push({
+        startTime: weekStartTime,
+        endTime: weekEndTime,
+        veterinaryId: data.veterinaryId,
+        veterinaryPracticeId: data.veterinaryPracticeId,
+      })
+    };
+
+    const createdAppointments = await Promise.all(appointmentsToCreate.map(async (apt) => {
+      const created = await prisma.appointment.create({
+        include: APPOINTMENT_INCLUDE_BASE,
+        data: {
+          startTime: apt.startTime,
+          endTime: apt.endTime,
+          veterinarian: { connect: { id: data.veterinaryId } },
+          veterinaryPractice: { connect: { id: data.veterinaryPracticeId } },
+        },
+      });
+
+      const appointmentId = created.id;
+      await prisma.appointmentHasService.createMany({
+        data: data.availableServiceIds.map(x => ({ serviceId: x, appointmentId: appointmentId })),
+        skipDuplicates: true
+      });
+      const updatedAppointment = await prisma.appointment.findUnique({
+        where: { id: appointmentId },
+        include: APPOINTMENT_INCLUDE_WITH_VET_SERVICES,
+      });
+      return mapToAppointment(updatedAppointment)
+    }))
+    return createdAppointments;
+  },
+
 
   async getById(id: number): Promise<AppointmentsType> {
     const foundAppointment = await prisma.appointment.findUnique({
