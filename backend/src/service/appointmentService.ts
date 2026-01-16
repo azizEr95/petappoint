@@ -74,11 +74,7 @@ export const appointmentService = {
         data: data.availableServiceIds.map(x => ({ serviceId: x, appointmentId: appointmentId })),
         skipDuplicates: true
       });
-      const updatedAppointment = await prisma.appointment.findUnique({
-        where: { id: appointmentId },
-        include: APPOINTMENT_INCLUDE_WITH_VET_SERVICES,
-      });
-      return mapToAppointment(updatedAppointment)
+      return mapToAppointment(created)
     }))
     return createdAppointments;
   },
