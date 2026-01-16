@@ -7,13 +7,22 @@ async function seedTestdata() {
   console.log("🌱 Seeding test data...");
 
   try {
+    const germany = await prisma.countries.findFirst({
+      where: {
+        name: "Deutschland"
+      }
+    });
+    if (!germany) {
+      throw new Error("Germany not found");
+    }
+
     const createdAddresses = await prisma.address.createMany({
       data: [
         {
           street: "Hauptstraße 1",
           cityCode: "10115",
           city: "Berlin",
-          country: "Deutschland",
+          fk_country: germany.id,
           latitude: 13.405,
           longitude: 52.52,
         },
@@ -21,7 +30,7 @@ async function seedTestdata() {
           street: "Bahnhofstraße 12",
           cityCode: "20095",
           city: "Hamburg",
-          country: "Deutschland",
+          fk_country: germany.id,
           longitude: 10.0,
           latitude: 53.55,
         },
@@ -29,7 +38,7 @@ async function seedTestdata() {
           street: "Marktplatz 5",
           cityCode: "80331",
           city: "München",
-          country: "Deutschland",
+          fk_country: germany.id,
           longitude: 11.5755,
           latitude: 48.1374,
         },
@@ -37,7 +46,7 @@ async function seedTestdata() {
           street: "Rheinallee 22",
           cityCode: "50667",
           city: "Köln",
-          country: "Deutschland",
+          fk_country: germany.id,
           longitude: 6.9603,
           latitude: 50.9375,
         },
@@ -45,7 +54,7 @@ async function seedTestdata() {
           street: "Kaiserstraße 8",
           cityCode: "60311",
           city: "Frankfurt am Main",
-          country: "Deutschland",
+          fk_country: germany.id,
           longitude: 8.6821,
           latitude: 50.1109,
         },

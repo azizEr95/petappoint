@@ -1,5 +1,4 @@
-import {  useEffect, useState } from 'react'
-import type { KeyboardEvent } from 'react'
+import { useEffect, useMemo, useState } from 'react';
 import {
   Button,
   Col,
@@ -8,21 +7,25 @@ import {
   Image,
   Modal,
   Row,
-} from 'react-bootstrap'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { PasswordInput } from '../common/PasswordInput'
+} from 'react-bootstrap';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import Select from 'react-select';
+import { PasswordInput } from '../common/PasswordInput';
 import {
   getPictureURLForPersonId,
   updatePerson,
   uploadPictureForPersonId,
-} from '../../api/PersonsAPI'
-import { getDateStringFromDate } from '../../utils/DateToStringFormat'
-import type {ChangeEvent} from 'react';
+} from '../../api/PersonsAPI';
+import { getDateStringFromDate } from '../../utils/DateToStringFormat';
+import type {SingleValue} from 'react-select';
+import type { ChangeEvent, KeyboardEvent } from 'react';
 import type {
+  CountryType,
   PersonsType,
   PersonsUpdateType,
-} from 'vetilib-shared/schemas/ZodSchemas'
-import '../../styles/components/ProfileDialog.scss'
+} from 'vetilib-shared/schemas/ZodSchemas';
+import '../../styles/components/ProfileDialog.scss';
+import { getAllCountries } from '@/api/CountriesAPI';
 
 type ProfileEditDialogProps = {
   hideDialog: () => void
@@ -47,7 +50,7 @@ export function ProfileEditDialog({
   const [street, setStreet] = useState(person.address.street)
   const [cityCode, setCityCode] = useState(person.address.cityCode)
   const [city, setCity] = useState(person.address.city)
-  const [country, setCountry] = useState(person.address.country)
+  const [country, setCountry] = useState<number | undefined>(person.address.country)
 
   const [changePassword, setChangePassword] = useState(false)
   const [newPassword, setNewPassword] = useState('')
@@ -85,27 +88,38 @@ export function ProfileEditDialog({
     confirmPassword: undefined,
   })
 
+  const { data: dataAllCountries, isSuccess: isSuccessAllCountries } = useQuery({
+    queryKey: ['allCountries'],
+    queryFn: () => getAllCountries(),
+  })
+
+  useEffect(() => {
+    if (selectedPictureFile) {
+      const url = URL.createObjectURL(selectedPictureFile)
+      setProfilePictureURL(url)
+      return () => URL.revokeObjectURL(url)
+    }
+  }, [selectedPictureFile])
+
   const handleFileSelect = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files !== null) {
-      const file: File | undefined = e.target.files[0]
-      if (file) {
-        if (!file.type.startsWith('image/')) {
-          setErrorText('Nur Bilder erlaubt.')
-          return
-        }
-
-        if (file.size > 2 * 1024 * 1024) {
-          setErrorText('Datei darf maximal 2MB groß sein.')
-          return
-        }
-
-        setSelectedPictureFile(file)
-        setErrorText('')
+      const file = e.target.files[0]
+      if (!file.type.startsWith('image/')) {
+        setErrorText('Nur Bilder erlaubt.')
+        return
       }
+
+      if (file.size > 2 * 1024 * 1024) {
+        setErrorText('Datei darf maximal 2MB groß sein.')
+        return
+      }
+
+      setSelectedPictureFile(file)
+      setErrorText('')
     }
   }
 
-  const validate = () => {
+  const validate = (): PersonsUpdateType | null => {
     const errors: typeof validationErrors = {
       firstName: undefined,
       lastName: undefined,
@@ -153,7 +167,7 @@ export function ProfileEditDialog({
       errors.city = 'Stadt ist erforderlich.'
     }
 
-    if (country.length < 1) {
+    if (!country) {
       errors.country = 'Land ist erforderlich.'
     }
 
@@ -167,7 +181,29 @@ export function ProfileEditDialog({
     }
 
     setValidationErrors(errors)
-    return Object.values(errors).every((error) => error === undefined)
+    if (!Object.values(errors).every((error) => error === undefined)) {
+      return null;
+    }
+
+    console.log(country)
+    return {
+      id: person.id,
+      firstName,
+      lastName,
+      sex,
+      dateOfBirth: new Date(dateOfBirth),
+      phone,
+      email,
+      address: {
+        id: person.address.id,
+        street,
+        cityCode,
+        city,
+        country: country!,
+        latitude: person.address.latitude,
+        longitude: person.address.longitude,
+      },
+    }
   }
 
   const updatePersonMutation = useMutation({
@@ -185,29 +221,34 @@ export function ProfileEditDialog({
     },
   })
 
+  const handleCountryChange = (selectedOption: SingleValue<{ value: CountryType; label: string }>) => {
+      if (selectedOption) {
+        setCountry(selectedOption.value.id);
+        if (validationErrors.country) {
+          const newErrors = { ...validationErrors };
+          delete newErrors.country;
+          setValidationErrors(newErrors);
+        }
+      } else {
+        setCountry(undefined);
+      }
+    }
+  
+    const countryOptions = useMemo(() => {
+      if (!isSuccessAllCountries) {
+        return [];
+      }
+      return dataAllCountries.map((countryMap: CountryType) => ({
+        value: countryMap,
+        label: countryMap.name,
+      }));
+    }, [isSuccessAllCountries, dataAllCountries]);
+
   const handleSubmit = () => {
-    if (!validate()) {
+    const updatedPerson = validate();
+    if (!updatedPerson) {
       setErrorText('Bitte korrigieren Sie die Fehler.')
       return
-    }
-
-    const updatedPerson: PersonsUpdateType = {
-      id: person.id,
-      firstName,
-      lastName,
-      sex,
-      dateOfBirth: new Date(dateOfBirth),
-      phone,
-      email,
-      address: {
-        id: person.address.id,
-        street,
-        cityCode,
-        city,
-        country,
-        latitude: person.address.latitude,
-        longitude: person.address.longitude,
-      },
     }
 
     if (changePassword && newPassword) {
@@ -223,14 +264,6 @@ export function ProfileEditDialog({
       handleSubmit()
     }
   }
-
-  useEffect(() => {
-    if (selectedPictureFile) {
-      const url = URL.createObjectURL(selectedPictureFile)
-      setProfilePictureURL(url)
-      return () => URL.revokeObjectURL(url)
-    }
-  }, [selectedPictureFile])
 
   return (
     <Modal show={true} onHide={hideDialog} size="lg" centered>
@@ -418,15 +451,27 @@ export function ProfileEditDialog({
             <Col md={4}>
               <Form.Group className="mb-3">
                 <Form.Label>Land*</Form.Label>
-                <Form.Control
-                  type="text"
-                  value={country}
-                  onChange={(e) => setCountry(e.target.value)}
-                  isInvalid={!!validationErrors.country}
+                <Select
+                  inputId="land"
+                  options={countryOptions}
+                  value={country ? countryOptions.find((opt) => opt.value.id === country) : null}
+                  onChange={handleCountryChange}
+                  placeholder="Land auswählen..."
+                  isClearable
+                  isSearchable
+                  noOptionsMessage={() => "Keine Länder gefunden"}
+                  styles={{
+                    control: (base) => ({
+                      ...base,
+                      borderColor: validationErrors.country ? '#dc3545' : base.borderColor,
+                    })
+                  }}
                 />
-                <Form.Control.Feedback type="invalid">
-                  {validationErrors.country}
-                </Form.Control.Feedback>
+                {validationErrors.country && (
+                  <div className="invalid-feedback d-block">
+                    {validationErrors.country}
+                  </div>
+                )}
               </Form.Group>
             </Col>
           </Row>

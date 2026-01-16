@@ -12,6 +12,7 @@ import { routerExceptionHandler } from './exceptions/routerExceptionMiddleware';
 import { emailverificationRouter } from './routes/emailverification';
 import { veterinariansRouter } from './routes/veterinary';
 import { passwordResetRouter } from './routes/passwordReset';
+import { countryRouter } from './routes/countries';
 
 export const app = express();
 
@@ -30,4 +31,5 @@ app.use("/api/animaltypes", animaltypeRouter);
 app.use("/api/services", serviceRouter);
 app.use("/api/registration", emailverificationRouter);
 app.use("/api/password-reset", passwordResetRouter);
+app.use("/api/countries", countryRouter);
 app.use(routerExceptionHandler);

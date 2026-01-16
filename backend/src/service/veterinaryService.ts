@@ -1,11 +1,9 @@
 import { prisma } from "../singletonPC";
 import { Veterinarian } from "../../generated/prisma";
+import { mapToVeterinary } from "../helper/mapToVeterinary";
+import { VeterinariansType } from "vetilib-shared/schemas/ZodSchemas";
 
 export const veterinaryService = {
-  async create(data: Veterinarian): Promise<Veterinarian> {
-    return await prisma.veterinarian.create({ data: data });
-  },
-
   async getById(id: number): Promise<Veterinarian> {
     const foundVeterinary = await prisma.veterinarian.findUnique({
       where: { id },

@@ -203,6 +203,15 @@ async function seedPractices() {
   console.log("🌱 Seeding veterinary practices...");
 
   try {
+    const germany = await prisma.countries.findFirst({
+      where: {
+        name: "Deutschland"
+      }
+    });
+    if (!germany) {
+      throw new Error("Germany not found");
+    }
+
     // ============================
     // Phase 1: Load existing data
     // ============================
@@ -249,7 +258,7 @@ async function seedPractices() {
               street: generateRandomStreet(),
               cityCode: city.citycode,
               city: city.name,
-              country: "Deutschland",
+              fk_country: germany.id,
               longitude: city.longitude + (Math.random() - 0.5) * 0.1,
               latitude: city.latitude + (Math.random() - 0.5) * 0.1,
             },
@@ -283,7 +292,7 @@ async function seedPractices() {
               street: "Katzenstr. 10",
               cityCode: "12345",
               city: "Berlin",
-              country: "Deutschland",
+              fk_country: germany.id,
               longitude: 0.0,
               latitude: 0.0,
             },
@@ -333,7 +342,7 @@ async function seedPractices() {
                 street: generateRandomStreet(),
                 cityCode: city.citycode,
                 city: city.name,
-                country: "Deutschland",
+                fk_country: germany.id,
                 longitude: city.longitude + (Math.random() - 0.5) * 0.1,
                 latitude: city.latitude + (Math.random() - 0.5) * 0.1,
               },

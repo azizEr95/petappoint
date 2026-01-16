@@ -111,7 +111,7 @@ export const AddressesSchema = z.object({
   street: z.string().min(3).max(80),
   cityCode: z.string().min(3).max(12),
   city: z.string().min(3).max(60),
-  country: z.string().min(3).max(150),
+  country: PostgresIdSchema,
   longitude: z.number(),
   latitude: z.number(),
 });
@@ -311,3 +311,11 @@ export const VeterinaryPracticeSearchResultSchema = z.object({
 });
 
 export type VeterinaryPracticeSearchResultType = z.infer<typeof VeterinaryPracticeSearchResultSchema>;
+
+export const CountrySchema = z.object({
+  id: PostgresIdSchema,
+  code: z.string().min(1).max(3),
+  name: z.string()
+});
+
+export type CountryType = z.infer<typeof CountrySchema>;
