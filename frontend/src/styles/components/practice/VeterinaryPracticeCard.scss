@@ -70,7 +70,6 @@
 .detail-item i {
   color: var(--color-primary);
   font-size: 1.1rem;
-  margin-top: 0.1rem;
   flex-shrink: 0;
 }
 
@@ -78,6 +77,11 @@
   color: var(--color-text-dark);
   text-decoration: none;
   transition: color 0.2s;
+  margin-top: 0.1rem;
+}
+
+.detail-item div {
+  margin-top: 0.1rem;
 }
 
 .detail-item a:hover {
