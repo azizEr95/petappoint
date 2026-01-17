@@ -284,7 +284,7 @@ function PersonRegistration() {
       if (!sex) newErrors.sex = 'Geschlecht ist erforderlich';
     }
 
-    setErrors(newErrors)
+    setErrors(newErrors);
     if (Object.keys(newErrors).length !== 0 || land === undefined) {
       return null;
     }
@@ -305,7 +305,7 @@ function PersonRegistration() {
         latitude: 0,
         longitude: 0,
       },
-    }
+    };
   }
 
   const handleChange = (e: any) => {
