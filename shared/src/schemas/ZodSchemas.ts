@@ -255,6 +255,7 @@ export const AppointmentsCreateSchema = z.object({
   veterinaryId: PostgresIdSchema,
   veterinaryPracticeId: PostgresIdSchema,
   availableServiceIds: PostgresIdSchema.array().optional().default([]),
+  endDate: DateTimeSchema.optional(),
 });
 
 export const AvailableAppointmentSchema = z.object({

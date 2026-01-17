@@ -1,5 +1,5 @@
 import '../../../styles/components/dashboard/DashboardPerson.scss'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Button } from 'react-bootstrap'
 import { useNavigate } from '@tanstack/react-router'
@@ -7,6 +7,7 @@ import type { AppointmentsType } from 'vetilib-shared/schemas/ZodSchemas'
 import { CalendarPractice } from '@/components/CalendarPractice'
 import { useLoginContext } from '@/LoginContext'
 import { getAvailableAppointmentsByPracticeId, getBookedAppointmentsByPractice } from '@/api/AppointmentsAPI'
+import { SuccessNotificationToast } from '@/components/SuccessNotificationToast'
 
 export function DashboardPractice() {
     const navigate = useNavigate();
@@ -14,6 +15,22 @@ export function DashboardPractice() {
         'showAppointments' | 'bookAppointment'
     >('showAppointments');
     const { login } = useLoginContext();
+    const [showSuccessNotification, setShowSuccessNotification] = useState<boolean>(false);
+    const [notificationText, setNotificationText] = useState<string>("");
+
+    useEffect(() => { // read localStorage for success notification
+      const createWeeklyAppointmentSuccess = localStorage.getItem('createWeeklyAppointmentSuccess');
+      const createAppointmentSuccess = localStorage.getItem('createAppointmentSuccess');
+      if (createWeeklyAppointmentSuccess) {
+        setNotificationText('Die wöchentlichen Termine wurden erfolgreich erstellt');
+        setShowSuccessNotification(true);
+        localStorage.removeItem('createWeeklyAppointmentSuccess');
+      } else if(createAppointmentSuccess) {
+        setNotificationText('Der Termin wurde erfolgreich erstellt');
+        setShowSuccessNotification(true);
+        localStorage.removeItem('createAppointmentSuccess');
+      }
+    }, []);
 
     const { isSuccess: isSuccessBookedAppointments, data: dataBookedAppointments } = useQuery<Array<AppointmentsType>>({
         queryKey: ['bookedAppointmentsPractice', login],
@@ -23,8 +40,8 @@ export function DashboardPractice() {
     })
 
     const filterOptionsAvailableAppointments = {
-        animalTypeIds: [1,2,3,4,5,6,7,8,9,10],
-        serviceTypeIds: [1,2,3,4,5,6,7,8,9,10],
+        animalTypeIds: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+        serviceTypeIds: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
     };
 
     const { isSuccess: isSuccessAvailableAppointments, data: dataAvailableAppointments } = useQuery<Array<AppointmentsType>>({
@@ -41,10 +58,6 @@ export function DashboardPractice() {
     if (!isSuccessBookedAppointments || !isSuccessAvailableAppointments) {
         return;
     }
-    console.log(login)
-    console.log(isSuccessAvailableAppointments)
-    console.log('dataBookedAppointments:', dataBookedAppointments);
-    console.log('dataAvailableAppointments:', dataAvailableAppointments);
 
     return <>
         <div className="dashboard-page">
@@ -81,6 +94,15 @@ export function DashboardPractice() {
                     <CalendarPractice data={dataAvailableAppointments} />
                 )}
             </div>
+
+
+            {/* show success Notifications in the right corner */}
+            {showSuccessNotification &&
+                <SuccessNotificationToast
+                    message={notificationText}
+                    onClose={() => setShowSuccessNotification(false)} />
+
+            }
         </div>
     </>
 }

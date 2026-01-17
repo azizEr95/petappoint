@@ -148,7 +148,7 @@ appointmentRouter.post('/', async (req, res) => {
     return res.sendStatus(201);
   } else {
     const appointmentCreationData = AppointmentsCreateSchema.parse(req.body);
-    await appointmentService.createWeeklyAppointments(appointmentCreationData, req.body.endDate);
+    await appointmentService.createWeeklyAppointments(appointmentCreationData);
     return res.sendStatus(201);
   }
 });

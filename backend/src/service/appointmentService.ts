@@ -32,12 +32,12 @@ export const appointmentService = {
     return mapToAppointment(created);
   },
 
-  async createWeeklyAppointments(data: AppointmentsCreateType, endDate: Date): Promise<AppointmentsType[]> {
-
-    if (!endDate || !data.endTime || !data.startTime) {
+  async createWeeklyAppointments(data: AppointmentsCreateType): Promise<AppointmentsType[]> {
+    console.log(data);
+    if (!data.endDate || !data.endTime || !data.startTime) {
       throw new Error("Zeiten müssen hier angegeben werden")
     }
-    const differenceInMs = endDate.getTime() - data.startTime.getTime();
+    const differenceInMs = data.endDate.getTime() - data.startTime.getTime();
     const diffDays = differenceInMs / (1000 * 60 * 60 * 24);
     const diffWeeks = Math.floor(diffDays / 7);
 
