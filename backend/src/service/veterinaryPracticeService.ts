@@ -7,12 +7,16 @@ import {
   VeterinaryPracticesType,
   VeterinaryPracticeSearchResultType,
   VeterinariansType,
+  AnimalsType,
+  PersonsType,
 } from "vetilib-shared/schemas/ZodSchemas";
 import { addressService } from "./addressService";
 import { ResourceNotFoundError } from "../exceptions/errors/ResourceNotFoundError";
 import { ConstraintError } from "../exceptions/errors/ConstraintError";
 import { Prisma, veterinarypractices_has_confirmation_code } from "../../generated/prisma";
 import { mapToVeterinaryPractice } from "../helper/mapToVeterinaryPractice";
+import { mapToAnimal } from "../helper/mapToAnimal";
+import { mapToPerson } from "../helper/mapToPerson";
 
 async function checkCreateEmailConstraint(veterinaryPracticeRe: VeterinaryPracticesCreateType) {
   const query = {
@@ -298,6 +302,54 @@ export const veterinaryPracticeService = {
       }
     }
     return serviceArray;
+  },
+
+  async getAnimalWithPerson(praxisId: number): Promise<{ animal: AnimalsType; person: PersonsType }[]> {
+    const appointmentWithAnimal = await prisma.appointment.findMany({
+      where: {
+        veterinaryPracticeId: praxisId
+      },
+      include: {
+        animal: {
+          include: {
+            personHasAnimals: {
+              include: {
+                person: {
+                  include: {
+                    address: true
+                  },
+                  omit: {
+                    password: true
+                  }
+                }
+              }
+            }
+          },
+        }
+      }
+    });
+
+    let animalPersons: { animal: AnimalsType; person: PersonsType }[] = []
+
+    for (let apt of appointmentWithAnimal) {
+
+      if (apt.animal?.personHasAnimals?.[0]) {
+        const animal = apt.animal
+        const person = apt.animal.personHasAnimals[0].person
+        if (animal && person) {
+
+          const exists = animalPersons.some(ap => ap.animal.id === animal.id && ap.person.id === person.id);
+
+          if (!exists) {
+            animalPersons.push({
+              animal: mapToAnimal(animal),
+              person: mapToPerson(person)
+            });
+          }
+        }
+      }
+    }
+    return animalPersons
   },
 
   async getAllAnimalTypes(praxisId: number): Promise<AnimalTypeType[]> {

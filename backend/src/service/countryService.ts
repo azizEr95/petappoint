@@ -3,6 +3,12 @@ import { prisma } from "../singletonPC";
 import { ResourceNotFoundError } from "../exceptions/errors/ResourceNotFoundError";
 
 export const countryService = {
+  async create(data: any): Promise<CountryType> {
+    return await prisma.countries.create({
+      data: data
+    })
+  },
+
   async getAll(): Promise<CountryType[]> {
     return await prisma.countries.findMany({});
   },

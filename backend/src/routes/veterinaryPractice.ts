@@ -11,6 +11,8 @@ import {
   AppointmentFilterSchema,
   VeterinaryPracticeSearchResultType,
   PostgresIdSchema,
+  AnimalsType,
+  PersonsType,
 } from "vetilib-shared/schemas/ZodSchemas";
 import { checkVerified, optionalAuthentication, requiresAuthentication } from "./authentication";
 import { createJWT, verifyJWT, verifyPasswordAndCreateJWT } from "../service/jwtService";
@@ -46,6 +48,12 @@ veterinaryPracticeRouter.get("/:id/animaltypes", optionalAuthentication, async (
   const animalTypes: AnimalTypeType[] = await veterinaryPracticeService.getAllAnimalTypes(id);
   return res.send(animalTypes);
 });
+
+veterinaryPracticeRouter.get("/:id/customers", optionalAuthentication, async (req, res) => {
+  const id: number = PostgresIdSchema.parse(parseInt(req.params.id));
+  const animalWithPersons: { animal: AnimalsType; person: PersonsType }[] = await veterinaryPracticeService.getAnimalWithPerson(id);
+  return res.send(animalWithPersons);
+})
 
 veterinaryPracticeRouter.get("/:id/appointments", optionalAuthentication, async (req, res) => {
   const id: number = PostgresIdSchema.parse(parseInt(req.params.id));

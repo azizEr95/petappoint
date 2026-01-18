@@ -10,7 +10,6 @@ import { ResourceNotFoundError } from "../exceptions/errors/ResourceNotFoundErro
 import { ConstraintError } from "../exceptions/errors/ConstraintError";
 import { APPOINTMENT_INCLUDE_BASE, APPOINTMENT_INCLUDE_WITH_VET_SERVICES } from "../helper/appointmentIncludes";
 import { mapToAppointment } from "../helper/mapToAppointment";
-import { createDateTime } from "../helper/createDateTime"
 
 export const appointmentService = {
   async create(data: AppointmentsCreateType): Promise<AppointmentsType> {
@@ -29,7 +28,17 @@ export const appointmentService = {
       data: data.availableServiceIds.map(x => ({ serviceId: x, appointmentId: appointmentId })),
       skipDuplicates: true
     });
-    return mapToAppointment(created);
+
+    const apt = await prisma.appointment.findUnique({
+      where: { id: appointmentId },
+      include: APPOINTMENT_INCLUDE_WITH_VET_SERVICES,
+    })
+
+    if (!apt) {
+      throw new Error(`Appointment mit ID ${appointmentId} nicht gefunden`);
+    }
+
+    return mapToAppointment(apt);
   },
 
   async createWeeklyAppointments(data: AppointmentsCreateType): Promise<AppointmentsType[]> {
@@ -60,7 +69,7 @@ export const appointmentService = {
 
     const createdAppointments = await Promise.all(appointmentsToCreate.map(async (apt) => {
       const created = await prisma.appointment.create({
-        include: APPOINTMENT_INCLUDE_BASE,
+        include: APPOINTMENT_INCLUDE_WITH_VET_SERVICES,
         data: {
           startTime: apt.startTime,
           endTime: apt.endTime,
@@ -74,7 +83,17 @@ export const appointmentService = {
         data: data.availableServiceIds.map(x => ({ serviceId: x, appointmentId: appointmentId })),
         skipDuplicates: true
       });
-      return mapToAppointment(created)
+
+      const result = await prisma.appointment.findUnique({
+        where: { id: appointmentId },
+        include: APPOINTMENT_INCLUDE_WITH_VET_SERVICES,
+      })
+
+      if (!result) {
+        throw new Error(`Appointment mit ID ${appointmentId} nicht gefunden`);
+      }
+
+      return mapToAppointment(result);
     }))
     return createdAppointments;
   },
