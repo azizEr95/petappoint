@@ -17,7 +17,7 @@ import {
   uploadPictureForPersonId,
 } from '../../api/PersonsAPI';
 import { getDateStringFromDate } from '../../utils/DateToStringFormat';
-import type {SingleValue} from 'react-select';
+import type { SingleValue } from 'react-select';
 import type { ChangeEvent, KeyboardEvent } from 'react';
 import type {
   CountryType,
@@ -222,27 +222,27 @@ export function ProfileEditDialog({
   })
 
   const handleCountryChange = (selectedOption: SingleValue<{ value: CountryType; label: string }>) => {
-      if (selectedOption) {
-        setCountry(selectedOption.value.id);
-        if (validationErrors.country) {
-          const newErrors = { ...validationErrors };
-          delete newErrors.country;
-          setValidationErrors(newErrors);
-        }
-      } else {
-        setCountry(undefined);
+    if (selectedOption) {
+      setCountry(selectedOption.value.id);
+      if (validationErrors.country) {
+        const newErrors = { ...validationErrors };
+        delete newErrors.country;
+        setValidationErrors(newErrors);
       }
+    } else {
+      setCountry(undefined);
     }
-  
-    const countryOptions = useMemo(() => {
-      if (!isSuccessAllCountries) {
-        return [];
-      }
-      return dataAllCountries.map((countryMap: CountryType) => ({
-        value: countryMap,
-        label: countryMap.name,
-      }));
-    }, [isSuccessAllCountries, dataAllCountries]);
+  }
+
+  const countryOptions = useMemo(() => {
+    if (!isSuccessAllCountries) {
+      return [];
+    }
+    return dataAllCountries.map((countryMap: CountryType) => ({
+      value: countryMap,
+      label: countryMap.name,
+    }));
+  }, [isSuccessAllCountries, dataAllCountries]);
 
   const handleSubmit = () => {
     const updatedPerson = validate();
