@@ -2,7 +2,7 @@ import { ListGroup, Modal } from 'react-bootstrap';
 import { useQuery } from '@tanstack/react-query';
 import { dateToDateString, dateToTimeString } from '../../utils/DateToStringFormat';
 import type { AnimalTypeType, AppointmentsType } from 'vetilib-shared/schemas/ZodSchemas';
-import { getAnimalTypeById } from '@/api/AnimalTypeAPI';
+import { getAnimaltypeById } from '@/api/AnimalTypeAPI';
 
 type AppointmentDetailDialogProps = {
     hideDialogDetailAppointment: () => void
@@ -17,7 +17,7 @@ export function AppointmentDetailDialog({
         AnimalTypeType
     >({
         queryKey: ['animaltype', appointmentDetail.animal?.animalTypeId],
-        queryFn: () => getAnimalTypeById(appointmentDetail.animal?.animalTypeId.toString() ?? ""),
+        queryFn: () => getAnimaltypeById(appointmentDetail.animal?.animalTypeId.toString() ?? ""),
         retry: false,
         enabled: appointmentDetail.animal?.animalTypeId !== undefined
     })

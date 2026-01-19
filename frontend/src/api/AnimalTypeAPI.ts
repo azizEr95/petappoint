@@ -22,15 +22,14 @@ export const getAllAnimalTypes = async (
   return parseAnimalTypeArray(data)
 }
 
-export const getAnimalTypeById = async (
-  id: string,
+export const getAnimaltypeById = async (
+  animaltypeId: string,
 ): Promise<AnimalTypeType> => {
-
-  const res = await fetch(import.meta.env.VITE_API_URL + '/animaltypes/' + id, {
+  const res = await fetch(import.meta.env.VITE_API_URL + '/animaltypes/' + animaltypeId, {
     credentials: 'include',
   })
   if (!res.ok) {
-    throw new Error('Failed to fetch getAnimalTypeById')
+    throw new Error('Failed to fetch getAnimaltypeById')
   }
 
   const data = await res.json()

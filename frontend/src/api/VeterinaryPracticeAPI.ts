@@ -11,42 +11,41 @@ import type {
 export const getVeterinaryPracticesByNameAddress = async (
   searchParams: VeterinaryPracticeSearchQueryType,
 ): Promise<VeterinaryPracticeSearchResultType> => {
-  const targetURL =
-    import.meta.env.VITE_API_URL + '/veterinary-practice/search?'
+  const targetURL = import.meta.env.VITE_API_URL + '/veterinary-practice/search?';
   let query = ''
   if (searchParams.name) {
-    query += `${query.length > 0 ? '&' : ''}name=${searchParams.name}`
+    query += `${query.length > 0 ? '&' : ''}name=${searchParams.name}`;
   }
   if (searchParams.address) {
-    query += `${query.length > 0 ? '&' : ''}address=${searchParams.address}`
+    query += `${query.length > 0 ? '&' : ''}address=${searchParams.address}`;
   }
   if (searchParams.animalTypeIds) {
-    query += `${query.length > 0 ? '&' : ''}animalTypeIds=${searchParams.animalTypeIds.join(',')}`
+    query += `${query.length > 0 ? '&' : ''}animalTypeIds=${searchParams.animalTypeIds.join(',')}`;
   }
   if (searchParams.serviceTypeIds) {
-    query += `${query.length > 0 ? '&' : ''}serviceTypeIds=${searchParams.serviceTypeIds.join(',')}`
+    query += `${query.length > 0 ? '&' : ''}serviceTypeIds=${searchParams.serviceTypeIds.join(',')}`;
   }
   if (searchParams.page) {
-    query += `${query.length > 0 ? '&' : ''}page=${searchParams.page}`
+    query += `${query.length > 0 ? '&' : ''}page=${searchParams.page}`;
   }
   if (searchParams.pageSize) {
-    query += `${query.length > 0 ? '&' : ''}pageSize=${searchParams.pageSize}`
+    query += `${query.length > 0 ? '&' : ''}pageSize=${searchParams.pageSize}`;
   }
-  const res = await fetch(targetURL + query, { credentials: 'include' })
+  const res = await fetch(targetURL + query, { credentials: 'include' });
   if (!res.ok) {
-    throw new Error('Failed to fetch getVeterinaryPracticesByNameAddress')
+    throw new Error('Failed to fetch getVeterinaryPracticesByNameAddress');
   }
 
   const data = await res.json()
-  const parsed = VeterinaryPracticeSearchResultSchema.safeParse(data)
+  const parsed = VeterinaryPracticeSearchResultSchema.safeParse(data);
   if (parsed.error !== undefined) {
     // if Zod throws an Error print them
-    console.log(parsed.error)
+    console.log(parsed.error);
   }
   if (!parsed.success) {
-    throw new Error(parsed.error.toString())
+    throw new Error(parsed.error.toString());
   }
-  return parsed.data
+  return parsed.data;
 }
 
 export const getVeterinaryPracticesById = async (
@@ -54,8 +53,7 @@ export const getVeterinaryPracticesById = async (
 ): Promise<VeterinaryPracticesType> => {
   const res = await fetch(
     import.meta.env.VITE_API_URL + '/veterinary-practice/' + id,
-    { credentials: 'include' },
-  )
+    { credentials: 'include' });
   if (!res.ok) {
     throw new Error('Failed to fetch getVeterinaryPracticesById')
   }
@@ -70,13 +68,13 @@ export const getFavoritesVeterinaryPractices = async (
   const res = await fetch(
     import.meta.env.VITE_API_URL + '/persons/' + userId + '/favorites',
     { credentials: 'include' },
-  )
+  );
   if (!res.ok) {
-    throw new Error('Failed to fetch getFavoritesVeterinaryPractices')
+    throw new Error('Failed to fetch getFavoritesVeterinaryPractices');
   }
 
-  const data = await res.json()
-  return data
+  const data = await res.json();
+  return data;
 }
 
 export const getFavoritesVeterinaryPracticesDetails = async (
@@ -114,17 +112,16 @@ export const addFavoritesVeterinaryPractices = async (
 
   const res = await fetch(
     import.meta.env.VITE_API_URL +
-      '/persons/' +
-      userId +
-      '/favorites/' +
-      practiceId,
-    requestOptions,
-  )
+    '/persons/' +
+    userId +
+    '/favorites/' +
+    practiceId,
+    requestOptions);
   if (!res.ok) {
-    throw new Error('Failed to fetch addFavoritesVeterinaryPractices')
+    throw new Error('Failed to fetch addFavoritesVeterinaryPractices');
   }
 
-  return
+  return;
 }
 
 export const deleteFavoritesVeterinaryPractices = async (
@@ -141,17 +138,16 @@ export const deleteFavoritesVeterinaryPractices = async (
 
   const res = await fetch(
     import.meta.env.VITE_API_URL +
-      '/persons/' +
-      userId +
-      '/favorites/' +
-      practiceId,
-    requestOptions,
-  )
+    '/persons/' +
+    userId +
+    '/favorites/' +
+    practiceId,
+    requestOptions);
   if (!res.ok) {
-    throw new Error('Failed to fetch deleteFavoritesVeterinaryPractices')
+    throw new Error('Failed to fetch deleteFavoritesVeterinaryPractices');
   }
 
-  return
+  return;
 }
 
 /*
@@ -160,13 +156,13 @@ export const deleteFavoritesVeterinaryPractices = async (
 const parsedVeterinaryPractice = (
   unsafeAppointment: VeterinaryPracticesType,
 ): VeterinaryPracticesType => {
-  const parsed = VeterinaryPracticeSchema.safeParse(unsafeAppointment)
+  const parsed = VeterinaryPracticeSchema.safeParse(unsafeAppointment);
   if (parsed.error !== undefined) {
     // if Zod throws an Error print them
-    console.log(parsed.error)
+    console.log(parsed.error);
   }
   if (!parsed.success) {
-    throw new Error(parsed.error.toString())
+    throw new Error(parsed.error.toString());
   }
-  return parsed.data
+  return parsed.data;
 }

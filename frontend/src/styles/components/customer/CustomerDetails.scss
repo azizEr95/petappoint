@@ -1,0 +1,53 @@
+@import '../../variables';
+
+.animal-detail-card-wrapper {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.animal-detail-card {
+    border: 2px solid var(--bs-secondary) !important;
+}
+
+.animal-image-col {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1.5rem;
+}
+
+.animal-detail-image {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.back-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: white;
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-md);
+    color: var(--color-primary);
+    font-size: $font-size-base;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: var(--spacing-md);
+
+    &:hover {
+      background: var(--color-primary-pale);
+      border-color: var(--color-primary-light);
+    }
+
+    i {
+      font-size: 1.1rem;
+    }
+  }
+
+.owner-section {
+  color: var(--bs-success);
+}
