@@ -399,6 +399,17 @@
           border-color: #dc2626;
         }
       }
+
+      &.action-rebook {
+        border-color: var(--color-primary-light);
+        color: var(--color-primary);
+
+        &:hover {
+          background: var(--color-primary);
+          color: white;
+          border-color: var(--color-primary);
+        }
+      }
     }
   }
 
@@ -565,13 +576,12 @@
 .appointment-details {
   position: sticky;
   top: var(--spacing-lg);
-  max-height: calc(100vh - 2 * var(--spacing-lg));
   display: flex;
   flex-direction: column;
   background: white;
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
-  overflow: hidden;
+  overflow: visible;
   animation: slideInFromRight 0.3s ease-out;
   border: 2px solid transparent;
 
@@ -763,6 +773,18 @@
         }
       }
 
+      &.btn-rebook {
+        border-color: var(--color-primary);
+        color: var(--color-primary);
+        background: var(--color-primary-pale);
+
+        &:hover {
+          background: var(--color-primary);
+          color: white;
+          border-color: var(--color-primary);
+        }
+      }
+
       &:disabled {
         opacity: 0.5;
         cursor: not-allowed;
@@ -779,14 +801,12 @@
   // Compact single-column content layout
   .details-content-compact {
     padding: var(--spacing-lg) var(--spacing-xl);
-    flex: 1;
-    overflow: hidden;
+    flex: 0;
 
     .info-column {
       display: flex;
       flex-direction: column;
       gap: 0;
-      min-height: 0; // Prevent flex overflow
     }
 
     // Practice link button styling
@@ -941,7 +961,8 @@
 
     .notes-section-compact {
       padding: var(--spacing-md) 0;
-      border-bottom: 1px solid var(--color-border-light);
+      margin-top: var(--spacing-md);
+      border-top: 1px solid var(--color-border-light);
 
       .compact-label {
         font-size: 0.75rem;

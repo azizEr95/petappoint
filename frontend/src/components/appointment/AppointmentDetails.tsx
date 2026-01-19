@@ -177,6 +177,22 @@ export function AppointmentDetails({
     })
   }
 
+  const handleRebook = () => {
+    if (isSuccess) {
+      navigate({
+        to: '/practices/$practiceId',
+        params: { practiceId: data.id.toString() },
+        state: {
+          filterOptions: {
+            animalTypeIds: appointment.animal?.animalTypeId ? [appointment.animal.animalTypeId] : undefined,
+            serviceTypeIds: appointment.service?.id ? [appointment.service.id] : undefined,
+            animal: appointment.animal?.id
+          }
+        }
+      })
+    }
+  }
+
   const handleToggleFavorite = async () => {
     setIsLoadingFavorite(true)
     try {
@@ -342,6 +358,19 @@ export function AppointmentDetails({
             >
               <i className="bi bi-x-circle"></i>
               <span>Absagen</span>
+            </button>
+          </div>
+        )}
+
+        {/* Rebook Action Button for Past Appointments */}
+        {!futureAppointment && (
+          <div className="actions-section-top">
+            <button
+              className="btn-action btn-rebook"
+              onClick={handleRebook}
+            >
+              <i className="bi bi-arrow-clockwise"></i>
+              <span>Erneut buchen</span>
             </button>
           </div>
         )}
