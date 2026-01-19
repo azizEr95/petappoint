@@ -12,7 +12,7 @@ type BreadcrumbConfig = (params: {
   practiceId?: string
   practiceName?: string
   practiceUrl?: string
-}) => BreadcrumbItem[]
+}) => Array<BreadcrumbItem>
 
 // Define breadcrumbs for each route pattern
 const breadcrumbConfigs: Array<{ pattern: RegExp; config: BreadcrumbConfig }> = [
@@ -107,7 +107,7 @@ export default function Breadcrumb() {
   const practiceId = practiceIdMatch ? practiceIdMatch[1] : null
 
   // Get practice from state (passed during navigation) or from confirmation state
-  const practiceFromState = location.state?.practice
+  const practiceFromState = location.state.practice
 
   // Fetch practice via API if not in state but practiceId exists
   const { data: practiceFromApi } = useQuery({
