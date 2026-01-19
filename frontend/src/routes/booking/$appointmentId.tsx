@@ -26,6 +26,7 @@ import type {
   ServiceType,
 } from 'vetilib-shared/schemas/ZodSchemas'
 import { useTitle } from '@/utils/useTitle'
+import { SuccessNotificationToast } from '@/components/SuccessNotificationToast'
 
 export const Route = createFileRoute('/booking/$appointmentId')({
   component: BookingComponent,
@@ -55,6 +56,8 @@ function BookingComponent() {
   const [filterTreatAnimaltypes, setFilterTreatAnimaltypes] = useState<Array<number>>(animalTypeId !== undefined ? [animalTypeId] : []);
   const [userId, setUserId] = useState(login ? login.id : undefined)
   const [showCreateAnimalDialog, setShowCreateAnimalDialog] = useState(false)
+  const [allAnimaltypesString, setAllAnimaltypesString] = useState<string>("");
+  const [showSuccessNotification, setShowSuccessNotification] = useState<boolean>(false);
 
   // load Appointment (contains practice info via veterinaryPractice relation):
   const {
@@ -109,6 +112,7 @@ function BookingComponent() {
         const allAnimaltypeIds = dataAnimaltypesVeterinary.map((animalType) => animalType.id);
         setFilterTreatAnimaltypes(allAnimaltypeIds);
       }
+      setAllAnimaltypesString(dataAnimaltypesVeterinary.map((at) => at.name).join(", "));
     }
   }, [isSuccessAnimaltypesVeterinary, dataAnimaltypesVeterinary])
 
@@ -116,7 +120,7 @@ function BookingComponent() {
   const { isSuccess: isSuccessAnimal, data: dataAnimal } = useQuery<
     Array<AnimalsType>
   >({
-    queryKey: ['animal', userId],
+    queryKey: ['animals', userId],
     queryFn: () => getAnimalsFromUser(userId ?? -1),
     retry: false,
     enabled: userId !== undefined,
@@ -128,20 +132,33 @@ function BookingComponent() {
 
   // Determine if user needs to create animal (only when in selectAnimal status)
   useEffect(() => {
-    if (userId !== undefined && isSuccessAnimal && status === StatusBooking.selectAnimal) {
-      const hasMatchingAnimal = dataAnimal.some(
-        (animal) => filterTreatAnimaltypes.includes(animal.animalTypeId)
-      )
+    if (userId === undefined || !isSuccessAnimal || status !== StatusBooking.selectAnimal) return;
+    if (filterTreatAnimaltypes.length === 0) return;
 
-      if (dataAnimal.length === 0 || !hasMatchingAnimal) {
-        // No animals or wrong type - need to create
-        setStatus(StatusBooking.createAnimal)
-      } else {
-        // Has matching animals - stay in select animal
-        setShowCreateAnimalDialog(false)
-      }
+    const hasMatchingAnimal = dataAnimal.some(
+      (animal) => filterTreatAnimaltypes.includes(animal.animalTypeId)
+    );
+
+    if (dataAnimal.length === 0 || !hasMatchingAnimal) {
+      setStatus(StatusBooking.createAnimal);
+    } else {
+      setShowCreateAnimalDialog(false);
     }
-  }, [userId, isSuccessAnimal, dataAnimal, filterTreatAnimaltypes, status])
+  }, [userId, isSuccessAnimal, dataAnimal, filterTreatAnimaltypes, status]);
+
+  useEffect(() => {
+    if (status !== StatusBooking.createAnimal) return;
+    if (!isSuccessAnimal || filterTreatAnimaltypes.length === 0) return;
+
+    const hasMatchingAnimal = dataAnimal.some(
+      (animal) => filterTreatAnimaltypes.includes(animal.animalTypeId)
+    );
+
+    if (hasMatchingAnimal) {
+      setStatus(StatusBooking.selectAnimal);
+      setShowCreateAnimalDialog(false);
+    }
+  }, [status, isSuccessAnimal, dataAnimal, filterTreatAnimaltypes])
 
   useEffect(() => {
     if (userId === undefined && status === StatusBooking.selectAnimal) {
@@ -294,11 +311,8 @@ function BookingComponent() {
   }
 
   const handleAnimalCreated = () => {
-    // Refetch animals after creation
-    queryClient.invalidateQueries({ queryKey: ['animals', userId] })
-    // Dialog will close automatically via AnimalEditNewDialog's hideDialogNewAnimal
-    setShowCreateAnimalDialog(false)
-    // Status will transition automatically via useEffect when animals are refetched
+    queryClient.invalidateQueries({ queryKey: ['animals', userId] });
+    setShowCreateAnimalDialog(false);
   }
 
   const handleSelectAnimal = () => {
@@ -327,6 +341,12 @@ function BookingComponent() {
   let submitButton
   let currentStep: 1 | 2 | 3 = 1
 
+  let plural = '';
+  if (dataAnimal && dataAnimal.length > 1) {
+    plural = 'en';
+  }
+  const textTiere = dataAnimal?.length === 0 ? 'Du hast noch keine Tiere angelegt. Bitte erstelle ein neues Tier, um fortzufahren.'
+    : `Für diesen Termin benötigst du ein Tier der Tierart${plural}: ${allAnimaltypesString}.`;
   switch (status) {
     case StatusBooking.selectAnimal:
       currentDisplay = (
@@ -356,13 +376,14 @@ function BookingComponent() {
           <h5 className="section-title">
             {dataAnimal?.length === 0
               ? 'Neues Tier anlegen'
-              : `Tier vom benötigten Typ erforderlich`}
+              : `Kein passendes Tier gefunden`}
           </h5>
-          <p className="section-description">
-            {dataAnimal?.length === 0
-              ? 'Du hast noch keine Tiere angelegt. Bitte erstelle ein neues Tier, um fortzufahren.'
-              : 'Für diesen Termin benötigst du ein Tier von einem anderen Typ. Bitte erstelle ein neues Tier oder wähle einen anderen Termin.'}
-          </p>
+          <div className="section-description">
+            <div>{textTiere}</div>
+            {dataAnimal && dataAnimal.length > 0 && <div>
+              Bitte erstelle ein neues Tier oder wähle einen anderen Termin.
+            </div>}
+          </div>
           <Button
             variant="primary"
             onClick={() => setShowCreateAnimalDialog(true)}
@@ -486,8 +507,15 @@ function BookingComponent() {
           animalEdit={undefined}
           preselectedAnimalTypeId={filterTreatAnimaltypes.length > 0 ? filterTreatAnimaltypes[0] : undefined}
           onAnimalCreated={handleAnimalCreated}
+          showSuccessNotification={() => setShowSuccessNotification(true)}
         />
       )}
+
+      {showSuccessNotification &&
+        <SuccessNotificationToast
+          message={"Das Tier wurde erfolgreich angelegt."}
+          onClose={() => setShowSuccessNotification(false)} />
+      }
     </div>
   )
 }

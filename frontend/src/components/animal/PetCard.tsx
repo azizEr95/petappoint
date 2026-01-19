@@ -1,11 +1,9 @@
-import { Link } from '@tanstack/react-router'
-import { useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
-import { getPictureFromAnimal } from '../../api/AnimalsAPI'
-import { mapMonthsToAgeRange } from '../../utils/AgeRangeMapper'
-import { AnimalDeleteDialog } from './AnimalDeleteDialog'
-import '../../styles/components/animal/PetCard.scss'
-import type { AnimalsType } from 'vetilib-shared/schemas/ZodSchemas'
+import { Link } from '@tanstack/react-router';
+import { useQuery } from '@tanstack/react-query';
+import { getPictureFromAnimal } from '../../api/AnimalsAPI';
+import { mapMonthsToAgeRange } from '../../utils/AgeRangeMapper';
+import '../../styles/components/animal/PetCard.scss';
+import type { AnimalsType } from 'vetilib-shared/schemas/ZodSchemas';
 
 type PetCardProps = {
   animal: AnimalsType
@@ -13,6 +11,7 @@ type PetCardProps = {
   lastTreatment?: Date
   nextAppointment?: Date
   onEdit: (animal: AnimalsType) => void
+  onDelete: (animal: AnimalsType) => void
 }
 
 export function PetCard({
@@ -21,8 +20,8 @@ export function PetCard({
   lastTreatment,
   nextAppointment,
   onEdit,
+  onDelete
 }: PetCardProps) {
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
 
   // fetch animal picture
   const { data: animalPictureData, isSuccess: isSuccessPictureData } = useQuery({
@@ -30,34 +29,27 @@ export function PetCard({
     queryFn: () => getPictureFromAnimal(animal.id),
     staleTime: 0,
   })
-
-  const handleDelete = () => {
-    setShowDeleteDialog(true)
-  }
-
-  const handleCloseDelete = () => {
-    setShowDeleteDialog(false)
-  }
+  
   // Calculate age from date of birth
   const getAge = () => {
-    if (!animal.dateOfBirth) return 'Unbekannt'
+    if (!animal.dateOfBirth) return 'Unbekannt';
 
-    const now = new Date()
-    const birth = new Date(animal.dateOfBirth)
-    const years = now.getFullYear() - birth.getFullYear()
-    const months = now.getMonth() - birth.getMonth()
-    const totalMonths = years * 12 + months
+    const now = new Date();
+    const birth = new Date(animal.dateOfBirth);
+    const years = now.getFullYear() - birth.getFullYear();
+    const months = now.getMonth() - birth.getMonth();
+    const totalMonths = years * 12 + months;
 
     // If approximate age, return original range
     if (!animal.dateOfBirthIsExact) {
-      return mapMonthsToAgeRange(totalMonths)
+      return mapMonthsToAgeRange(totalMonths);
     }
 
     // Exact age display
     if (totalMonths < 12) {
-      return `${totalMonths} Monat${totalMonths !== 1 ? 'e' : ''}`
+      return `${totalMonths} Monat${totalMonths !== 1 ? 'e' : ''}`;
     }
-    return `${years} Jahr${years !== 1 ? 'e' : ''}`
+    return `${years} Jahr${years !== 1 ? 'e' : ''}`;
   }
 
   const formatDate = (date: Date) => {
@@ -65,8 +57,9 @@ export function PetCard({
       year: 'numeric',
       month: 'short',
       day: 'numeric',
-    })
+    });
   }
+
   if (isSuccessPictureData) {
     return (
       <div className="pet-card" data-testid={"animal-card-" + animal.name}>
@@ -89,7 +82,7 @@ export function PetCard({
             </button>
             <button
               className="pet-delete-btn"
-              onClick={handleDelete}
+              onClick={() => onDelete(animal)}
               title="Löschen"
               data-testid={"delete-animal-" + animal.name}
             >
@@ -153,13 +146,6 @@ export function PetCard({
             </div>
           </div>
         </div>
-
-        {showDeleteDialog && (
-          <AnimalDeleteDialog
-            hideDialogDeleteAnimal={handleCloseDelete}
-            animalDelete={animal}
-          />
-        )}
       </div>
     )
   }
