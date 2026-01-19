@@ -5,8 +5,8 @@ import { ResourceNotFoundError } from "../exceptions/errors/ResourceNotFoundErro
 export const countryService = {
   async create(data: any): Promise<CountryType> {
     return await prisma.countries.create({
-      data: data
-    })
+      data: data,
+    });
   },
 
   async getAll(): Promise<CountryType[]> {
@@ -15,15 +15,15 @@ export const countryService = {
 
   async getById(id: number): Promise<CountryType> {
     const country = await prisma.countries.findUnique({
-        where: {
-            id: id
-        }
+      where: {
+        id: id,
+      },
     });
 
     if (!country) {
-        throw new ResourceNotFoundError("No country found with given id", "id", id);
+      throw new ResourceNotFoundError("No country found with given id", "id", id);
     }
 
     return country;
-  }
+  },
 };
