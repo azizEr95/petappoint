@@ -10,7 +10,7 @@ import { prisma } from "../src/singletonPC";
  * - 15 practices (fixed, exact)
  * - 6 test accounts (fixed)
  * - 24 animals (1 per race, good variation across all 7 animal types)
- * - 3 veterinarians
+ * - ~40 veterinarians (2-3 per practice with varied specializations)
  */
 
 // ============================
@@ -85,11 +85,35 @@ const FIXED_ANIMALS = [
   { name: "Bull1", ownerEmail: "daniel@daniel.de", animalTypeId: 7, raceId: 23 }, // Rind
 ];
 
-const FIXED_VETS = [
-  { email: "maria.vet@example.de", firstName: "Maria", lastName: "Schmidt", practiceEmail: "kontakt@berlinvet.de", city: "Berlin", cityCode: "10115" },
-  { email: "daniel.vet@example.de", firstName: "Daniel", lastName: "Fischer", practiceEmail: "kontakt@alstertier.de", city: "Hamburg", cityCode: "20095" },
-  { email: "joe.vet@example.de", firstName: "Joe", lastName: "Wagner", practiceEmail: "kontakt@berlinvet.de", city: "Berlin", cityCode: "10115" },
-];
+// Generate 2-3 vets per practice (total ~40 vets)
+function generateVets() {
+  const vets = [];
+  const firstNames = ["Maria", "Daniel", "Joe", "Anna", "Klaus", "Sarah", "Michael", "Lisa", "Thomas", "Julia", "Alexander", "Jennifer", "Peter", "Christina", "Andreas"];
+  const lastNames = ["Schmidt", "Fischer", "Wagner", "Müller", "Bauer", "Weber", "Meyer", "Schneider", "Hoffmann", "König", "Roth", "Richter", "Keller", "Berg", "Lange"];
+
+  for (let i = 0; i < FIXED_PRACTICES.length; i++) {
+    const practice = FIXED_PRACTICES[i];
+    const vetCountForPractice = Math.random() > 0.4 ? 3 : 2; // 60% have 3 vets, 40% have 2
+
+    for (let j = 0; j < vetCountForPractice; j++) {
+      const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+      const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
+      const email = `${firstName.toLowerCase()}.${lastName.toLowerCase()}${i}-${j}@vetclinic.de`;
+
+      vets.push({
+        email,
+        firstName,
+        lastName,
+        practiceEmail: practice.email,
+        city: practice.city,
+        cityCode: practice.cityCode,
+      });
+    }
+  }
+  return vets;
+}
+
+const FIXED_VETS = generateVets();
 
 // ============================
 // SEEDING FUNCTION
@@ -317,9 +341,9 @@ async function seedStatic() {
     console.log(`✅ ${personsCreated} persons created`);
 
     // ============================
-    // Phase 4: 3 Fixed Veterinarians
+    // Phase 4: ~40 Veterinarians (2-3 per practice)
     // ============================
-    console.log("👨‍⚕️ Creating 3 fixed veterinarians...");
+    console.log(`👨‍⚕️ Creating ${FIXED_VETS.length} veterinarians (~2-3 per practice)...`);
 
     let vetsCreated = 0;
 
@@ -448,11 +472,15 @@ async function seedStatic() {
       });
 
       if (!existingServices && services.length > 0) {
-        const serviceIds = [services[0].id, services[1].id, services[2].id];
+        // Each vet gets 3-5 random services (varied specializations)
+        const serviceCount = Math.floor(Math.random() * 3) + 3; // 3-5 services
+        const shuffledServices = [...services].sort(() => Math.random() - 0.5);
+        const selectedServices = shuffledServices.slice(0, serviceCount);
+
         await prisma.veterinaryHasService.createMany({
-          data: serviceIds.map((serviceId) => ({
+          data: selectedServices.map((service) => ({
             veterinaryId: vet.id,
-            serviceId,
+            serviceId: service.id,
           })),
           skipDuplicates: true,
         });
@@ -463,11 +491,15 @@ async function seedStatic() {
       });
 
       if (!existingTypes && animalTypes.length > 0) {
-        const typeIds = [animalTypes[0].id, animalTypes[1].id];
+        // Each vet can treat 2-4 random animal types (varied specializations)
+        const typeCount = Math.floor(Math.random() * 3) + 2; // 2-4 animal types
+        const shuffledTypes = [...animalTypes].sort(() => Math.random() - 0.5);
+        const selectedTypes = shuffledTypes.slice(0, typeCount);
+
         await prisma.veterinaryCanTreatAnimalType.createMany({
-          data: typeIds.map((typeId) => ({
+          data: selectedTypes.map((type) => ({
             veterinaryId: vet.id,
-            animalTypeId: typeId,
+            animalTypeId: type.id,
           })),
           skipDuplicates: true,
         });
