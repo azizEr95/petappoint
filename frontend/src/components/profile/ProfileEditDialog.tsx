@@ -26,6 +26,7 @@ import type {
 } from 'vetilib-shared/schemas/ZodSchemas';
 import '../../styles/components/ProfileDialog.scss';
 import { getAllCountries } from '@/api/CountriesAPI';
+import { validatePersonFormular } from '@/utils/ValidateForm';
 
 type ProfileEditDialogProps = {
   hideDialog: () => void
@@ -38,60 +39,55 @@ export function ProfileEditDialog({
 }: ProfileEditDialogProps) {
   const queryClient = useQueryClient()
 
-  const [firstName, setFirstName] = useState(person.firstName)
-  const [lastName, setLastName] = useState(person.lastName)
-  const [sex, setSex] = useState(person.sex)
-  const [dateOfBirth, setDateOfBirth] = useState(
-    getDateStringFromDate(person.dateOfBirth),
-  )
-  const [phone, setPhone] = useState(person.phone)
-  const [email, setEmail] = useState(person.email)
+  const extractStreetAndNumber = (fullStreet: string) => {
+    const match = fullStreet.match(/^(.+?)(\d+[a-zA-Z]*)$/);
+    if (match) {
+      return { street: match[1].trim(), streetNumber: match[2].trim() };
+    }
+    return { street: fullStreet, streetNumber: '' };
+  };
 
-  const [street, setStreet] = useState(person.address.street)
-  const [cityCode, setCityCode] = useState(person.address.cityCode)
-  const [city, setCity] = useState(person.address.city)
-  const [country, setCountry] = useState<number | undefined>(person.address.country)
+  const { street: initialStreet, streetNumber: initialStreetNumber } = extractStreetAndNumber(person.address.street);
 
-  const [changePassword, setChangePassword] = useState(false)
-  const [newPassword, setNewPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
-
+  const [changePassword, setChangePassword] = useState(false);
+  const [profileData, setProfileData] = useState({
+    firstName: person.firstName,
+    lastName: person.lastName,
+    sex: person.sex,
+    dateOfBirth: getDateStringFromDate(person.dateOfBirth),
+    phone: person.phone,
+    email: person.email,
+    address: {
+      street: initialStreet,
+      streetNumber: initialStreetNumber,
+      cityCode: person.address.cityCode,
+      city: person.address.city,
+      country: undefined as CountryType | undefined,
+    },
+    password: changePassword ? '' : undefined,
+    confirmPassword: changePassword ? '' : undefined,
+  });
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [profilePictureURL, setProfilePictureURL] = useState<string>(
     getPictureURLForPersonId(person.id, Date.now()),
-  )
-  const [selectedPictureFile, setSelectedPictureFile] = useState<File>()
-
-  const [errorText, setErrorText] = useState('')
-  const [validationErrors, setValidationErrors] = useState<{
-    firstName: string | undefined
-    lastName: string | undefined
-    email: string | undefined
-    phone: string | undefined
-    dateOfBirth: string | undefined
-    street: string | undefined
-    cityCode: string | undefined
-    city: string | undefined
-    country: string | undefined
-    newPassword: string | undefined
-    confirmPassword: string | undefined
-  }>({
-    firstName: undefined,
-    lastName: undefined,
-    email: undefined,
-    phone: undefined,
-    dateOfBirth: undefined,
-    street: undefined,
-    cityCode: undefined,
-    city: undefined,
-    country: undefined,
-    newPassword: undefined,
-    confirmPassword: undefined,
-  })
+  );
+  const [selectedPictureFile, setSelectedPictureFile] = useState<File>();
+  const [errorText, setErrorText] = useState('');
 
   const { data: dataAllCountries, isSuccess: isSuccessAllCountries } = useQuery({
     queryKey: ['allCountries'],
     queryFn: () => getAllCountries(),
-  })
+  });
+
+  useEffect(() => {
+    if (isSuccessAllCountries && person.address.country) {
+      const found = dataAllCountries.find((c: CountryType) => c.id === person.address.country);
+      setProfileData((prev) => ({
+        ...prev,
+        address: { ...prev.address, country: found },
+      }));
+    }
+  }, [isSuccessAllCountries, dataAllCountries, person.address.country]);
 
   useEffect(() => {
     if (selectedPictureFile) {
@@ -119,93 +115,6 @@ export function ProfileEditDialog({
     }
   }
 
-  const validate = (): PersonsUpdateType | null => {
-    const errors: typeof validationErrors = {
-      firstName: undefined,
-      lastName: undefined,
-      email: undefined,
-      phone: undefined,
-      dateOfBirth: undefined,
-      street: undefined,
-      cityCode: undefined,
-      city: undefined,
-      country: undefined,
-      newPassword: undefined,
-      confirmPassword: undefined,
-    }
-
-    if (firstName.length < 2 || firstName.length > 60) {
-      errors.firstName = 'Vorname muss zwischen 2 und 60 Zeichen lang sein.'
-    }
-
-    if (lastName.length < 2 || lastName.length > 60) {
-      errors.lastName = 'Nachname muss zwischen 2 und 60 Zeichen lang sein.'
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(email) || email.length > 100) {
-      errors.email = 'Ungültige E-Mail-Adresse.'
-    }
-
-    if (phone.length < 5 || phone.length > 20) {
-      errors.phone = 'Telefonnummer muss zwischen 5 und 20 Zeichen lang sein.'
-    }
-
-    if (!dateOfBirth) {
-      errors.dateOfBirth = 'Geburtsdatum ist erforderlich.'
-    }
-
-    if (street.length < 1) {
-      errors.street = 'Straße ist erforderlich.'
-    }
-
-    if (cityCode.length < 1) {
-      errors.cityCode = 'PLZ ist erforderlich.'
-    }
-
-    if (city.length < 1) {
-      errors.city = 'Stadt ist erforderlich.'
-    }
-
-    if (!country) {
-      errors.country = 'Land ist erforderlich.'
-    }
-
-    if (changePassword) {
-      if (newPassword.length < 8 || newPassword.length > 255) {
-        errors.newPassword = 'Passwort muss mindestens 8 Zeichen lang sein.'
-      }
-      if (newPassword !== confirmPassword) {
-        errors.confirmPassword = 'Passwörter stimmen nicht überein.'
-      }
-    }
-
-    setValidationErrors(errors)
-    if (!Object.values(errors).every((error) => error === undefined)) {
-      return null;
-    }
-
-    console.log(country)
-    return {
-      id: person.id,
-      firstName,
-      lastName,
-      sex,
-      dateOfBirth: new Date(dateOfBirth),
-      phone,
-      email,
-      address: {
-        id: person.address.id,
-        street,
-        cityCode,
-        city,
-        country: country!,
-        latitude: person.address.latitude,
-        longitude: person.address.longitude,
-      },
-    }
-  }
-
   const updatePersonMutation = useMutation({
     mutationFn: (updatedPerson: PersonsUpdateType) =>
       updatePerson(person.id, updatedPerson),
@@ -221,18 +130,72 @@ export function ProfileEditDialog({
     },
   })
 
-  const handleCountryChange = (selectedOption: SingleValue<{ value: CountryType; label: string }>) => {
-    if (selectedOption) {
-      setCountry(selectedOption.value.id);
-      if (validationErrors.country) {
-        const newErrors = { ...validationErrors };
-        delete newErrors.country;
-        setValidationErrors(newErrors);
+  const handleBlur = (e: any) => {
+    const { name, value } = e.target;
+    const addressFields = ['street', 'streetNumber', 'cityCode', 'city'];
+    const nextData = addressFields.includes(name)
+      ? { ...profileData, address: { ...profileData.address, [name]: value } }
+      : { ...profileData, [name]: value };
+
+    const newErrors = validatePersonFormular(nextData, errors, name);
+    setErrors(newErrors);
+  };
+
+  const handleChange = (e: any) => {
+    const { name, value } = e.target;
+
+    setProfileData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
+    if (name === 'newPassword') {
+      if (profileData.confirmPassword && value === profileData.confirmPassword && errors.confirmPassword) {
+        const next = { ...errors };
+        delete next.confirmPassword;
+        setErrors(next);
       }
-    } else {
-      setCountry(undefined);
     }
+    if (name === 'confirmPassword') {
+      if (value === profileData.password && errors.confirmPassword) {
+        const next = { ...errors };
+        delete next.confirmPassword;
+        setErrors(next);
+      }
+    }
+  };
+
+  const handleChangeCheckedPassword = (e: ChangeEvent<HTMLInputElement>) => {
+    const checked = e.target.checked;
+    setChangePassword(checked);
+    setProfileData((prev) => ({
+      ...prev,
+      password: checked ? '' : undefined,
+      confirmPassword: checked ? '' : undefined,
+    }));
   }
+
+  const handleAddressChange = (e: any) => {
+    const { name, value } = e.target;
+
+    setProfileData((prev) => ({
+      ...prev,
+      address: {
+        ...prev.address,
+        [name]: value,
+      },
+    }));
+  };
+
+  const handleCountryChange = (selectedOption: SingleValue<{ value: CountryType; label: string }>) => {
+    setProfileData((prev) => ({
+      ...prev,
+      address: {
+        ...prev.address,
+        country: selectedOption?.value,
+      },
+    }));
+  };
 
   const countryOptions = useMemo(() => {
     if (!isSuccessAllCountries) {
@@ -245,17 +208,43 @@ export function ProfileEditDialog({
   }, [isSuccessAllCountries, dataAllCountries]);
 
   const handleSubmit = () => {
-    const updatedPerson = validate();
-    if (!updatedPerson) {
-      setErrorText('Bitte korrigieren Sie die Fehler.')
-      return
+    const newErrors = validatePersonFormular(profileData, errors);
+    setErrors(newErrors);
+    if (changePassword && !profileData.confirmPassword) {
+    }
+    if (Object.keys(newErrors).length !== 0) {
+        setErrorText('Bitte korrigieren Sie die Fehler.');
+        return;
     }
 
-    if (changePassword && newPassword) {
-      updatedPerson.password = newPassword
+    if (!profileData.address.country) {
+      setErrorText('Land ist erforderlich.');
+      return;
     }
 
-    updatePersonMutation.mutate(updatedPerson)
+    const updatedPerson: PersonsUpdateType = {
+      id: person.id,
+      firstName: profileData.firstName,
+      lastName: profileData.lastName,
+      email: profileData.email,
+      phone: profileData.phone,
+      dateOfBirth: new Date(profileData.dateOfBirth),
+      sex: profileData.sex,
+      address: {
+        id: person.address.id,
+        street: profileData.address.street + profileData.address.streetNumber,
+        cityCode: profileData.address.cityCode,
+        city: profileData.address.city,
+        country: profileData.address.country.id,
+        latitude: person.address.latitude,
+        longitude: person.address.longitude,
+      },
+    };
+    if (changePassword && profileData.password) {
+      updatedPerson.password = profileData.password;
+    }
+
+    updatePersonMutation.mutate(updatedPerson);
   }
 
   const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
@@ -308,12 +297,14 @@ export function ProfileEditDialog({
                 <Form.Label>Vorname*</Form.Label>
                 <Form.Control
                   type="text"
-                  value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
-                  isInvalid={!!validationErrors.firstName}
+                  value={profileData.firstName}
+                  name="firstName"
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  isInvalid={!!errors.firstName}
                 />
                 <Form.Control.Feedback type="invalid">
-                  {validationErrors.firstName}
+                  {errors.firstName}
                 </Form.Control.Feedback>
               </Form.Group>
             </Col>
@@ -322,12 +313,14 @@ export function ProfileEditDialog({
                 <Form.Label>Nachname*</Form.Label>
                 <Form.Control
                   type="text"
-                  value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
-                  isInvalid={!!validationErrors.lastName}
+                  value={profileData.lastName}
+                  name="lastName"
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  isInvalid={!!errors.lastName}
                 />
                 <Form.Control.Feedback type="invalid">
-                  {validationErrors.lastName}
+                  {errors.lastName}
                 </Form.Control.Feedback>
               </Form.Group>
             </Col>
@@ -339,8 +332,10 @@ export function ProfileEditDialog({
                 <Form.Label>Geschlecht*</Form.Label>
                 <Form.Control
                   as="select"
-                  value={sex}
-                  onChange={(e) => setSex(e.target.value as any)}
+                  value={profileData.sex}
+                  name="sex"
+                  onChange={handleChange}
+                  onBlur={handleBlur}
                 >
                   <option value="male">männlich</option>
                   <option value="female">weiblich</option>
@@ -354,12 +349,14 @@ export function ProfileEditDialog({
                 <Form.Label>Geburtsdatum*</Form.Label>
                 <Form.Control
                   type="date"
-                  value={dateOfBirth}
-                  onChange={(e) => setDateOfBirth(e.target.value)}
-                  isInvalid={!!validationErrors.dateOfBirth}
+                  value={profileData.dateOfBirth}
+                  name="dateOfBirth"
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  isInvalid={!!errors.dateOfBirth}
                 />
                 <Form.Control.Feedback type="invalid">
-                  {validationErrors.dateOfBirth}
+                  {errors.dateOfBirth}
                 </Form.Control.Feedback>
               </Form.Group>
             </Col>
@@ -371,12 +368,14 @@ export function ProfileEditDialog({
                 <Form.Label>E-Mail*</Form.Label>
                 <Form.Control
                   type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  isInvalid={!!validationErrors.email}
+                  value={profileData.email}
+                  name="email"
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  isInvalid={!!errors.email}
                 />
                 <Form.Control.Feedback type="invalid">
-                  {validationErrors.email}
+                  {errors.email}
                 </Form.Control.Feedback>
               </Form.Group>
             </Col>
@@ -385,12 +384,14 @@ export function ProfileEditDialog({
                 <Form.Label>Telefon*</Form.Label>
                 <Form.Control
                   type="tel"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  isInvalid={!!validationErrors.phone}
+                  value={profileData.phone}
+                  name="phone"
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  isInvalid={!!errors.phone}
                 />
                 <Form.Control.Feedback type="invalid">
-                  {validationErrors.phone}
+                  {errors.phone}
                 </Form.Control.Feedback>
               </Form.Group>
             </Col>
@@ -403,17 +404,35 @@ export function ProfileEditDialog({
           </Row>
 
           <Row>
-            <Col md={12}>
+            <Col md={8}>
               <Form.Group className="mb-3">
                 <Form.Label>Straße*</Form.Label>
                 <Form.Control
                   type="text"
-                  value={street}
-                  onChange={(e) => setStreet(e.target.value)}
-                  isInvalid={!!validationErrors.street}
+                  value={profileData.address.street}
+                  name="street"
+                  onChange={handleAddressChange}
+                  onBlur={handleBlur}
+                  isInvalid={!!errors.street}
                 />
                 <Form.Control.Feedback type="invalid">
-                  {validationErrors.street}
+                  {errors.street}
+                </Form.Control.Feedback>
+              </Form.Group>
+            </Col>
+            <Col md={4}>
+              <Form.Group className="mb-3">
+                <Form.Label>Nr.*</Form.Label>
+                <Form.Control
+                  type="text"
+                  value={profileData.address.streetNumber}
+                  name="streetNumber"
+                  onChange={handleAddressChange}
+                  onBlur={handleBlur}
+                  isInvalid={!!errors.streetNumber}
+                />
+                <Form.Control.Feedback type="invalid">
+                  {errors.streetNumber}
                 </Form.Control.Feedback>
               </Form.Group>
             </Col>
@@ -425,12 +444,14 @@ export function ProfileEditDialog({
                 <Form.Label>PLZ*</Form.Label>
                 <Form.Control
                   type="text"
-                  value={cityCode}
-                  onChange={(e) => setCityCode(e.target.value)}
-                  isInvalid={!!validationErrors.cityCode}
+                  value={profileData.address.cityCode}
+                  name="cityCode"
+                  onChange={handleAddressChange}
+                  onBlur={handleBlur}
+                  isInvalid={!!errors.cityCode}
                 />
                 <Form.Control.Feedback type="invalid">
-                  {validationErrors.cityCode}
+                  {errors.cityCode}
                 </Form.Control.Feedback>
               </Form.Group>
             </Col>
@@ -439,12 +460,14 @@ export function ProfileEditDialog({
                 <Form.Label>Stadt*</Form.Label>
                 <Form.Control
                   type="text"
-                  value={city}
-                  onChange={(e) => setCity(e.target.value)}
-                  isInvalid={!!validationErrors.city}
+                  value={profileData.address.city}
+                  name="city"
+                  onChange={handleAddressChange}
+                  onBlur={handleBlur}
+                  isInvalid={!!errors.city}
                 />
                 <Form.Control.Feedback type="invalid">
-                  {validationErrors.city}
+                  {errors.city}
                 </Form.Control.Feedback>
               </Form.Group>
             </Col>
@@ -453,9 +476,14 @@ export function ProfileEditDialog({
                 <Form.Label>Land*</Form.Label>
                 <Select
                   inputId="land"
+                  name="country"
                   options={countryOptions}
-                  value={country ? countryOptions.find((opt) => opt.value.id === country) : null}
+                  value={profileData.address.country ? countryOptions.find((opt) => opt.value.id === profileData.address.country!.id) : null}
                   onChange={handleCountryChange}
+                  onBlur={() => {
+                    const newErrors = validatePersonFormular(profileData, errors, 'country');
+                    setErrors(newErrors);
+                  }}
                   placeholder="Land auswählen..."
                   isClearable
                   isSearchable
@@ -463,13 +491,13 @@ export function ProfileEditDialog({
                   styles={{
                     control: (base) => ({
                       ...base,
-                      borderColor: validationErrors.country ? '#dc3545' : base.borderColor,
+                      borderColor: errors.country ? '#dc3545' : base.borderColor,
                     })
                   }}
                 />
-                {validationErrors.country && (
+                {errors.country && (
                   <div className="invalid-feedback d-block">
-                    {validationErrors.country}
+                    {errors.country}
                   </div>
                 )}
               </Form.Group>
@@ -483,7 +511,7 @@ export function ProfileEditDialog({
                 type="checkbox"
                 label="Passwort ändern"
                 checked={changePassword}
-                onChange={(e) => setChangePassword(e.target.checked)}
+                onChange={handleChangeCheckedPassword}
                 className="mb-3"
               />
             </Col>
@@ -495,12 +523,13 @@ export function ProfileEditDialog({
                 <Col md={6}>
                   <PasswordInput
                     id="newPassword"
-                    name="newPassword"
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
+                    name="password"
+                    value={profileData.password || ''}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
                     placeholder="••••••••"
-                    isInvalid={!!validationErrors.newPassword}
-                    error={validationErrors.newPassword}
+                    isInvalid={!!errors.newPassword}
+                    error={errors.newPassword}
                     className="mb-3"
                     label="Neues Passwort*"
                     required
@@ -510,11 +539,12 @@ export function ProfileEditDialog({
                   <PasswordInput
                     id="confirmPassword"
                     name="confirmPassword"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    value={profileData.confirmPassword || ''}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
                     placeholder="••••••••"
-                    isInvalid={!!validationErrors.confirmPassword}
-                    error={validationErrors.confirmPassword}
+                    isInvalid={!!errors.confirmPassword}
+                    error={errors.confirmPassword}
                     className="mb-3"
                     label="Passwort bestätigen*"
                     required
