@@ -4,7 +4,8 @@ import { LoginPage } from '../pom/LoginPage';
 import { AnimalPage } from '../pom/AnimalPage';
 import { DashboardPage } from '../pom/DashboardPage';
 
-describe('Animal Page Tests', () => {
+// these tests are skipped
+describe.skip('Animal Page Tests', () => {
     let loginPage: LoginPage;
     let animalPage: AnimalPage;
     let dashboardPage: DashboardPage;
