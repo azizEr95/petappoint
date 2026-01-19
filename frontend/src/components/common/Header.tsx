@@ -1,4 +1,4 @@
-import { Link } from '@tanstack/react-router'
+import { Link, useLocation } from '@tanstack/react-router'
 import '../../styles/components/common/Header.scss'
 import { useMutation } from '@tanstack/react-query'
 import { useLoginContext } from '../../LoginContext'
@@ -6,6 +6,7 @@ import { logoutUser } from '../../api/LoginAPI'
 
 export default function Header() {
   const { login, setLogin } = useLoginContext()
+  const location = useLocation()
 
   const { mutate: mutateLogout } = useMutation({
     mutationFn: () => logoutUser(),
@@ -20,31 +21,31 @@ export default function Header() {
   let linksHeader = <></>;
   if (login && login.role === 'person') {
     linksHeader = <>
-      <Link to="/dashboard" className="nav-link-clean">
+      <Link to="/dashboard" className={`nav-link-clean ${location.pathname === '/dashboard' ? 'active' : ''}`}>
         Dashboard
       </Link>
-      <Link to="/appointments" className="nav-link-clean">
+      <Link to="/appointments" className={`nav-link-clean ${location.pathname === '/appointments' ? 'active' : ''}`}>
         Termine
       </Link>
-      <Link to="/animals" className="nav-link-clean">
+      <Link to="/animals" className={`nav-link-clean ${location.pathname === '/animals' ? 'active' : ''}`}>
         Tiere
       </Link>
     </>;
   } else if (login && login.role === 'company') {
     linksHeader = <>
-      <Link to="/dashboard" className="nav-link-clean">
+      <Link to="/dashboard" className={`nav-link-clean ${location.pathname === '/dashboard' ? 'active' : ''}`}>
         Dashboard
       </Link>
     </>;
   } else {
     linksHeader = <>
-      <Link to="/" hash="how-it-works" className="nav-link-clean">
+      <Link to="/" hash="how-it-works" className={`nav-link-clean ${location.pathname === '/' ? 'active' : ''}`}>
         So funktioniert's
       </Link>
-      <Link to="/" hash="for-vets" className="nav-link-clean">
+      <Link to="/" hash="for-vets" className={`nav-link-clean ${location.pathname === '/' ? 'active' : ''}`}>
         Für Tierärzte
       </Link>
-      <Link to="/" hash="contact" className="nav-link-clean">
+      <Link to="/" hash="contact" className={`nav-link-clean ${location.pathname === '/' ? 'active' : ''}`}>
         Kontakt
       </Link>
     </>;
