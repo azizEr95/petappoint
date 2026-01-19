@@ -6,19 +6,22 @@ import type { AnimalsType } from 'vetilib-shared/schemas/ZodSchemas'
 type AnimalDeleteDialogProps = {
   hideDialogDeleteAnimal: () => void
   animalDelete: AnimalsType
+  showSuccessNotification: () => void
 }
 
 // visibility from this component has to be handled from the parent component
 export function AnimalDeleteDialog({
   hideDialogDeleteAnimal,
   animalDelete,
+  showSuccessNotification
 }: AnimalDeleteDialogProps) {
   const queryClient = useQueryClient()
 
   const { mutate: mutateDeleteAnimal } = useMutation({
     mutationFn: (animalId: number) => deleteAnimal(animalId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['animals'] })
+      queryClient.invalidateQueries({ queryKey: ['animals'] });
+      showSuccessNotification();
     },
   })
 

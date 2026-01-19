@@ -27,6 +27,7 @@ export function DashboardPractice() {
   const handleClickAddAppointment = () => {
     navigate({ to: '/appointments/create' });
   }
+
   return <>
     <div className="dashboard-page">
       <Button variant="primary" onClick={handleClickAddAppointment}>
