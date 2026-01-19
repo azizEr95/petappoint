@@ -7,6 +7,7 @@ import type {
   ServiceType,
   VeterinaryPracticesType,
 } from 'vetilib-shared/schemas/ZodSchemas'
+import type { CustomerType } from './api/CustomerAPI'
 
 // erweitert History State, damit Praxis auch als State uebergeben werden kann
 declare module '@tanstack/react-router' {
@@ -24,5 +25,6 @@ declare module '@tanstack/react-router' {
     selectedAppointmentId?: number
     initialTab?: 'upcoming' | 'past'
     fromDashboard?: boolean
+    customer?: CustomerType
   }
 }

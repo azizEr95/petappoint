@@ -14,6 +14,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as AnimalsRouteImport } from './routes/animals'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CustomersIndexRouteImport } from './routes/customers/index'
 import { Route as AppointmentsIndexRouteImport } from './routes/appointments/index'
 import { Route as RegistrationVeterinarypracticeRouteImport } from './routes/registration/veterinarypractice'
 import { Route as RegistrationVerifyEmailRouteImport } from './routes/registration/verify-email'
@@ -21,6 +22,7 @@ import { Route as RegistrationPersonRouteImport } from './routes/registration/pe
 import { Route as PracticesFavoritesRouteImport } from './routes/practices/favorites'
 import { Route as PracticesPracticeIdRouteImport } from './routes/practices/$practiceId'
 import { Route as PasswordResetRequestRouteImport } from './routes/password-reset/request'
+import { Route as CustomersAnimalIdRouteImport } from './routes/customers/$animalId'
 import { Route as BookingConfirmationRouteImport } from './routes/booking/confirmation'
 import { Route as BookingAppointmentIdRouteImport } from './routes/booking/$appointmentId'
 import { Route as AppointmentsCreateRouteImport } from './routes/appointments/create'
@@ -51,6 +53,11 @@ const AnimalsRoute = AnimalsRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CustomersIndexRoute = CustomersIndexRouteImport.update({
+  id: '/customers/',
+  path: '/customers/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppointmentsIndexRoute = AppointmentsIndexRouteImport.update({
@@ -87,6 +94,11 @@ const PracticesPracticeIdRoute = PracticesPracticeIdRouteImport.update({
 const PasswordResetRequestRoute = PasswordResetRequestRouteImport.update({
   id: '/password-reset/request',
   path: '/password-reset/request',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CustomersAnimalIdRoute = CustomersAnimalIdRouteImport.update({
+  id: '/customers/$animalId',
+  path: '/customers/$animalId',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BookingConfirmationRoute = BookingConfirmationRouteImport.update({
@@ -132,6 +144,7 @@ export interface FileRoutesByFullPath {
   '/appointments/create': typeof AppointmentsCreateRoute
   '/booking/$appointmentId': typeof BookingAppointmentIdRoute
   '/booking/confirmation': typeof BookingConfirmationRoute
+  '/customers/$animalId': typeof CustomersAnimalIdRoute
   '/password-reset/request': typeof PasswordResetRequestRoute
   '/practices/$practiceId': typeof PracticesPracticeIdRoute
   '/practices/favorites': typeof PracticesFavoritesRoute
@@ -139,6 +152,7 @@ export interface FileRoutesByFullPath {
   '/registration/verify-email': typeof RegistrationVerifyEmailRoute
   '/registration/veterinarypractice': typeof RegistrationVeterinarypracticeRoute
   '/appointments': typeof AppointmentsIndexRoute
+  '/customers': typeof CustomersIndexRoute
   '/appointments/$appointmentId/reschedule': typeof AppointmentsAppointmentIdRescheduleRoute
   '/password-reset/confirm/$token': typeof PasswordResetConfirmTokenRoute
   '/registration/email-confirmation/$emailVerifyCode': typeof RegistrationEmailConfirmationEmailVerifyCodeRoute
@@ -152,6 +166,7 @@ export interface FileRoutesByTo {
   '/appointments/create': typeof AppointmentsCreateRoute
   '/booking/$appointmentId': typeof BookingAppointmentIdRoute
   '/booking/confirmation': typeof BookingConfirmationRoute
+  '/customers/$animalId': typeof CustomersAnimalIdRoute
   '/password-reset/request': typeof PasswordResetRequestRoute
   '/practices/$practiceId': typeof PracticesPracticeIdRoute
   '/practices/favorites': typeof PracticesFavoritesRoute
@@ -159,6 +174,7 @@ export interface FileRoutesByTo {
   '/registration/verify-email': typeof RegistrationVerifyEmailRoute
   '/registration/veterinarypractice': typeof RegistrationVeterinarypracticeRoute
   '/appointments': typeof AppointmentsIndexRoute
+  '/customers': typeof CustomersIndexRoute
   '/appointments/$appointmentId/reschedule': typeof AppointmentsAppointmentIdRescheduleRoute
   '/password-reset/confirm/$token': typeof PasswordResetConfirmTokenRoute
   '/registration/email-confirmation/$emailVerifyCode': typeof RegistrationEmailConfirmationEmailVerifyCodeRoute
@@ -173,6 +189,7 @@ export interface FileRoutesById {
   '/appointments/create': typeof AppointmentsCreateRoute
   '/booking/$appointmentId': typeof BookingAppointmentIdRoute
   '/booking/confirmation': typeof BookingConfirmationRoute
+  '/customers/$animalId': typeof CustomersAnimalIdRoute
   '/password-reset/request': typeof PasswordResetRequestRoute
   '/practices/$practiceId': typeof PracticesPracticeIdRoute
   '/practices/favorites': typeof PracticesFavoritesRoute
@@ -180,6 +197,7 @@ export interface FileRoutesById {
   '/registration/verify-email': typeof RegistrationVerifyEmailRoute
   '/registration/veterinarypractice': typeof RegistrationVeterinarypracticeRoute
   '/appointments/': typeof AppointmentsIndexRoute
+  '/customers/': typeof CustomersIndexRoute
   '/appointments/$appointmentId/reschedule': typeof AppointmentsAppointmentIdRescheduleRoute
   '/password-reset/confirm/$token': typeof PasswordResetConfirmTokenRoute
   '/registration/email-confirmation/$emailVerifyCode': typeof RegistrationEmailConfirmationEmailVerifyCodeRoute
@@ -195,6 +213,7 @@ export interface FileRouteTypes {
     | '/appointments/create'
     | '/booking/$appointmentId'
     | '/booking/confirmation'
+    | '/customers/$animalId'
     | '/password-reset/request'
     | '/practices/$practiceId'
     | '/practices/favorites'
@@ -202,6 +221,7 @@ export interface FileRouteTypes {
     | '/registration/verify-email'
     | '/registration/veterinarypractice'
     | '/appointments'
+    | '/customers'
     | '/appointments/$appointmentId/reschedule'
     | '/password-reset/confirm/$token'
     | '/registration/email-confirmation/$emailVerifyCode'
@@ -215,6 +235,7 @@ export interface FileRouteTypes {
     | '/appointments/create'
     | '/booking/$appointmentId'
     | '/booking/confirmation'
+    | '/customers/$animalId'
     | '/password-reset/request'
     | '/practices/$practiceId'
     | '/practices/favorites'
@@ -222,6 +243,7 @@ export interface FileRouteTypes {
     | '/registration/verify-email'
     | '/registration/veterinarypractice'
     | '/appointments'
+    | '/customers'
     | '/appointments/$appointmentId/reschedule'
     | '/password-reset/confirm/$token'
     | '/registration/email-confirmation/$emailVerifyCode'
@@ -235,6 +257,7 @@ export interface FileRouteTypes {
     | '/appointments/create'
     | '/booking/$appointmentId'
     | '/booking/confirmation'
+    | '/customers/$animalId'
     | '/password-reset/request'
     | '/practices/$practiceId'
     | '/practices/favorites'
@@ -242,6 +265,7 @@ export interface FileRouteTypes {
     | '/registration/verify-email'
     | '/registration/veterinarypractice'
     | '/appointments/'
+    | '/customers/'
     | '/appointments/$appointmentId/reschedule'
     | '/password-reset/confirm/$token'
     | '/registration/email-confirmation/$emailVerifyCode'
@@ -256,6 +280,7 @@ export interface RootRouteChildren {
   AppointmentsCreateRoute: typeof AppointmentsCreateRoute
   BookingAppointmentIdRoute: typeof BookingAppointmentIdRoute
   BookingConfirmationRoute: typeof BookingConfirmationRoute
+  CustomersAnimalIdRoute: typeof CustomersAnimalIdRoute
   PasswordResetRequestRoute: typeof PasswordResetRequestRoute
   PracticesPracticeIdRoute: typeof PracticesPracticeIdRoute
   PracticesFavoritesRoute: typeof PracticesFavoritesRoute
@@ -263,6 +288,7 @@ export interface RootRouteChildren {
   RegistrationVerifyEmailRoute: typeof RegistrationVerifyEmailRoute
   RegistrationVeterinarypracticeRoute: typeof RegistrationVeterinarypracticeRoute
   AppointmentsIndexRoute: typeof AppointmentsIndexRoute
+  CustomersIndexRoute: typeof CustomersIndexRoute
   AppointmentsAppointmentIdRescheduleRoute: typeof AppointmentsAppointmentIdRescheduleRoute
   PasswordResetConfirmTokenRoute: typeof PasswordResetConfirmTokenRoute
   RegistrationEmailConfirmationEmailVerifyCodeRoute: typeof RegistrationEmailConfirmationEmailVerifyCodeRoute
@@ -303,6 +329,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/customers/': {
+      id: '/customers/'
+      path: '/customers'
+      fullPath: '/customers'
+      preLoaderRoute: typeof CustomersIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/appointments/': {
@@ -352,6 +385,13 @@ declare module '@tanstack/react-router' {
       path: '/password-reset/request'
       fullPath: '/password-reset/request'
       preLoaderRoute: typeof PasswordResetRequestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/customers/$animalId': {
+      id: '/customers/$animalId'
+      path: '/customers/$animalId'
+      fullPath: '/customers/$animalId'
+      preLoaderRoute: typeof CustomersAnimalIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/booking/confirmation': {
@@ -408,6 +448,7 @@ const rootRouteChildren: RootRouteChildren = {
   AppointmentsCreateRoute: AppointmentsCreateRoute,
   BookingAppointmentIdRoute: BookingAppointmentIdRoute,
   BookingConfirmationRoute: BookingConfirmationRoute,
+  CustomersAnimalIdRoute: CustomersAnimalIdRoute,
   PasswordResetRequestRoute: PasswordResetRequestRoute,
   PracticesPracticeIdRoute: PracticesPracticeIdRoute,
   PracticesFavoritesRoute: PracticesFavoritesRoute,
@@ -415,6 +456,7 @@ const rootRouteChildren: RootRouteChildren = {
   RegistrationVerifyEmailRoute: RegistrationVerifyEmailRoute,
   RegistrationVeterinarypracticeRoute: RegistrationVeterinarypracticeRoute,
   AppointmentsIndexRoute: AppointmentsIndexRoute,
+  CustomersIndexRoute: CustomersIndexRoute,
   AppointmentsAppointmentIdRescheduleRoute:
     AppointmentsAppointmentIdRescheduleRoute,
   PasswordResetConfirmTokenRoute: PasswordResetConfirmTokenRoute,

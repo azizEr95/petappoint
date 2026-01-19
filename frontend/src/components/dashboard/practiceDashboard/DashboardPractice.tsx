@@ -11,28 +11,32 @@ export function DashboardPractice() {
   const [notificationText, setNotificationText] = useState<string>("");
 
   useEffect(() => { // read localStorage for success notification
-    const createWeeklyAppointmentSuccess = localStorage.getItem('createWeeklyAppointmentSuccess');
-    const createAppointmentSuccess = localStorage.getItem('createAppointmentSuccess');
-    if (createWeeklyAppointmentSuccess) {
-      setNotificationText('Die wöchentlichen Termine wurden erfolgreich erstellt');
-      setShowSuccessNotification(true);
-      localStorage.removeItem('createWeeklyAppointmentSuccess');
-    } else if (createAppointmentSuccess) {
-      setNotificationText('Der Termin wurde erfolgreich erstellt');
-      setShowSuccessNotification(true);
-      localStorage.removeItem('createAppointmentSuccess');
-    }
+      const createWeeklyAppointmentSuccess = localStorage.getItem('createWeeklyAppointmentSuccess');
+      const createAppointmentSuccess = localStorage.getItem('createAppointmentSuccess');
+      if (createWeeklyAppointmentSuccess) {
+          setNotificationText('Die wöchentlichen Termine wurden erfolgreich erstellt');
+          setShowSuccessNotification(true);
+          localStorage.removeItem('createWeeklyAppointmentSuccess');
+      } else if  (createAppointmentSuccess) {
+          setNotificationText('Der Termin wurde erfolgreich erstellt');
+          setShowSuccessNotification(true);
+          localStorage.removeItem('createAppointmentSuccess');
+      }
   }, []);
 
   const handleClickAddAppointment = () => {
     navigate({ to: '/appointments/create' });
   }
 
-  return <>
-    <div className="dashboard-page">
-      <Button variant="primary" onClick={handleClickAddAppointment}>
-        Termin anlegen
-      </Button>
+    return <>
+        <div className="dashboard-page">
+            <Button variant="primary" onClick={handleClickAddAppointment}>
+                Termin anlegen
+            </Button>
+
+            <Button variant="primary" onClick={() => navigate({ to: '/customers', search: { name: "" } })} className="ms-2">
+                alle Kunden
+            </Button>
 
       <DashboardCalenderSection />
 
