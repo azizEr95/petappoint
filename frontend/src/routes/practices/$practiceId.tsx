@@ -8,12 +8,11 @@ import { useQuery } from '@tanstack/react-query'
 import { NextAvailableAppointments } from '../../components/practice/NextAvailableAppointments'
 import '../../styles/routes/praxisPage.scss'
 import { getVeterinaryPracticesById } from '../../api/VeterinaryPracticeAPI'
-import { SearchFilter } from '../../components/common/SearchFilter'
+import { PracticeFilterBar } from '../../components/practice/PracticeFilterBar'
 import { getAnimaltypesFromPractice } from '../../api/AnimalTypeAPI'
 import { FavoritePractice } from '../../components/practice/FavoritePractice'
 import type {
   AnimalTypeType,
-  VeterinaryPracticeSearchQueryType,
   VeterinaryPracticesType,
 } from 'vetilib-shared/schemas/ZodSchemas'
 import { useTitle } from '@/utils/useTitle'
@@ -104,16 +103,6 @@ function VeterinaryPractice() {
     }
   }
 
-  const searchFilter: VeterinaryPracticeSearchQueryType = {
-    // only for propagation to component SearchFilter, only are animalTypeIds and ServiceTypeIds are used from this
-    name: '',
-    address: '',
-    animalTypeIds: filterOptions.animalTypeIds,
-    serviceTypeIds: filterOptions.serviceTypeIds,
-    page: 0,
-    pageSize: 0,
-  }
-
   return (
     <div className="praxis-page">
       <div className="praxis-header">
@@ -182,20 +171,18 @@ function VeterinaryPractice() {
         </div>
 
         <div className="praxis-appointments">
-          <div className="appointments-header-section flex-row">
+          <div className="appointments-header-section">
             <h2>Verfügbare Termine</h2>
-            <div id="FilterPracticePage">
-              <SearchFilter
-                filterOptions={filterOptions}
-                setFilterServiceType={setFilterServiceType}
-                setFilterAnimalType={setFilterAnimalType}
-                setFilterAnimal={setFilterAnimal}
-                practicePage={practice}
-                searchFilter={searchFilter}
-                landingPage={false}
-              />
-            </div>
           </div>
+          <PracticeFilterBar
+            filterAnimalType={filterAnimalType}
+            filterServiceType={filterServiceType}
+            filterAnimal={filterAnimal}
+            setFilterAnimalType={setFilterAnimalType}
+            setFilterServiceType={setFilterServiceType}
+            setFilterAnimal={setFilterAnimal}
+            practiceId={practiceId}
+          />
           <NextAvailableAppointments
             practiceId={practiceId}
             filterOptions={filterOptions}

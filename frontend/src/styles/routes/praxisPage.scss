@@ -12,7 +12,7 @@
 }
 
 .praxis-header {
-  margin-bottom: var(--spacing-xl);
+  margin-bottom: var(--spacing-lg);
 
   .back-button {
     display: inline-flex;
@@ -63,6 +63,7 @@
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
   padding: var(--spacing-xl);
+  overflow-wrap: anywhere;
 
   .info-description {
     margin-bottom: var(--spacing-lg);
@@ -142,8 +143,8 @@
   padding: var(--spacing-xl);
 
   .appointments-header-section {
-    margin-bottom: var(--spacing-lg);
-    padding-bottom: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+    padding-bottom: var(--spacing-sm);
     border-bottom: 2px solid var(--color-border);
 
     h2 {
@@ -153,6 +154,15 @@
       margin: 0;
     }
   }
+}
+
+// Filter Bar - Placed above praxis-layout
+.practice-filter-bar {
+  margin-bottom: var(--spacing-lg);
+}
+
+.filter-bar-title {
+  height: 40px;
 }
 
 // Responsive Design
@@ -181,8 +191,4 @@
   .praxis-appointments {
     padding: var(--spacing-md);
   }
-}
-
-#FilterPracticePage {
-  margin-left: auto;
 }
