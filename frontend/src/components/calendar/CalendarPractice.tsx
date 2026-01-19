@@ -31,10 +31,12 @@ const localizer = momentLocalizer(moment)
 
 type CalendarPracticeProps = {
     data: Array<AppointmentsType> | undefined
+    onSelectEvent: (event: AppointmentsType) => void
+    onSelectSlot: (slotInfo: { start: Date; end: Date}) => void
 }
 
 // alle Termine die hier angezeigt werden sollen muessen hier uebergeben werden als Props
-export function CalendarPractice({ data }: CalendarPracticeProps) {
+export function CalendarPractice({ data, onSelectEvent, onSelectSlot }: CalendarPracticeProps) {
     const [view, setView] = useState<View>(Views.WEEK)
     const [date, setDate] = useState(new Date())
 
@@ -68,29 +70,20 @@ export function CalendarPractice({ data }: CalendarPracticeProps) {
                 agendaTimeRangeFormat: ({ start, end }) => `${moment(start).format('HH:mm')} - ${moment(end).format('HH:mm')}`,
             }}
             messages={{
-                today: 'Heute',
                 previous: 'Zurück',
+                today: 'Heute',
                 next: 'Weiter',
                 month: 'Monat',
                 week: 'Woche',
                 day: 'Tag',
-                agenda: 'Agenda',
+                agenda: 'Übersicht',
                 date: 'Datum',
                 time: 'Zeit',
                 event: 'Termin',
                 noEventsInRange: 'Keine Termine in diesem Bereich.',
             }}
-            onSelectEvent={(event) => {
-                console.log("Termin angeklickt:", event);
-                alert(`Patient: ${event}`);
-            }}
-            onSelectSlot={(slotInfo) => {
-                console.log("Leeres Feld angeklickt bei:", slotInfo.start);
-                const title = window.prompt("Neuer Termin für:");
-                if (title) {
-                    alert(`Termin am ${slotInfo.start.toLocaleString()} wird angelegt.`);
-                }
-            }}
+            onSelectEvent={onSelectEvent}
+            onSelectSlot={onSelectSlot}
         />
     </>
 }
