@@ -128,8 +128,9 @@ async function seedDynamic() {
 
           const vet = practiceVets[Math.floor(Math.random() * practiceVets.length)];
 
-          // 100% of future appointments have animals
-          const animalId = animals.length > 0 ? animals[Math.floor(Math.random() * animals.length)].id : null;
+          // 25% of future appointments have animals, 75% are available (free)
+          const hasAnimal = Math.random() < 0.25;
+          const animalId = hasAnimal && animals.length > 0 ? animals[Math.floor(Math.random() * animals.length)].id : null;
 
           appointments.push({
             startTime,
@@ -164,7 +165,7 @@ async function seedDynamic() {
     console.log("🔗 Linking appointments to services...");
 
     const appointmentIDsWithVet = await prisma.appointment.findMany({
-      select: { id: true, veterinaryId: true },
+      select: { id: true, veterinaryId: true, animalId: true },
     });
 
     const vetServices = await prisma.veterinaryHasService.findMany({
@@ -180,10 +181,22 @@ async function seedDynamic() {
     const appointmentHasService: { appointmentId: number; serviceId: number }[] = [];
     for (const appt of appointmentIDsWithVet) {
       const serviceIds = vetServiceMap.get(appt.veterinaryId) ?? [];
-      for (const sId of serviceIds) {
+      if (serviceIds.length === 0) continue;
+
+      if (appt.animalId === null) {
+        // Available appointment (75%): link ALL services
+        for (const sId of serviceIds) {
+          appointmentHasService.push({
+            appointmentId: appt.id,
+            serviceId: sId,
+          });
+        }
+      } else {
+        // Booked appointment (25%): link ONE random service
+        const randomService = serviceIds[Math.floor(Math.random() * serviceIds.length)];
         appointmentHasService.push({
           appointmentId: appt.id,
-          serviceId: sId,
+          serviceId: randomService,
         });
       }
     }
@@ -207,11 +220,12 @@ async function seedDynamic() {
     // Count appointments by range
     const pastCount = appointments.filter((a) => a.startTime < now).length;
     const futureCount = appointments.filter((a) => a.startTime >= now).length;
-    const booked = appointments.filter((a) => a.animalId !== null).length;
+    const pastBooked = appointments.filter((a) => a.startTime < now && a.animalId !== null).length;
+    const futureBooked = appointments.filter((a) => a.startTime >= now && a.animalId !== null).length;
+    const futureAvailable = appointments.filter((a) => a.startTime >= now && a.animalId === null).length;
 
-    console.log(`   📆 Past appointments: ${pastCount}`);
-    console.log(`   📆 Future appointments: ${futureCount}`);
-    console.log(`   🐾 Booked appointments: ${booked}`);
+    console.log(`   📆 Past appointments: ${pastCount} (booked: ${pastBooked})`);
+    console.log(`   📆 Future appointments: ${futureCount} (available: ${futureAvailable}, booked: ${futureBooked})`);
   } catch (error) {
     console.error("❌ Error seeding dynamic data:", error);
     process.exit(1);
