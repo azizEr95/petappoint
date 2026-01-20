@@ -1,0 +1,258 @@
+@import '../../variables';
+
+// ============================================
+// DASHBOARD SPACING
+// ============================================
+
+.dashboard-content {
+  margin-top: $spacing-lg;
+}
+
+// ============================================
+// FULL HEIGHT LAYOUT
+// ============================================
+
+.calendar-container {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 200px);
+  min-height: 800px;
+
+  .rbc-calendar {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+
+    .rbc-time-view {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .rbc-time-header {
+      flex-shrink: 0;
+    }
+
+    .rbc-time-content {
+      flex: 1;
+      min-height: 0;
+      overflow-y: hidden;
+    }
+  }
+}
+
+// ============================================
+// TOOLBAR STYLING
+// ============================================
+
+.rbc-toolbar {
+  padding: $spacing-md 0 0 0;
+  margin-bottom: $spacing-md;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  .rbc-btn-group {
+    display: flex;
+    gap: 0;
+    font-size: inherit;
+  }
+
+  .rbc-label-wrapper {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+  }
+
+  .rbc-date-label {
+    font-weight: 600;
+    font-size: $font-size-base;
+    flex-shrink: 0;
+  }
+
+  .rbc-week-number {
+    color: $primary;
+    padding: $spacing-xs $spacing-sm;
+    font-size: $font-size-base;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  button {
+    background: white;
+    border: 1px solid $border-color;
+    color: $text-dark;
+    padding: 0.5rem 1rem;
+    border-radius: $border-radius-sm;
+    font-weight: 500;
+    font-size: $font-size-base;
+    transition: all 0.2s ease;
+    cursor: pointer;
+
+    &:hover {
+      background: $primary-pale;
+      border-color: $primary;
+      color: $primary;
+    }
+
+    &.rbc-active {
+      background: $primary;
+      color: white;
+      border-color: $primary;
+    }
+  }
+}
+
+// ============================================
+// CALENDAR GENERAL STYLING
+// ============================================
+
+.rbc-calendar {
+  font-family: inherit;
+
+  // Header styling
+  .rbc-header {
+    padding: 1rem;
+    font-weight: 600;
+    color: $text-dark;
+    border-bottom: 2px solid $border-color;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+    }
+
+    span {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    &.rbc-today {
+      background: $primary-pale;
+      color: $primary;
+    }
+  }
+
+  // Today highlighting
+  .rbc-today {
+    background-color: $primary-pale;
+  }
+
+  // Current time indicator
+  .rbc-current-time-indicator {
+    background-color: $primary;
+    height: 2px;
+  }
+
+  // Time header
+  .rbc-time-header-content {
+    border-left: 1px solid $border-color;
+  }
+
+  // Time gutter
+  .rbc-time-gutter {
+    .rbc-timeslot-group {
+      border-left: 1px solid $border-color;
+    }
+  }
+}
+
+// ============================================
+// EVENT STYLING
+// ============================================
+
+.rbc-time-slot {
+  .rbc-events-container {
+    margin-right: 0 !important;
+  }
+
+  .rbc-event {
+    padding: 4px !important;
+    width: auto !important;
+    max-width: 100% !important;
+
+    // Time label - always visible, left-aligned
+    .rbc-event-label {
+      display: block !important;
+      text-align: left !important;
+      font-weight: 600 !important;
+      padding: 2px 4px !important;
+      font-size: 0.85rem !important;
+      margin-bottom: 2px !important;
+    }
+
+    // Event content - keep in DOM
+    .rbc-event-content {
+      display: block !important;
+      padding: 2px 4px !important;
+      font-size: 0.9rem !important;
+    }
+  }
+}
+
+.rbc-day-slot {
+  .rbc-events-container {
+    margin-right: 0 !important;
+  }
+}
+
+// ============================================
+// APPOINTMENT DETAIL MODAL
+// ============================================
+
+.appointment-detail-modal {
+  .modal-header {
+    padding: 2rem;
+  }
+
+  .modal-body {
+    padding: 2rem;
+  }
+
+  .modal-title {
+    font-size: 1.5rem;
+    color: $primary;
+    margin-bottom: 0;
+
+    .modal-subtitle {
+      font-size: $font-size-sm;
+      font-weight: 400;
+      color: $gray-600;
+      margin-top: 0.25rem;
+    }
+  }
+
+  .list-group-item {
+    border: none;
+    border-bottom: 1px solid $border-color;
+    padding: 1rem 0;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    strong {
+      display: block;
+      color: $gray-600;
+      margin-bottom: 0.25rem;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    p {
+      font-size: $font-size-lg;
+      color: $text-dark;
+      margin: 0;
+    }
+  }
+}

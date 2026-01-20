@@ -126,9 +126,6 @@ veterinaryPracticeRouter.put("/:id", requiresAuthentication, checkVerified, asyn
     throw new AuthorizationError("No access to update this practice");
   }
 
-  // Fetch current practice to preserve address ID
-  const currentPractice = await veterinaryPracticeService.getById(id);
-
   const updated = await veterinaryPracticeService.update({
     id,
     name: validatedBody.name,
@@ -138,7 +135,6 @@ veterinaryPracticeRouter.put("/:id", requiresAuthentication, checkVerified, asyn
     website: validatedBody.website,
     info: validatedBody.info,
     address: {
-      id: currentPractice.address.id,
       ...validatedBody.address,
     },
   } as VeterinaryPracticesType);

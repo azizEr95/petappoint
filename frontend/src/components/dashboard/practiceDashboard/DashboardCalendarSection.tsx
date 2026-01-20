@@ -68,14 +68,14 @@ export function DashboardCalenderSection() {
                     className={`dashboard-tab ${activeTab === 'showAppointments' ? 'active' : ''}`}
                     onClick={() => setActiveTab('showAppointments')}
                 >
-                    <i className="bi bi-calendar-check"></i> Termine anzeigen
+                    <i className="bi bi-calendar-check"></i> Bevorstehende Termine
                 </button>
                 {/* alle noch freien Termine die in der Praxis noch gebucht werden können, oder andere Ansicht hier darstellen??; Filteroption benoetigt */}
                 <button
                     className={`dashboard-tab ${activeTab === 'bookAppointment' ? 'active' : ''}`}
                     onClick={() => setActiveTab('bookAppointment')}
                 >
-                    <i className="bi bi-calendar-check"></i> Termin buchen
+                    <i className="bi bi-calendar-check"></i> Verfügbare Termine
                 </button>
             </div>
         </div>
