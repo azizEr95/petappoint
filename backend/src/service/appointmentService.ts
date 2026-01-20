@@ -655,4 +655,14 @@ export const appointmentService = {
 
     return animalService.canPersonAccessAnimal(personId, appointment.animalId);
   },
+
+  async getAppointmentsByAnimal(animalId: number): Promise<AppointmentsType[]> {
+    const appointments = await prisma.appointment.findMany({
+      where: { animalId: animalId },
+      include: APPOINTMENT_INCLUDE_WITH_VET_SERVICES,
+      orderBy: { startTime: 'desc' },
+    });
+
+    return appointments.map(apt => mapToAppointment(apt));
+  },
 };
