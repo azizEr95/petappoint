@@ -18,7 +18,7 @@ export function CustomerList({ customers, searchName }: CustomerListProps) {
 
     useEffect(() => {
         handleFilter();
-    }, []);
+    }, [customers, searchString]);
 
     const handleFilter = () => {
         if (!customers) {
@@ -80,7 +80,7 @@ export function CustomerList({ customers, searchName }: CustomerListProps) {
 
             <div className="customer-cards-container">
                 {filteredCustomers.map((customer) => (
-                    <CustomerCard key={customer.person.id + customer.animal.id} customer={customer} />
+                    <CustomerCard key={`${customer.person.id}-${customer.animal.id}`} customer={customer} />
                 ))}
                 {filteredCustomers.length === 0 && (
                     <div className="no-customers-message">
