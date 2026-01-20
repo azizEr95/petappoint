@@ -13,10 +13,10 @@ import '../../styles/routes/personRegistration.scss';
 import { personRegistration } from '../../api/LoginAPI';
 import { useLoginContext } from '../../LoginContext';
 import { getPersonCreateType, scrollToFirstError, validatePersonFormular } from '../../utils/ValidateForm';
-import type { PersonsValidateType } from '../../utils/ValidateForm';
 import type { SingleValue } from 'react-select';
 import type { CountryType, PersonsCreateType } from 'vetilib-shared/schemas/ZodSchemas';
 import type { FormEvent } from 'react';
+import type { PersonsValidateType } from '@/types/validation';
 import { useTitle } from '@/utils/useTitle';
 import { getAllCountries } from '@/api/CountriesAPI';
 

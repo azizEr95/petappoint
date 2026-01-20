@@ -6,7 +6,7 @@ import { Alert, Form, FormGroup } from 'react-bootstrap';
 import { VeterinaryPracticeCreateSchema } from 'vetilib-shared/schemas/ZodSchemas';
 import { PasswordInput } from '../../components/common/PasswordInput';
 import {  getPracticeCreateType, scrollToFirstError, validatePracticeFormular } from '../../utils/ValidateForm';
-import type {PracticeValidateType} from '../../utils/ValidateForm';
+import type {PracticeValidateType} from '../../types/validation';
 import type {SingleValue} from 'react-select';
 import type { ChangeEvent, FormEvent } from 'react';
 import type { CountryType, VeterinaryPracticesCreateType } from 'vetilib-shared/schemas/ZodSchemas';
@@ -258,7 +258,7 @@ function VeterinaryRegistration() {
                 <PasswordInput
                   id="password"
                   name="password"
-                  value={practiceData.password}
+                  value={practiceData.password!}
                   onChange={handleChange}
                   onBlur={handleBlur}
                   placeholder="••••••••"
@@ -273,7 +273,7 @@ function VeterinaryRegistration() {
                 <div className="password-requirements">
                   <div className={`password-requirement ${passwordRequirements.minLength
                     ? 'valid'
-                    : practiceData.password.length > 0
+                    : practiceData.password!.length > 0
                       ? 'invalid'
                       : 'neutral'
                     }`}>
@@ -281,7 +281,7 @@ function VeterinaryRegistration() {
                   </div>
                   <div className={`password-requirement ${passwordRequirements.hasUpperCase
                     ? 'valid'
-                    : practiceData.password.length > 0
+                    : practiceData.password!.length > 0
                       ? 'invalid'
                       : 'neutral'
                     }`}>
@@ -289,7 +289,7 @@ function VeterinaryRegistration() {
                   </div>
                   <div className={`password-requirement ${passwordRequirements.hasNumber
                     ? 'valid'
-                    : practiceData.password.length > 0
+                    : practiceData.password!.length > 0
                       ? 'invalid'
                       : 'neutral'
                     }`}>
@@ -297,7 +297,7 @@ function VeterinaryRegistration() {
                   </div>
                   <div className={`password-requirement ${passwordRequirements.hasSpecialChar
                     ? 'valid'
-                    : practiceData.password.length > 0
+                    : practiceData.password!.length > 0
                       ? 'invalid'
                       : 'neutral'
                     }`}>
@@ -309,7 +309,7 @@ function VeterinaryRegistration() {
               <PasswordInput
                 id="CreateVeterinayrPracticeConfirmPassword"
                 name="confirmPassword"
-                value={practiceData.confirmPassword}
+                value={practiceData.confirmPassword!}
                 onChange={handleChange}
                 onBlur={handleBlur}
                 placeholder="••••••••"

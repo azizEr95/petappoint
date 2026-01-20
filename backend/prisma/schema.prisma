@@ -136,6 +136,7 @@ model VeterinaryPractice {
   password                                  String                                     @db.VarChar(255)
   website                                   String?                                    @db.VarChar(150)
   info                                      String?
+  picturePath                               String?                                    @map("picturepath") @db.VarChar(256)
   addressId                                 Int                                        @map("fk_addressid")
   appointments                              Appointment[]
   personHasFavorizedVeterinaryPractices     PersonHasFavorizedVeterinaryPractice[]
