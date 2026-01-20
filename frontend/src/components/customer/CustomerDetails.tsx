@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type { CustomerType } from "@/api/CustomerAPI";
-import { getPicturePlaceholderAnimal } from "@/api/AnimalsAPI";
+import { getPicturePlaceholderAnimal, getAppointmentsByAnimal } from "@/api/AnimalsAPI";
 import { getAnimaltypeById } from "@/api/AnimalTypeAPI";
+import { AppointmentCard } from "@/components/appointment/AppointmentCard";
+import type { AppointmentsType } from "vetilib-shared/schemas/ZodSchemas";
 import "@/styles/components/customer/CustomerDetails.scss";
 
 type CustomerDetailsProps = {
@@ -14,10 +16,21 @@ export function CustomerDetails({ customer }: CustomerDetailsProps) {
     const [birthDate, setBirthDate] = useState<string>();
     const [sex, setSex] = useState<string>();
     const [lifestyle, setLifestyle] = useState<string>();
+    const [selectedAppointment, setSelectedAppointment] = useState<AppointmentsType | undefined>();
+
+    const handleShowDetailsAppointment = (appointment: AppointmentsType) => {
+        setSelectedAppointment(appointment);
+    };
 
     const { data: dataAnimalType } = useQuery({
         queryKey: ['animaltype', customer.animal.animalTypeId],
         queryFn: () => getAnimaltypeById(customer.animal.animalTypeId.toString()),
+        staleTime: 0,
+    })
+
+    const { data: appointments = [] } = useQuery({
+        queryKey: ['animalAppointments', customer.animal.id],
+        queryFn: () => getAppointmentsByAnimal(customer.animal.id),
         staleTime: 0,
     })
 
@@ -100,6 +113,11 @@ export function CustomerDetails({ customer }: CustomerDetailsProps) {
             ? (customer.animal.isCastrated ? 'Ja' : 'Nein')
             : '';
 
+    // Split appointments into upcoming and past
+    const now = new Date();
+    const upcomingAppointments = appointments.filter(apt => new Date(apt.startTime) >= now);
+    const pastAppointments = appointments.filter(apt => new Date(apt.startTime) < now);
+
     return (
         <div className="animal-detail-card-wrapper">
             <button className="back-button" onClick={handleClickBack}>
@@ -172,6 +190,53 @@ export function CustomerDetails({ customer }: CustomerDetailsProps) {
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                {/* Appointments section */}
+                <div className="mt-4">
+                    <h3 className="mb-3 fw-bold">Termine für {customer.animal.name}</h3>
+
+                    {/* Upcoming appointments */}
+                    <div className="mb-4">
+                        <h5 className="fw-bold text-secondary">Anstehende Termine</h5>
+                        {upcomingAppointments.length > 0 ? (
+                            <div className="appointments-grid">
+                                {upcomingAppointments.map((apt) => (
+                                    <AppointmentCard
+                                        key={apt.id}
+                                        appointment={apt}
+                                        handleShowDetailsAppointment={handleShowDetailsAppointment}
+                                        isActive={selectedAppointment?.id === apt.id}
+                                        isPast={false}
+                                        compact={true}
+                                    />
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="alert alert-info">Keine anstehenden Termine</div>
+                        )}
+                    </div>
+
+                    {/* Past appointments */}
+                    <div>
+                        <h5 className="fw-bold text-secondary">Vergangene Termine</h5>
+                        {pastAppointments.length > 0 ? (
+                            <div className="appointments-grid">
+                                {pastAppointments.map((apt) => (
+                                    <AppointmentCard
+                                        key={apt.id}
+                                        appointment={apt}
+                                        handleShowDetailsAppointment={handleShowDetailsAppointment}
+                                        isActive={selectedAppointment?.id === apt.id}
+                                        isPast={true}
+                                        compact={true}
+                                    />
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="alert alert-info">Keine vergangenen Termine</div>
+                        )}
                     </div>
                 </div>
             </div>
