@@ -16,10 +16,6 @@
   border-radius: 16px;
   border: 2px solid #e5e7eb;
   text-align: center;
-
-  &:hover .benefit-icon {
-    transform: scale(1.15);
-  }
 }
 
 .benefit-icon-wrapper {
@@ -30,7 +26,6 @@
   font-size: 4rem;
   color: var(--color-primary);
   display: block;
-  transition: transform 0.3s ease;
 }
 
 .benefit-title {

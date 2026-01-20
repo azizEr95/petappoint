@@ -1,150 +1,62 @@
-import { Button, Col, Container, Form, Row } from 'react-bootstrap'
-import { Link } from '@tanstack/react-router'
+import { Col, Container, Row } from 'react-bootstrap'
 import '../../styles/components/landing/Footer.scss'
 
 export default function Footer() {
   return (
-    <footer id="contact" className="footer bg-dark text-white pt-5 pb-3">
+    <footer id="contact" className="footer bg-dark text-white py-5">
       <Container>
-        <Row className="g-4">
-          {/* Logo & Description */}
-          <Col lg={3} md={6}>
-            <h4 className="fw-bold text-success mb-3">VetiLib</h4>
-            <p className="text-light small">
-              Ihre moderne Plattform für einfache und schnelle
-              Tierarzt-Terminbuchungen.
-            </p>
-            <div className="d-flex gap-2 mt-3">
-              <a href="#" className="social-link">
-                <i className="bi bi-facebook"></i>
-              </a>
-              <a href="#" className="social-link">
-                <i className="bi bi-instagram"></i>
-              </a>
-              <a href="#" className="social-link">
-                <i className="bi bi-twitter"></i>
-              </a>
-              <a href="#" className="social-link">
-                <i className="bi bi-linkedin"></i>
-              </a>
+        <Row className="g-5">
+          {/* Logo & Description & Copyright */}
+          <Col lg={5} md={6}>
+            <div className="footer-brand">
+              <h5 className="fw-bold text-success mb-3">VetiLib</h5>
+              <p className="text-light small mb-4">
+                Ihre moderne Plattform für einfache und schnelle
+                Tierarzt-Terminbuchungen.
+              </p>
+              <small className="text-light opacity-75 d-block">
+                © {new Date().getFullYear()} vetilib.<br />
+                Alle Rechte vorbehalten.
+              </small>
             </div>
           </Col>
 
-          {/* Navigation */}
-          <Col lg={2} md={6}>
-            <h6 className="fw-bold mb-3">Navigation</h6>
-            <ul className="footer-links list-unstyled">
-              <li>
-                <Link to="/">Start</Link>
-              </li>
-              <li>
-                <a href="#how-it-works">So funktioniert's</a>
-              </li>
-              <li>
-                <a href="#for-vets">Für Tierärzte</a>
-              </li>
-              <li>
-                <Link
-                  to="/search"
-                  search={{
-                    address: '',
-                    animalType: '',
-                    serviceType: '',
-                  }}
-                >
-                  Tierarzt finden
-                </Link>
-              </li>
-            </ul>
-          </Col>
-
           {/* Legal */}
-          <Col lg={2} md={6}>
-            <h6 className="fw-bold mb-3">Rechtliches</h6>
-            <ul className="footer-links list-unstyled">
-              <li>
-                <a href="#">Über uns</a>
+          <Col lg={3} md={6}>
+            <h6 className="text-white fw-bold mb-3 opacity-90">Rechtliches</h6>
+            <ul className="list-unstyled footer-links-vertical">
+              <li className="mb-2">
+                <a href="/legal/impressum" className="footer-link small">Impressum</a>
+              </li>
+              <li className="mb-2">
+                <a href="/legal/datenschutz" className="footer-link small">Datenschutz</a>
               </li>
               <li>
-                <a href="#">Impressum</a>
-              </li>
-              <li>
-                <a href="#">Datenschutz</a>
-              </li>
-              <li>
-                <a href="#">AGB</a>
+                <a href="/legal/agb" className="footer-link small">AGB</a>
               </li>
             </ul>
           </Col>
 
           {/* Contact */}
-          <Col lg={2} md={6}>
-            <h6 className="fw-bold mb-3">Kontakt</h6>
-            <ul className="footer-contact list-unstyled">
-              <li>
-                <i className="bi bi-envelope me-2"></i>
-                <a href="mailto:info@vetilib.de">info@vetilib.de</a>
+          <Col lg={4} md={6}>
+            <h6 className="text-white fw-bold mb-3 opacity-90">Kontakt & Info</h6>
+            <ul className="list-unstyled footer-links-vertical">
+              <li className="mb-2">
+                <a href="/about" className="footer-link small">Über uns</a>
+              </li>
+              <li className="mb-2">
+                <a href="mailto:info@vetilib.de" className="footer-link small">
+                  <i className="bi bi-envelope me-2"></i>
+                  info@vetilib.de
+                </a>
               </li>
               <li>
-                <i className="bi bi-telephone me-2"></i>
-                <a href="tel:+498001234567">0800 123 4567</a>
-              </li>
-              <li>
-                <i className="bi bi-geo-alt me-2"></i>
-                Berlin, Deutschland
+                <span className="text-light small opacity-75">
+                  <i className="bi bi-geo-alt me-2"></i>
+                  Berlin, Deutschland
+                </span>
               </li>
             </ul>
-          </Col>
-
-          {/* Newsletter */}
-          <Col lg={3} md={12}>
-            <h6 className="fw-bold mb-3">Newsletter</h6>
-            <p className="small text-light mb-3">
-              Bleiben Sie informiert über neue Funktionen und Angebote
-            </p>
-            <Form className="newsletter-form">
-              <div className="input-group">
-                <Form.Control
-                  type="email"
-                  placeholder="Ihre E-Mail"
-                  className="bg-dark text-white border-secondary"
-                />
-                <Button variant="success" type="submit">
-                  <i className="bi bi-arrow-right"></i>
-                </Button>
-              </div>
-            </Form>
-            <div className="mt-4 app-download-section">
-              <small className="text-light d-block mb-3">
-                App herunterladen:
-              </small>
-              <div className="d-flex gap-2">
-                <Button className="app-download-btn">
-                  <i className="bi bi-apple me-1"></i>
-                  iOS
-                </Button>
-                <Button className="app-download-btn">
-                  <i className="bi bi-google-play me-1"></i>
-                  Android
-                </Button>
-              </div>
-            </div>
-          </Col>
-        </Row>
-
-        <hr className="my-4 bg-secondary" />
-
-        <Row className="align-items-center">
-          <Col md={6} className="text-center text-md-start mb-3 mb-md-0">
-            <small className="text-light">
-              © {new Date().getFullYear()} vetilib. Alle Rechte vorbehalten.
-            </small>
-          </Col>
-          <Col md={6} className="text-center text-md-end">
-            <small className="text-light">
-              Made with <i className="bi bi-heart-fill text-danger"></i> for
-              animals
-            </small>
           </Col>
         </Row>
       </Container>

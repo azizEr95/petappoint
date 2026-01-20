@@ -3,6 +3,16 @@
 .app-promo-section {
   background: var(--color-primary);
   color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.app-promo-with-mockup {
+  padding-bottom: 0 !important;
+
+  .col-lg-6:first-child {
+    margin-top: 4rem;
+  }
 }
 
 .app-promo-title {
@@ -75,36 +85,25 @@
   font-weight: 500;
 }
 
-.mockup-phone {
-  color: rgba(255, 255, 255, 0.2);
-  margin-bottom: $spacing-lg;
+.mockup-image {
+  max-width: 140%;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  margin-bottom: -1px;
+  margin-top: auto;
 }
 
-.mockup-phone i {
-  font-size: 15rem;
+.app-promo-qr-section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
-.qr-placeholder {
-  display: inline-block;
-}
-
-.qr-code {
-  background: white;
-  color: var(--color-text-dark);
-  padding: $spacing-lg;
-  border-radius: $border-radius-lg;
-  display: inline-block;
-  box-shadow: $box-shadow-lg;
-
-  p {
-    font-weight: 600;
-    color: var(--color-text-dark);
-  }
-}
-
-.qr-code i {
-  font-size: 6rem;
-  color: var(--color-primary);
+.qr-code-image {
+  max-width: 120px;
+  height: auto;
+  object-fit: contain;
 }
 
 @media (max-width: 768px) {
