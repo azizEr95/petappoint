@@ -1,4 +1,24 @@
-import type { CountryType, PersonsCreateType, VeterinaryPracticesCreateType, sexesType } from "vetilib-shared/schemas/ZodSchemas";
+import type { CountryType, PersonsCreateType, VeterinaryPracticesCreateType, VeterinariansCreateType, sexesType } from "vetilib-shared/schemas/ZodSchemas";
+
+export type VeterinarianValidateType = {
+    firstName: string;
+    lastName: string;
+    infoEmail: string;
+    // Person data (used when creating new person)
+    email: string;
+    password?: string;
+    confirmPassword?: string;
+    dateOfBirth: string;
+    sex: sexesType | undefined;
+    phone: string;
+    address: {
+        country: CountryType | undefined;
+        street: string;
+        streetNumber: string;
+        cityCode: string;
+        city: string;
+    };
+}
 
 export type PersonsValidateType = {
     sex: sexesType | undefined;
@@ -470,5 +490,230 @@ export const scrollToFirstError = (errorsScroll: { [key: string]: string }) => {
             errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
             ; (errorElement as HTMLElement).focus();
         }
+    }
+}
+
+export function validateVeterinarianFormular(
+    vetData: VeterinarianValidateType,
+    oldErrors: { [key: string]: string },
+    verifyField?: string,
+    mode: 'new' | 'existing' = 'new'
+): { [key: string]: string } {
+    const newErrors: { [key: string]: string } = { ...oldErrors };
+
+    // Veterinarian fields (always required)
+    if (verifyField === "firstName" || verifyField === undefined) {
+        if (!vetData.firstName.trim()) {
+            newErrors.firstName = 'Vorname ist erforderlich';
+        } else if (!/^[a-zA-ZäöüÄÖÜß '`-]+$/.test(vetData.firstName)) {
+            newErrors.firstName = 'Diese Zeichen sind in diesem Feld nicht erlaubt';
+        } else if (vetData.firstName.length < 2) {
+            newErrors.firstName = 'Vorname muss mindestens aus 2 Zeichen bestehen';
+        } else if (vetData.firstName.length > 60) {
+            newErrors.firstName = 'Vorname darf maximal 60 Zeichen lang sein';
+        } else {
+            delete newErrors.firstName;
+        }
+    }
+
+    if (verifyField === "lastName" || verifyField === undefined) {
+        if (!vetData.lastName.trim()) {
+            newErrors.lastName = 'Nachname ist erforderlich';
+        } else if (!/^[a-zA-ZäöüÄÖÜß '`-]+$/.test(vetData.lastName)) {
+            newErrors.lastName = 'Diese Zeichen sind in diesem Feld nicht erlaubt';
+        } else if (vetData.lastName.length < 2) {
+            newErrors.lastName = 'Nachname muss mindestens aus 2 Zeichen bestehen';
+        } else if (vetData.lastName.length > 60) {
+            newErrors.lastName = 'Nachname darf maximal 60 Zeichen lang sein';
+        } else {
+            delete newErrors.lastName;
+        }
+    }
+
+    if (verifyField === "infoEmail" || verifyField === undefined) {
+        if (vetData.infoEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(vetData.infoEmail)) {
+            newErrors.infoEmail = 'Gültige E-Mail-Adresse erforderlich';
+        } else {
+            delete newErrors.infoEmail;
+        }
+    }
+
+    // Person fields (only for "new" mode)
+    if (mode === 'new') {
+        // Email validation
+        if (verifyField === "email" || verifyField === undefined) {
+            if (!vetData.email.trim()) {
+                newErrors.email = 'E-Mail ist erforderlich';
+            } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(vetData.email)) {
+                newErrors.email = 'Gültige E-Mail-Adresse erforderlich';
+            } else {
+                delete newErrors.email;
+            }
+        }
+
+        // Phone validation
+        if (verifyField === "phone" || verifyField === undefined) {
+            if (vetData.phone && !/^[\d\s+()/-]+$/.test(vetData.phone)) {
+                newErrors.phone = 'Ungültiges Telefonformat';
+            } else {
+                delete newErrors.phone;
+            }
+        }
+
+        // Date of birth validation
+        if (verifyField === "dateOfBirth" || verifyField === undefined) {
+            if (!vetData.dateOfBirth.trim()) {
+                newErrors.dateOfBirth = 'Geburtsdatum ist erforderlich';
+            } else {
+                try {
+                    const birthDate = new Date(vetData.dateOfBirth);
+                    const age = calculateAge(birthDate);
+                    if (age < 18) {
+                        newErrors.dateOfBirth = 'Tierarzt muss mindestens 18 Jahre alt sein';
+                    } else {
+                        delete newErrors.dateOfBirth;
+                    }
+                } catch {
+                    newErrors.dateOfBirth = 'Ungültiges Datum';
+                }
+            }
+        }
+
+        // Sex validation
+        if (verifyField === "sex" || verifyField === undefined) {
+            if (!vetData.sex) {
+                newErrors.sex = 'Geschlecht ist erforderlich';
+            } else {
+                delete newErrors.sex;
+            }
+        }
+
+        // Password validation
+        if (verifyField === "password" || verifyField === undefined) {
+            if (!vetData.password) {
+                newErrors.password = 'Passwort ist erforderlich';
+            } else if (vetData.password.length < 8) {
+                newErrors.password = 'Passwort muss mindestens 8 Zeichen lang sein';
+            } else if (!/[A-Z]/.test(vetData.password)) {
+                newErrors.password = 'Passwort muss mindestens einen Großbuchstaben enthalten';
+            } else if (!/[0-9]/.test(vetData.password)) {
+                newErrors.password = 'Passwort muss mindestens eine Zahl enthalten';
+            } else if (!/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(vetData.password)) {
+                newErrors.password = 'Passwort muss mindestens einen Sonderzeichen enthalten';
+            } else {
+                delete newErrors.password;
+            }
+        }
+
+        // Confirm password validation
+        if (verifyField === "confirmPassword" || verifyField === undefined) {
+            if (!vetData.confirmPassword) {
+                newErrors.confirmPassword = 'Passwortbestätigung ist erforderlich';
+            } else if (vetData.confirmPassword !== vetData.password) {
+                newErrors.confirmPassword = 'Passwörter stimmen nicht überein';
+            } else {
+                delete newErrors.confirmPassword;
+            }
+        }
+
+        // Address validation
+        if (verifyField === "country" || verifyField === undefined) {
+            if (!vetData.address.country) {
+                newErrors.country = 'Land ist erforderlich';
+            } else {
+                delete newErrors.country;
+            }
+        }
+
+        if (verifyField === "street" || verifyField === undefined) {
+            if (!vetData.address.street.trim()) {
+                newErrors.street = 'Straße ist erforderlich';
+            } else if (!/^(?=.*[a-zA-ZäöüÄÖÜß0-9])[a-zA-ZäöüÄÖÜß0-9 '`.-]+$/.test(vetData.address.street)) {
+                newErrors.street = 'Straße muss mindestens einen Buchstaben oder eine Zahl enthalten';
+            } else if (vetData.address.street.length < 3) {
+                newErrors.street = 'Straße muss mindestens aus 3 Zeichen bestehen';
+            } else if (vetData.address.street.length > 80) {
+                newErrors.street = 'Straße darf maximal 80 Zeichen lang sein';
+            } else {
+                delete newErrors.street;
+            }
+        }
+
+        if (verifyField === "streetNumber" || verifyField === undefined) {
+            if (!vetData.address.streetNumber.trim()) {
+                newErrors.streetNumber = 'Hausnummer ist erforderlich';
+            } else if (!/^(?=.*[0-9])[a-zA-Z0-9]+$/.test(vetData.address.streetNumber)) {
+                newErrors.streetNumber = 'Hausnummer muss mindestens eine Zahl enthalten';
+            } else if (vetData.address.streetNumber.length > 10) {
+                newErrors.streetNumber = 'Hausnummer darf maximal 10 Zeichen lang sein';
+            } else {
+                delete newErrors.streetNumber;
+            }
+        }
+
+        if (verifyField === "cityCode" || verifyField === undefined) {
+            if (!vetData.address.cityCode.trim()) {
+                newErrors.cityCode = 'Postleitzahl ist erforderlich';
+            } else if (!/^[a-zA-Z0-9 -]+$/.test(vetData.address.cityCode)) {
+                newErrors.cityCode = 'Ungültiges PLZ-Format';
+            } else if (vetData.address.cityCode.length > 20) {
+                newErrors.cityCode = 'PLZ darf maximal 20 Zeichen lang sein';
+            } else {
+                delete newErrors.cityCode;
+            }
+        }
+
+        if (verifyField === "city" || verifyField === undefined) {
+            if (!vetData.address.city.trim()) {
+                newErrors.city = 'Stadt ist erforderlich';
+            } else if (!/^[a-zA-ZäöüÄÖÜß0-9 '-]+$/.test(vetData.address.city)) {
+                newErrors.city = 'Ungültiges Format';
+            } else if (vetData.address.city.length < 2) {
+                newErrors.city = 'Stadt muss mindestens aus 2 Zeichen bestehen';
+            } else if (vetData.address.city.length > 80) {
+                newErrors.city = 'Stadt darf maximal 80 Zeichen lang sein';
+            } else {
+                delete newErrors.city;
+            }
+        }
+    }
+
+    return newErrors;
+}
+
+export function getVeterinarianCreateType(
+    vetData: VeterinarianValidateType,
+    mode: 'new' | 'existing',
+    practiceId?: number
+): VeterinariansCreateType | null {
+    if (mode === 'new') {
+        // Full person + veterinarian creation
+        if (!vetData.sex || !vetData.address.country || !vetData.password) {
+            return null;
+        }
+
+        return {
+            id: undefined as any, // Backend will auto-create person
+            firstName: vetData.firstName,
+            lastName: vetData.lastName,
+            infoEmail: vetData.infoEmail || null,
+            veterinaryPracticeId: practiceId || null,
+            email: vetData.email,
+            password: vetData.password,
+            dateOfBirth: new Date(vetData.dateOfBirth),
+            sex: vetData.sex,
+            phone: vetData.phone,
+            address: {
+                street: vetData.address.street + " " + vetData.address.streetNumber,
+                cityCode: vetData.address.cityCode,
+                city: vetData.address.city,
+                country: vetData.address.country.id,
+                latitude: 0,
+                longitude: 0,
+            },
+        } as any;
+    } else {
+        // Existing person mode - TODO: implement when backend supports
+        return null;
     }
 }

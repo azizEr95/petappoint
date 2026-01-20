@@ -10,6 +10,7 @@ import path from "path";
 async function runScript(scriptPath: string, scriptName: string): Promise<void> {
   return new Promise((resolve, reject) => {
     const child = spawn("tsx", [scriptPath], {
+      shell: true,
       cwd: path.dirname(scriptPath),
       stdio: "inherit",
     });
