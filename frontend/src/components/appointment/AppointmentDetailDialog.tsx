@@ -28,38 +28,48 @@ export function AppointmentDetailDialog({
 
     return (
         <Modal
+            className="appointment-detail-modal"
             show={true}
             onHide={hideDialogDetailAppointment}
         >
             <Modal.Header closeButton>
-                <Modal.Title>Termin</Modal.Title>
+                <Modal.Title>
+                    {appointmentDetail.service?.name || 'Termin'}
+                    <div className="modal-subtitle">
+                        {dateToDateString(appointmentDetail.startTime)} · {dateToTimeString(appointmentDetail.startTime)} - {dateToTimeString(appointmentDetail.endTime)}
+                    </div>
+                </Modal.Title>
             </Modal.Header>
 
             <Modal.Body>
-                <ListGroup className="list-group-flush mt-3">
+                <ListGroup className="list-group-flush">
                     <ListGroup.Item>
-                        <div>
-                            <strong>Termin am {dateToDateString(appointmentDetail.startTime)} von {dateToTimeString(appointmentDetail.startTime)} bis {dateToTimeString(appointmentDetail.endTime)}</strong>
-                        </div>
+                        <strong>Tierarzt</strong>
+                        <p>
+                            {appointmentDetail.veterinary.firstName} {appointmentDetail.veterinary.lastName}
+                        </p>
                     </ListGroup.Item>
+
                     <ListGroup.Item>
-                        <div>
-                            <strong>Tierart:</strong>
-                            <p className="mb-0">{dataAnimalType.name}</p>
-                        </div>
+                        <strong>Tier</strong>
+                        <p>{appointmentDetail.animal?.name || 'Nicht zugewiesen'}</p>
                     </ListGroup.Item>
+
                     <ListGroup.Item>
-                        <div>
-                            <strong>Tiername:</strong>
-                            <p className="mb-0">{appointmentDetail.animal?.name}</p>
-                        </div>
+                        <strong>Tierart</strong>
+                        <p>{dataAnimalType.name}</p>
                     </ListGroup.Item>
-                    <ListGroup.Item>
-                        <div>
-                            <strong>Tierarzt:</strong>
-                            <p className="mb-0">{appointmentDetail.veterinary.firstName + " " + appointmentDetail.veterinary.lastName}</p>
-                        </div>
-                    </ListGroup.Item>
+
+
+                    {/* TODO: add feature later, another api call needed 
+                    {appointmentDetail.animal?.owner && (
+                        <ListGroup.Item>
+                            <strong>Tierbesitzer</strong>
+                            <p>
+                                {appointmentDetail.animal.owner.firstName} {appointmentDetail.animal.owner.lastName}
+                            </p>
+                        </ListGroup.Item>
+                    )} */}
                 </ListGroup>
             </Modal.Body>
         </Modal>

@@ -27,20 +27,26 @@ export function AppointmentBookDialogPractice({
 
     return (
         <Modal
+            className="appointment-detail-modal"
             show={true}
             onHide={hideDialogBookAppointment}
         >
             <Modal.Header closeButton>
-                <Modal.Title>Termin buchen</Modal.Title>
+                <Modal.Title>
+                    Termin buchen
+                    <div className="modal-subtitle">
+                        {dateToDateString(appointmentDetail.startTime)} · {dateToTimeString(appointmentDetail.startTime)} - {dateToTimeString(appointmentDetail.endTime)}
+                    </div>
+                </Modal.Title>
             </Modal.Header>
 
             <Modal.Body>
-                <ListGroup className="list-group-flush mt-3">
+                <ListGroup className="list-group-flush">
                     <ListGroup.Item>
-                        <div>
-                            <strong>Termin am {dateToDateString(appointmentDetail.startTime)} von {dateToTimeString(appointmentDetail.startTime)} bis {dateToTimeString(appointmentDetail.endTime)}</strong>
-                        </div>
+                        <strong>Tierarzt</strong>
+                        <p>{appointmentDetail.veterinary.firstName} {appointmentDetail.veterinary.lastName}</p>
                     </ListGroup.Item>
+
                     <ListGroup.Item>
                         <FormGroup>
                             <Form.Label>Behandlung:</Form.Label>
@@ -54,24 +60,26 @@ export function AppointmentBookDialogPractice({
                             </Form.Select>
                         </FormGroup>
                     </ListGroup.Item>
+
                     <ListGroup.Item>
                         <FormGroup>
                             <Form.Label>Tierbesitzer:</Form.Label>
                             <Form.Control type="text"  />
                         </FormGroup>
-
                     </ListGroup.Item>
+
                     <ListGroup.Item>
                         <FormGroup>
                             <Form.Label>Tiername:</Form.Label>
                             <Form.Control type="text"  />
                         </FormGroup>
                     </ListGroup.Item>
+
                     <ListGroup.Item>
-                        <div>
-                            <strong>Tierarzt:</strong>
-                            <p className="mb-0">{appointmentDetail.veterinary.firstName + " " + appointmentDetail.veterinary.lastName}</p>
-                        </div>
+                        <FormGroup>
+                            <Form.Label>Tierart:</Form.Label>
+                            <Form.Control type="text"  />
+                        </FormGroup>
                     </ListGroup.Item>
                 </ListGroup>
             </Modal.Body>
