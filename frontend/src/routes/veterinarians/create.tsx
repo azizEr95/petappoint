@@ -2,17 +2,17 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useMemo, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { Alert, Form, FormGroup } from 'react-bootstrap';
+import Select from 'react-select';
 import { getVeterinarianCreateType, scrollToFirstError, validateVeterinarianFormular } from '../../utils/ValidateForm';
-import type { VeterinarianValidateType } from '../../utils/ValidateForm';
+import { PasswordInput } from '../../components/common/PasswordInput';
 import { createVeterinarian } from '../../api/VeterinarianAPI';
 import { useLoginContext } from '../../LoginContext';
 import { useTitle } from '../../utils/useTitle';
-import type { CountryType } from 'vetilib-shared/schemas/ZodSchemas';
 import { getAllCountries } from '../../api/CountriesAPI';
-import Select from 'react-select';
+import type { CountryType } from 'vetilib-shared/schemas/ZodSchemas';
 import type { SingleValue } from 'react-select';
-import { PasswordInput } from '../../components/common/PasswordInput';
 import '../../styles/routes/veterinarianCreate.scss';
+import type { VeterinarianValidateType } from '@/types/validation';
 
 export const Route = createFileRoute('/veterinarians/create')({
   component: VeterinarianCreate,
@@ -86,7 +86,7 @@ function VeterinarianCreate() {
   const handleChange = (e: any) => {
     const { name, value } = e.target;
 
-    setVeterinarianData((prev) => ({
+    setVeterinarianData((prev: VeterinarianValidateType) => ({
       ...prev,
       [name]: value,
     }));
@@ -107,7 +107,7 @@ function VeterinarianCreate() {
 
   const handleAddressChange = (e: any) => {
     const { name, value } = e.target;
-    setVeterinarianData((prev) => ({
+    setVeterinarianData((prev: VeterinarianValidateType) => ({
       ...prev,
       address: {
         ...prev.address,

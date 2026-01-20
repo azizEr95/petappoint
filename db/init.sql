@@ -391,6 +391,7 @@ CREATE TABLE IF NOT EXISTS veterinarypractices(
   password VARCHAR(255) NOT NULL,
   website VARCHAR(150),
   info TEXT,
+  picturepath VARCHAR(256),
   fk_addressId INTEGER NOT NULL REFERENCES addresses(id) ON DELETE CASCADE
 );
 

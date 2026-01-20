@@ -150,6 +150,86 @@ export const deleteFavoritesVeterinaryPractices = async (
   return;
 }
 
+export const getPictureURLForPracticeId = (practiceId: number, timestamp?: number): string => {
+  const url = `${import.meta.env.VITE_API_URL}/veterinary-practice/${practiceId}/image`;
+  return timestamp ? `${url}?t=${timestamp}` : url;
+}
+
+export const getPictureFromPracticeId = async (
+  practiceId: number,
+): Promise<string> => {
+  const response = await fetch(
+    `${import.meta.env.VITE_API_URL}/veterinary-practice/${practiceId}/image`,
+    { credentials: 'include' },
+  );
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch getPictureFromPracticeId');
+  }
+
+  const data = await response.blob();
+  const url = URL.createObjectURL(data);
+  return url;
+}
+
+export const uploadPictureForPracticeId = async (
+  practiceId: number,
+  file: File,
+): Promise<void> => {
+  const formData = new FormData();
+  formData.append('image', file);
+  const targetURL = `${import.meta.env.VITE_API_URL}/veterinary-practice/${practiceId}/image`;
+  const response = await fetch(targetURL, {
+    method: 'POST',
+    body: formData,
+    credentials: 'include',
+  });
+
+  if (!response.ok) {
+    throw Error('Could not upload image');
+  }
+}
+
+export const deletePictureForPracticeId = async (
+  practiceId: number,
+): Promise<void> => {
+  const targetURL = `${import.meta.env.VITE_API_URL}/veterinary-practice/${practiceId}/image`;
+  const response = await fetch(targetURL, {
+    method: 'DELETE',
+    credentials: 'include',
+  });
+
+  if (!response.ok) {
+    throw Error('Failed to delete practice image');
+  }
+}
+
+export const updateVeterinaryPractice = async (
+  id: number,
+  data: VeterinaryPracticesType,
+): Promise<VeterinaryPracticesType> => {
+  const requestOptions = {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+    credentials: 'include' as RequestCredentials,
+  };
+
+  const res = await fetch(
+    `${import.meta.env.VITE_API_URL}/veterinary-practice/${id}`,
+    requestOptions,
+  );
+
+  if (!res.ok) {
+    throw new Error('Failed to update veterinary practice');
+  }
+
+  const responseData = await res.json();
+  return parsedVeterinaryPractice(responseData);
+}
+
 /*
  * change the date from the Appointment to Date Object and safeParse the object
  */

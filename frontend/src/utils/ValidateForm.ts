@@ -1,60 +1,5 @@
-import type { CountryType, PersonsCreateType, VeterinaryPracticesCreateType, VeterinariansCreateType, sexesType } from "vetilib-shared/schemas/ZodSchemas";
-
-export type VeterinarianValidateType = {
-    firstName: string;
-    lastName: string;
-    infoEmail: string;
-    // Person data (used when creating new person)
-    email: string;
-    password?: string;
-    confirmPassword?: string;
-    dateOfBirth: string;
-    sex: sexesType | undefined;
-    phone: string;
-    address: {
-        country: CountryType | undefined;
-        street: string;
-        streetNumber: string;
-        cityCode: string;
-        city: string;
-    };
-}
-
-export type PersonsValidateType = {
-    sex: sexesType | undefined;
-    dateOfBirth: string;
-    firstName: string;
-    lastName: string;
-    phone: string;
-    email: string;
-    address: {
-        country: CountryType | undefined;
-        street: string;
-        streetNumber: string;
-        cityCode: string;
-        city: string;
-    };
-    password?: string;
-    confirmPassword?: string;
-}
-
-export type PracticeValidateType = {
-    name: string;
-    phone: string;
-    email: string;
-    address: {
-        country: CountryType | undefined;
-        street: string;
-        streetNumber: string;
-        cityCode: string;
-        city: string;
-    };
-    password: string;
-    confirmPassword: string;
-    infoEmail: string;
-    website: string;
-    info: string;
-}
+import type { PersonsValidateType, PracticeValidateType, VeterinarianValidateType } from "@/types/validation";
+import type { PersonsCreateType, VeterinariansCreateType, VeterinaryPracticesCreateType} from "vetilib-shared/schemas/ZodSchemas";
 
 // if verifyField is undefined, validate all fields
 export function validatePersonFormular(personData: PersonsValidateType, oldErrors: { [key: string]: string }, verifyField?: string): { [key: string]: string } {
@@ -195,8 +140,6 @@ export function validatePersonFormular(personData: PersonsValidateType, oldError
     }
 
     if ((verifyField === "confirmPassword" || verifyField === undefined) && personData.confirmPassword !== undefined) {
-        console.log(personData.confirmPassword);
-        console.log(personData.password);
         if (!personData.confirmPassword.trim()) {
             newPersonErrors.confirmPassword = 'Passwort-Wiederholung ist erforderlich';
         } else if (personData.confirmPassword !== personData.password && personData.password !== undefined) {
@@ -368,7 +311,7 @@ export function validatePracticeFormular(practiceData: PracticeValidateType, old
         }
     }
 
-    if (verifyField === "password" || verifyField === undefined) {
+    if ((verifyField === "password" || verifyField === undefined)  && practiceData.password !== undefined && practiceData.password !== "") {
         if (!practiceData.password.trim()) {
             newErrors.password = 'Passwort ist erforderlich';
         } else if (practiceData.password.length < 8) {
@@ -384,10 +327,10 @@ export function validatePracticeFormular(practiceData: PracticeValidateType, old
         }
     }
 
-    if (verifyField === "confirmPassword" || verifyField === undefined) {
+    if ((verifyField === "confirmPassword" || verifyField === undefined) && practiceData.confirmPassword !== undefined) {
         if (!practiceData.confirmPassword.trim()) {
             newErrors.confirmPassword = 'Passwort-Wiederholung ist erforderlich';
-        } else if (practiceData.confirmPassword !== practiceData.password) {
+        } else if (practiceData.confirmPassword !== practiceData.password && practiceData.password !== undefined) {
             newErrors.confirmPassword = 'Passwörter stimmen nicht überein';
         } else {
             delete newErrors.confirmPassword;
@@ -446,7 +389,7 @@ export function validatePracticeFormular(practiceData: PracticeValidateType, old
 }
 
 export function getPracticeCreateType(practiceData: PracticeValidateType): VeterinaryPracticesCreateType | null {
-    if (practiceData.address.country) {
+    if (practiceData.address.country && practiceData.password) {
         return {
             name: practiceData.name,
             email: practiceData.email,
@@ -466,30 +409,6 @@ export function getPracticeCreateType(practiceData: PracticeValidateType): Veter
         };
     } else {
         return null;
-    }
-}
-
-// Helper function to calculate age
-const calculateAge = (birthDate: Date): number => {
-    const today = new Date();
-    let age = today.getFullYear() - birthDate.getFullYear();
-    const monthDiff = today.getMonth() - birthDate.getMonth();
-
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-        age--;
-    }
-
-    return age;
-};
-
-export const scrollToFirstError = (errorsScroll: { [key: string]: string }) => {
-    const firstErrorKey = Object.keys(errorsScroll)[0];
-    if (firstErrorKey) {
-        const errorElement = document.querySelector(`[name="${firstErrorKey}"]`);
-        if (errorElement) {
-            errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            ; (errorElement as HTMLElement).focus();
-        }
     }
 }
 
@@ -715,5 +634,29 @@ export function getVeterinarianCreateType(
     } else {
         // Existing person mode - TODO: implement when backend supports
         return null;
+    }
+}
+
+// Helper function to calculate age
+const calculateAge = (birthDate: Date): number => {
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+    }
+
+    return age;
+};
+
+export const scrollToFirstError = (errorsScroll: { [key: string]: string }) => {
+    const firstErrorKey = Object.keys(errorsScroll)[0];
+    if (firstErrorKey) {
+        const errorElement = document.querySelector(`[name="${firstErrorKey}"]`);
+        if (errorElement) {
+            errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            ; (errorElement as HTMLElement).focus();
+        }
     }
 }

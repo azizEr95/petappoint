@@ -17,6 +17,8 @@ import { Prisma, veterinarypractices_has_confirmation_code } from "../../generat
 import { mapToVeterinaryPractice } from "../helper/mapToVeterinaryPractice";
 import { mapToAnimal } from "../helper/mapToAnimal";
 import { mapToPerson } from "../helper/mapToPerson";
+import fs from "node:fs/promises";
+import path from "node:path";
 
 async function checkCreateEmailConstraint(veterinaryPracticeRe: VeterinaryPracticesCreateType) {
   const query = {
@@ -460,5 +462,79 @@ export const veterinaryPracticeService = {
       }
     });
     return practice;
+  },
+
+  async getPicturePath(practiceId: number): Promise<string> {
+    const found = await prisma.veterinaryPractice.findFirst({
+      where: {
+        id: practiceId,
+      },
+      select: {
+        picturePath: true,
+      },
+    });
+
+    const filepath = found?.picturePath ?? "public/placeholders/unknown.png";
+    return path.join(appRootDir, filepath);
+  },
+
+  async savePicture(practiceId: number, fileOnDiskPath: string | null): Promise<void> {
+    const old = await prisma.veterinaryPractice.findFirst({
+      where: {
+        id: practiceId,
+      },
+      select: {
+        picturePath: true,
+      },
+    });
+    if (!old) {
+      throw new ConstraintError(`No practice with given id exists.`, [{ path: "practiceId", value: practiceId }]);
+    }
+
+    if (old.picturePath) {
+      const oldImagePath = path.join(appRootDir, old.picturePath);
+      fs.rm(oldImagePath).catch(() => {});
+    }
+
+    await prisma.veterinaryPractice.update({
+      where: {
+        id: practiceId,
+      },
+      data: {
+        picturePath: fileOnDiskPath,
+      },
+      select: {
+        picturePath: true,
+      },
+    });
+  },
+
+  async deletePicture(practiceId: number): Promise<void> {
+    const practice = await prisma.veterinaryPractice.findFirst({
+      where: {
+        id: practiceId,
+      },
+      select: {
+        picturePath: true,
+      },
+    });
+
+    if (!practice) {
+      throw new ResourceNotFoundError("Practice not found", "practiceId", practiceId);
+    }
+
+    if (practice.picturePath) {
+      const imagePath = path.join(appRootDir, practice.picturePath);
+      fs.rm(imagePath).catch(() => {});
+    }
+
+    await prisma.veterinaryPractice.update({
+      where: {
+        id: practiceId,
+      },
+      data: {
+        picturePath: null,
+      },
+    });
   }
 };

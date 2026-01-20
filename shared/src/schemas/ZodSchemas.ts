@@ -219,7 +219,14 @@ export const VeterinaryPracticeCreateSchema = VeterinaryPracticeSchema.omit({
   password: z.string().min(6).max(255),
 });
 
+export const VeterinaryPracticeUpdateSchema = VeterinaryPracticeSchema.omit({
+  id: true,
+}).extend({
+  address: AddressesCreateSchema,
+});
+
 export type VeterinaryPracticesCreateType = z.infer<typeof VeterinaryPracticeCreateSchema>;
+export type VeterinaryPracticeUpdateType = z.infer<typeof VeterinaryPracticeUpdateSchema>;
 export type VeterinaryPracticesType = z.infer<typeof VeterinaryPracticeSchema>;
 
 //Veterinarians:

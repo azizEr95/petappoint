@@ -193,10 +193,6 @@ const parseAppointmentArray = (
   return unsafeAppointments
     .map((x) => {
       const parsed = AppointmentsSchema.safeParse(x)
-      if (parsed.error !== undefined) {
-        // if Zod throws an Error print them
-        console.log(parsed.error)
-      }
       if (parsed.success) {
         return parsed.data
       }
