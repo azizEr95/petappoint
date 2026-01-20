@@ -28,10 +28,18 @@ export function DashboardPractice() {
     navigate({ to: '/appointments/create' });
   }
 
+  const handleClickAddVeterinarian = () => {
+    navigate({ to: '/veterinarians/create' });
+  }
+
     return <>
         <div className="dashboard-page">
             <Button variant="primary" onClick={handleClickAddAppointment}>
                 Termin anlegen
+            </Button>
+
+            <Button variant="primary" onClick={handleClickAddVeterinarian} className="ms-2">
+              Tierarzt erstellen
             </Button>
 
             <Button variant="primary" onClick={() => navigate({ to: '/customers', search: { name: "" } })} className="ms-2">

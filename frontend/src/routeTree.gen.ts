@@ -16,6 +16,7 @@ import { Route as AnimalsRouteImport } from './routes/animals'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CustomersIndexRouteImport } from './routes/customers/index'
 import { Route as AppointmentsIndexRouteImport } from './routes/appointments/index'
+import { Route as VeterinariansCreateRouteImport } from './routes/veterinarians/create'
 import { Route as RegistrationVeterinarypracticeRouteImport } from './routes/registration/veterinarypractice'
 import { Route as RegistrationVerifyEmailRouteImport } from './routes/registration/verify-email'
 import { Route as RegistrationPersonRouteImport } from './routes/registration/person'
@@ -63,6 +64,11 @@ const CustomersIndexRoute = CustomersIndexRouteImport.update({
 const AppointmentsIndexRoute = AppointmentsIndexRouteImport.update({
   id: '/appointments/',
   path: '/appointments/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VeterinariansCreateRoute = VeterinariansCreateRouteImport.update({
+  id: '/veterinarians/create',
+  path: '/veterinarians/create',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RegistrationVeterinarypracticeRoute =
@@ -151,6 +157,7 @@ export interface FileRoutesByFullPath {
   '/registration/person': typeof RegistrationPersonRoute
   '/registration/verify-email': typeof RegistrationVerifyEmailRoute
   '/registration/veterinarypractice': typeof RegistrationVeterinarypracticeRoute
+  '/veterinarians/create': typeof VeterinariansCreateRoute
   '/appointments': typeof AppointmentsIndexRoute
   '/customers': typeof CustomersIndexRoute
   '/appointments/$appointmentId/reschedule': typeof AppointmentsAppointmentIdRescheduleRoute
@@ -173,6 +180,7 @@ export interface FileRoutesByTo {
   '/registration/person': typeof RegistrationPersonRoute
   '/registration/verify-email': typeof RegistrationVerifyEmailRoute
   '/registration/veterinarypractice': typeof RegistrationVeterinarypracticeRoute
+  '/veterinarians/create': typeof VeterinariansCreateRoute
   '/appointments': typeof AppointmentsIndexRoute
   '/customers': typeof CustomersIndexRoute
   '/appointments/$appointmentId/reschedule': typeof AppointmentsAppointmentIdRescheduleRoute
@@ -196,6 +204,7 @@ export interface FileRoutesById {
   '/registration/person': typeof RegistrationPersonRoute
   '/registration/verify-email': typeof RegistrationVerifyEmailRoute
   '/registration/veterinarypractice': typeof RegistrationVeterinarypracticeRoute
+  '/veterinarians/create': typeof VeterinariansCreateRoute
   '/appointments/': typeof AppointmentsIndexRoute
   '/customers/': typeof CustomersIndexRoute
   '/appointments/$appointmentId/reschedule': typeof AppointmentsAppointmentIdRescheduleRoute
@@ -220,6 +229,7 @@ export interface FileRouteTypes {
     | '/registration/person'
     | '/registration/verify-email'
     | '/registration/veterinarypractice'
+    | '/veterinarians/create'
     | '/appointments'
     | '/customers'
     | '/appointments/$appointmentId/reschedule'
@@ -242,6 +252,7 @@ export interface FileRouteTypes {
     | '/registration/person'
     | '/registration/verify-email'
     | '/registration/veterinarypractice'
+    | '/veterinarians/create'
     | '/appointments'
     | '/customers'
     | '/appointments/$appointmentId/reschedule'
@@ -264,6 +275,7 @@ export interface FileRouteTypes {
     | '/registration/person'
     | '/registration/verify-email'
     | '/registration/veterinarypractice'
+    | '/veterinarians/create'
     | '/appointments/'
     | '/customers/'
     | '/appointments/$appointmentId/reschedule'
@@ -287,6 +299,7 @@ export interface RootRouteChildren {
   RegistrationPersonRoute: typeof RegistrationPersonRoute
   RegistrationVerifyEmailRoute: typeof RegistrationVerifyEmailRoute
   RegistrationVeterinarypracticeRoute: typeof RegistrationVeterinarypracticeRoute
+  VeterinariansCreateRoute: typeof VeterinariansCreateRoute
   AppointmentsIndexRoute: typeof AppointmentsIndexRoute
   CustomersIndexRoute: typeof CustomersIndexRoute
   AppointmentsAppointmentIdRescheduleRoute: typeof AppointmentsAppointmentIdRescheduleRoute
@@ -343,6 +356,13 @@ declare module '@tanstack/react-router' {
       path: '/appointments'
       fullPath: '/appointments'
       preLoaderRoute: typeof AppointmentsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/veterinarians/create': {
+      id: '/veterinarians/create'
+      path: '/veterinarians/create'
+      fullPath: '/veterinarians/create'
+      preLoaderRoute: typeof VeterinariansCreateRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/registration/veterinarypractice': {
@@ -455,6 +475,7 @@ const rootRouteChildren: RootRouteChildren = {
   RegistrationPersonRoute: RegistrationPersonRoute,
   RegistrationVerifyEmailRoute: RegistrationVerifyEmailRoute,
   RegistrationVeterinarypracticeRoute: RegistrationVeterinarypracticeRoute,
+  VeterinariansCreateRoute: VeterinariansCreateRoute,
   AppointmentsIndexRoute: AppointmentsIndexRoute,
   CustomersIndexRoute: CustomersIndexRoute,
   AppointmentsAppointmentIdRescheduleRoute:
