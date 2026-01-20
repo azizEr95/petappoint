@@ -18,7 +18,7 @@ export function CustomerList({ customers, searchName }: CustomerListProps) {
 
     useEffect(() => {
         handleFilter();
-    }, [customers, searchString]);
+    }, []);
 
     const handleFilter = () => {
         if (!customers) {
