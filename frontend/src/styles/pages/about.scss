@@ -1,0 +1,74 @@
+@import '../variables';
+
+.about-page {
+  min-height: 100vh;
+}
+
+.about-hero {
+  background: linear-gradient(135deg, var(--color-primary) 0%, rgba(26, 93, 58, 0.9) 100%);
+  padding: 4rem 0;
+}
+
+.about-hero h1 {
+  font-size: $h1-font-size;
+  font-weight: 700;
+  margin: 0;
+  line-height: 1.2;
+  color: white;
+}
+
+.about-section {
+  padding: $spacing-3xl 0;
+  background: white;
+}
+
+.about-team {
+  padding: 0;
+  background: white;
+}
+
+.team-image-wrapper {
+  width: 100%;
+}
+
+.team-image {
+  width: 100%;
+  height: auto;
+  border-radius: $border-radius-lg;
+  display: block;
+}
+
+.about-content {
+  h2 {
+    font-size: $h2-font-size;
+    color: var(--color-primary);
+    font-weight: 700;
+    margin-bottom: $spacing-lg;
+    margin-top: 0;
+  }
+
+  p {
+    font-size: $font-size-base;
+    line-height: $line-height-base;
+    color: var(--color-text-dark);
+    margin-bottom: $spacing-md;
+  }
+}
+
+@media (max-width: 768px) {
+  .about-hero {
+    padding: 2.5rem 0;
+  }
+
+  .about-hero h1 {
+    font-size: 1.8rem;
+  }
+
+  .about-section {
+    padding: $spacing-2xl 0;
+  }
+
+  .about-content h2 {
+    font-size: 1.5rem;
+  }
+}

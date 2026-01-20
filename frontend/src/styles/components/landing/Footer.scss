@@ -3,174 +3,63 @@
 .footer {
   background-color: var(--color-primary-dark);
   color: rgba(255, 255, 255, 0.8);
-  padding-top: $spacing-3xl !important;
-  padding-bottom: $spacing-xl !important;
-  margin-top: 0;
 }
 
-.footer h4,
+.footer h5,
 .footer h6 {
   color: white;
   font-weight: 600;
-  margin-bottom: $spacing-lg;
-}
-
-.footer hr {
-  border-color: rgba(255, 255, 255, 0.1);
-}
-
-.footer h4 {
-  font-size: $h4-font-size;
 }
 
 .footer h6 {
-  font-size: 1rem;
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
 }
 
-.footer-links {
+.footer-brand {
+  border-right: 1px solid rgba(125, 216, 159, 0.2);
+  padding-right: $spacing-lg;
+}
+
+.footer-links-vertical {
   li {
-    margin-bottom: $spacing-md;
-  }
-
-  a {
-    color: rgba(255, 255, 255, 0.7);
-    text-decoration: none;
-    font-size: $font-size-sm;
-    transition: all 0.3s ease;
-
-    &:hover {
-      color: white;
-      text-decoration: underline;
-    }
+    line-height: 1.8;
   }
 }
 
-.footer-contact {
-  li {
-    margin-bottom: $spacing-md;
-    font-size: $font-size-sm;
-    color: rgba(255, 255, 255, 0.7);
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-
-    i {
-      color: var(--color-primary-light);
-      min-width: 1.2rem;
-    }
-  }
-
-  a {
-    color: rgba(255, 255, 255, 0.7);
-    text-decoration: none;
-    transition: color 0.3s ease;
-
-    &:hover {
-      color: white;
-      text-decoration: underline;
-    }
-  }
-}
-
-.social-link {
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
-  border-radius: 50%;
+.footer-link {
+  color: rgba(255, 255, 255, 0.7);
   text-decoration: none;
-  transition: all 0.3s ease;
-  font-size: 1.2rem;
+  transition: color 0.3s ease;
 
   &:hover {
-    background: var(--color-primary);
-    color: white;
-    transform: translateY(-3px);
+    color: var(--color-primary-light);
+  }
+
+  i {
+    transition: transform 0.3s ease;
+    color: var(--color-primary);
+  }
+
+  &:hover i {
+    transform: translateX(3px);
   }
 }
 
-.newsletter-form {
-  .input-group {
-    margin-bottom: $spacing-md;
-  }
-
-  .form-control {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: white;
-    padding: 0.75rem 1rem;
-    border-radius: $border-radius-sm 0 0 $border-radius-sm;
-    font-size: $font-size-sm;
-
-    &::placeholder {
-      color: rgba(255, 255, 255, 0.5);
-    }
-
-    &:focus {
-      background: rgba(255, 255, 255, 0.15);
-      border-color: var(--color-primary-light);
-      box-shadow: 0 0 0 0.2rem rgba(125, 216, 159, 0.25);
-      color: white;
-    }
-  }
-
-  .btn {
-    background: var(--color-primary);
-    border: none;
-    border-radius: 0 $border-radius-sm $border-radius-sm 0;
-    padding: 0.75rem 1.2rem;
-    transition: all 0.3s ease;
-    color: white;
-
-    &:hover {
-      background: var(--color-primary-light);
-      transform: translateY(-2px);
-    }
-  }
-}
-
-.app-download-section {
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  padding-top: $spacing-lg;
-}
-
-.app-download-btn {
-  background: rgba(255, 255, 255, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  color: white;
-  padding: 0.5rem 1rem;
-  font-size: $font-size-sm;
-  font-weight: 500;
-  border-radius: $border-radius-sm;
-  transition: all 0.3s ease;
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.3);
-    border-color: white;
-    color: white;
-    transform: translateY(-2px);
-  }
-
-  &:active,
-  &:focus {
-    background: rgba(255, 255, 255, 0.25);
+@media (max-width: 992px) {
+  .footer-brand {
+    border-right: none;
+    border-bottom: 1px solid rgba(125, 216, 159, 0.2);
+    padding-right: 0;
+    padding-bottom: $spacing-lg;
+    margin-bottom: $spacing-lg;
   }
 }
 
 @media (max-width: 768px) {
-  .footer {
-    padding-top: $spacing-2xl !important;
-  }
-
-  .footer h6 {
-    margin-top: $spacing-lg;
-    margin-bottom: $spacing-md;
-  }
-
-  .newsletter-form {
-    margin-top: $spacing-lg;
+  .footer-brand {
+    border-bottom: 1px solid rgba(125, 216, 159, 0.2);
+    padding-bottom: $spacing-lg;
+    margin-bottom: $spacing-lg;
   }
 }
