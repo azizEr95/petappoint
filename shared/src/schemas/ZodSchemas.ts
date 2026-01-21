@@ -250,8 +250,24 @@ export const VeterinariansCreateSchema = VeterinariansSchema; //id muss uebergeb
 
 export type VeterinariansCreateType = z.infer<typeof VeterinariansCreateSchema>;
 export type VeterinariansUpdateType = z.infer<typeof VeterinariansUpdateSchema>;
-export type VeterinariansDbType = z.infer<typeof VeterinariansDbSchema>;  
+export type VeterinariansDbType = z.infer<typeof VeterinariansDbSchema>;
 export type VeterinariansType = z.infer<typeof VeterinariansSchema>;
+
+//Veterinary Can Treat AnimalType:
+export const VeterinaryAnimaltypesSchema = z.object({
+  veterinaryId: PostgresIdSchema,
+  animalTypeIds: z.array(PostgresIdSchema),
+});
+
+export type VeterinaryAnimaltypesType = z.infer<typeof VeterinaryAnimaltypesSchema>;
+
+//Veterinary Has Service:
+export const VeterinaryServicesSchema = z.object({
+  veterinaryId: PostgresIdSchema,
+  serviceIds: z.array(PostgresIdSchema),
+});
+
+export type VeterinaryServicesType = z.infer<typeof VeterinaryServicesSchema>;
 
 //Appointments:
 export const AppointmentsSchema = z.object({
