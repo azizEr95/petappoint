@@ -1,5 +1,5 @@
 import { VeterinariansSchema } from "vetilib-shared/schemas/ZodSchemas";
-import type { VeterinariansType, VeterinariansCreateType } from "vetilib-shared/schemas/ZodSchemas";
+import type { VeterinariansCreateType, VeterinariansType } from "vetilib-shared/schemas/ZodSchemas";
 
 export const getVeterinariansByPracticeId = async (practiceId: string): Promise<Array<VeterinariansType>> => {
     const res = await fetch(
@@ -35,6 +35,27 @@ export const createVeterinarian = async (veterinarian: VeterinariansCreateType):
     throw new Error('Invalid veterinarian response');
   }
   return parsed.data;
+};
+
+export const checkPersonByEmail = async (email: string): Promise<CheckPersonType> => {
+  const body = { email: email };
+  const res = await fetch(
+    import.meta.env.VITE_API_URL + '/persons/email',
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+      credentials: 'include',
+    },
+  );
+  if (!res.ok && res.status !== 404) {
+    throw new Error('Failed to check email');
+  }
+  if (res.status === 404) {
+    return { exists: false };
+  }
+  const data = await res.json();
+  return data;
 };
 
 const parseVeterinariansArray = (unsafeVeterinarians: Array<VeterinariansType>,): Array<VeterinariansType> => {

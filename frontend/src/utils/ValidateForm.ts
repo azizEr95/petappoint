@@ -457,8 +457,35 @@ export function validateVeterinarianFormular(
         }
     }
 
-    // Person fields (only for "new" mode)
-    if (mode === 'new') {
+    // Mode-specific Person fields validation
+    if (mode === 'existing') {
+        // Existing mode: email only required
+        if (verifyField === "email" || verifyField === undefined) {
+            if (!vetData.email.trim()) {
+                newErrors.email = 'E-Mail ist erforderlich';
+            } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(vetData.email)) {
+                newErrors.email = 'Gültige E-Mail-Adresse erforderlich';
+            } else {
+                delete newErrors.email;
+            }
+        }
+        // Remove other person field errors when full submit
+        if (verifyField === undefined) {
+            delete newErrors.firstName;
+            delete newErrors.lastName;
+            delete newErrors.dateOfBirth;
+            delete newErrors.sex;
+            delete newErrors.phone;
+            delete newErrors.street;
+            delete newErrors.streetNumber;
+            delete newErrors.cityCode;
+            delete newErrors.city;
+            delete newErrors.country;
+            delete newErrors.password;
+            delete newErrors.confirmPassword;
+        }
+    } else {
+        // New mode: full person validation
         // Email validation
         if (verifyField === "email" || verifyField === undefined) {
             if (!vetData.email.trim()) {
