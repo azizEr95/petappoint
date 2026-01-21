@@ -66,6 +66,8 @@ describe("veterinaryPracticeService Function", () => {
 
         const testVet = await veterinaryService.create({
             id: testPersonForVet.id,
+            firstName: testPersonForVet.firstName,
+            lastName: testPersonForVet.lastName,
             infoEmail: "vet@info.de",
             fk_veterinarypracticeid: testVetPractice.id
         });
@@ -111,7 +113,7 @@ describe("veterinaryPracticeService Function", () => {
             startTime: startTime,
             endTime: endTime,
             veterinaryId: testVet.id,
-            veterinaryPracticeId: testVetPractice.id,
+            fk_veterinarypracticeid: testVetPractice.id,
             availableServiceIds: [testService.id],
         }
 
@@ -207,6 +209,8 @@ describe("veterinaryPracticeService Function", () => {
 
         const testVet = await veterinaryService.create({
             id: testPersonForVet.id,
+            firstName: testPersonForVet.firstName,
+            lastName: testPersonForVet.lastName,
             infoEmail: "vet@info.de",
             fk_veterinarypracticeid: testVetPractice.id
         });
@@ -287,7 +291,7 @@ describe("veterinaryPracticeService Function", () => {
             startTime: new Date("2026-01-16T10:00:00Z"),
             endTime: new Date("2026-01-16T10:30:00Z"),
             veterinaryId: testVet.id,
-            veterinaryPracticeId: testVetPractice.id,
+            fk_veterinarypracticeid: testVetPractice.id,
             availableServiceIds: [testService.id],
         });
 
@@ -295,7 +299,7 @@ describe("veterinaryPracticeService Function", () => {
             startTime: new Date("2026-01-16T11:00:00Z"),
             endTime: new Date("2026-01-16T11:30:00Z"),
             veterinaryId: testVet.id,
-            veterinaryPracticeId: testVetPractice.id,
+            fk_veterinarypracticeid: testVetPractice.id,
             availableServiceIds: [testService.id],
         });
 
@@ -369,6 +373,8 @@ describe("veterinaryPracticeService Function", () => {
 
         const testVet = await veterinaryService.create({
             id: testPersonForVet.id,
+            firstName: testPersonForVet.firstName,
+            lastName: testPersonForVet.lastName,
             infoEmail: "vet@info.de",
             fk_veterinarypracticeid: testVetPractice.id
         });
@@ -397,7 +403,7 @@ describe("veterinaryPracticeService Function", () => {
             startTime: new Date("2026-01-16T10:00:00Z"),
             endTime: new Date("2026-01-16T10:30:00Z"),
             veterinaryId: testVet.id,
-            veterinaryPracticeId: testVetPractice.id,
+            fk_veterinarypracticeid: testVetPractice.id,
             availableServiceIds: [testService.id],
         });
 
@@ -456,6 +462,8 @@ describe("veterinaryPracticeService Function", () => {
 
         const testVet = await veterinaryService.create({
             id: testPersonForVet.id,
+            firstName: testPersonForVet.firstName,
+            lastName: testPersonForVet.lastName,
             infoEmail: "vet@info.de",
             fk_veterinarypracticeid: testVetPractice.id
         });
@@ -517,7 +525,7 @@ describe("veterinaryPracticeService Function", () => {
             startTime: new Date("2026-01-16T10:00:00Z"),
             endTime: new Date("2026-01-16T10:30:00Z"),
             veterinaryId: testVet.id,
-            veterinaryPracticeId: testVetPractice.id,
+            fk_veterinarypracticeid: testVetPractice.id,
             availableServiceIds: [testService.id],
         });
 
@@ -525,7 +533,7 @@ describe("veterinaryPracticeService Function", () => {
             startTime: new Date("2026-01-16T11:00:00Z"),
             endTime: new Date("2026-01-16T11:30:00Z"),
             veterinaryId: testVet.id,
-            veterinaryPracticeId: testVetPractice.id,
+            fk_veterinarypracticeid: testVetPractice.id,
             availableServiceIds: [testService.id],
         });
 

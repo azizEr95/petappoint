@@ -76,7 +76,7 @@ export const personService = {
     return mapToPerson(foundPerson);
   },
 
-  async getByEmail(email: string): Promise<PersonsType> {
+  async getByEmail(email: string): Promise<PersonsType | null> {
     const foundPerson = await prisma.person.findUnique({
       include: {
         address: true,
@@ -85,7 +85,7 @@ export const personService = {
     });
 
     if (!foundPerson) {
-      throw new ResourceNotFoundError(`Person not found with the email ${email}`, "email", email);
+      return null
     }
 
     return mapToPerson(foundPerson);

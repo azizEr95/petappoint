@@ -403,7 +403,7 @@ export const veterinaryPracticeService = {
       firstName: x.person.firstName,
       lastName: x.person.lastName,
       infoEmail: x.infoEmail,
-      veterinaryPracticeId: praxisId
+      fk_veterinarypracticeid: praxisId
     }));
   },
 

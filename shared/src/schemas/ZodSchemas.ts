@@ -235,12 +235,22 @@ export const VeterinariansSchema = z.object({
   firstName: z.string().min(2).max(60),
   lastName: z.string().min(2).max(60),
   infoEmail: z.email().nullable(),
-  veterinaryPracticeId: PostgresIdSchema.nullable(),
+  fk_veterinarypracticeid: PostgresIdSchema.nullable(),
 });
+
+export const VeterinariansDbSchema = z.object({
+  id: PostgresIdSchema, //ist identisch zur Personen ID
+  infoEmail: z.email().nullable(),
+  fk_veterinarypracticeid: PostgresIdSchema.nullable(),
+});
+
+export const VeterinariansUpdateSchema = VeterinariansSchema
 
 export const VeterinariansCreateSchema = VeterinariansSchema; //id muss uebergeben werden, da Referenz zur Person wichtig ist
 
 export type VeterinariansCreateType = z.infer<typeof VeterinariansCreateSchema>;
+export type VeterinariansUpdateType = z.infer<typeof VeterinariansUpdateSchema>;
+export type VeterinariansDbType = z.infer<typeof VeterinariansDbSchema>;  
 export type VeterinariansType = z.infer<typeof VeterinariansSchema>;
 
 //Appointments:
@@ -260,7 +270,7 @@ export const AppointmentsCreateSchema = z.object({
   startTime: DateTimeSchema,
   endTime: DateTimeSchema,
   veterinaryId: PostgresIdSchema,
-  veterinaryPracticeId: PostgresIdSchema,
+  fk_veterinarypracticeid: PostgresIdSchema,
   availableServiceIds: PostgresIdSchema.array().optional().default([]),
   endDate: DateTimeSchema.optional(),
 });
