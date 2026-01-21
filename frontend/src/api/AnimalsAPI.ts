@@ -153,7 +153,27 @@ export const deleteAnimal = async (animalID: number): Promise<void> => {
     requestOptions,
   )
   if (!res.ok) {
-    throw new Error('Failed to fetch deleteAnimal')
+    const error = await res.json()
+    throw { status: res.status, message: error.error }
+  }
+  return
+}
+
+export const deleteAnimalWithAppointments = async (animalID: number): Promise<void> => {
+  const requestOptions = {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include' as RequestCredentials,
+  }
+
+  const res = await fetch(
+    import.meta.env.VITE_API_URL + '/animals/' + animalID + '/with-appointments',
+    requestOptions,
+  )
+  if (!res.ok) {
+    throw new Error('Failed to delete animal with appointments')
   }
   return
 }

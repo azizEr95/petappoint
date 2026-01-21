@@ -120,6 +120,15 @@ animalsRouter.delete("/:animalId", requiresAuthentication, checkVerified, async 
   res.sendStatus(204);
 });
 
+animalsRouter.delete("/:animalId/with-appointments", requiresAuthentication, checkVerified, async (req, res) => {
+  const animalId = PostgresIdSchema.parse(parseInt(req.params.animalId));
+
+  await ensureUserCanAccessAnimal(req.userId!, animalId);
+
+  await animalService.deleteWithAppointmentCancellation(animalId);
+  res.sendStatus(204);
+});
+
 animalsRouter.get("/:animalId/races", requiresAuthentication, checkVerified, async (req, res) => {
   const animalId = PostgresIdSchema.parse(parseInt(req.params.animalId));
 
