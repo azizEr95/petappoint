@@ -63,11 +63,12 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  margin-top: $spacing-lg;
+  margin: $spacing-lg auto 0;
   background: white;
-  padding: 1.75rem 2rem 0.75rem 2rem;
+  padding: 1.75rem 2rem;
   border-radius: $border-radius-lg;
   box-shadow: $box-shadow-lg;
+  align-self: center;
 }
 
 .hero-filters-row {
@@ -180,9 +181,10 @@
 }
 
 .hero-filter-help {
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   display: block;
   color: $text-light;
+  margin-top: 1.125rem;
 }
 
 .hero-filter-link {
