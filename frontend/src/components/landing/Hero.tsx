@@ -13,6 +13,7 @@ import type {
   AnimalsType,
   ServiceType,
 } from 'vetilib-shared/schemas/ZodSchemas'
+import Select from "react-select"
 
 export default function Hero() {
   const navigate = useNavigate()
@@ -108,6 +109,26 @@ export default function Hero() {
 
   const hasAnimals = userAnimals.length > 0
 
+  // react-select options for animal types
+  const animalTypeOptions = animalTypes.map(type => ({
+    value: type.id,
+    label: type.name
+  }))
+
+  const selectedAnimalTypeOption = animalTypeOptions.find(
+    option => option.value === filterAnimalType[0]
+  ) || null
+
+  // react-select options for services
+  const serviceOptions = services.map(service => ({
+    value: service.id,
+    label: service.name
+  }))
+
+  const selectedServiceOption = serviceOptions.find(
+    option => option.value === selectedService
+  ) || null
+
   return (
     <section
       id="hero"
@@ -146,44 +167,150 @@ export default function Hero() {
                     ))}
                   </Form.Control>
                 ) : (
-                  <Form.Control
-                    as="select"
-                    value={filterAnimalType[0] || ''}
-                    onChange={(e) =>
-                      setFilterAnimalType(
-                        e.target.value ? [parseInt(e.target.value)] : [],
-                      )
+                  <Select
+                    options={animalTypeOptions}
+                    value={selectedAnimalTypeOption}
+                    onChange={(option) => 
+                      setFilterAnimalType(option ? [option.value] : [])
                     }
-                  >
-                    <option value="">Tierart auswählen</option>
-                    {animalTypes.map((type) => (
-                      <option key={type.id} value={type.id}>
-                        {type.name}
-                      </option>
-                    ))}
-                  </Form.Control>
+                    placeholder="Tierart auswählen"
+                    isClearable
+                    isSearchable
+                    noOptionsMessage={() => "Keine Tierart gefunden"}
+                    menuPortalTarget={document.body}
+                    menuPosition="fixed"
+                    styles={{
+                      control: (base) => ({
+                        ...base,
+                        minHeight: '38px',
+                        borderRadius: '0.375rem',
+                        border: '1px solid #dee2e6',
+                        boxShadow: 'none',
+                        '&:hover': {
+                          border: '1px solid #dee2e6'
+                        }
+                      }),
+                      valueContainer: (base) => ({
+                        ...base,
+                        padding: '0.375rem 0.75rem'
+                      }),
+                      singleValue: (base) => ({
+                        ...base,
+                        textAlign: 'left'
+                      }),
+                      placeholder: (base) => ({
+                        ...base,
+                        textAlign: 'left'
+                      }),
+                      input: (base) => ({
+                        ...base,
+                        margin: 0,
+                        padding: 0
+                      }),
+                      indicatorSeparator: () => ({
+                        display: 'none'
+                      }),
+                      dropdownIndicator: (base) => ({
+                        ...base,
+                        padding: '0.375rem 0.5rem'
+                      }),
+                      menuPortal: (base) => ({
+                        ...base,
+                        zIndex: 9999
+                      }),
+                      menu: (base) => ({
+                        ...base,
+                        zIndex: 9999
+                      }),
+                      option: (base, state) => ({
+                        ...base,
+                        backgroundColor: state.isSelected 
+                          ? '#0d6efd' 
+                          : state.isFocused 
+                          ? '#e9ecef' 
+                          : 'white',
+                        color: state.isSelected ? 'white' : '#212529',
+                        cursor: 'pointer',
+                        padding: '0.375rem 0.75rem',
+                        textAlign: 'left'
+                      })
+                    }}
+                  />
                 )}
               </Form.Group>
 
               {/* Service/Treatment Selection */}
               <Form.Group className="filter-group">
                 <Form.Label>Behandlung:</Form.Label>
-                <Form.Control
-                  as="select"
-                  value={selectedService || ''}
-                  onChange={(e) =>
-                    setSelectedService(
-                      e.target.value ? parseInt(e.target.value) : undefined,
-                    )
+                <Select
+                  options={serviceOptions}
+                  value={selectedServiceOption}
+                  onChange={(option) => 
+                    setSelectedService(option ? option.value : undefined)
                   }
-                >
-                  <option value="">Behandlung auswählen</option>
-                  {services.map((service) => (
-                    <option key={service.id} value={service.id}>
-                      {service.name}
-                    </option>
-                  ))}
-                </Form.Control>
+                  placeholder="Behandlung auswählen"
+                  isClearable
+                  isSearchable
+                  noOptionsMessage={() => "Keine Behandlung gefunden"}
+                  menuPortalTarget={document.body}
+                  menuPosition="fixed"
+                  styles={{
+                    control: (base) => ({
+                      ...base,
+                      minHeight: '38px',
+                      borderRadius: '0.375rem',
+                      border: '1px solid #dee2e6',
+                      boxShadow: 'none',
+                      '&:hover': {
+                        border: '1px solid #dee2e6'
+                      }
+                    }),
+                    valueContainer: (base) => ({
+                      ...base,
+                      padding: '0.375rem 0.75rem'
+                    }),
+                    singleValue: (base) => ({
+                      ...base,
+                      textAlign: 'left'
+                    }),
+                    placeholder: (base) => ({
+                      ...base,
+                      textAlign: 'left'
+                    }),
+                    input: (base) => ({
+                      ...base,
+                      margin: 0,
+                      padding: 0
+                    }),
+                    indicatorSeparator: () => ({
+                      display: 'none'
+                    }),
+                    dropdownIndicator: (base) => ({
+                      ...base,
+                      padding: '0.375rem 0.5rem'
+                    }),
+                    menuPortal: (base) => ({
+                      ...base,
+                      zIndex: 9999
+                    }),
+                    menu: (base) => ({
+                      ...base,
+                      zIndex: 9999
+                    }),
+                    option: (base, state) => ({
+                      ...base,
+                      backgroundColor: state.isSelected 
+                        ? '#0d6efd' 
+                        : state.isFocused 
+                        ? '#e9ecef' 
+                        : 'white',
+                      color: state.isSelected ? 'white' : '#212529',
+                      cursor: 'pointer',
+                      padding: '0.375rem 0.75rem',
+                      textAlign: 'left'
+                    })
+                  }}
+                />
               </Form.Group>
 
               {/* Location Selection */}
