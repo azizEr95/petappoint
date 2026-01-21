@@ -234,7 +234,7 @@ export function NextAvailableAppointments({
   }
 
   return (
-    <div className="calendar-container">
+    <div className={`calendar-container ${expandedDays.size > 0 ? 'expanded' : ''}`}>
       {/* Header mit Navigation */}
       <div className="calendar-header">
         <button
@@ -277,7 +277,7 @@ export function NextAvailableAppointments({
               const displayLimit = 5
               const anyExpanded = expandedDays.size > 0
 
-              // Berechne maximale Anzahl Slots (bei expansion)
+              // Berechne maximale Anzahl Reihen (bei expansion alle, sonst max 5)
               const maxAppointments = anyExpanded
                 ? Math.max(...appointmentDays.map((t) => t.length))
                 : displayLimit
