@@ -184,6 +184,10 @@ export default function Hero() {
                         ...base,
                         padding: '0.375rem 0.75rem'
                       }),
+                      singleValue: (base) => ({
+                        ...base,
+                        textAlign: 'left'
+                      }),
                       placeholder: (base) => ({
                         ...base,
                         textAlign: 'left'
