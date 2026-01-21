@@ -69,7 +69,10 @@ export const updatePersonEmail = async (
   return parsePerson(data)
 }
 
-export const getPictureURLForPersonId = (personId: number, cacheBust?: number): string => {
+export const getPictureURLForPersonId = (
+  personId: number,
+  cacheBust?: number,
+): string => {
   const url = import.meta.env.VITE_API_URL + '/persons/' + personId + '/picture'
   return cacheBust ? `${url}?t=${cacheBust}` : url
 }
