@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
-import { Button, Form } from 'react-bootstrap'
+import { Button } from 'react-bootstrap'
 import { useLoginContext } from '../../LoginContext'
 import heroBg from '../../assets/hero-bg.png'
 import '../../styles/components/landing/Hero.scss'
@@ -9,6 +9,7 @@ import { getAllAnimalTypes } from '../../api/AnimalTypeAPI'
 import { getAllAvailableServices } from '../../api/ServicesAPI'
 import { getAnimalsFromUser } from '../../api/AnimalsAPI'
 import { Autocomplete } from '../common/Autocomplete'
+import { LocationAutocomplete } from '../common/LocationAutocomplete'
 import type {
   AnimalTypeType,
   AnimalsType,
@@ -19,7 +20,6 @@ export default function Hero() {
   const navigate = useNavigate()
   const { login } = useLoginContext()
   const [location, setLocation] = useState('')
-  const [isLoadingLocation, setIsLoadingLocation] = useState(false)
   const [filterAnimalType, setFilterAnimalType] = useState<Array<number>>([])
   const [filterAnimal, setFilterAnimal] = useState<number | undefined>(undefined)
   const [selectedService, setSelectedService] = useState<number | undefined>(undefined)
@@ -56,34 +56,6 @@ export default function Hero() {
       }
     }
   }, [filterAnimal, userAnimals])
-
-  const handleGetCurrentLocation = () => {
-    setIsLoadingLocation(true)
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        const { latitude, longitude } = position.coords
-        try {
-          const response = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`,
-            { headers: { 'Accept-Language': 'de' } },
-          )
-          const data = await response.json()
-          const city =
-            data.address?.city || data.address?.town || data.address?.village || ''
-          setLocation(city)
-        } catch (error) {
-          console.error('Fehler beim Abrufen der Adresse:', error)
-          alert('Standort konnte nicht ermittelt werden')
-        } finally {
-          setIsLoadingLocation(false)
-        }
-      },
-      () => {
-        setIsLoadingLocation(false)
-        alert('Zugriff auf Standort wurde verweigert')
-      },
-    )
-  }
 
   const handleSearch = () => {
     navigate({
@@ -158,28 +130,14 @@ export default function Hero() {
               </div>
 
               {/* Location Selection */}
-              <div className="location-input-group">
-                <label>Standort:</label>
-                <div className="input-wrapper">
-                  <Form.Control
-                    type="text"
-                    placeholder="Stadt, PLZ oder Standort"
-                    value={location}
-                    onChange={(e) => setLocation(e.target.value)}
-                  />
-                  <Button
-                    variant="outline-secondary"
-                    onClick={handleGetCurrentLocation}
-                    disabled={isLoadingLocation}
-                    className="location-btn"
-                  >
-                    <i
-                      className={
-                        isLoadingLocation ? 'bi bi-arrow-clockwise spin' : 'bi bi-geo-alt'
-                      }
-                    ></i>
-                  </Button>
-                </div>
+              <div className="filter-group">
+                <LocationAutocomplete
+                  value={location}
+                  onChange={setLocation}
+                  placeholder="Stadt, PLZ oder Standort"
+                  label="Standort"
+                  showGeolocationButton={true}
+                />
               </div>
 
               {/* Search Button */}

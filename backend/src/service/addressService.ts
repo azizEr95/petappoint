@@ -57,4 +57,13 @@ export const addressService = {
   async delete(id: number): Promise<void> {
     await prisma.address.delete({ where: { id } });
   },
+
+  async getDistinctCities(): Promise<string[]> {
+    const addresses = await prisma.address.findMany({
+      distinct: ['city'],
+      select: { city: true },
+      orderBy: { city: 'asc' },
+    });
+    return addresses.map(a => a.city).filter(city => city !== null) as string[];
+  },
 };
