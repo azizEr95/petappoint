@@ -59,6 +59,8 @@ describe("appointmentService CRUD Functions", () => {
 
         })
         const testVet = await veterinaryService.create({
+            firstName: "Bello",
+            lastName: "Bello",
             id: testPerson.id,
             infoEmail: "vet@info.de",
             fk_veterinarypracticeid: testVetPractice.id
@@ -69,11 +71,12 @@ describe("appointmentService CRUD Functions", () => {
         const testAppointment = {
             startTime: startTime,
             endTime: endTime,
+            endDate: endDate,
             veterinaryId: testVet.id,
-            veterinaryPracticeId: testVetPractice.id,
+            fk_veterinarypracticeid: testVetPractice.id,
             availableServiceIds: [testService.id],
         }
-        const appointments: AppointmentsType[] = await appointmentService.createWeeklyAppointments(testAppointment, endDate);
+        const appointments: AppointmentsType[] = await appointmentService.createWeeklyAppointments(testAppointment);
         const getAppointment1 = await appointmentService.getById(appointments[0].id);
         expect(getAppointment1).toStrictEqual(appointments[0]);
         expect(createDateTime(getAppointment1.startTime)).toBe("Freitag, 16. Januar 2026 um 10:00")

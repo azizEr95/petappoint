@@ -266,7 +266,7 @@ function CreateAppointmentComponent() {
         startTime: new Date(appointmentData.date + "T" + appointmentData.startTime),
         endTime: new Date(appointmentData.date + "T" + appointmentData.endTime),
         veterinaryId: appointmentData.veterinarianId!,
-        veterinaryPracticeId: login.id,
+        fk_veterinarypracticeid: login.id,
         availableServiceIds: selectedServices.map((service) => service.value.id),
         endDate: undefined,
       };
@@ -286,7 +286,7 @@ function CreateAppointmentComponent() {
         startTime: new Date(appointmentData.date + "T" + appointmentData.startTime),
         endTime: new Date(appointmentData.date + "T" + appointmentData.endTime),
         veterinaryId: appointmentData.veterinarianId!,
-        veterinaryPracticeId: login.id,
+        fk_veterinarypracticeid: login.id,
         availableServiceIds: selectedServices.map((service) => service.value.id),
         endDate: new Date(appointmentData.endDate!)
       };

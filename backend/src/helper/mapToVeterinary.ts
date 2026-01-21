@@ -1,6 +1,4 @@
-import { lifestyles, Sexes } from "generated/prisma";
-import { AddressesType, AnimalsType, VeterinariansType } from "vetilib-shared/schemas/ZodSchemas";
-import { PersonPrismaMappedType } from "./mapToPerson";
+import { VeterinariansType } from "vetilib-shared/schemas/ZodSchemas";
 
 export type VeterinaryPrismaMappedType = {
     id: number,
@@ -18,6 +16,6 @@ export function mapToVeterinary(veterinary: VeterinaryPrismaMappedType): Veterin
         id: veterinary.id,
         infoEmail: veterinary.infoEmail,
         lastName: veterinary.person.lastName,
-        veterinaryPracticeId: veterinary.fk_veterinarypracticeid
+        fk_veterinarypracticeid: veterinary.fk_veterinarypracticeid
     };
 }

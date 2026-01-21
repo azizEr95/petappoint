@@ -19,7 +19,7 @@ export const appointmentService = {
         startTime: data.startTime,
         endTime: data.endTime,
         veterinarian: { connect: { id: data.veterinaryId } },
-        veterinaryPractice: { connect: { id: data.veterinaryPracticeId } },
+        veterinaryPractice: { connect: { id: data.fk_veterinarypracticeid } },
       },
     });
 
@@ -42,7 +42,6 @@ export const appointmentService = {
   },
 
   async createWeeklyAppointments(data: AppointmentsCreateType): Promise<AppointmentsType[]> {
-    console.log(data);
     if (!data.endDate || !data.endTime || !data.startTime) {
       throw new Error("Zeiten müssen hier angegeben werden")
     }
@@ -63,7 +62,7 @@ export const appointmentService = {
         startTime: weekStartTime,
         endTime: weekEndTime,
         veterinaryId: data.veterinaryId,
-        veterinaryPracticeId: data.veterinaryPracticeId,
+        fk_veterinarypracticeid: data.fk_veterinarypracticeid,
       })
     };
 
@@ -74,7 +73,7 @@ export const appointmentService = {
           startTime: apt.startTime,
           endTime: apt.endTime,
           veterinarian: { connect: { id: data.veterinaryId } },
-          veterinaryPractice: { connect: { id: data.veterinaryPracticeId } },
+          veterinaryPractice: { connect: { id: data.fk_veterinarypracticeid } },
         },
       });
 
