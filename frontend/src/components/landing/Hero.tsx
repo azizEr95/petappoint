@@ -109,7 +109,7 @@ export default function Hero() {
 
   const hasAnimals = userAnimals.length > 0
 
-  // react-select options
+  // react-select options for animal types
   const animalTypeOptions = animalTypes.map(type => ({
     value: type.id,
     label: type.name
@@ -117,6 +117,16 @@ export default function Hero() {
 
   const selectedAnimalTypeOption = animalTypeOptions.find(
     option => option.value === filterAnimalType[0]
+  ) || null
+
+  // react-select options for services
+  const serviceOptions = services.map(service => ({
+    value: service.id,
+    label: service.name
+  }))
+
+  const selectedServiceOption = serviceOptions.find(
+    option => option.value === selectedService
   ) || null
 
   return (
@@ -232,22 +242,75 @@ export default function Hero() {
               {/* Service/Treatment Selection */}
               <Form.Group className="filter-group">
                 <Form.Label>Behandlung:</Form.Label>
-                <Form.Control
-                  as="select"
-                  value={selectedService || ''}
-                  onChange={(e) =>
-                    setSelectedService(
-                      e.target.value ? parseInt(e.target.value) : undefined,
-                    )
+                <Select
+                  options={serviceOptions}
+                  value={selectedServiceOption}
+                  onChange={(option) => 
+                    setSelectedService(option ? option.value : undefined)
                   }
-                >
-                  <option value="">Behandlung auswählen</option>
-                  {services.map((service) => (
-                    <option key={service.id} value={service.id}>
-                      {service.name}
-                    </option>
-                  ))}
-                </Form.Control>
+                  placeholder="Behandlung auswählen"
+                  isClearable
+                  isSearchable
+                  noOptionsMessage={() => "Keine Behandlung gefunden"}
+                  menuPortalTarget={document.body}
+                  menuPosition="fixed"
+                  styles={{
+                    control: (base) => ({
+                      ...base,
+                      minHeight: '38px',
+                      borderRadius: '0.375rem',
+                      border: '1px solid #dee2e6',
+                      boxShadow: 'none',
+                      '&:hover': {
+                        border: '1px solid #dee2e6'
+                      }
+                    }),
+                    valueContainer: (base) => ({
+                      ...base,
+                      padding: '0.375rem 0.75rem'
+                    }),
+                    singleValue: (base) => ({
+                      ...base,
+                      textAlign: 'left'
+                    }),
+                    placeholder: (base) => ({
+                      ...base,
+                      textAlign: 'left'
+                    }),
+                    input: (base) => ({
+                      ...base,
+                      margin: 0,
+                      padding: 0
+                    }),
+                    indicatorSeparator: () => ({
+                      display: 'none'
+                    }),
+                    dropdownIndicator: (base) => ({
+                      ...base,
+                      padding: '0.375rem 0.5rem'
+                    }),
+                    menuPortal: (base) => ({
+                      ...base,
+                      zIndex: 9999
+                    }),
+                    menu: (base) => ({
+                      ...base,
+                      zIndex: 9999
+                    }),
+                    option: (base, state) => ({
+                      ...base,
+                      backgroundColor: state.isSelected 
+                        ? '#0d6efd' 
+                        : state.isFocused 
+                        ? '#e9ecef' 
+                        : 'white',
+                      color: state.isSelected ? 'white' : '#212529',
+                      cursor: 'pointer',
+                      padding: '0.375rem 0.75rem',
+                      textAlign: 'left'
+                    })
+                  }}
+                />
               </Form.Group>
 
               {/* Location Selection */}
