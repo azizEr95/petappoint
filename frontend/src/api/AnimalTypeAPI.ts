@@ -1,8 +1,9 @@
 import {
-  AnimalTypeSchema
+  AnimalTypeSchema,
+  VeterinariansWithAnimalTypesSchema
   
 } from 'vetilib-shared/schemas/ZodSchemas'
-import type {AnimalTypeType} from 'vetilib-shared/schemas/ZodSchemas';
+import type {AnimalTypeType, VeterinariansWithAnimalTypesType} from 'vetilib-shared/schemas/ZodSchemas';
 
 export const getAllAnimalTypes = async (
   practiceId: string | undefined,
@@ -55,6 +56,25 @@ export const getAnimaltypesFromPractice = async (
   return parseAnimalTypeArray(data)
 }
 
+export const getAnimaltypesFromAllVeterinarysFromPractice = async (
+  id: string,
+): Promise<Array<VeterinariansWithAnimalTypesType>> => {
+  const res = await fetch(
+    import.meta.env.VITE_API_URL +
+      '/veterinary-practice/' +
+      id +
+      '/veterinarians/treatableanimals',
+    { credentials: 'include' },
+  );
+
+  if (!res.ok) {
+    throw new Error('Failed to fetch getAnimaltypesFromVeterinary');
+  }
+
+  const data = await res.json();
+  return parseVeterinariansWithAnimalTypesTypeArray(data);
+}
+
 export const getAnimaltypesFromVeterinary = async (
   id: string,
 ): Promise<Array<AnimalTypeType>> => {
@@ -95,6 +115,24 @@ const parseAnimalTypeArray = (
   return unsafeAnimalType
     .map((unsafeType) => {
       const parsed = AnimalTypeSchema.safeParse(unsafeType)
+      if (parsed.error !== undefined) {
+        // if Zod throws an Error print them
+        console.log(parsed.error)
+      }
+      if (parsed.success) {
+        return parsed.data
+      }
+      return null
+    })
+    .filter((x) => x !== null)
+}
+
+const parseVeterinariansWithAnimalTypesTypeArray = (
+  unsafeAnimalType: Array<VeterinariansWithAnimalTypesType>,
+): Array<VeterinariansWithAnimalTypesType> => {
+  return unsafeAnimalType
+    .map((unsafeType) => {
+      const parsed = VeterinariansWithAnimalTypesSchema.safeParse(unsafeType)
       if (parsed.error !== undefined) {
         // if Zod throws an Error print them
         console.log(parsed.error)

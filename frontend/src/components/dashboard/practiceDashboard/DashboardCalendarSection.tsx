@@ -7,6 +7,8 @@ import { useLoginContext } from "@/LoginContext";
 import { AppointmentDetailDialog } from "@/components/appointment/AppointmentDetailDialog";
 import { AppointmentBookDialogPractice } from "@/components/appointment/AppointmentBookDialogPractice";
 import { SuccessNotificationToast } from "@/components/SuccessNotificationToast";
+import { PracticeFilterBar } from "@/components/practice/PracticeFilterBar";
+import { getAnimaltypesFromAllVeterinarysFromPractice } from "@/api/AnimalTypeAPI";
 
 export function DashboardCalenderSection() {
     const queryClient = useQueryClient();
@@ -19,6 +21,11 @@ export function DashboardCalenderSection() {
     const [selectedAppointment, setSelectedAppointment] = useState<AppointmentsType>();
     const [showSuccessNotification, setShowSuccessNotification] = useState<boolean>(false);
     const [notificationText, setNotificationText] = useState<string>("");
+    const [filterAnimalType, setFilterAnimalType] = useState<Array<number>>([]);
+    const [filterServiceType, setFilterServiceType] = useState<Array<number>>([]);
+    // filter for booking appointments, not needed for showing booked appointments, component requrires it
+    const [filterAnimal, setFilterAnimal] = useState<number | undefined>(undefined);
+    const [showedAvailableAppointments, setShowedAvailableAppointments] = useState<Array<AppointmentsType>>([]);
 
     const { isSuccess: isSuccessBookedAppointments, data: dataBookedAppointments } = useQuery<Array<AppointmentsType>>({
         queryKey: ['bookedAppointmentsPractice', login],
@@ -39,15 +46,24 @@ export function DashboardCalenderSection() {
         enabled: login !== false && login.role === 'company'
     })
 
+    const practiceId = login && login.id;
+
+    const { data: treatableAnimalTypesData, isSuccess: isSuccessAnimalTypes } = useQuery({
+        queryKey: ['treatableAnimalTypes', practiceId],
+        queryFn: () => getAnimaltypesFromAllVeterinarysFromPractice(practiceId.toString()),
+        retry: false,
+        enabled: practiceId !== false && login.role === 'company'
+    });
+
     useEffect(() => { // read localStorage for success notification
-    const deleteAppointmentSuccess = localStorage.getItem("deleteAppointmentSuccess");
-    if (deleteAppointmentSuccess) {
-        queryClient.invalidateQueries({ queryKey: ['bookedAppointmentsPractice'] });
-      setNotificationText('Der Termin wurde erfolgreich abgesagt und der Kunde wurde benachrichtigt');
-      setShowSuccessNotification(true);
-      localStorage.removeItem('deleteAppointmentSuccess');
-    }
-  }, [showDetailsAppointment])
+        const deleteAppointmentSuccess = localStorage.getItem("deleteAppointmentSuccess");
+        if (deleteAppointmentSuccess) {
+            queryClient.invalidateQueries({ queryKey: ['bookedAppointmentsPractice'] });
+            setNotificationText('Der Termin wurde erfolgreich abgesagt und der Kunde wurde benachrichtigt');
+            setShowSuccessNotification(true);
+            localStorage.removeItem('deleteAppointmentSuccess');
+        }
+    }, [showDetailsAppointment])
 
     const handleHideDetailsAppointment = () => {
         setShowDetailsAppointment(false);
@@ -55,7 +71,6 @@ export function DashboardCalenderSection() {
 
     const handleHideBookAppointment = () => {
         setShowBookAppointment(false);
-        console.log("hide")
     }
 
     const handleShowDetailsAppointment = (appointment: AppointmentsType) => {
@@ -69,7 +84,45 @@ export function DashboardCalenderSection() {
         console.log("book appointment" + appointment.id);
     }
 
-    if (!isSuccessBookedAppointments || !isSuccessAvailableAppointments) {
+    const handleSubmitFilterAvailableAppointments = () => {
+        if (!isSuccessAvailableAppointments || !isSuccessAnimalTypes) {
+            return;
+        }
+        let filteredAppointments = dataAvailableAppointments;
+
+        if (filterAnimalType.length > 0) {
+            filteredAppointments = filteredAppointments.filter(appointment => {
+                for (const animalTypeId of filterAnimalType) {
+                    if (treatableAnimalTypesData.find(a => a.id === appointment.veterinary.id)?.treatableAnimalTypes.includes(animalTypeId)) {
+                        return true;
+                    }
+                }
+                return false;
+            });
+        }
+
+        if (filterServiceType.length > 0) {
+            filteredAppointments = filteredAppointments.filter(appointment => {
+                for (const serviceTypeId of filterServiceType) {
+                    // TODO: check if appointment has service type
+                    if (appointment.availableServices.map(x => x.id).includes(serviceTypeId)) {
+                        return true;
+                    }
+                }
+                return false;
+            });
+        }
+
+        setShowedAvailableAppointments(filteredAppointments);
+    };
+
+    useEffect(() => {
+        if (isSuccessAvailableAppointments) {
+            handleSubmitFilterAvailableAppointments();
+        }
+    }, [filterAnimalType, filterServiceType, dataAvailableAppointments, isSuccessAvailableAppointments]);
+
+    if (!isSuccessBookedAppointments || !isSuccessAvailableAppointments || login === false) {
         return;
     }
 
@@ -101,11 +154,19 @@ export function DashboardCalenderSection() {
                     onSelectSlot={() => { }} />
             )}
 
-            {activeTab === 'bookAppointment' && (
-                <CalendarPractice data={dataAvailableAppointments}
+            {activeTab === 'bookAppointment' && (<>
+                <PracticeFilterBar
+                    filterAnimalType={filterAnimalType}
+                    filterServiceType={filterServiceType}
+                    filterAnimal={filterAnimal}
+                    setFilterAnimalType={setFilterAnimalType}
+                    setFilterServiceType={setFilterServiceType}
+                    setFilterAnimal={setFilterAnimal}
+                    practiceId={login.id.toString()} />
+                <CalendarPractice data={showedAvailableAppointments}
                     onSelectEvent={(appointment: AppointmentsType) => handleShowBookAppointment(appointment)}
                     onSelectSlot={() => { }} />
-            )}
+            </>)}
         </div>
 
         {showDetailsAppointment &&

@@ -49,6 +49,11 @@ veterinaryPracticeRouter.get("/all", optionalAuthentication, async (_req, res) =
   res.send(allVeterinarians);
 });
 
+veterinaryPracticeRouter.get("/:id/veterinarians/treatableanimals", optionalAuthentication, async (req, res) => {
+  const veterinarians = await veterinaryPracticeService.getTreatableAnimals(parseInt(req.params.id));
+  res.send(veterinarians);
+});
+
 veterinaryPracticeRouter.get("/search", optionalAuthentication, async (req, res) => {
   const validatedQuery = VeterinaryPracticeSearchQuerySchema.parse(req.query);
   const found: VeterinaryPracticeSearchResultType = await veterinaryPracticeService.search(validatedQuery);
