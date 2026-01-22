@@ -1,14 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
+import { Button } from 'react-bootstrap';
+import { SuccessNotificationToast } from '../SuccessNotificationToast';
+import { PersonEditNewDialog } from '../person/PersonEditNewDialog';
 import { CustomerCard } from "./CustomerCard";
 import type { CustomerType } from "@/api/CustomerAPI";
 import "@/styles/components/customer/Customer.scss";
 import type { ChangeEvent } from "react";
-import { Button } from 'react-bootstrap';
-import { PersonEditNewDialog } from '../person/PersonEditNewDialog';
-import { SuccessNotificationToast } from '../SuccessNotificationToast';
-import { useQueryClient } from '@tanstack/react-query';
-import { useLoginContext } from '@/LoginContext';
 
 type CustomerListProps = {
     customers: Array<CustomerType> | undefined
@@ -25,19 +23,15 @@ export function CustomerList({ customers, searchName, sortBy }: CustomerListProp
     const [showPersonDialog, setShowPersonDialog] = useState<boolean>(false);
     const [showSuccessNotification, setShowSuccessNotification] = useState<boolean>(false);
 
-    const queryClient = useQueryClient();
-    const { login } = useLoginContext();
-    const practiceId = login ? login.id : -1;
-
     useEffect(() => {
         handleFilter();
     }, []);
 
     const applySorting = (
-        customers: Array<CustomerType>,
+        unsortedCustomer: Array<CustomerType>,
         sort: string,
     ): Array<CustomerType> => {
-        const copy = [...customers];
+        const copy = [...unsortedCustomer];
         switch (sort) {
             case 'name-asc':
                 return copy.sort((a, b) => a.animal.name.localeCompare(b.animal.name));
