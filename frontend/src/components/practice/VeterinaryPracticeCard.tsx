@@ -10,6 +10,7 @@ import type {
   AppointmentFilterType,
   VeterinaryPracticesType,
 } from 'vetilib-shared/schemas/ZodSchemas'
+import { useLoginContext } from '@/LoginContext.ts'
 
 type VeterinaryPracticeCardProps = {
   practice: VeterinaryPracticesType
@@ -20,6 +21,7 @@ export function VeterinaryPracticeCard({
   practice,
   filterOptions,
 }: VeterinaryPracticeCardProps) {
+   const {login} = useLoginContext();
   const queryClient = useQueryClient()
   const navigate = useNavigate()
 
@@ -112,7 +114,7 @@ export function VeterinaryPracticeCard({
             </div>
           </div>
         </div>
-
+            {login === false || login.role === 'person' && (<>
         <div className="calendar-section">
           <h4 className="calendar-title">
             <i className="bi bi-calendar-check"></i>
@@ -125,6 +127,7 @@ export function VeterinaryPracticeCard({
             />
           </div>
         </div>
+        </>)}
       </div>
     </div>
   )
