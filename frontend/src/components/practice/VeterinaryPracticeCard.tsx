@@ -114,7 +114,7 @@ export function VeterinaryPracticeCard({
             </div>
           </div>
         </div>
-            {login === false || login.role === 'person' && (<>
+            {((login && login.role === 'person')  || (login === false))&& (<>
         <div className="calendar-section">
           <h4 className="calendar-title">
             <i className="bi bi-calendar-check"></i>
