@@ -87,7 +87,8 @@ npm run dev
 - `npm run dev` - Start Vite dev server (port 3001)
 - `npm run build` - Production build
 - `npm test` - Run Vitest tests
-- `npm run check` - Format & lint with auto-fix
+- `npm run check:staged` - Format & lint only staged files (recommended before commit)
+- `npm run check` - Format & lint all files (use only when intentional, not before commit)
 
 ## Project Structure
 

@@ -125,7 +125,10 @@ Prisma schema in `backend/prisma/schema.prisma` (reverse-engineered from DB):
 - Reports: HTML + JUnit XML artifacts
 
 **Local quality checks (recommended before push, not enforced):**
-- Frontend code quality: `cd frontend && npm run check` (Prettier + ESLint auto-fix)
+- Frontend code quality: `cd frontend && npm run check:staged` (format + lint only staged files)
+  - ⚠️ **IMPORTANT:** Use `check:staged` NOT `check` to avoid formatting all files
+  - `npm run check` formats ALL files = massive unintended changes in MRs
+  - `npm run check:staged` formats ONLY staged files = clean commits
 - Backend unit tests: `cd backend && npm test` (optional - currently not in pipeline)
 - Frontend unit tests: `cd frontend && npm test` (optional - currently not in pipeline)
 - Combined: `npm test` runs both unit test suites locally
