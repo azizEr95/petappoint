@@ -103,6 +103,10 @@
 }
 
 .autocomplete-no-results {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
   padding: 1rem 0.85rem;
   text-align: center;
   color: $text-light;
@@ -111,4 +115,71 @@
   border: 1px solid $border-color;
   border-top: none;
   border-radius: 0 0 $border-radius-sm $border-radius-sm;
+  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.location-autocomplete-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  .autocomplete-input-wrapper {
+    flex: 1;
+  }
+}
+
+.autocomplete-container.location-autocomplete {
+  .autocomplete-input-wrapper {
+    position: relative;
+  }
+
+  .autocomplete-dropdown,
+  .autocomplete-no-results {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+  }
+}
+
+.location-geolocation-btn {
+  background: none;
+  border: 1px solid $border-color;
+  border-radius: $border-radius-sm;
+  padding: 0.5rem 0.75rem;
+  min-height: 44px;
+  color: $text-dark;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+  font-size: 1rem;
+
+  &:hover {
+    border-color: $primary;
+    color: $primary;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  i {
+    &.spin {
+      animation: spin 1s linear infinite;
+    }
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
