@@ -59,7 +59,7 @@ export function CalendarPractice({ data, onSelectEvent, onSelectSlot }: Calendar
             <Calendar<AppointmentsType>
                 localizer={localizer}
                 culture="de"
-                events={data || []} // Use data prop for events
+                events={data || []}
                 startAccessor="startTime"
                 endAccessor="endTime"
                 selectable
@@ -71,6 +71,9 @@ export function CalendarPractice({ data, onSelectEvent, onSelectSlot }: Calendar
                 defaultView={Views.DAY}
                 min={new Date(2026, 0, 1, 6, 0)}
                 max={new Date(2026, 0, 1, 20, 0)}
+                step={30}
+                timeslots={2}
+                dayLayoutAlgorithm="no-overlap"
                 formats={{
                     timeGutterFormat: 'HH:mm',
                     eventTimeRangeFormat: ({ start, end }) => `${moment(start).format('HH:mm')} - ${moment(end).format('HH:mm')}`,
