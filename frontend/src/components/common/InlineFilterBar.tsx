@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
+import { useNavigate } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 import { Button } from 'react-bootstrap'
 import { useLoginContext } from '../../LoginContext'
@@ -37,6 +38,7 @@ export function InlineFilterBar({
   setFilterAnimal,
   setCurrentPageNumber,
 }: InlineFilterBarProps) {
+  const navigate = useNavigate()
   const { login } = useLoginContext()
   const [selectedService, setSelectedService] = useState<number | undefined>()
 
@@ -82,6 +84,15 @@ export function InlineFilterBar({
 
   const handleApplyFilters = () => {
     setCurrentPageNumber(1)
+    navigate({
+      to: '/search',
+      search: {
+        animalType: filterAnimalType.join('-'),
+        animal: filterAnimal ? filterAnimal.toString() : '',
+        serviceType: filterServiceType.join('-'),
+        address: filterLocation,
+      },
+    })
   }
 
   const handleResetFilters = () => {
@@ -90,6 +101,15 @@ export function InlineFilterBar({
     setSelectedService(undefined)
     setFilterServiceType([])
     setCurrentPageNumber(1)
+    navigate({
+      to: '/search',
+      search: {
+        animalType: '',
+        animal: '',
+        serviceType: '',
+        address: '',
+      },
+    })
   }
 
   const handleAnimalChange = (id: number | undefined) => {
