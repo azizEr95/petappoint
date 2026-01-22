@@ -86,7 +86,7 @@ export function DashboardPractice() {
         </div>
       </div>
       <div className="dashboard-buttons mt-4">
-        <Button variant="primary" onClick={() => navigate({ to: '/customers', search: { name: "" } })}>
+        <Button variant="primary" onClick={() => navigate({ to: '/customers', search: { name: "", sortBy: "" } })}>
           alle Kunden
         </Button>
         <Button variant="primary" onClick={handleClickVeterinarianPage} className="ms-2">
