@@ -38,7 +38,7 @@
     .rbc-time-content {
       flex: 1;
       min-height: 0;
-      overflow-y: hidden;
+      overflow-y: auto;
     }
   }
 }
@@ -167,41 +167,26 @@
 }
 
 // ============================================
-// EVENT STYLING
+// EVENT STYLING - KOMPAKT
 // ============================================
 
-.rbc-time-slot {
-  .rbc-events-container {
-    margin-right: 0 !important;
+.rbc-event {
+  padding: 2px 4px !important;
+  border-radius: 4px !important;
+  font-size: 0.75rem !important;
+
+  .rbc-event-label {
+    font-weight: 600 !important;
+    font-size: 0.7rem !important;
+    line-height: 1.2 !important;
   }
 
-  .rbc-event {
-    padding: 4px !important;
-    width: auto !important;
-    max-width: 100% !important;
-
-    // Time label - always visible, left-aligned
-    .rbc-event-label {
-      display: block !important;
-      text-align: left !important;
-      font-weight: 600 !important;
-      padding: 2px 4px !important;
-      font-size: 0.85rem !important;
-      margin-bottom: 2px !important;
-    }
-
-    // Event content - keep in DOM
-    .rbc-event-content {
-      display: block !important;
-      padding: 2px 4px !important;
-      font-size: 0.9rem !important;
-    }
-  }
-}
-
-.rbc-day-slot {
-  .rbc-events-container {
-    margin-right: 0 !important;
+  .rbc-event-content {
+    font-size: 0.7rem !important;
+    line-height: 1.2 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
   }
 }
 
