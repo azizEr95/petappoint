@@ -10,6 +10,7 @@ import type {
   AppointmentFilterType,
   VeterinaryPracticesType,
 } from 'vetilib-shared/schemas/ZodSchemas'
+import { useLoginContext } from '@/LoginContext.ts'
 
 type VeterinaryPracticeCardProps = {
   practice: VeterinaryPracticesType
@@ -20,6 +21,7 @@ export function VeterinaryPracticeCard({
   practice,
   filterOptions,
 }: VeterinaryPracticeCardProps) {
+  const { login } = useLoginContext();
   const queryClient = useQueryClient()
   const navigate = useNavigate()
 
@@ -112,19 +114,26 @@ export function VeterinaryPracticeCard({
             </div>
           </div>
         </div>
-
-        <div className="calendar-section">
-          <h4 className="calendar-title">
-            <i className="bi bi-calendar-check"></i>
-            Verfügbare Termine
-          </h4>
-          <div className="calendar-wrapper">
-            <NextAvailableAppointments
-              practiceId={practice.id.toString()}
-              filterOptions={filterOptions}
-            />
+        {((login && login.role === 'person') || (login === false)) ? (<>
+          <div className="calendar-section">
+            <h4 className="calendar-title">
+              <i className="bi bi-calendar-check"></i>
+              Verfügbare Termine
+            </h4>
+            <div className="calendar-wrapper">
+              <NextAvailableAppointments
+                practiceId={practice.id.toString()}
+                filterOptions={filterOptions}
+              />
+            </div>
           </div>
-        </div>
+        </>) : (
+          <div className="calendar-section">
+            <div className="alert alert-info d-flex align-items-center" role="alert">
+              <i className="bi bi-info-circle me-3" style={{ fontSize: '1.5rem' }}></i>
+              <p className="mb-0">Als Praxis können Sie keine Termine bei anderen Praxen buchen.</p>
+            </div>
+          </div>)}
       </div>
     </div>
   )
