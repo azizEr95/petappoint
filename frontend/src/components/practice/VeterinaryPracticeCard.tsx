@@ -128,6 +128,12 @@ export function VeterinaryPracticeCard({
           </div>
         </div>
         </>)}
+        <div className="calendar-section">
+    <div className="alert alert-info d-flex align-items-center" role="alert">
+      <i className="bi bi-info-circle me-3" style={{fontSize: '1.5rem'}}></i>
+      <p className="mb-0">Als Praxis können Sie keine Termine bei anderen Praxen buchen.</p>
+    </div>
+  </div>
       </div>
     </div>
   )
