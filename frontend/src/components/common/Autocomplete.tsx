@@ -7,7 +7,7 @@ export type AutocompleteOption = {
 }
 
 type AutocompleteProps = {
-  options: AutocompleteOption[]
+  options: Array<AutocompleteOption>
   value: number | undefined
   onChange: (id: number | undefined) => void
   placeholder: string
@@ -24,14 +24,13 @@ export function Autocomplete({
   const [isOpen, setIsOpen] = useState(false)
   const [searchText, setSearchText] = useState('')
   const [highlightedIndex, setHighlightedIndex] = useState(-1)
+  const [isSearching, setIsSearching] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
   // Filter options based on search text
   const filteredOptions = options
-    .filter((opt) =>
-      opt.name.toLowerCase().includes(searchText.toLowerCase())
-    )
+    .filter((opt) => opt.name.toLowerCase().includes(searchText.toLowerCase()))
     .sort((a, b) => a.name.localeCompare(b.name))
 
   // Get selected option
@@ -41,6 +40,7 @@ export function Autocomplete({
   const handleSelectOption = (optionId: number) => {
     onChange(optionId)
     setSearchText('')
+    setIsSearching(false)
     setHighlightedIndex(-1)
     setTimeout(() => setIsOpen(false), 0)
     inputRef.current?.focus()
@@ -51,18 +51,30 @@ export function Autocomplete({
     e.stopPropagation()
     onChange(undefined)
     setSearchText('')
+    setIsSearching(false)
     inputRef.current?.focus()
   }
 
   // Handle input change
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchText(e.target.value)
+    const newValue = e.target.value
+    setSearchText(newValue)
+    setIsSearching(true)
     setIsOpen(true)
+    // Clear selection when user starts typing over selected value
+    if (value !== undefined) {
+      onChange(undefined)
+    }
   }
 
   // Handle input focus
   const handleInputFocus = () => {
     setIsOpen(true)
+    // When focusing on selection, prepare for new search
+    if (value !== undefined) {
+      setSearchText('')
+      setIsSearching(true)
+    }
   }
 
   // Handle outside click
@@ -104,7 +116,7 @@ export function Autocomplete({
     if (e.key === 'ArrowDown') {
       e.preventDefault()
       setHighlightedIndex((prev) =>
-        prev < filteredOptions.length - 1 ? prev + 1 : prev
+        prev < filteredOptions.length - 1 ? prev + 1 : prev,
       )
     } else if (e.key === 'ArrowUp') {
       e.preventDefault()
@@ -128,7 +140,7 @@ export function Autocomplete({
           type="text"
           className="form-control autocomplete-input"
           placeholder={placeholder}
-          value={selectedOption ? selectedOption.name : searchText}
+          value={isSearching ? searchText : (selectedOption ? selectedOption.name : searchText)}
           onChange={handleInputChange}
           onFocus={handleInputFocus}
           onKeyDown={handleKeyDown}
