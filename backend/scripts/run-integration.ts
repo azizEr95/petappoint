@@ -23,7 +23,7 @@ async function start() {
 
   // 4. Prisma Migration
   console.log('🟡 Warte auf Datenbank & führe Migrations aus...');
-  runCommand('npx prisma migrate reset --force --skip-seed');
+  //runCommand('npx prisma migrate reset --force --skip-seed');
 
   console.log('🟢 Datenbank bereit!');
 
