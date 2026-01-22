@@ -1,13 +1,15 @@
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { AppointmentsType } from "vetilib-shared/schemas/ZodSchemas";
 import { CalendarPractice } from "@/components/calendar/CalendarPractice";
 import { getAvailableAppointmentsByPracticeId, getBookedAppointmentsByPractice } from "@/api/AppointmentsAPI";
 import { useLoginContext } from "@/LoginContext";
 import { AppointmentDetailDialog } from "@/components/appointment/AppointmentDetailDialog";
 import { AppointmentBookDialogPractice } from "@/components/appointment/AppointmentBookDialogPractice";
+import { SuccessNotificationToast } from "@/components/SuccessNotificationToast";
 
 export function DashboardCalenderSection() {
+    const queryClient = useQueryClient();
     const [activeTab, setActiveTab] = useState<
         'showAppointments' | 'bookAppointment'
     >('showAppointments');
@@ -15,6 +17,8 @@ export function DashboardCalenderSection() {
     const [showDetailsAppointment, setShowDetailsAppointment] = useState<boolean>(false);
     const [showBookAppointment, setShowBookAppointment] = useState<boolean>(false);
     const [selectedAppointment, setSelectedAppointment] = useState<AppointmentsType>();
+    const [showSuccessNotification, setShowSuccessNotification] = useState<boolean>(false);
+    const [notificationText, setNotificationText] = useState<string>("");
 
     const { isSuccess: isSuccessBookedAppointments, data: dataBookedAppointments } = useQuery<Array<AppointmentsType>>({
         queryKey: ['bookedAppointmentsPractice', login],
@@ -34,6 +38,16 @@ export function DashboardCalenderSection() {
         retry: false,
         enabled: login !== false && login.role === 'company'
     })
+
+    useEffect(() => { // read localStorage for success notification
+    const deleteAppointmentSuccess = localStorage.getItem("deleteAppointmentSuccess");
+    if (deleteAppointmentSuccess) {
+        queryClient.invalidateQueries({ queryKey: ['bookedAppointmentsPractice'] });
+      setNotificationText('Der Termin wurde erfolgreich abgesagt und der Kunde wurde benachrichtigt');
+      setShowSuccessNotification(true);
+      localStorage.removeItem('deleteAppointmentSuccess');
+    }
+  }, [showDetailsAppointment])
 
     const handleHideDetailsAppointment = () => {
         setShowDetailsAppointment(false);
@@ -106,6 +120,12 @@ export function DashboardCalenderSection() {
                 hideDialogBookAppointment={handleHideBookAppointment}
                 appointmentDetail={selectedAppointment!}
             />
+        }
+
+        {showSuccessNotification &&
+            <SuccessNotificationToast
+                message={notificationText}
+                onClose={() => setShowSuccessNotification(false)} />
         }
     </>
 }

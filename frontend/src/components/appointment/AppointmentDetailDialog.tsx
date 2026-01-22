@@ -1,8 +1,9 @@
-import { ListGroup, Modal } from 'react-bootstrap';
-import { useQuery } from '@tanstack/react-query';
+import { Button, ListGroup, Modal } from 'react-bootstrap';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { dateToDateString, dateToTimeString } from '../../utils/DateToStringFormat';
 import type { AnimalTypeType, AppointmentsType } from 'vetilib-shared/schemas/ZodSchemas';
 import { getAnimaltypeById } from '@/api/AnimalTypeAPI';
+import { cancelAppointment } from '@/api/AppointmentsAPI';
 
 type AppointmentDetailDialogProps = {
     hideDialogDetailAppointment: () => void
@@ -13,6 +14,7 @@ export function AppointmentDetailDialog({
     hideDialogDetailAppointment,
     appointmentDetail
 }: AppointmentDetailDialogProps) {
+
     const { isSuccess: isSuccessAnimalType, data: dataAnimalType } = useQuery<
         AnimalTypeType
     >({
@@ -21,6 +23,18 @@ export function AppointmentDetailDialog({
         retry: false,
         enabled: appointmentDetail.animal?.animalTypeId !== undefined
     })
+
+    const deleteAppointmentMutation = useMutation({
+        mutationFn: (id: number) => cancelAppointment(id),
+        onSuccess: () => {
+            localStorage.setItem("deleteAppointmentSuccess" ,"true");
+            hideDialogDetailAppointment();
+        },
+    })
+
+    const handleSubmitDeleteAppointment = () => {
+        deleteAppointmentMutation.mutate(appointmentDetail.id);
+    }
 
     if (!isSuccessAnimalType) {
         return;
@@ -72,6 +86,22 @@ export function AppointmentDetailDialog({
                     )} */}
                 </ListGroup>
             </Modal.Body>
+            <Modal.Footer>
+                <Button
+                    variant="secondary"
+                    onClick={hideDialogDetailAppointment}
+                    disabled={deleteAppointmentMutation.isPending}
+                >
+                    Abbrechen
+                </Button>
+                <Button
+                    variant="danger"
+                    onClick={handleSubmitDeleteAppointment}
+                    disabled={deleteAppointmentMutation.isPending}
+                >
+                    {deleteAppointmentMutation.isPending ? 'Wird abgesagt...' : 'Termin absagen'}
+                </Button>
+            </Modal.Footer>
         </Modal>
     )
 }
