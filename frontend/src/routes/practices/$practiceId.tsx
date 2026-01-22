@@ -16,12 +16,14 @@ import type {
   VeterinaryPracticesType,
 } from 'vetilib-shared/schemas/ZodSchemas'
 import { useTitle } from '@/utils/useTitle'
+import { useLoginContext } from '@/LoginContext'
 
 export const Route = createFileRoute('/practices/$practiceId')({
   component: VeterinaryPractice,
 })
 
 function VeterinaryPractice() {
+  const {login} = useLoginContext();
   // useTitle is called later with practice name
   const navigate = useNavigate()
   const location = useLocation()
@@ -169,11 +171,14 @@ function VeterinaryPractice() {
             </div>
           </div>
         </div>
-
+              {login === false || login.role === 'person' && (<>
         <div className="praxis-appointments">
           <div className="appointments-header-section">
+
             <h2>Verfügbare Termine</h2>
+           
           </div>
+           
           <PracticeFilterBar
             filterAnimalType={filterAnimalType}
             filterServiceType={filterServiceType}
@@ -188,6 +193,7 @@ function VeterinaryPractice() {
             filterOptions={filterOptions}
           />
         </div>
+        </>)}
       </div>
     </div>
   )
