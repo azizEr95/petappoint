@@ -323,4 +323,19 @@ export const animalService = {
 
     return false;
   },
+
+  async canCompanyAccessAnimal(companyId: number, animalId: number): Promise<boolean> {
+    const relationExists = await prisma.appointment.findFirst({
+      where: {
+        animalId: animalId,
+        veterinaryPracticeId: companyId
+      }
+    });
+    
+    if (relationExists) {
+      return true;
+    }
+    
+    return false;
+  }
 };

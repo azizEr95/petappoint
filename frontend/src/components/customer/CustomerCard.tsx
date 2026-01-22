@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import type { CustomerType } from "@/api/CustomerAPI";
-import { getPicturePlaceholderAnimal } from "@/api/AnimalsAPI";
+import { getPictureFromAnimal, getPicturePlaceholderAnimal } from "@/api/AnimalsAPI";
 import { getAnimaltypeById } from "@/api/AnimalTypeAPI";
 
 type CustomerCardProps = {
@@ -19,14 +19,13 @@ export function CustomerCard({ customer }: CustomerCardProps) {
         staleTime: 0,
     })
 
-    // fetch animal picture
-    // use it when all rights available from backend
-    // const { data: animalPictureData, isSuccess: isSuccessPictureData } = useQuery({
-    //     queryKey: ['animalPicture', customer.animal.id],
-    //     queryFn: () => getPictureFromAnimal(customer.animal.id),
-    //     staleTime: 0,
-    //     retry: false,
-    // })
+    const { data: animalPictureData, isSuccess: isSuccessPictureData } = useQuery({
+        queryKey: ['animalPicture', customer.animal.id],
+        queryFn: () => getPictureFromAnimal(customer.animal.id),
+        staleTime: 0,
+        retry: false,
+    })
+
     const { data: animalUnknownPictureData, isSuccess: isSuccessUnknownPictureData } = useQuery({
         queryKey: ['animalUnknownPicture'],
         queryFn: () => getPicturePlaceholderAnimal(),
@@ -34,13 +33,12 @@ export function CustomerCard({ customer }: CustomerCardProps) {
     })
 
     useEffect(() => { // use this effect to set the picture URL when data is fetched
-        // if (isSuccessPictureData && animalPictureData) {
-        //     setAnimalPictureURL(animalPictureData);
-        // } else if (isSuccessUnknownPictureData && animalUnknownPictureData) {
-        setAnimalPictureURL(animalUnknownPictureData);
-        // }
-        // }, [isSuccessPictureData, animalPictureData, isSuccessUnknownPictureData, animalUnknownPictureData]);
-    }, [isSuccessUnknownPictureData, animalUnknownPictureData]);
+        if (isSuccessPictureData && animalPictureData) {
+            setAnimalPictureURL(animalPictureData);
+        } else if(isSuccessUnknownPictureData && animalUnknownPictureData) {
+            setAnimalPictureURL(animalUnknownPictureData);
+        }
+    }, [isSuccessPictureData, animalPictureData, isSuccessUnknownPictureData, animalUnknownPictureData]);
 
     const handleClickAnimal = () => {
         navigate({

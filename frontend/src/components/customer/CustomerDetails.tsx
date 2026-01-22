@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type { CustomerType } from "@/api/CustomerAPI";
-import { getPicturePlaceholderAnimal, getAppointmentsByAnimal } from "@/api/AnimalsAPI";
+import { getPictureFromAnimal, getPicturePlaceholderAnimal } from "@/api/AnimalsAPI";
 import { getAnimaltypeById } from "@/api/AnimalTypeAPI";
 import { AppointmentCard } from "@/components/appointment/AppointmentCard";
 import type { AppointmentsType } from "vetilib-shared/schemas/ZodSchemas";
 import "@/styles/components/customer/CustomerDetails.scss";
+import { getAppointmentsByAnimal } from "@/api/AppointmentsAPI";
 
 type CustomerDetailsProps = {
     customer: CustomerType
@@ -34,16 +35,26 @@ export function CustomerDetails({ customer }: CustomerDetailsProps) {
         staleTime: 0,
     })
 
-    // TODO load correct animal picture when rights are available from backend
+    const { data: animalPictureData, isSuccess: isSuccessPictureData } = useQuery({
+            queryKey: ['animalPicture', customer.animal.id],
+            queryFn: () => getPictureFromAnimal(customer.animal.id),
+            staleTime: 0,
+            retry: false,
+        })
+        
     const { data: animalUnknownPictureData, isSuccess: isSuccessUnknownPictureData } = useQuery({
         queryKey: ['animalUnknownPicture'],
         queryFn: () => getPicturePlaceholderAnimal(),
         staleTime: 0,
     })
 
-    useEffect(() => {
-        setAnimalPictureURL(animalUnknownPictureData);
-    }, [isSuccessUnknownPictureData, animalUnknownPictureData]);
+    useEffect(() => { // use this effect to set the picture URL when data is fetched
+        if (isSuccessPictureData && animalPictureData) {
+            setAnimalPictureURL(animalPictureData);
+        } else if(isSuccessUnknownPictureData && animalUnknownPictureData) {
+            setAnimalPictureURL(animalUnknownPictureData);
+        }
+    }, [isSuccessPictureData, animalPictureData, isSuccessUnknownPictureData, animalUnknownPictureData]);
 
     useEffect(() => { // change data to display format
         if (customer.animal.dateOfBirthIsExact && customer.animal.dateOfBirth) {

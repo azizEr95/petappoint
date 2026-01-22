@@ -42,6 +42,14 @@ const upload = multer({
   },
 });
 
+async function ensureCompanyCanAccessAnimal(companyId: number, animalId: number) {
+  const hasAccess = await animalService.canCompanyAccessAnimal(companyId, animalId);
+
+  if (!hasAccess) {
+    throw new AuthorizationError("No access");
+  }
+}
+
 async function ensureUserCanAccessAnimal(personId: number, animalId: number) {
   const hasAccess = await animalService.canPersonAccessAnimal(personId, animalId);
 
@@ -82,7 +90,12 @@ animalsRouter.put("/:animalId", requiresAuthentication, checkVerified, async (re
 animalsRouter.get("/:animalId/picture", requiresAuthentication, checkVerified, async (req, res) => {
   const animalId = PostgresIdSchema.parse(parseInt(req.params.animalId));
 
-  await ensureUserCanAccessAnimal(req.userId!, animalId);
+  if (req.role === 'person') {
+    await ensureUserCanAccessAnimal(req.userId!, animalId);
+  } else {
+    await ensureCompanyCanAccessAnimal(req.userId!, animalId);
+  }
+
 
   const filepath = await animalService.getPicturePath(animalId);
   res.sendFile(filepath);
@@ -183,13 +196,10 @@ animalsRouter.delete("/:animalId/races/:raceId", requiresAuthentication, checkVe
 animalsRouter.get("/:animalId/appointments", requiresAuthentication, checkVerified, async (req, res) => {
   const animalId = PostgresIdSchema.parse(parseInt(req.params.animalId));
 
-  // Check if person (customer) has access
-  const hasPersonAccess = await animalService.canPersonAccessAnimal(req.userId!, animalId);
-
-  if (!hasPersonAccess) {
-    // For practice access: require explicit query param with practiceId to prevent info disclosure
-    // This way practice must know the animal exists first or have the appointment
-    throw new AuthorizationError("No access to this animal's appointments");
+  if (req.role === 'person') {
+    await ensureUserCanAccessAnimal(req.userId!, animalId);
+  } else {
+    await ensureCompanyCanAccessAnimal(req.userId!, animalId);
   }
 
   const appointments = await appointmentService.getAppointmentsByAnimal(animalId);

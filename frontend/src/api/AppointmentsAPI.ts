@@ -167,6 +167,21 @@ export const updateAppointmentNotes = async (
   return parseAppointment(data)
 }
 
+export const getAppointmentsByAnimal = async (
+  animalId: number,
+): Promise<Array<AppointmentsType>> => {
+  const res = await fetch(
+    import.meta.env.VITE_API_URL + '/animals/' + animalId + '/appointments',
+    { credentials: 'include' },
+  )
+  if (!res.ok) {
+    throw new Error('Failed to fetch getAppointmentsByAnimal')
+  }
+
+  const data = await res.json()
+  return parseAppointmentArray(data)
+}
+
 /*
  * change the date from the Appointment to Date Object and safeParse the object
  */

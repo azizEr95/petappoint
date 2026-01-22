@@ -142,16 +142,12 @@ veterinaryPracticeRouter.put("/:id", requiresAuthentication, checkVerified, asyn
     address: {
       ...validatedBody.address,
     },
-  } as VeterinaryPracticesType);
+  });
   res.send(updated);
 });
 
 veterinaryPracticeRouter.get("/:id/image", requiresAuthentication, checkVerified, async (req, res) => {
   const id = PostgresIdSchema.parse(parseInt(req.params.id));
-
-  if (id !== req.userId) {
-    throw new AuthorizationError("No access to image of this practice");
-  }
 
   const filepath = await veterinaryPracticeService.getPicturePath(id);
   res.sendFile(filepath);
