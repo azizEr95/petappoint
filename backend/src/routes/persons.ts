@@ -1,5 +1,6 @@
 import express from "express";
 import { personService } from "../service/personService";
+import { veterinaryService } from "../service/veterinaryService";
 import { AnimalsType, PersonsCreateSchema, PersonsType, PersonsUpdateSchema, PostgresIdSchema } from "vetilib-shared/schemas/ZodSchemas";
 import { verifyJWT, verifyPasswordAndCreateJWT } from "../service/jwtService";
 import { emailService } from "../service/emailService";
@@ -212,3 +213,30 @@ personsRouter.post('/:id/picture',
         res.sendStatus(200);
     }
 );
+
+// email has to be provided in body, returns person if exists
+personsRouter.post('/email', optionalAuthentication, async (req, res, next) => {
+    if(!req.body.email) {
+        res.status(400).json({ error: "Email is required" });
+        return;
+    }
+    try {
+        const person = await personService.getByEmail(req.body.email);
+        if (!person) {
+            return res.status(404).json({ exists: false });
+        }
+
+        // Check if already veterinarian
+        const isVet = await veterinaryService.getById(person.id).catch(() => null);
+
+        res.status(200).json({
+            exists: true,
+            isVeterinarian: !!isVet,
+            firstName: person.firstName,
+            lastName: person.lastName,
+        });
+    } catch (err) {
+        res.sendStatus(500);
+        next(err);
+    }
+});

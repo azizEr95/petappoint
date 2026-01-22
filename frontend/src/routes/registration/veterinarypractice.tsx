@@ -1,16 +1,20 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
-import { useState } from 'react';
-import '../../styles/routes/veterinaryRegistration.scss';
-import { useMutation } from '@tanstack/react-query';
+import Select from 'react-select';
+import { useMemo, useState } from 'react';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { Alert, Form, FormGroup } from 'react-bootstrap';
 import { VeterinaryPracticeCreateSchema } from 'vetilib-shared/schemas/ZodSchemas';
 import { PasswordInput } from '../../components/common/PasswordInput';
-import { scrollToFirstError } from '../../utils/Registration';
+import {  getPracticeCreateType, scrollToFirstError, validatePracticeFormular } from '../../utils/ValidateForm';
+import type {PracticeValidateType} from '../../types/validation';
+import type {SingleValue} from 'react-select';
 import type { ChangeEvent, FormEvent } from 'react';
-import type { VeterinaryPracticesCreateType } from 'vetilib-shared/schemas/ZodSchemas';
+import type { CountryType, VeterinaryPracticesCreateType } from 'vetilib-shared/schemas/ZodSchemas';
 import { veterinaryPracticeRegistration } from '@/api/LoginAPI';
 import { useLoginContext } from '@/LoginContext';
 import { useTitle } from '@/utils/useTitle';
+import { getAllCountries } from '@/api/CountriesAPI';
+import '../../styles/routes/veterinaryRegistration.scss';
 
 export const Route = createFileRoute('/registration/veterinarypractice')({
   component: VeterinaryRegistration,
@@ -18,22 +22,26 @@ export const Route = createFileRoute('/registration/veterinarypractice')({
 
 function VeterinaryRegistration() {
   useTitle("Registrierung Praxis");
-  const [name, setName] = useState('');
-  const [strasse, setStrasse] = useState('');
-  const [hausnr, setHausnr] = useState('');
-  const [plz, setPlz] = useState('');
-  const [stadt, setStadt] = useState('');
-  const [land, setLand] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [phone, setPhone] = useState('');
-  const [infoemail, setInfoemail] = useState('');
-  const [website, setWebsite] = useState('');
-  const [info, setInfo] = useState('');
+  const [practiceData, setPracticeData] = useState<PracticeValidateType>({
+    name: '',
+    phone: '',
+    email: '',
+    address: {
+      country: undefined,
+      street: '',
+      streetNumber: '',
+      cityCode: '',
+      city: '',
+    },
+    password: '',
+    confirmPassword: '',
+    infoEmail: '',
+    website: '',
+    info: '',
+  });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const navigate = useNavigate();
-  const { setLogin } = useLoginContext()
+  const { setLogin } = useLoginContext();
 
   // Password validation state
   const [passwordRequirements, setPasswordRequirements] = useState({
@@ -41,7 +49,7 @@ function VeterinaryRegistration() {
     hasUpperCase: false,
     hasNumber: false,
     hasSpecialChar: false,
-  })
+  });
 
   // Function to check password requirements
   const checkPasswordRequirements = (pwd: string) => {
@@ -50,169 +58,24 @@ function VeterinaryRegistration() {
       hasUpperCase: /[A-Z]/.test(pwd),
       hasNumber: /[0-9]/.test(pwd),
       hasSpecialChar: /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(pwd),
-    })
-  }
+    });
+  };
 
   const handleBlur = (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const nameBlur = e.target.name;
-    validateForm(nameBlur);
-  }
+    const { name, value } = e.target;
+    const addressFields = ['street', 'streetNumber', 'cityCode', 'city'];
+    const nextData = addressFields.includes(name)
+      ? { ...practiceData, address: { ...practiceData.address, [name]: value } }
+      : { ...practiceData, [name]: value };
 
-  const validateForm = (nameFormField: string | null) => {
-    const newErrors: { [key: string]: string } = { ...errors }
+    const newErrors = validatePracticeFormular(nextData, errors, name);
+    setErrors(newErrors);
+  };
 
-    if (nameFormField === "name" || nameFormField === null) {
-      if (!name.trim()) {
-        newErrors.name = 'Praxisname ist erforderlich'
-      } else if (!/^[a-zA-ZäöüÄÖÜß '`-]+$/.test(name)) {
-        newErrors.name =
-          'Diese Zeichen sind in diesem Feld nicht erlaubt (Zahlen,/,.)'
-      } else if (name.length < 5) {
-        newErrors.name = 'Praxisname muss mindestens aus 5 Zeichen bestehen'
-      }
-    }
-
-    if (nameFormField === "strasse" || nameFormField === null) {
-      if (!strasse.trim()) {
-        newErrors.strasse = 'Straße ist erforderlich'
-      } else if (
-        !/^(?=.*[a-zA-ZäöüÄÖÜß0-9])[a-zA-ZäöüÄÖÜß0-9 '`.-]+$/.test(strasse)
-      ) {
-        newErrors.strasse =
-          'Straße muss mindestens einen Buchstaben oder eine Zahl enthalten'
-      } else if (strasse.length < 3) {
-        newErrors.strasse = 'Straße muss mindestens aus 3 Zeichen bestehen'
-      }
-    }
-
-    if (nameFormField === "hausnr" || nameFormField === null) {
-      if (!hausnr.trim()) {
-        newErrors.hausnr = 'Hausnummer ist erforderlich'
-      } else if (!/^(?=.*[0-9])[a-zA-Z0-9]+$/.test(hausnr)) {
-        newErrors.hausnr = 'Hausnummer muss mindestens eine Zahl enthalten'
-      }
-    }
-
-    if (nameFormField === "plz" || nameFormField === null) {
-      if (!plz.trim()) {
-        newErrors.plz = 'Postleitzahl ist erforderlich'
-      } else if (!/^(?=.*[0-9])[a-zA-Z0-9]+$/.test(plz)) {
-        newErrors.plz = 'Postleitzahl muss mindestens eine Zahl enthalten'
-      }
-    }
-
-    if (nameFormField === "stadt" || nameFormField === null) {
-      if (!stadt.trim()) {
-        newErrors.stadt = 'Stadt ist erforderlich'
-      } else if (!/^[a-zA-ZäöüÄÖÜß '`-]+$/.test(stadt)) {
-        newErrors.stadt =
-          'Diese Zeichen sind in diesem Feld nicht erlaubt (Zahlen,/,.)'
-      } else if (stadt.length < 3) {
-        newErrors.stadt = 'Stadt muss mindestens aus 3 Zeichen bestehen'
-      }
-    }
-
-    if (nameFormField === "land" || nameFormField === null) {
-      if (!land.trim()) {
-        newErrors.land = 'Land ist erforderlich'
-      } else if (!/^[a-zA-ZäöüÄÖÜß '`-]+$/.test(land)) {
-        newErrors.land =
-          'Diese Zeichen sind in diesem Feld nicht erlaubt (Zahlen,/,.)'
-      } else if (land.length < 5) {
-        newErrors.land = 'Land muss mindestens aus 5 Zeichen bestehen'
-      }
-    }
-
-    if (nameFormField === "email" || nameFormField === null) {
-      if (!email.trim()) {
-        newErrors.email = 'E-Mail ist erforderlich'
-      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
-        newErrors.email = 'Bitte geben Sie eine gültige E-Mail-Adresse ein'
-      } else if ((email.match(/@/g) || []).length !== 1) {
-        newErrors.email = 'E-Mail darf nur ein @ enthalten'
-      } else {
-        const beforeAt = email.split('@')[0]
-        if (!/[a-zA-Z]/.test(beforeAt)) {
-          newErrors.email =
-            'E-Mail muss vor dem @ mindestens einen Buchstaben enthalten'
-        } else if (
-          !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)
-        ) {
-          newErrors.email = 'E-Mail enthält ungültige Zeichen'
-        }
-      }
-    }
-
-    if (nameFormField === "password" || nameFormField === null) {
-      if (!password.trim()) {
-        newErrors.password = 'Passwort ist erforderlich'
-      } else if (password.length < 6) {
-        newErrors.password = 'Passwort muss mindestens aus 6 Zeichen bestehen'
-      } else if (!/[A-Z]/.test(password)) {
-        newErrors.password =
-          'Passwort muss mindestens einen Großbuchstaben enthalten'
-      } else if (!/[0-9]/.test(password)) {
-        newErrors.password = 'Passwort muss mindestens eine Zahl enthalten'
-      } else if (!/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password)) {
-        newErrors.password =
-          'Passwort muss mindestens ein Sonderzeichen enthalten'
-      }
-    }
-
-    if (nameFormField === "confirmPassword" || nameFormField === null) {
-      if (!confirmPassword.trim()) {
-        newErrors.confirmPassword = 'Passwort-Wiederholung ist erforderlich';
-      } else if (confirmPassword !== password) {
-        newErrors.confirmPassword = 'Passwörter stimmen nicht überein';
-      }
-    }
-
-    if (nameFormField === "phone" || nameFormField === null) {
-      if (!phone.trim()) {
-        newErrors.phone = 'Telefon ist erforderlich'
-      } else if (!/^[+]?[0-9]+$/.test(phone)) {
-        newErrors.phone =
-          'Telefon darf nur Zahlen und optional ein + am Anfang enthalten'
-      } else {
-        const numbers = phone.replace('+', '')
-        if (numbers.length < 6) {
-          newErrors.phone = 'Telefon muss mindestens aus 6 Zahlen bestehen'
-        }
-      }
-    }
-
-    if (nameFormField === "infoemail" || nameFormField === null) {
-      if (!infoemail.trim()) {
-        newErrors.infoemail = 'E-Mail ist erforderlich'
-      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(infoemail)) {
-        newErrors.infoemail = 'Bitte geben Sie eine gültige E-Mail-Adresse ein'
-      } else if ((infoemail.match(/@/g) || []).length !== 1) {
-        newErrors.infoemail = 'E-Mail darf nur ein @ enthalten'
-      } else {
-        const beforeAt = infoemail.split('@')[0]
-        if (!/[a-zA-Z]/.test(beforeAt)) {
-          newErrors.infoemail =
-            'E-Mail muss vor dem @ mindestens einen Buchstaben enthalten'
-        } else if (
-          !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(infoemail)
-        ) {
-          newErrors.infoemail = 'E-Mail enthält ungültige Zeichen'
-        }
-      }
-    }
-
-    if (nameFormField === "website" || nameFormField === null) {
-      if (website.trim()) {
-        if (!/^https?:\/\/.+\..+/.test(website)) {
-          newErrors.website =
-            'Bitte geben Sie eine gültige URL ein (z.B. https://beispiel.de)'
-        }
-      }
-    }
-
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
+  const { data: dataCountries, isSuccess: isSuccessCountries } = useQuery({
+    queryKey: ['allCountries'],
+    queryFn: () => getAllCountries(),
+  });
 
   const { mutate: mutateCreatePractice } = useMutation({
     mutationFn: (practice: VeterinaryPracticesCreateType) =>
@@ -227,109 +90,92 @@ function VeterinaryRegistration() {
       setLogin(data);
       navigate({
         to: '/registration/verify-email',
-      })
+      });
     },
-  })
+  });
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
   ) => {
-    const t = e.target
-    const nameChange = t.name
-    const value = t.value
+    const { name, value } = e.target;
 
-    if (errors[nameChange]) {
-      const newErrors = { ...errors }
-      delete newErrors[nameChange]
-      setErrors(newErrors)
+    const addressFields = ['street', 'streetNumber', 'cityCode', 'city'];
+    if (addressFields.includes(name)) {
+      setPracticeData((prev) => ({
+        ...prev,
+        address: {
+          ...prev.address,
+          [name]: value,
+        },
+      }));
+    } else {
+      setPracticeData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
     }
 
-    switch (nameChange) {
-      case 'name':
-        setName(value);
-        break;
-      case 'strasse':
-        setStrasse(value);
-        break;
-      case 'hausnr':
-        setHausnr(value);
-        break;
-      case 'plz':
-        setPlz(value);
-        break;
-      case 'stadt':
-        setStadt(value);
-        break;
-      case 'land':
-        setLand(value);
-        break;
-      case 'email':
-        setEmail(value);
-        break;
-      case 'password':
-        setPassword(value);
-        checkPasswordRequirements(value)
-        // Check confirmPassword when password changes
-        if (confirmPassword && value !== confirmPassword) {
-          setErrors({ ...errors, confirmPassword: 'Passwörter stimmen nicht überein' })
-        } else if (confirmPassword && value === confirmPassword) {
-          const newErrors = { ...errors }
-          delete newErrors.confirmPassword
-          setErrors(newErrors)
-        }
-        break;
-      case 'confirmPassword':
-        setConfirmPassword(value);
-        break;
-      case 'phone':
-        setPhone(value)
-        break
-      case 'infoemail':
-        setInfoemail(value);
-        break;
-      case 'website':
-        setWebsite(value);
-        break;
-      case 'info':
-        setInfo(value);
-        break;
-      default:
-        console.log('Error: Fehler beim Aendern von veterinaryRegistration State in handleChange');
+    if (name === 'password') {
+      checkPasswordRequirements(value);
+      if (practiceData.confirmPassword && value === practiceData.confirmPassword && errors.confirmPassword) {
+        const next = { ...errors };
+        delete next.confirmPassword;
+        setErrors(next);
+      }
     }
-  }
+    if (name === 'confirmPassword') {
+      if (value === practiceData.password && errors.confirmPassword) {
+        const next = { ...errors };
+        delete next.confirmPassword;
+        setErrors(next);
+      }
+    }
+  };
+
+  const handleCountryChange = (selectedOption: SingleValue<{ value: CountryType; label: string }>) => {
+    setPracticeData((prev) => ({
+      ...prev,
+      address: {
+        ...prev.address,
+        country: selectedOption?.value,
+      },
+    }));
+  };
+
+  const countryOptions = useMemo(() => {
+    if (!isSuccessCountries) {
+      return [];
+    }
+    return dataCountries.map((country: CountryType) => ({
+      value: country,
+      label: country.name,
+    }));
+  }, [isSuccessCountries, dataCountries]);
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!validateForm(null)) {
+    const newErrors = validatePracticeFormular(practiceData, errors);
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length !== 0) {
       setTimeout(() => {
-        scrollToFirstError(errors);
+        scrollToFirstError(newErrors);
       }, 100);
       return;
     }
 
-    const practice: VeterinaryPracticesCreateType = {
-      name: name,
-      email: email,
-      password: password,
-      phone: phone,
-      infoEmail: infoemail,
-      website: website || null,
-      info: info,
-      address: {
-        street: strasse + hausnr,
-        cityCode: plz,
-        city: stadt,
-        country: land,
-        longitude: 0,
-        latitude: 0,
-      },
+    const practice = getPracticeCreateType(practiceData);
+    if (!practice) {
+      setErrors({ ...errors, country: 'Land ist erforderlich' });
+      return;
     }
+
     try {
-      VeterinaryPracticeCreateSchema.parse(practice)
-      mutateCreatePractice(practice)
+      VeterinaryPracticeCreateSchema.parse(practice);
+      mutateCreatePractice(practice);
     } catch (err) {
-      console.log('Zod Error: personRegistration' + err)
+      console.log('Zod Error: veterinaryRegistration' + err);
     }
   }
 
@@ -360,7 +206,7 @@ function VeterinaryRegistration() {
                   name="name"
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  value={name}
+                  value={practiceData.name}
                   isInvalid={!!errors.name}
                 />
                 <Form.Control.Feedback type="invalid">
@@ -380,7 +226,7 @@ function VeterinaryRegistration() {
                     name="email"
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    value={email}
+                    value={practiceData.email}
                     isInvalid={!!errors.email}
                   />
                   <Form.Control.Feedback type="invalid">
@@ -399,7 +245,7 @@ function VeterinaryRegistration() {
                     name="phone"
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    value={phone}
+                    value={practiceData.phone}
                     isInvalid={!!errors.phone}
                   />
                   <Form.Control.Feedback type="invalid">
@@ -412,7 +258,7 @@ function VeterinaryRegistration() {
                 <PasswordInput
                   id="password"
                   name="password"
-                  value={password}
+                  value={practiceData.password!}
                   onChange={handleChange}
                   onBlur={handleBlur}
                   placeholder="••••••••"
@@ -427,7 +273,7 @@ function VeterinaryRegistration() {
                 <div className="password-requirements">
                   <div className={`password-requirement ${passwordRequirements.minLength
                     ? 'valid'
-                    : password.length > 0
+                    : practiceData.password!.length > 0
                       ? 'invalid'
                       : 'neutral'
                     }`}>
@@ -435,7 +281,7 @@ function VeterinaryRegistration() {
                   </div>
                   <div className={`password-requirement ${passwordRequirements.hasUpperCase
                     ? 'valid'
-                    : password.length > 0
+                    : practiceData.password!.length > 0
                       ? 'invalid'
                       : 'neutral'
                     }`}>
@@ -443,7 +289,7 @@ function VeterinaryRegistration() {
                   </div>
                   <div className={`password-requirement ${passwordRequirements.hasNumber
                     ? 'valid'
-                    : password.length > 0
+                    : practiceData.password!.length > 0
                       ? 'invalid'
                       : 'neutral'
                     }`}>
@@ -451,7 +297,7 @@ function VeterinaryRegistration() {
                   </div>
                   <div className={`password-requirement ${passwordRequirements.hasSpecialChar
                     ? 'valid'
-                    : password.length > 0
+                    : practiceData.password!.length > 0
                       ? 'invalid'
                       : 'neutral'
                     }`}>
@@ -463,7 +309,7 @@ function VeterinaryRegistration() {
               <PasswordInput
                 id="CreateVeterinayrPracticeConfirmPassword"
                 name="confirmPassword"
-                value={confirmPassword}
+                value={practiceData.confirmPassword!}
                 onChange={handleChange}
                 onBlur={handleBlur}
                 placeholder="••••••••"
@@ -480,101 +326,116 @@ function VeterinaryRegistration() {
 
               <div className="form-row two-col">
                 <FormGroup className="form-group">
-                  <Form.Label htmlFor="strasse" className="form-label">
+                  <Form.Label htmlFor="street" className="form-label">
                     Straße *
                   </Form.Label>
                   <Form.Control
-                    id="strasse"
+                    id="street"
                     type="text"
                     placeholder="Musterstraße"
-                    name="strasse"
+                    name="street"
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    value={strasse}
-                    isInvalid={!!errors.strasse}
+                    value={practiceData.address.street}
+                    isInvalid={!!errors.street}
                   />
                   <Form.Control.Feedback type="invalid">
-                    {errors.strasse}
+                    {errors.street}
                   </Form.Control.Feedback>
                 </FormGroup>
 
                 <FormGroup className="form-group">
-                  <Form.Label htmlFor="hausnr" className="form-label">
+                  <Form.Label htmlFor="streetNumber" className="form-label">
                     Nr. *
                   </Form.Label>
                   <Form.Control
-                    id="hausnr"
+                    id="streetNumber"
                     type="text"
                     placeholder="1"
-                    name="hausnr"
+                    name="streetNumber"
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    value={hausnr}
-                    isInvalid={!!errors.hausnr}
+                    value={practiceData.address.streetNumber}
+                    isInvalid={!!errors.streetNumber}
                   />
                   <Form.Control.Feedback type="invalid">
-                    {errors.hausnr}
+                    {errors.streetNumber}
                   </Form.Control.Feedback>
                 </FormGroup>
               </div>
 
               <div className="form-row equal-col">
                 <FormGroup className="form-group">
-                  <Form.Label htmlFor="plz" className="form-label">
+                  <Form.Label htmlFor="cityCode" className="form-label">
                     PLZ *
                   </Form.Label>
                   <Form.Control
-                    id="plz"
+                    id="cityCode"
                     type="text"
                     placeholder="12345"
-                    name="plz"
+                    name="cityCode"
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    value={plz}
-                    isInvalid={!!errors.plz}
+                    value={practiceData.address.cityCode}
+                    isInvalid={!!errors.cityCode}
                   />
                   <Form.Control.Feedback type="invalid">
-                    {errors.plz}
+                    {errors.cityCode}
                   </Form.Control.Feedback>
                 </FormGroup>
 
                 <FormGroup className="form-group">
-                  <Form.Label htmlFor="stadt" className="form-label">
+                  <Form.Label htmlFor="city" className="form-label">
                     Stadt *
                   </Form.Label>
                   <Form.Control
-                    id="stadt"
+                    id="city"
                     type="text"
                     placeholder="Musterstadt"
-                    name="stadt"
+                    name="city"
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    value={stadt}
-                    isInvalid={!!errors.stadt}
+                    value={practiceData.address.city}
+                    isInvalid={!!errors.city}
                   />
                   <Form.Control.Feedback type="invalid">
-                    {errors.stadt}
+                    {errors.city}
                   </Form.Control.Feedback>
                 </FormGroup>
               </div>
 
               <FormGroup className="form-group">
-                <Form.Label htmlFor="land" className="form-label">
+                <Form.Label htmlFor="country" className="form-label">
                   Land *
                 </Form.Label>
-                <Form.Control
-                  id="land"
-                  type="text"
-                  placeholder="Deutschland"
-                  name="land"
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  value={land}
-                  isInvalid={!!errors.land}
-                />
-                <Form.Control.Feedback type="invalid">
-                  {errors.land}
-                </Form.Control.Feedback>
+                {isSuccessCountries && (
+                  <Select
+                    inputId="country"
+                    name="country"
+                    options={countryOptions}
+                    value={practiceData.address.country ? countryOptions.find((opt) => opt.value.id === practiceData.address.country!.id) : null}
+                    onChange={handleCountryChange}
+                    onBlur={() => {
+                      const newErrors = validatePracticeFormular(practiceData, errors, 'country');
+                      setErrors(newErrors);
+                    }}
+                    placeholder="Land auswählen..."
+                    isClearable
+                    isSearchable
+                    noOptionsMessage={() => "Keine Länder gefunden"}
+                    styles={{
+                      control: (base) => ({
+                        ...base,
+                        borderColor: errors.country ? '#dc3545' : base.borderColor,
+                      })
+                    }}
+                  />
+                )}
+                {errors.country && (
+                  <div className="invalid-feedback d-block">
+                    {errors.country}
+                  </div>
+                )}
               </FormGroup>
             </div>
 
@@ -583,21 +444,21 @@ function VeterinaryRegistration() {
 
               <div className="form-row equal-col">
                 <FormGroup className="form-group">
-                  <Form.Label htmlFor="infoemail" className="form-label">
+                  <Form.Label htmlFor="infoEmail" className="form-label">
                     Info E-Mail *
                   </Form.Label>
                   <Form.Control
-                    id="infoemail"
+                    id="infoEmail"
                     type="email"
                     placeholder="info@beispiel.de"
-                    name="infoemail"
+                    name="infoEmail"
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    value={infoemail}
-                    isInvalid={!!errors.infoemail}
+                    value={practiceData.infoEmail}
+                    isInvalid={!!errors.infoEmail}
                   />
                   <Form.Control.Feedback type="invalid">
-                    {errors.infoemail}
+                    {errors.infoEmail}
                   </Form.Control.Feedback>
                 </FormGroup>
 
@@ -612,7 +473,7 @@ function VeterinaryRegistration() {
                     name="website"
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    value={website}
+                    value={practiceData.website}
                     isInvalid={!!errors.website}
                   />
                   <Form.Control.Feedback type="invalid">
@@ -632,7 +493,7 @@ function VeterinaryRegistration() {
                   placeholder="Beschreibung Ihrer Praxis..."
                   name="info"
                   onChange={handleChange}
-                  value={info}
+                  value={practiceData.info}
                 />
               </FormGroup>
             </div>

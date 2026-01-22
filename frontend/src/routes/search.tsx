@@ -13,6 +13,7 @@ export type VeterinaryPracticeSearch = {
   address: string
   animalType: string
   serviceType: string
+  animal?: string
 }
 
 export const Route = createFileRoute('/search')({
@@ -26,7 +27,7 @@ export const Route = createFileRoute('/search')({
 
 function SearchComponent() {
   useTitle('Suche');
-  const { address, animalType, serviceType } = Route.useSearch()
+  const { address, animalType, serviceType, animal } = Route.useSearch()
   // serviceType or animalType are an empty string if the route was called from outside
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   const [filterServiceType, setFilterServiceType] = useState<Array<number>>(serviceType !== undefined ? stringToArray(serviceType.toString()) : [])
@@ -35,14 +36,24 @@ function SearchComponent() {
   const [filterLocation, setFilterLocation] = useState<string>(address || '')
   const [totalResults, setTotalResults] = useState<number>(0)
   const [filterAnimal, setFilterAnimal] = useState<number | undefined>(
-    undefined,
+    animal !== undefined ? parseInt(animal) : undefined,
   )
   const [page, setPage] = useState<number>(1) // current pageNumber for VeterinaryPracticeList
 
-  const filterOptions: AppointmentFilterType = {
+  // Applied filters - only update when "Apply" button clicked
+  const [appliedFilterOptions, setAppliedFilterOptions] = useState<AppointmentFilterType>({
     animalTypeIds: filterAnimalType,
     serviceTypeIds: filterServiceType,
     animal: filterAnimal,
+  })
+
+  const handleApplyFilters = () => {
+    setAppliedFilterOptions({
+      animalTypeIds: filterAnimalType,
+      serviceTypeIds: filterServiceType,
+      animal: filterAnimal,
+    })
+    setPage(1)
   }
 
   return (
@@ -59,7 +70,7 @@ function SearchComponent() {
             setFilterServiceType={setFilterServiceType}
             setFilterLocation={setFilterLocation}
             setFilterAnimal={setFilterAnimal}
-            setCurrentPageNumber={setPage}
+            setCurrentPageNumber={handleApplyFilters}
           />
         </div>
       </div>
@@ -73,7 +84,7 @@ function SearchComponent() {
           </h4>
           <p className="results-count">
             <i className="bi bi-search"></i>
-            {totalResults} {totalResults === 1 ? 'Ergebnis' : 'Ergebnisse'}{' '}
+            {'  '}{totalResults} {totalResults === 1 ? 'Ergebnis' : 'Ergebnisse'}{' '}
             gefunden
           </p>
         </div>
@@ -83,7 +94,7 @@ function SearchComponent() {
           <VeterinaryPracticeList
             searchName={''}
             searchOrt={filterLocation}
-            filterOptions={filterOptions}
+            filterOptions={appliedFilterOptions}
             onTotalChange={setTotalResults}
             setCurrentPageNumber={setPage}
             currentPageNumber={page}

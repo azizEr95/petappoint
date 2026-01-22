@@ -1,58 +1,63 @@
 import { AppointmentsType, ServiceType } from "vetilib-shared/schemas/ZodSchemas";
 
-export function mapToAppointment(appointment: any): AppointmentsType {
-    return {
-        id: appointment.id,
-        startTime: appointment.startTime,
-        endTime: appointment.endTime,
-        animal: appointment.animal
-          ? {
-            id: appointment.animal.id,
-            name: appointment.animal.name,
-            dateOfBirth: appointment.animal.dateOfBirth,
-            dateOfBirthIsExact: appointment.animal.dateOfBirthIsExact,
-            heightInCm: appointment.animal.heightInCm,
-            weightInGram: appointment.animal.weightInGram,
-            isCastrated: appointment.animal.isCastrated,
-            lifestyle: appointment.animal.lifestyle,
-            sex: appointment.animal.sex,
-            timeOfDeath: appointment.animal.timeOfDeath,
-            animalGroupId: appointment.animal.animalGroupId,
-            animalTypeId: appointment.animal.animalTypeId,
-          }
-          : null,
-        veterinaryPractice: {
-          id: appointment.veterinaryPractice.id,
-          address: appointment.veterinaryPractice.address,
-          email: appointment.veterinaryPractice.email,
-          info: appointment.veterinaryPractice.info,
-          infoEmail: appointment.veterinaryPractice.infoEmail,
-          name: appointment.veterinaryPractice.name,
-          phone: appointment.veterinaryPractice.phone,
-          website: appointment.veterinaryPractice.website,
-        },
-        veterinary: {
-          id: appointment.veterinarian.id,
-          firstName: appointment.veterinarian.person.firstName,
-          lastName: appointment.veterinarian.person.lastName,
-          infoEmail: appointment.veterinarian.infoEmail,
-          veterinaryPracticeId: appointment.veterinaryPractice.id,
-        },
-        service: appointment.service
-          ? {
-            id: appointment.service.id,
-            name: appointment.service.name,
-          }
-          : null,
-        availableServices: getAvailableServices(appointment),
-        notes: appointment.notes,
-      };
+import { Sexes } from "generated/prisma";
+import { PersonsType } from "vetilib-shared/schemas/ZodSchemas";
+import { AnimalPrismaMappedType, mapToAnimal } from "./mapToAnimal";
+import { mapToVeterinaryPractice, VeterinaryPracticePrismaMappedType } from "./mapToVeterinaryPractice";
+import { mapToVeterinary, VeterinaryPrismaMappedType } from "./mapToVeterinary";
+import { mapToService, ServicePrismaMappedType } from "./mapToService";
+
+export type AppointmentPrismaMappedType = {
+  id: number,
+  startTime: Date,
+  endTime: Date,
+  animal: AnimalPrismaMappedType | null,
+  veterinaryPractice: VeterinaryPracticePrismaMappedType,
+  veterinarian: VeterinaryPrismaMappedType & {
+    veterinaryHasServices?: {
+      veterinaryId: number,
+      serviceId: number,
+      notes: string | null,
+      service: ServicePrismaMappedType
+    }[],
+    veterinaryCanTreatAnimalTypes?: {
+      animalTypeId: number,
+      veterinaryId: number
+    }[]
+  },
+  service: ServicePrismaMappedType | null,
+  notes: string | null,
+  appointmentHasServices: {
+    appointmentId: number,
+    serviceId: number,
+    service: ServicePrismaMappedType
+  }[]
 }
 
-function getAvailableServices(appointment: any): ServiceType[] {
-    const availableServices: ServiceType[] =
-          appointment.appointmentHasServices.length > 0
-            ? appointment.appointmentHasServices.flatMap((x: any) => x.service)
-            : appointment.veterinarian.veterinaryHasServices.flatMap((x: any) => x.service);
-    return availableServices;
+export function mapToAppointment(appointment: AppointmentPrismaMappedType): AppointmentsType {
+  return {
+    id: appointment.id,
+    startTime: appointment.startTime,
+    endTime: appointment.endTime,
+    animal: appointment.animal ? mapToAnimal(appointment.animal) : null,
+    veterinaryPractice: mapToVeterinaryPractice(appointment.veterinaryPractice),
+    veterinary: mapToVeterinary(appointment.veterinarian),
+    service: appointment.service
+      ? mapToService(appointment.service)
+      : null,
+    availableServices: getAvailableServices(appointment),
+    notes: appointment.notes,
+  };
+}
+
+function getAvailableServices(appointment: AppointmentPrismaMappedType): ServiceType[] {
+  if (appointment.appointmentHasServices.length > 0) {
+    return appointment.appointmentHasServices.flatMap(x => mapToService(x.service));
+  }
+
+  if (appointment.veterinarian.veterinaryHasServices) {
+    return appointment.veterinarian.veterinaryHasServices.flatMap(x => mapToService(x.service));
+  }
+
+  return [];
 }

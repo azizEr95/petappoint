@@ -3,17 +3,17 @@ import {
   AnimalsType,
   PersonsCreateType,
   PersonsType,
-  PersonsUpdateSchema,
   PersonsUpdateType,
   PostgresIdSchema,
 } from "vetilib-shared/schemas/ZodSchemas";
 import { addressService } from "./addressService";
-import z from "zod";
 import { ResourceNotFoundError } from "../exceptions/errors/ResourceNotFoundError";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { ConstraintError } from "../exceptions/errors/ConstraintError";
 import { person_has_confirmation_code } from "../../generated/prisma";
+import { mapToPerson } from "../helper/mapToPerson";
+import { mapToAnimal } from "../helper/mapToAnimal";
 
 export const personService = {
   async create(dataRe: PersonsCreateType): Promise<PersonsType> {
@@ -34,7 +34,14 @@ export const personService = {
         sex: dataRe.sex,
         dateOfBirth: dataRe.dateOfBirth,
         address: {
-          create: dataRe.address,
+          create: {
+            city: dataRe.address.cityCode,
+            cityCode: dataRe.address.cityCode,
+            latitude: dataRe.address.latitude,
+            longitude: dataRe.address.longitude,
+            street: dataRe.address.street,
+            fk_country: dataRe.address.country
+          },
         },
         phone: dataRe.phone,
         email: dataRe.email,
@@ -42,16 +49,7 @@ export const personService = {
       },
     });
 
-    return {
-      id: created.id,
-      firstName: created.firstName,
-      lastName: created.lastName,
-      sex: created.sex,
-      dateOfBirth: created.dateOfBirth,
-      address: created.address!,
-      phone: created.phone,
-      email: created.email,
-    };
+    return mapToPerson(created);
   },
 
   async connectAnimal(personId: number, animalId: number): Promise<void> {
@@ -75,19 +73,10 @@ export const personService = {
       throw new ResourceNotFoundError(`Person not found with id: ${id}`, "id", id);
     }
 
-    return {
-      id: foundPerson.id,
-      firstName: foundPerson.firstName,
-      lastName: foundPerson.lastName,
-      sex: foundPerson.sex,
-      dateOfBirth: foundPerson.dateOfBirth,
-      address: foundPerson.address,
-      phone: foundPerson.phone,
-      email: foundPerson.email,
-    };
+    return mapToPerson(foundPerson);
   },
 
-  async getByEmail(email: string): Promise<PersonsType> {
+  async getByEmail(email: string): Promise<PersonsType | null> {
     const foundPerson = await prisma.person.findUnique({
       include: {
         address: true,
@@ -96,19 +85,10 @@ export const personService = {
     });
 
     if (!foundPerson) {
-      throw new ResourceNotFoundError(`Person not found with the email ${email}`, "email", email);
+      return null
     }
 
-    return {
-      id: foundPerson.id,
-      firstName: foundPerson.firstName,
-      lastName: foundPerson.lastName,
-      sex: foundPerson.sex,
-      dateOfBirth: foundPerson.dateOfBirth,
-      address: foundPerson.address,
-      phone: foundPerson.phone,
-      email: foundPerson.email,
-    };
+    return mapToPerson(foundPerson);
   },
 
   async getAll(): Promise<PersonsType[]> {
@@ -118,16 +98,7 @@ export const personService = {
       },
     });
 
-    return found.map((foundPerson) => ({
-      id: foundPerson.id,
-      firstName: foundPerson.firstName,
-      lastName: foundPerson.lastName,
-      sex: foundPerson.sex,
-      dateOfBirth: foundPerson.dateOfBirth,
-      address: foundPerson.address,
-      phone: foundPerson.phone,
-      email: foundPerson.email,
-    }));
+    return found.map((foundPerson) => mapToPerson(foundPerson));
   },
 
   async update(dataRe: PersonsUpdateType): Promise<PersonsType> {
@@ -163,16 +134,7 @@ export const personService = {
       },
     });
 
-    return {
-      id: updatedPerson.id,
-      firstName: updatedPerson.firstName,
-      lastName: updatedPerson.lastName,
-      sex: updatedPerson.sex,
-      dateOfBirth: updatedPerson.dateOfBirth,
-      address: updatedPerson.address,
-      phone: updatedPerson.phone,
-      email: updatedPerson.email,
-    };
+    return mapToPerson(updatedPerson);
   },
 
   async updateEmail(id: number, dataEmail: string): Promise<PersonsType> { // only updating the email
@@ -196,16 +158,7 @@ export const personService = {
       },
     });
 
-    return {
-      id: updatedPerson.id,
-      firstName: updatedPerson.firstName,
-      lastName: updatedPerson.lastName,
-      sex: updatedPerson.sex,
-      dateOfBirth: updatedPerson.dateOfBirth,
-      address: updatedPerson.address,
-      phone: updatedPerson.phone,
-      email: updatedPerson.email,
-    };
+    return mapToPerson(updatedPerson);
   },
 
   async favorizeVeterinaryPracticesByIds(personId: number, practiceIds: number[]): Promise<void> {
@@ -253,20 +206,7 @@ export const personService = {
       },
     });
 
-    return animals.map((x) => ({
-      id: x.animal.id,
-      name: x.animal.name,
-      dateOfBirth: x.animal.dateOfBirth,
-      dateOfBirthIsExact: x.animal.dateOfBirthIsExact,
-      weightInGram: x.animal.weightInGram,
-      heightInCm: x.animal.heightInCm,
-      timeOfDeath: x.animal.timeOfDeath,
-      isCastrated: x.animal.isCastrated,
-      lifestyle: x.animal.lifestyle,
-      sex: x.animal.sex,
-      animalTypeId: x.animal.animalTypeId,
-      animalGroupId: x.animal.animalGroupId,
-    }));
+    return animals.map((x) => mapToAnimal(x.animal));
   },
 
   async delete(id: number): Promise<void> {

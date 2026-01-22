@@ -1,10 +1,12 @@
 import { useQuery } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
-import { Button, Form } from 'react-bootstrap'
+import { Button } from 'react-bootstrap'
 import { useLoginContext } from '../../LoginContext'
 import { getAllAnimalTypes } from '../../api/AnimalTypeAPI'
 import { getAllAvailableServices } from '../../api/ServicesAPI'
 import { getAnimalsFromUser } from '../../api/AnimalsAPI'
+import { Autocomplete } from './Autocomplete'
+import { LocationAutocomplete } from './LocationAutocomplete'
 import type {
   AnimalTypeType,
   AnimalsType,
@@ -36,7 +38,6 @@ export function InlineFilterBar({
   setCurrentPageNumber,
 }: InlineFilterBarProps) {
   const { login } = useLoginContext()
-  const [isLoadingLocation, setIsLoadingLocation] = useState(false)
   const [selectedService, setSelectedService] = useState<number | undefined>()
 
   // Fetch animal types
@@ -79,35 +80,6 @@ export function InlineFilterBar({
     }
   }, [filterAnimal, userAnimals, setFilterAnimalType])
 
-  const handleGetCurrentLocation = () => {
-    setIsLoadingLocation(true)
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        const { latitude, longitude } = position.coords
-        try {
-          const response = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`,
-            { headers: { 'Accept-Language': 'de' } },
-          )
-          const data = await response.json()
-          const city =
-            data.address?.city || data.address?.town || data.address?.village || ''
-          setFilterLocation(city)
-          setCurrentPageNumber(1)
-        } catch (error) {
-          console.error('Fehler beim Abrufen der Adresse:', error)
-          alert('Standort konnte nicht ermittelt werden')
-        } finally {
-          setIsLoadingLocation(false)
-        }
-      },
-      () => {
-        setIsLoadingLocation(false)
-        alert('Zugriff auf Standort wurde verweigert')
-      },
-    )
-  }
-
   const handleApplyFilters = () => {
     setCurrentPageNumber(1)
   }
@@ -120,29 +92,17 @@ export function InlineFilterBar({
     setCurrentPageNumber(1)
   }
 
-  const handleLocationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFilterLocation(e.target.value)
-    setCurrentPageNumber(1)
+  const handleAnimalChange = (id: number | undefined) => {
+    setFilterAnimal(id)
   }
 
-  const handleAnimalChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = e.target.value
-    setFilterAnimal(value ? parseInt(value) : undefined)
-    setCurrentPageNumber(1)
+  const handleAnimalTypeChange = (id: number | undefined) => {
+    setFilterAnimalType(id ? [id] : [])
   }
 
-  const handleAnimalTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = e.target.value
-    setFilterAnimalType(value ? [parseInt(value)] : [])
-    setCurrentPageNumber(1)
-  }
-
-  const handleServiceChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = e.target.value
-    const serviceId = value ? parseInt(value) : undefined
-    setSelectedService(serviceId)
-    setFilterServiceType(serviceId ? [serviceId] : [])
-    setCurrentPageNumber(1)
+  const handleServiceChange = (id: number | undefined) => {
+    setSelectedService(id)
+    setFilterServiceType(id ? [id] : [])
   }
 
   const hasAnimals = userAnimals.length > 0
@@ -160,76 +120,48 @@ export function InlineFilterBar({
 
       <div className="filter-controls">
         {/* Animal / Animal Type */}
-        <Form.Group className="filter-item">
-          <Form.Label>Tier:</Form.Label>
+        <div className="filter-item">
           {login && hasAnimals ? (
-            <Form.Select
-              value={filterAnimal || ''}
+            <Autocomplete
+              options={userAnimals.map((a) => ({ id: a.id, name: a.name }))}
+              value={filterAnimal}
               onChange={handleAnimalChange}
-            >
-              <option value="">Tier auswählen</option>
-              {userAnimals.map((animal) => (
-                <option key={animal.id} value={animal.id}>
-                  {animal.name}
-                </option>
-              ))}
-            </Form.Select>
+              placeholder="Nach Tier suchen..."
+              label="Tier"
+            />
           ) : (
-            <Form.Select
-              value={filterAnimalType[0] || ''}
+            <Autocomplete
+              options={animalTypes.map((t) => ({ id: t.id, name: t.name }))}
+              value={filterAnimalType[0]}
               onChange={handleAnimalTypeChange}
-            >
-              <option value="">Tierart auswählen</option>
-              {animalTypes.map((type) => (
-                <option key={type.id} value={type.id}>
-                  {type.name}
-                </option>
-              ))}
-            </Form.Select>
+              placeholder="Nach Tierart suchen..."
+              label="Tierart"
+            />
           )}
-        </Form.Group>
+        </div>
 
         {/* Services */}
-        <Form.Group className="filter-item">
-          <Form.Label>Behandlung:</Form.Label>
-          <Form.Select
-            value={selectedService || ''}
+        <div className="filter-item">
+          <Autocomplete
+            options={services.map((s) => ({ id: s.id, name: s.name }))}
+            value={selectedService}
             onChange={handleServiceChange}
-          >
-            <option value="">Behandlung auswählen</option>
-            {services.map((service) => (
-              <option key={service.id} value={service.id}>
-                {service.name}
-              </option>
-            ))}
-          </Form.Select>
-        </Form.Group>
+            placeholder="Nach Behandlung suchen..."
+            label="Service"
+          />
+        </div>
 
         {/* Location */}
         <div className="location-input-group">
           <label>Standort:</label>
           <div className="input-wrapper">
-            <Form.Control
-              type="text"
-              placeholder="Stadt, PLZ oder Standort"
+            <LocationAutocomplete
               value={filterLocation}
-              onChange={handleLocationChange}
+              onChange={setFilterLocation}
+              placeholder={'Stadt, PLZ oder Standort'}
+              label='Standort'
+              showGeolocationButton={true}
             />
-            <Button
-              variant="outline-secondary"
-              onClick={handleGetCurrentLocation}
-              disabled={isLoadingLocation}
-              className="location-btn"
-              title="Aktuellen Standort verwenden"
-            >
-              <i
-                className={
-                  isLoadingLocation
-                    ? 'bi bi-arrow-clockwise spin'
-                    : 'bi bi-geo-alt'
-                }
-              ></i>
-            </Button>
           </div>
         </div>
 

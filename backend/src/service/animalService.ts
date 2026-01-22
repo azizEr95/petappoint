@@ -175,7 +175,7 @@ export const animalService = {
       where: {
         animalId: id,
         startTime: {
-          lt: new Date(),
+          gte: new Date(),
         },
       },
       select: {
@@ -193,6 +193,35 @@ export const animalService = {
       );
     }
 
+    await prisma.animal.delete({ where: { id } });
+  },
+
+  async deleteWithAppointmentCancellation(id: number): Promise<void> {
+    // Find future appointments
+    const futureAppointments = await prisma.appointment.findMany({
+      where: {
+        animalId: id,
+        startTime: {
+          gte: new Date(),
+        },
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    // Cancel all future appointments
+    if (futureAppointments.length > 0) {
+      await prisma.appointment.deleteMany({
+        where: {
+          id: {
+            in: futureAppointments.map((a) => a.id),
+          },
+        },
+      });
+    }
+
+    // Delete the animal
     await prisma.animal.delete({ where: { id } });
   },
 

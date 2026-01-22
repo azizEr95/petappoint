@@ -5,18 +5,44 @@ import {
   AppointmentsType,
   VeterinaryPracticesType,
   VeterinaryPracticeCreateSchema,
+  VeterinaryPracticeUpdateSchema,
   ServiceType,
   VeterinaryPracticeSearchQuerySchema,
   AnimalTypeType,
   AppointmentFilterSchema,
   VeterinaryPracticeSearchResultType,
   PostgresIdSchema,
+  AnimalsType,
+  PersonsType,
 } from "vetilib-shared/schemas/ZodSchemas";
 import { checkVerified, optionalAuthentication, requiresAuthentication } from "./authentication";
 import { createJWT, verifyJWT, verifyPasswordAndCreateJWT } from "../service/jwtService";
 import { emailService } from "../service/emailService";
+import { AuthorizationError } from "../exceptions/errors/AuthorizationError";
+import multer from "multer";
 
 export const veterinaryPracticeRouter = express.Router();
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "public/uploads/practices");
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(null, file.fieldname + "-" + uniqueSuffix + "." + file.originalname.split(".").pop());
+  },
+});
+
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 2 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    if (!file.mimetype.startsWith("image/")) {
+      return cb(new Error("Only images are allowed"));
+    }
+    cb(null, true);
+  },
+});
 
 veterinaryPracticeRouter.get("/all", optionalAuthentication, async (_req, res) => {
   const allVeterinarians: VeterinaryPracticesType[] = await veterinaryPracticeService.getAll();
@@ -46,6 +72,12 @@ veterinaryPracticeRouter.get("/:id/animaltypes", optionalAuthentication, async (
   const animalTypes: AnimalTypeType[] = await veterinaryPracticeService.getAllAnimalTypes(id);
   return res.send(animalTypes);
 });
+
+veterinaryPracticeRouter.get("/:id/customers", optionalAuthentication, async (req, res) => {
+  const id: number = PostgresIdSchema.parse(parseInt(req.params.id));
+  const animalWithPersons: { animal: AnimalsType; person: PersonsType }[] = await veterinaryPracticeService.getAnimalWithPerson(id);
+  return res.send(animalWithPersons);
+})
 
 veterinaryPracticeRouter.get("/:id/appointments", optionalAuthentication, async (req, res) => {
   const id: number = PostgresIdSchema.parse(parseInt(req.params.id));
@@ -83,6 +115,63 @@ veterinaryPracticeRouter.get("/:id/appointments/booked", optionalAuthentication,
     parsedFilter.data
   );
   return res.send(availableAppointments);
+});
+
+veterinaryPracticeRouter.put("/:id", requiresAuthentication, checkVerified, async (req, res) => {
+  const id = PostgresIdSchema.parse(parseInt(req.params.id));
+  const validatedBody = VeterinaryPracticeUpdateSchema.parse(req.body);
+
+  // Only allow practice to update their own profile
+  if (req.userId !== id) {
+    throw new AuthorizationError("No access to update this practice");
+  }
+
+  const updated = await veterinaryPracticeService.update({
+    id,
+    name: validatedBody.name,
+    phone: validatedBody.phone,
+    email: validatedBody.email,
+    infoEmail: validatedBody.infoEmail,
+    website: validatedBody.website,
+    info: validatedBody.info,
+    address: {
+      ...validatedBody.address,
+    },
+  } as VeterinaryPracticesType);
+  res.send(updated);
+});
+
+veterinaryPracticeRouter.get("/:id/image", requiresAuthentication, checkVerified, async (req, res) => {
+  const id = PostgresIdSchema.parse(parseInt(req.params.id));
+
+  if (id !== req.userId) {
+    throw new AuthorizationError("No access to image of this practice");
+  }
+
+  const filepath = await veterinaryPracticeService.getPicturePath(id);
+  res.sendFile(filepath);
+});
+
+veterinaryPracticeRouter.post("/:id/image", requiresAuthentication, checkVerified, upload.single("image"), async (req, res) => {
+  const id = PostgresIdSchema.parse(parseInt(req.params.id));
+
+  if (id !== req.userId) {
+    throw new AuthorizationError("No access to update image of this practice");
+  }
+
+  await veterinaryPracticeService.savePicture(id, req.file?.path ?? null);
+  res.sendStatus(201);
+});
+
+veterinaryPracticeRouter.delete("/:id/image", requiresAuthentication, checkVerified, async (req, res) => {
+  const id = PostgresIdSchema.parse(parseInt(req.params.id));
+
+  if (id !== req.userId) {
+    throw new AuthorizationError("No access to delete image of this practice");
+  }
+
+  await veterinaryPracticeService.deletePicture(id);
+  res.sendStatus(204);
 });
 
 veterinaryPracticeRouter.post("/", optionalAuthentication,

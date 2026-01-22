@@ -1,13 +1,23 @@
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { appointmentService } from "../../src/service/appointmentService";
 import { veterinaryService } from "../../src/service/veterinaryService";
 import { veterinaryPracticeService } from "../../src/service/veterinaryPracticeService";
 import { personService } from "../../src/service/personService";
 import { serviceService } from "../../src/service/serviceService";
-import { AppointmentsType } from "vetilib-shared/schemas/ZodSchemas";
+import { countryService } from "../../src/service/countryService";
+import { AppointmentsType, CountryType } from "vetilib-shared/schemas/ZodSchemas";
 import { createDateTime } from "../../src/helper/createDateTime";
 
 describe("appointmentService CRUD Functions", () => {
+    let testCountry: CountryType;
+
+    beforeEach(async () => {
+        testCountry = await countryService.create({
+            code: "DEU",
+            name: "Deutschland",
+        });
+    });
+
     it("create an appointment", async () => {
         const testService = await serviceService.create({
             name: "Impfung",
@@ -24,7 +34,7 @@ describe("appointmentService CRUD Functions", () => {
                 street: "Knobelsdorffstrasse 105",
                 cityCode: "DE",
                 city: "Berlin",
-                country: "Deutschland",
+                country: testCountry.id,
                 longitude: 1,
                 latitude: 1,
             },
@@ -41,7 +51,7 @@ describe("appointmentService CRUD Functions", () => {
                 street: "Knobelsdorffstrasse 99",
                 cityCode: "DE",
                 city: "Berlin",
-                country: "Deutschland",
+                country: testCountry.id,
                 longitude: 2,
                 latitude: 2,
             },
@@ -49,6 +59,8 @@ describe("appointmentService CRUD Functions", () => {
 
         })
         const testVet = await veterinaryService.create({
+            firstName: "Bello",
+            lastName: "Bello",
             id: testPerson.id,
             infoEmail: "vet@info.de",
             fk_veterinarypracticeid: testVetPractice.id
@@ -59,11 +71,12 @@ describe("appointmentService CRUD Functions", () => {
         const testAppointment = {
             startTime: startTime,
             endTime: endTime,
+            endDate: endDate,
             veterinaryId: testVet.id,
-            veterinaryPracticeId: testVetPractice.id,
+            fk_veterinarypracticeid: testVetPractice.id,
             availableServiceIds: [testService.id],
         }
-        const appointments: AppointmentsType[] = await appointmentService.createWeeklyAppointments(testAppointment, endDate);
+        const appointments: AppointmentsType[] = await appointmentService.createWeeklyAppointments(testAppointment);
         const getAppointment1 = await appointmentService.getById(appointments[0].id);
         expect(getAppointment1).toStrictEqual(appointments[0]);
         expect(createDateTime(getAppointment1.startTime)).toBe("Freitag, 16. Januar 2026 um 10:00")

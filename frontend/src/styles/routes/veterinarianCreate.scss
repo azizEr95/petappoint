@@ -1,0 +1,62 @@
+@import './auth-shared';
+
+// Specific styles for veterinarian creation
+.auth-container {
+  max-width: 800px;
+}
+
+.mode-toggle {
+  padding: 1rem;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  background-color: #f8f9fa;
+
+  .form-check {
+    margin-bottom: 0.5rem;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+.password-requirements {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+  font-size: 0.875rem;
+
+  .requirements-title {
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #495057;
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    li {
+      padding: 0.25rem 0;
+      color: #6c757d;
+      transition: color 0.2s ease;
+
+      &.met {
+        color: #28a745;
+        font-weight: 500;
+
+        &::before {
+          content: '✓ ';
+          margin-right: 0.25rem;
+        }
+      }
+
+      &:not(.met)::before {
+        content: '○ ';
+        margin-right: 0.25rem;
+      }
+    }
+  }
+}

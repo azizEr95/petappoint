@@ -13,14 +13,21 @@ import { Route as SearchRouteImport } from './routes/search'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as AnimalsRouteImport } from './routes/animals'
+import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CustomersIndexRouteImport } from './routes/customers/index'
 import { Route as AppointmentsIndexRouteImport } from './routes/appointments/index'
+import { Route as VeterinariansCreateRouteImport } from './routes/veterinarians/create'
 import { Route as RegistrationVeterinarypracticeRouteImport } from './routes/registration/veterinarypractice'
 import { Route as RegistrationVerifyEmailRouteImport } from './routes/registration/verify-email'
 import { Route as RegistrationPersonRouteImport } from './routes/registration/person'
 import { Route as PracticesFavoritesRouteImport } from './routes/practices/favorites'
 import { Route as PracticesPracticeIdRouteImport } from './routes/practices/$practiceId'
 import { Route as PasswordResetRequestRouteImport } from './routes/password-reset/request'
+import { Route as LegalImpressumRouteImport } from './routes/legal/impressum'
+import { Route as LegalDatenschutzRouteImport } from './routes/legal/datenschutz'
+import { Route as LegalAgbRouteImport } from './routes/legal/agb'
+import { Route as CustomersAnimalIdRouteImport } from './routes/customers/$animalId'
 import { Route as BookingConfirmationRouteImport } from './routes/booking/confirmation'
 import { Route as BookingAppointmentIdRouteImport } from './routes/booking/$appointmentId'
 import { Route as AppointmentsCreateRouteImport } from './routes/appointments/create'
@@ -48,14 +55,29 @@ const AnimalsRoute = AnimalsRouteImport.update({
   path: '/animals',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CustomersIndexRoute = CustomersIndexRouteImport.update({
+  id: '/customers/',
+  path: '/customers/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AppointmentsIndexRoute = AppointmentsIndexRouteImport.update({
   id: '/appointments/',
   path: '/appointments/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VeterinariansCreateRoute = VeterinariansCreateRouteImport.update({
+  id: '/veterinarians/create',
+  path: '/veterinarians/create',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RegistrationVeterinarypracticeRoute =
@@ -87,6 +109,26 @@ const PracticesPracticeIdRoute = PracticesPracticeIdRouteImport.update({
 const PasswordResetRequestRoute = PasswordResetRequestRouteImport.update({
   id: '/password-reset/request',
   path: '/password-reset/request',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LegalImpressumRoute = LegalImpressumRouteImport.update({
+  id: '/legal/impressum',
+  path: '/legal/impressum',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LegalDatenschutzRoute = LegalDatenschutzRouteImport.update({
+  id: '/legal/datenschutz',
+  path: '/legal/datenschutz',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LegalAgbRoute = LegalAgbRouteImport.update({
+  id: '/legal/agb',
+  path: '/legal/agb',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CustomersAnimalIdRoute = CustomersAnimalIdRouteImport.update({
+  id: '/customers/$animalId',
+  path: '/customers/$animalId',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BookingConfirmationRoute = BookingConfirmationRouteImport.update({
@@ -125,6 +167,7 @@ const AppointmentsAppointmentIdRescheduleRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/animals': typeof AnimalsRoute
   '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
@@ -132,19 +175,26 @@ export interface FileRoutesByFullPath {
   '/appointments/create': typeof AppointmentsCreateRoute
   '/booking/$appointmentId': typeof BookingAppointmentIdRoute
   '/booking/confirmation': typeof BookingConfirmationRoute
+  '/customers/$animalId': typeof CustomersAnimalIdRoute
+  '/legal/agb': typeof LegalAgbRoute
+  '/legal/datenschutz': typeof LegalDatenschutzRoute
+  '/legal/impressum': typeof LegalImpressumRoute
   '/password-reset/request': typeof PasswordResetRequestRoute
   '/practices/$practiceId': typeof PracticesPracticeIdRoute
   '/practices/favorites': typeof PracticesFavoritesRoute
   '/registration/person': typeof RegistrationPersonRoute
   '/registration/verify-email': typeof RegistrationVerifyEmailRoute
   '/registration/veterinarypractice': typeof RegistrationVeterinarypracticeRoute
+  '/veterinarians/create': typeof VeterinariansCreateRoute
   '/appointments': typeof AppointmentsIndexRoute
+  '/customers': typeof CustomersIndexRoute
   '/appointments/$appointmentId/reschedule': typeof AppointmentsAppointmentIdRescheduleRoute
   '/password-reset/confirm/$token': typeof PasswordResetConfirmTokenRoute
   '/registration/email-confirmation/$emailVerifyCode': typeof RegistrationEmailConfirmationEmailVerifyCodeRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/animals': typeof AnimalsRoute
   '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
@@ -152,13 +202,19 @@ export interface FileRoutesByTo {
   '/appointments/create': typeof AppointmentsCreateRoute
   '/booking/$appointmentId': typeof BookingAppointmentIdRoute
   '/booking/confirmation': typeof BookingConfirmationRoute
+  '/customers/$animalId': typeof CustomersAnimalIdRoute
+  '/legal/agb': typeof LegalAgbRoute
+  '/legal/datenschutz': typeof LegalDatenschutzRoute
+  '/legal/impressum': typeof LegalImpressumRoute
   '/password-reset/request': typeof PasswordResetRequestRoute
   '/practices/$practiceId': typeof PracticesPracticeIdRoute
   '/practices/favorites': typeof PracticesFavoritesRoute
   '/registration/person': typeof RegistrationPersonRoute
   '/registration/verify-email': typeof RegistrationVerifyEmailRoute
   '/registration/veterinarypractice': typeof RegistrationVeterinarypracticeRoute
+  '/veterinarians/create': typeof VeterinariansCreateRoute
   '/appointments': typeof AppointmentsIndexRoute
+  '/customers': typeof CustomersIndexRoute
   '/appointments/$appointmentId/reschedule': typeof AppointmentsAppointmentIdRescheduleRoute
   '/password-reset/confirm/$token': typeof PasswordResetConfirmTokenRoute
   '/registration/email-confirmation/$emailVerifyCode': typeof RegistrationEmailConfirmationEmailVerifyCodeRoute
@@ -166,6 +222,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/animals': typeof AnimalsRoute
   '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
@@ -173,13 +230,19 @@ export interface FileRoutesById {
   '/appointments/create': typeof AppointmentsCreateRoute
   '/booking/$appointmentId': typeof BookingAppointmentIdRoute
   '/booking/confirmation': typeof BookingConfirmationRoute
+  '/customers/$animalId': typeof CustomersAnimalIdRoute
+  '/legal/agb': typeof LegalAgbRoute
+  '/legal/datenschutz': typeof LegalDatenschutzRoute
+  '/legal/impressum': typeof LegalImpressumRoute
   '/password-reset/request': typeof PasswordResetRequestRoute
   '/practices/$practiceId': typeof PracticesPracticeIdRoute
   '/practices/favorites': typeof PracticesFavoritesRoute
   '/registration/person': typeof RegistrationPersonRoute
   '/registration/verify-email': typeof RegistrationVerifyEmailRoute
   '/registration/veterinarypractice': typeof RegistrationVeterinarypracticeRoute
+  '/veterinarians/create': typeof VeterinariansCreateRoute
   '/appointments/': typeof AppointmentsIndexRoute
+  '/customers/': typeof CustomersIndexRoute
   '/appointments/$appointmentId/reschedule': typeof AppointmentsAppointmentIdRescheduleRoute
   '/password-reset/confirm/$token': typeof PasswordResetConfirmTokenRoute
   '/registration/email-confirmation/$emailVerifyCode': typeof RegistrationEmailConfirmationEmailVerifyCodeRoute
@@ -188,6 +251,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/about'
     | '/animals'
     | '/dashboard'
     | '/login'
@@ -195,19 +259,26 @@ export interface FileRouteTypes {
     | '/appointments/create'
     | '/booking/$appointmentId'
     | '/booking/confirmation'
+    | '/customers/$animalId'
+    | '/legal/agb'
+    | '/legal/datenschutz'
+    | '/legal/impressum'
     | '/password-reset/request'
     | '/practices/$practiceId'
     | '/practices/favorites'
     | '/registration/person'
     | '/registration/verify-email'
     | '/registration/veterinarypractice'
+    | '/veterinarians/create'
     | '/appointments'
+    | '/customers'
     | '/appointments/$appointmentId/reschedule'
     | '/password-reset/confirm/$token'
     | '/registration/email-confirmation/$emailVerifyCode'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/about'
     | '/animals'
     | '/dashboard'
     | '/login'
@@ -215,19 +286,26 @@ export interface FileRouteTypes {
     | '/appointments/create'
     | '/booking/$appointmentId'
     | '/booking/confirmation'
+    | '/customers/$animalId'
+    | '/legal/agb'
+    | '/legal/datenschutz'
+    | '/legal/impressum'
     | '/password-reset/request'
     | '/practices/$practiceId'
     | '/practices/favorites'
     | '/registration/person'
     | '/registration/verify-email'
     | '/registration/veterinarypractice'
+    | '/veterinarians/create'
     | '/appointments'
+    | '/customers'
     | '/appointments/$appointmentId/reschedule'
     | '/password-reset/confirm/$token'
     | '/registration/email-confirmation/$emailVerifyCode'
   id:
     | '__root__'
     | '/'
+    | '/about'
     | '/animals'
     | '/dashboard'
     | '/login'
@@ -235,13 +313,19 @@ export interface FileRouteTypes {
     | '/appointments/create'
     | '/booking/$appointmentId'
     | '/booking/confirmation'
+    | '/customers/$animalId'
+    | '/legal/agb'
+    | '/legal/datenschutz'
+    | '/legal/impressum'
     | '/password-reset/request'
     | '/practices/$practiceId'
     | '/practices/favorites'
     | '/registration/person'
     | '/registration/verify-email'
     | '/registration/veterinarypractice'
+    | '/veterinarians/create'
     | '/appointments/'
+    | '/customers/'
     | '/appointments/$appointmentId/reschedule'
     | '/password-reset/confirm/$token'
     | '/registration/email-confirmation/$emailVerifyCode'
@@ -249,6 +333,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AboutRoute: typeof AboutRoute
   AnimalsRoute: typeof AnimalsRoute
   DashboardRoute: typeof DashboardRoute
   LoginRoute: typeof LoginRoute
@@ -256,13 +341,19 @@ export interface RootRouteChildren {
   AppointmentsCreateRoute: typeof AppointmentsCreateRoute
   BookingAppointmentIdRoute: typeof BookingAppointmentIdRoute
   BookingConfirmationRoute: typeof BookingConfirmationRoute
+  CustomersAnimalIdRoute: typeof CustomersAnimalIdRoute
+  LegalAgbRoute: typeof LegalAgbRoute
+  LegalDatenschutzRoute: typeof LegalDatenschutzRoute
+  LegalImpressumRoute: typeof LegalImpressumRoute
   PasswordResetRequestRoute: typeof PasswordResetRequestRoute
   PracticesPracticeIdRoute: typeof PracticesPracticeIdRoute
   PracticesFavoritesRoute: typeof PracticesFavoritesRoute
   RegistrationPersonRoute: typeof RegistrationPersonRoute
   RegistrationVerifyEmailRoute: typeof RegistrationVerifyEmailRoute
   RegistrationVeterinarypracticeRoute: typeof RegistrationVeterinarypracticeRoute
+  VeterinariansCreateRoute: typeof VeterinariansCreateRoute
   AppointmentsIndexRoute: typeof AppointmentsIndexRoute
+  CustomersIndexRoute: typeof CustomersIndexRoute
   AppointmentsAppointmentIdRescheduleRoute: typeof AppointmentsAppointmentIdRescheduleRoute
   PasswordResetConfirmTokenRoute: typeof PasswordResetConfirmTokenRoute
   RegistrationEmailConfirmationEmailVerifyCodeRoute: typeof RegistrationEmailConfirmationEmailVerifyCodeRoute
@@ -298,6 +389,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AnimalsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -305,11 +403,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/customers/': {
+      id: '/customers/'
+      path: '/customers'
+      fullPath: '/customers'
+      preLoaderRoute: typeof CustomersIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/appointments/': {
       id: '/appointments/'
       path: '/appointments'
       fullPath: '/appointments'
       preLoaderRoute: typeof AppointmentsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/veterinarians/create': {
+      id: '/veterinarians/create'
+      path: '/veterinarians/create'
+      fullPath: '/veterinarians/create'
+      preLoaderRoute: typeof VeterinariansCreateRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/registration/veterinarypractice': {
@@ -352,6 +464,34 @@ declare module '@tanstack/react-router' {
       path: '/password-reset/request'
       fullPath: '/password-reset/request'
       preLoaderRoute: typeof PasswordResetRequestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/legal/impressum': {
+      id: '/legal/impressum'
+      path: '/legal/impressum'
+      fullPath: '/legal/impressum'
+      preLoaderRoute: typeof LegalImpressumRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/legal/datenschutz': {
+      id: '/legal/datenschutz'
+      path: '/legal/datenschutz'
+      fullPath: '/legal/datenschutz'
+      preLoaderRoute: typeof LegalDatenschutzRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/legal/agb': {
+      id: '/legal/agb'
+      path: '/legal/agb'
+      fullPath: '/legal/agb'
+      preLoaderRoute: typeof LegalAgbRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/customers/$animalId': {
+      id: '/customers/$animalId'
+      path: '/customers/$animalId'
+      fullPath: '/customers/$animalId'
+      preLoaderRoute: typeof CustomersAnimalIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/booking/confirmation': {
@@ -401,6 +541,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AboutRoute: AboutRoute,
   AnimalsRoute: AnimalsRoute,
   DashboardRoute: DashboardRoute,
   LoginRoute: LoginRoute,
@@ -408,13 +549,19 @@ const rootRouteChildren: RootRouteChildren = {
   AppointmentsCreateRoute: AppointmentsCreateRoute,
   BookingAppointmentIdRoute: BookingAppointmentIdRoute,
   BookingConfirmationRoute: BookingConfirmationRoute,
+  CustomersAnimalIdRoute: CustomersAnimalIdRoute,
+  LegalAgbRoute: LegalAgbRoute,
+  LegalDatenschutzRoute: LegalDatenschutzRoute,
+  LegalImpressumRoute: LegalImpressumRoute,
   PasswordResetRequestRoute: PasswordResetRequestRoute,
   PracticesPracticeIdRoute: PracticesPracticeIdRoute,
   PracticesFavoritesRoute: PracticesFavoritesRoute,
   RegistrationPersonRoute: RegistrationPersonRoute,
   RegistrationVerifyEmailRoute: RegistrationVerifyEmailRoute,
   RegistrationVeterinarypracticeRoute: RegistrationVeterinarypracticeRoute,
+  VeterinariansCreateRoute: VeterinariansCreateRoute,
   AppointmentsIndexRoute: AppointmentsIndexRoute,
+  CustomersIndexRoute: CustomersIndexRoute,
   AppointmentsAppointmentIdRescheduleRoute:
     AppointmentsAppointmentIdRescheduleRoute,
   PasswordResetConfirmTokenRoute: PasswordResetConfirmTokenRoute,

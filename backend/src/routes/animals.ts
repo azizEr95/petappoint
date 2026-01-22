@@ -13,6 +13,8 @@ import { animalService } from "../service/animalService";
 import { personService } from "../service/personService";
 import { animalRaceService } from "../service/animalRaceService";
 import { animalHasRacesService } from "../service/animalHasRacesService";
+import { appointmentService } from "../service/appointmentService";
+import { veterinaryPracticeService } from "../service/veterinaryPracticeService";
 import multer from "multer";
 import { checkVerified, optionalAuthentication, requiresAuthentication } from "./authentication";
 import { ConstraintError } from "../exceptions/errors/ConstraintError";
@@ -118,6 +120,15 @@ animalsRouter.delete("/:animalId", requiresAuthentication, checkVerified, async 
   res.sendStatus(204);
 });
 
+animalsRouter.delete("/:animalId/with-appointments", requiresAuthentication, checkVerified, async (req, res) => {
+  const animalId = PostgresIdSchema.parse(parseInt(req.params.animalId));
+
+  await ensureUserCanAccessAnimal(req.userId!, animalId);
+
+  await animalService.deleteWithAppointmentCancellation(animalId);
+  res.sendStatus(204);
+});
+
 animalsRouter.get("/:animalId/races", requiresAuthentication, checkVerified, async (req, res) => {
   const animalId = PostgresIdSchema.parse(parseInt(req.params.animalId));
 
@@ -167,4 +178,20 @@ animalsRouter.delete("/:animalId/races/:raceId", requiresAuthentication, checkVe
   });
 
   res.sendStatus(204);
+});
+
+animalsRouter.get("/:animalId/appointments", requiresAuthentication, checkVerified, async (req, res) => {
+  const animalId = PostgresIdSchema.parse(parseInt(req.params.animalId));
+
+  // Check if person (customer) has access
+  const hasPersonAccess = await animalService.canPersonAccessAnimal(req.userId!, animalId);
+
+  if (!hasPersonAccess) {
+    // For practice access: require explicit query param with practiceId to prevent info disclosure
+    // This way practice must know the animal exists first or have the appointment
+    throw new AuthorizationError("No access to this animal's appointments");
+  }
+
+  const appointments = await appointmentService.getAppointmentsByAnimal(animalId);
+  res.send(appointments);
 });

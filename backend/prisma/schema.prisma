@@ -14,9 +14,10 @@ model Address {
   street              String               @db.VarChar(80)
   cityCode            String               @map("citycode") @db.VarChar(12)
   city                String               @db.VarChar(60)
-  country             String               @db.VarChar(150)
+  fk_country          Int
   longitude           Float
   latitude            Float
+  countries           countries            @relation(fields: [fk_country], references: [id], onDelete: NoAction, onUpdate: NoAction)
   persons             Person[]
   veterinaryPractices VeterinaryPractice[]
 
@@ -135,6 +136,7 @@ model VeterinaryPractice {
   password                                  String                                     @db.VarChar(255)
   website                                   String?                                    @db.VarChar(150)
   info                                      String?
+  picturePath                               String?                                    @map("picturepath") @db.VarChar(256)
   addressId                                 Int                                        @map("fk_addressid")
   appointments                              Appointment[]
   personHasFavorizedVeterinaryPractices     PersonHasFavorizedVeterinaryPractice[]
@@ -325,6 +327,13 @@ model veterinarypractices_has_confirmation_code {
   dateofcreation          DateTime           @db.Date
   verified                Boolean
   veterinarypractices     VeterinaryPractice @relation(fields: [fk_veterinarypracticeid], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "veterinarypractices_has_confirmati_fk_veterinarypracticeid_fkey")
+}
+
+model countries {
+  id        Int       @id @default(autoincrement())
+  code      String    @unique @db.VarChar(3)
+  name      String    @db.VarChar(100)
+  addresses Address[]
 }
 
 enum Sexes {

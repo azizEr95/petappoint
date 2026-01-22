@@ -41,6 +41,7 @@ type AnimalEditNewDialogProps = {
   animalEdit: AnimalsType | undefined
   preselectedAnimalTypeId?: number
   onAnimalCreated?: () => void
+  showSuccessNotification: () => void
 }
 
 // visibility from this component has to be handled from the parent component
@@ -49,6 +50,7 @@ export function AnimalEditNewDialog({
   animalEdit,
   preselectedAnimalTypeId,
   onAnimalCreated,
+  showSuccessNotification
 }: AnimalEditNewDialogProps) {
   const queryClient = useQueryClient()
   const [animalTypeAnimal, setAnimalTypeAnimal] = useState<
@@ -417,13 +419,13 @@ export function AnimalEditNewDialog({
     mutationFn: ({ animalID, animal }: AnimalEditPayload) =>
       editAnimal(animalID, animal),
     onError: () => {
-      setErrorText('Fehler beim Bearbeiten des Tieres')
+      setErrorText('Fehler beim Bearbeiten des Tieres');
     },
     onSuccess: (data) => {
       // animal was successful edited
       // edit animalraces, delete all first, then add selected ones
-      setErrorText('')
-      mutateDeleteAllRaces(data.id)
+      setErrorText('');
+      mutateDeleteAllRaces(data.id);
     },
   })
 
@@ -431,9 +433,9 @@ export function AnimalEditNewDialog({
     mutationFn: (animalID: AddRacesToAnimalType) => addRacesToAnimal(animalID),
     onError: () => {
       if (animalEdit === undefined) {
-        setErrorText('Fehler beim Erstellen des Tieres')
+        setErrorText('Fehler beim Erstellen des Tieres');
       } else {
-        setErrorText('Fehler beim Bearbeiten des Tieres')
+        setErrorText('Fehler beim Bearbeiten des Tieres');
       }
     },
     onSuccess: (data) => {
@@ -444,16 +446,18 @@ export function AnimalEditNewDialog({
       } else if (shouldDeletePicture) {
         mutateDeletePicture(data.animalId);
       } else { // if neither: user didn't change picture, do nothing (keep existing)
-        setErrorText('')
-        setShouldDeletePicture(false)
-        queryClient.invalidateQueries({ queryKey: ['animals'] })
-        queryClient.invalidateQueries({ queryKey: ['animalPicture'] })
-        queryClient.invalidateQueries({ queryKey: ['animalUnknownPicture'] })
+        setErrorText('');
+        setShouldDeletePicture(false);
+        queryClient.invalidateQueries({ queryKey: ['animals'] });
+        queryClient.invalidateQueries({ queryKey: ['animalPicture'] });
+        queryClient.invalidateQueries({ queryKey: ['animalUnknownPicture'] });
         // Call onAnimalCreated callback if this was a new animal creation
         if (animalEdit === undefined && onAnimalCreated) {
-          onAnimalCreated()
+          onAnimalCreated();
         }
-        hideDialogNewAnimal()
+        console.log('hide dialog');
+        showSuccessNotification();
+        hideDialogNewAnimal();
       }
     },
   })

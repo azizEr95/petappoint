@@ -10,7 +10,6 @@ import { ResourceNotFoundError } from "../exceptions/errors/ResourceNotFoundErro
 import { ConstraintError } from "../exceptions/errors/ConstraintError";
 import { APPOINTMENT_INCLUDE_BASE, APPOINTMENT_INCLUDE_WITH_VET_SERVICES } from "../helper/appointmentIncludes";
 import { mapToAppointment } from "../helper/mapToAppointment";
-import { createDateTime } from "../helper/createDateTime"
 
 export const appointmentService = {
   async create(data: AppointmentsCreateType): Promise<AppointmentsType> {
@@ -20,7 +19,7 @@ export const appointmentService = {
         startTime: data.startTime,
         endTime: data.endTime,
         veterinarian: { connect: { id: data.veterinaryId } },
-        veterinaryPractice: { connect: { id: data.veterinaryPracticeId } },
+        veterinaryPractice: { connect: { id: data.fk_veterinarypracticeid } },
       },
     });
 
@@ -29,15 +28,24 @@ export const appointmentService = {
       data: data.availableServiceIds.map(x => ({ serviceId: x, appointmentId: appointmentId })),
       skipDuplicates: true
     });
-    return mapToAppointment(created);
+
+    const apt = await prisma.appointment.findUnique({
+      where: { id: appointmentId },
+      include: APPOINTMENT_INCLUDE_WITH_VET_SERVICES,
+    })
+
+    if (!apt) {
+      throw new Error(`Appointment mit ID ${appointmentId} nicht gefunden`);
+    }
+
+    return mapToAppointment(apt);
   },
 
-  async createWeeklyAppointments(data: AppointmentsCreateType, endDate: Date): Promise<AppointmentsType[]> {
-
-    if (!endDate || !data.endTime || !data.startTime) {
+  async createWeeklyAppointments(data: AppointmentsCreateType): Promise<AppointmentsType[]> {
+    if (!data.endDate || !data.endTime || !data.startTime) {
       throw new Error("Zeiten müssen hier angegeben werden")
     }
-    const differenceInMs = endDate.getTime() - data.startTime.getTime();
+    const differenceInMs = data.endDate.getTime() - data.startTime.getTime();
     const diffDays = differenceInMs / (1000 * 60 * 60 * 24);
     const diffWeeks = Math.floor(diffDays / 7);
 
@@ -54,18 +62,18 @@ export const appointmentService = {
         startTime: weekStartTime,
         endTime: weekEndTime,
         veterinaryId: data.veterinaryId,
-        veterinaryPracticeId: data.veterinaryPracticeId,
+        fk_veterinarypracticeid: data.fk_veterinarypracticeid,
       })
     };
 
     const createdAppointments = await Promise.all(appointmentsToCreate.map(async (apt) => {
       const created = await prisma.appointment.create({
-        include: APPOINTMENT_INCLUDE_BASE,
+        include: APPOINTMENT_INCLUDE_WITH_VET_SERVICES,
         data: {
           startTime: apt.startTime,
           endTime: apt.endTime,
           veterinarian: { connect: { id: data.veterinaryId } },
-          veterinaryPractice: { connect: { id: data.veterinaryPracticeId } },
+          veterinaryPractice: { connect: { id: data.fk_veterinarypracticeid } },
         },
       });
 
@@ -74,11 +82,17 @@ export const appointmentService = {
         data: data.availableServiceIds.map(x => ({ serviceId: x, appointmentId: appointmentId })),
         skipDuplicates: true
       });
-      const updatedAppointment = await prisma.appointment.findUnique({
+
+      const result = await prisma.appointment.findUnique({
         where: { id: appointmentId },
         include: APPOINTMENT_INCLUDE_WITH_VET_SERVICES,
-      });
-      return mapToAppointment(updatedAppointment)
+      })
+
+      if (!result) {
+        throw new Error(`Appointment mit ID ${appointmentId} nicht gefunden`);
+      }
+
+      return mapToAppointment(result);
     }))
     return createdAppointments;
   },
@@ -639,5 +653,15 @@ export const appointmentService = {
     }
 
     return animalService.canPersonAccessAnimal(personId, appointment.animalId);
+  },
+
+  async getAppointmentsByAnimal(animalId: number): Promise<AppointmentsType[]> {
+    const appointments = await prisma.appointment.findMany({
+      where: { animalId: animalId },
+      include: APPOINTMENT_INCLUDE_WITH_VET_SERVICES,
+      orderBy: { startTime: 'desc' },
+    });
+
+    return appointments.map(apt => mapToAppointment(apt));
   },
 };

@@ -1,10 +1,11 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { useEffect, useState } from 'react'
-import { DashboardPetsSection } from '../components/dashboard/personDashboard/DashboardPetsSection'
-import { useLoginContext } from '../LoginContext'
-import { AnimalEditNewDialog } from '../components/animal/AnimalEditNewDialog'
-import { isLoggedInAndVerified } from '../utils/Authentication'
-import { useTitle } from '@/utils/useTitle'
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { useEffect, useState } from 'react';
+import { DashboardPetsSection } from '../components/dashboard/personDashboard/DashboardPetsSection';
+import { useLoginContext } from '../LoginContext';
+import { AnimalEditNewDialog } from '../components/animal/AnimalEditNewDialog';
+import { isLoggedInAndVerified } from '../utils/Authentication';
+import { useTitle } from '@/utils/useTitle';
+import { SuccessNotificationToast } from '@/components/SuccessNotificationToast';
 
 export const Route = createFileRoute('/animals')({
   component: Animals,
@@ -12,11 +13,12 @@ export const Route = createFileRoute('/animals')({
 
 function Animals() {
   useTitle('Meine Tiere');
-  const [showAnimalDialog, setShowAnimalDialog] = useState(false)
-  const [hasAnimals, setHasAnimals] = useState(false)
-  const { login } = useLoginContext()
-  const navigate = useNavigate()
-  
+  const [showAnimalDialog, setShowAnimalDialog] = useState(false);
+  const [hasAnimals, setHasAnimals] = useState(false);
+  const { login } = useLoginContext();
+  const navigate = useNavigate();
+  const [showSuccessNotification, setShowSuccessNotification] = useState<boolean>(false);
+
   useEffect(() => {
     if (!isLoggedInAndVerified(login)) {
       navigate({
@@ -26,12 +28,12 @@ function Animals() {
         },
       })
     }
-  }, [login])
+  }, [login]);
 
   const userId = login ? login.id : -1; // userId is always !== -1
 
   const handleAddPet = () => {
-    setShowAnimalDialog(true)
+    setShowAnimalDialog(true);
   }
 
   return (
@@ -54,16 +56,23 @@ function Animals() {
             <AnimalEditNewDialog
               hideDialogNewAnimal={() => setShowAnimalDialog(false)}
               animalEdit={undefined}
+              showSuccessNotification={() => {setShowSuccessNotification(true)}}
             />
           )}
         </div>
       </div>
       <br />
       <div>
-        <DashboardPetsSection 
-        userId={userId} 
-        onAnimalsLoaded={setHasAnimals}/>
+        <DashboardPetsSection
+          userId={userId}
+          onAnimalsLoaded={setHasAnimals} />
       </div>
+
+      {showSuccessNotification &&
+        <SuccessNotificationToast
+          message={"Das Tier wurde erfolgreich angelegt."}
+          onClose={() => setShowSuccessNotification(false)} />
+      }
     </div>
   )
 }

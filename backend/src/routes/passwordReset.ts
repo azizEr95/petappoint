@@ -26,7 +26,11 @@ passwordResetRouter.post("/request",
         const person = await personService.getByEmail(email);
 
         // Send reset email
-        await sendPasswordResetEmail(email, person.firstName, token);
+        if(person) {
+          await sendPasswordResetEmail(email, person.firstName, token);
+        } else {
+          res.status(400).json({ error: "Bad Request", message: "E-mail required "})
+        }
       }
 
       // Always return success (prevent email enumeration)

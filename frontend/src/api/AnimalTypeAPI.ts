@@ -5,10 +5,10 @@ import {
 import type {AnimalTypeType} from 'vetilib-shared/schemas/ZodSchemas';
 
 export const getAllAnimalTypes = async (
-  id: string | undefined,
+  practiceId: string | undefined,
 ): Promise<Array<AnimalTypeType>> => {
-  if (id !== undefined) {
-    return getAnimaltypesFromPractice(id)
+  if (practiceId !== undefined) {
+    return getAnimaltypesFromPractice(practiceId)
   }
 
   const res = await fetch(import.meta.env.VITE_API_URL + '/animaltypes/all', {
@@ -20,6 +20,20 @@ export const getAllAnimalTypes = async (
 
   const data = await res.json()
   return parseAnimalTypeArray(data)
+}
+
+export const getAnimaltypeById = async (
+  animaltypeId: string,
+): Promise<AnimalTypeType> => {
+  const res = await fetch(import.meta.env.VITE_API_URL + '/animaltypes/' + animaltypeId, {
+    credentials: 'include',
+  })
+  if (!res.ok) {
+    throw new Error('Failed to fetch getAnimaltypeById')
+  }
+
+  const data = await res.json()
+  return parseAnimalType(data)
 }
 
 export const getAnimaltypesFromPractice = async (
@@ -58,6 +72,18 @@ export const getAnimaltypesFromVeterinary = async (
 
   const data = await res.json()
   return parseAnimalTypeArray(data)
+}
+
+const parseAnimalType = (unsafeAnimalType: AnimalTypeType): AnimalTypeType => {
+  const parsed = AnimalTypeSchema.safeParse(unsafeAnimalType)
+  if (parsed.error !== undefined) {
+    // if Zod throws an Error print them
+    console.log(parsed.error)
+  }
+  if (!parsed.success) {
+    throw new Error(parsed.error.toString())
+  }
+  return parsed.data
 }
 
 /*

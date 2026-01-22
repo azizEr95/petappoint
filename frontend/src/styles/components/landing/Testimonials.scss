@@ -5,6 +5,10 @@
 }
 
 .testimonial-carousel {
+  .carousel-inner {
+    padding: $spacing-lg $spacing-md;
+  }
+
   .carousel-control-prev,
   .carousel-control-next {
     width: 5%;

@@ -7,6 +7,7 @@ import { AnimalEditNewDialog } from '../animal/AnimalEditNewDialog'
 import { AnimalDeleteDialog } from '../animal/AnimalDeleteDialog'
 import { useLoginContext } from '../../LoginContext'
 import { getAllAnimalTypes } from '../../api/AnimalTypeAPI'
+import { SuccessNotificationToast } from '../SuccessNotificationToast'
 import type { AnimalTypeType, AnimalsType } from 'vetilib-shared/schemas/ZodSchemas'
 
 type SelectAnimalProps = {
@@ -32,6 +33,8 @@ export function SelectAnimal({
   const [notSelectableAnimals, setNotSelectableAnimals] = useState<
     Array<AnimalsType>
   >([])
+  const [showSuccessNotification, setShowSuccessNotification] = useState<boolean>(false);
+  const [notificationText, setNotificationText] = useState<string>("");
 
   let animals: Array<AnimalsType> = []
   useEffect(() => {
@@ -131,15 +134,15 @@ export function SelectAnimal({
   }
 
   const hideDialogNewAnimal = () => {
-    setShowDialogNewAnimal(false)
+    setShowDialogNewAnimal(false);
   }
 
   const hideDialogEditAnimal = () => {
-    setShowDialogEditAnimal(null)
+    setShowDialogEditAnimal(null);
   }
 
   const hideDialogDeleteAnimal = () => {
-    setShowDialogDeleteAnimal(null)
+    setShowDialogDeleteAnimal(null);
   }
 
   const handleAnimalEdit = (
@@ -239,20 +242,38 @@ export function SelectAnimal({
         <AnimalEditNewDialog
           hideDialogNewAnimal={hideDialogNewAnimal}
           animalEdit={undefined}
+          showSuccessNotification={() => {
+            setShowSuccessNotification(true);
+            setNotificationText("Das Tier wurde erfolgreich angelegt.");
+          }}
         />
       )}
       {showDialogEditAnimal !== null && (
         <AnimalEditNewDialog
           hideDialogNewAnimal={hideDialogEditAnimal}
           animalEdit={showDialogEditAnimal}
+          showSuccessNotification={() => {
+            setShowSuccessNotification(true);
+            setNotificationText("Das Tier wurde erfolgreich bearbeitet.");
+          }}
         />
       )}
       {showDialogDeleteAnimal !== null && (
         <AnimalDeleteDialog
           hideDialogDeleteAnimal={hideDialogDeleteAnimal}
           animalDelete={showDialogDeleteAnimal}
+          showSuccessNotification={() => {
+            setShowSuccessNotification(true);
+            setNotificationText("Das Tier wurde erfolgreich gelöscht.");
+          }}
         />
       )}
+
+      {showSuccessNotification &&
+        <SuccessNotificationToast
+          message={notificationText}
+          onClose={() => setShowSuccessNotification(false)} />
+      }
     </>
   )
 }

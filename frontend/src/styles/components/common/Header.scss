@@ -49,13 +49,18 @@
 
 .nav-link-clean {
   text-decoration: none;
-  color: var(--color-primary);
+  color: var(--text-light, #4a5568);
   font-weight: 500;
   transition: color 0.3s;
 }
 
 .nav-link-clean:hover {
-  color: var(--color-primary-dark);
+  color: #333;
+}
+
+.nav-link-clean.active {
+  color: var(--color-primary);
+  font-weight: bold;
 }
 
 .nav-actions {

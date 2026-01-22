@@ -7,12 +7,18 @@ import {
   VeterinaryPracticesType,
   VeterinaryPracticeSearchResultType,
   VeterinariansType,
+  AnimalsType,
+  PersonsType,
 } from "vetilib-shared/schemas/ZodSchemas";
 import { addressService } from "./addressService";
 import { ResourceNotFoundError } from "../exceptions/errors/ResourceNotFoundError";
 import { ConstraintError } from "../exceptions/errors/ConstraintError";
 import { Prisma, veterinarypractices_has_confirmation_code } from "../../generated/prisma";
-import { resolveSoa } from "dns";
+import { mapToVeterinaryPractice } from "../helper/mapToVeterinaryPractice";
+import { mapToAnimal } from "../helper/mapToAnimal";
+import { mapToPerson } from "../helper/mapToPerson";
+import fs from "node:fs/promises";
+import path from "node:path";
 
 async function checkCreateEmailConstraint(veterinaryPracticeRe: VeterinaryPracticesCreateType) {
   const query = {
@@ -38,7 +44,7 @@ export const veterinaryPracticeService = {
   async create(veterinaryPracticeRe: VeterinaryPracticesCreateType): Promise<VeterinaryPracticesType> {
     await checkCreateEmailConstraint(veterinaryPracticeRe);
 
-    return await prisma.veterinaryPractice.create({
+    const created = await prisma.veterinaryPractice.create({
       include: {
         address: true,
       },
@@ -49,10 +55,19 @@ export const veterinaryPracticeService = {
         email: veterinaryPracticeRe.email,
         password: veterinaryPracticeRe.password,
         address: {
-          create: veterinaryPracticeRe.address,
+          create: {
+            city: veterinaryPracticeRe.address.city,
+            cityCode: veterinaryPracticeRe.address.cityCode,
+            latitude: veterinaryPracticeRe.address.latitude,
+            longitude: veterinaryPracticeRe.address.longitude,
+            street: veterinaryPracticeRe.address.street,
+            fk_country: veterinaryPracticeRe.address.country
+          },
         },
       },
     });
+
+    return mapToVeterinaryPractice(created);
   },
 
   async getById(id: number): Promise<VeterinaryPracticesType> {
@@ -71,8 +86,7 @@ export const veterinaryPracticeService = {
     if (!foundPractice) {
       throw new ResourceNotFoundError("Veterinary Practice not found with id:", "id", id);
     }
-
-    return foundPractice;
+    return mapToVeterinaryPractice(foundPractice);
   },
 
   async search(query: VeterinaryPracticeSearchQueryType): Promise<VeterinaryPracticeSearchResultType> {
@@ -169,12 +183,14 @@ export const veterinaryPracticeService = {
                     mode: "insensitive" as const,
                   },
                 },
+                /*
                 {
                   country: {
                     contains: query.address,
                     mode: "insensitive" as const,
                   },
                 },
+                */
               ],
             },
           },
@@ -196,7 +212,7 @@ export const veterinaryPracticeService = {
     ]);
 
     return {
-      data: searchResults,
+      data: searchResults.map(x => mapToVeterinaryPractice(x)),
       total,
       page,
       pageSize,
@@ -204,7 +220,7 @@ export const veterinaryPracticeService = {
   },
 
   async getByEmail(email: string): Promise<VeterinaryPracticesType | null> {
-    return await prisma.veterinaryPractice.findFirst({
+    const found = await prisma.veterinaryPractice.findFirst({
       include: {
         address: true,
       },
@@ -213,14 +229,22 @@ export const veterinaryPracticeService = {
         email,
       },
     });
+
+    if (!found) {
+      return null;
+    }
+
+    return mapToVeterinaryPractice(found);
   },
 
   async getAll(): Promise<VeterinaryPracticesType[]> {
-    return await prisma.veterinaryPractice.findMany({
+    const allPractices = await prisma.veterinaryPractice.findMany({
       include: {
         address: true,
       },
     });
+
+    return allPractices.map(x => mapToVeterinaryPractice(x));
   },
 
   async update(data: VeterinaryPracticesType): Promise<VeterinaryPracticesType> {
@@ -244,7 +268,7 @@ export const veterinaryPracticeService = {
       include: { address: true },
     });
 
-    return updatedPractice;
+    return mapToVeterinaryPractice(updatedPractice);
   },
 
   async delete(id: number): Promise<void> {
@@ -280,6 +304,54 @@ export const veterinaryPracticeService = {
       }
     }
     return serviceArray;
+  },
+
+  async getAnimalWithPerson(praxisId: number): Promise<{ animal: AnimalsType; person: PersonsType }[]> {
+    const appointmentWithAnimal = await prisma.appointment.findMany({
+      where: {
+        veterinaryPracticeId: praxisId
+      },
+      include: {
+        animal: {
+          include: {
+            personHasAnimals: {
+              include: {
+                person: {
+                  include: {
+                    address: true
+                  },
+                  omit: {
+                    password: true
+                  }
+                }
+              }
+            }
+          },
+        }
+      }
+    });
+
+    let animalPersons: { animal: AnimalsType; person: PersonsType }[] = []
+
+    for (let apt of appointmentWithAnimal) {
+
+      if (apt.animal?.personHasAnimals?.[0]) {
+        const animal = apt.animal
+        const person = apt.animal.personHasAnimals[0].person
+        if (animal && person) {
+
+          const exists = animalPersons.some(ap => ap.animal.id === animal.id && ap.person.id === person.id);
+
+          if (!exists) {
+            animalPersons.push({
+              animal: mapToAnimal(animal),
+              person: mapToPerson(person)
+            });
+          }
+        }
+      }
+    }
+    return animalPersons
   },
 
   async getAllAnimalTypes(praxisId: number): Promise<AnimalTypeType[]> {
@@ -331,39 +403,41 @@ export const veterinaryPracticeService = {
       firstName: x.person.firstName,
       lastName: x.person.lastName,
       infoEmail: x.infoEmail,
-      veterinaryPracticeId: praxisId
+      fk_veterinarypracticeid: praxisId
     }));
   },
 
   async checkConfirmationCodeExists(vetPracId: number, generatedCode: string): Promise<boolean> {
-    const found = await prisma.veterinarypractices_has_confirmation_code.findFirst({where: {
-      fk_veterinarypracticeid: vetPracId,
-      code: generatedCode,
-      dateofcreation: {
-        gte: new Date(new Date().valueOf() - 15 * 60000)
+    const found = await prisma.veterinarypractices_has_confirmation_code.findFirst({
+      where: {
+        fk_veterinarypracticeid: vetPracId,
+        code: generatedCode,
+        dateofcreation: {
+          gte: new Date(new Date().valueOf() - 15 * 60000)
+        }
       }
-    }});
+    });
     return !!found;
   },
 
   async createConfirmationCode(userId: number, generatedCode: string): Promise<veterinarypractices_has_confirmation_code> {
-      const created = await prisma.veterinarypractices_has_confirmation_code.upsert({
-       where: {
-          fk_veterinarypracticeid: userId
-       },
-       update: {
-          code: generatedCode,
-          dateofcreation: new Date().toISOString()
-       },
-       create:{
-          fk_veterinarypracticeid: userId,
-          code: generatedCode,
-          dateofcreation: new Date().toISOString(),
-          verified: false
-       }
-      });
-      return created;
-    },
+    const created = await prisma.veterinarypractices_has_confirmation_code.upsert({
+      where: {
+        fk_veterinarypracticeid: userId
+      },
+      update: {
+        code: generatedCode,
+        dateofcreation: new Date().toISOString()
+      },
+      create: {
+        fk_veterinarypracticeid: userId,
+        code: generatedCode,
+        dateofcreation: new Date().toISOString(),
+        verified: false
+      }
+    });
+    return created;
+  },
 
   async checkVerified(vetPracId: number): Promise<boolean> {
     const check = await prisma.veterinarypractices_has_confirmation_code.findUnique({
@@ -371,12 +445,12 @@ export const veterinaryPracticeService = {
         fk_veterinarypracticeid: vetPracId
       }
     });
-    if(!check){
-      throw new ResourceNotFoundError("Pracice not found.","practiceId",vetPracId);
+    if (!check) {
+      throw new ResourceNotFoundError("Pracice not found.", "practiceId", vetPracId);
     }
     return check.verified;
   },
-  
+
   async updateVerified(vetPracId: number, code: string): Promise<veterinarypractices_has_confirmation_code> {
     const practice = await prisma.veterinarypractices_has_confirmation_code.update({
       where: {
@@ -388,5 +462,79 @@ export const veterinaryPracticeService = {
       }
     });
     return practice;
+  },
+
+  async getPicturePath(practiceId: number): Promise<string> {
+    const found = await prisma.veterinaryPractice.findFirst({
+      where: {
+        id: practiceId,
+      },
+      select: {
+        picturePath: true,
+      },
+    });
+
+    const filepath = found?.picturePath ?? "public/placeholders/unknown.png";
+    return path.join(appRootDir, filepath);
+  },
+
+  async savePicture(practiceId: number, fileOnDiskPath: string | null): Promise<void> {
+    const old = await prisma.veterinaryPractice.findFirst({
+      where: {
+        id: practiceId,
+      },
+      select: {
+        picturePath: true,
+      },
+    });
+    if (!old) {
+      throw new ConstraintError(`No practice with given id exists.`, [{ path: "practiceId", value: practiceId }]);
+    }
+
+    if (old.picturePath) {
+      const oldImagePath = path.join(appRootDir, old.picturePath);
+      fs.rm(oldImagePath).catch(() => {});
+    }
+
+    await prisma.veterinaryPractice.update({
+      where: {
+        id: practiceId,
+      },
+      data: {
+        picturePath: fileOnDiskPath,
+      },
+      select: {
+        picturePath: true,
+      },
+    });
+  },
+
+  async deletePicture(practiceId: number): Promise<void> {
+    const practice = await prisma.veterinaryPractice.findFirst({
+      where: {
+        id: practiceId,
+      },
+      select: {
+        picturePath: true,
+      },
+    });
+
+    if (!practice) {
+      throw new ResourceNotFoundError("Practice not found", "practiceId", practiceId);
+    }
+
+    if (practice.picturePath) {
+      const imagePath = path.join(appRootDir, practice.picturePath);
+      fs.rm(imagePath).catch(() => {});
+    }
+
+    await prisma.veterinaryPractice.update({
+      where: {
+        id: practiceId,
+      },
+      data: {
+        picturePath: null,
+      },
+    });
   }
 };

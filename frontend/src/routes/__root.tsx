@@ -1,6 +1,5 @@
 import { Outlet, createRootRoute } from '@tanstack/react-router'
 import Header from '../components/common/Header'
-import Breadcrumb from '../components/common/Breadcrumb'
 import { Error404, Error500 } from '../components/error'
 import Footer from '../components/common/Footer'
 
@@ -12,11 +11,12 @@ export const Route = createRootRoute({
 
 function RootComponent() {
   return (
-    <>
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <Header />
-      <Breadcrumb />
-      <Outlet />
+      <div style={{ flex: 1 }}>
+        <Outlet />
+      </div>
       <Footer />
-    </>
+    </div>
   )
 }

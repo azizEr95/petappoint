@@ -83,17 +83,28 @@ Prisma schema in `backend/prisma/schema.prisma` (reverse-engineered from DB):
 
 ## Testing
 
-### Backend
+### Backend (Unit Tests)
 - Jest config in `backend/jest.config.js`
 - Uses ts-jest preset, node environment
 - Tests in `backend/tests/` (ignored in coverage)
 - Setup file: `testConfig/singleton.ts`
 - Test pattern: `*.test.ts` or `*.test.mts`
+- Run: `npm run test:backend` or `cd backend && npm test`
 
-### Frontend
+### Frontend (Unit Tests)
 - Vitest with jsdom environment
 - Testing Library React for component tests
 - Config in `frontend/vite.config.ts`
+- Run: `cd frontend && npm test`
+
+### E2E-Tests (Integration Tests)
+- Playwright framework in `e2e-tests/` folder
+- Config: `playwright.config.ts`
+- Tests in: `e2e-tests/tests/`
+- Setup script: `e2e-tests/scripts/seed-e2e-tests.ts`
+- Run: `npm run e2e-tests` (starts DB + backend + frontend automatically)
+- CI mode: `npm run e2e-tests:ci` (single worker, 1 retry)
+- Reports: HTML report + JUnit XML (GitLab CI integration)
 
 ## Key Conventions
 
@@ -105,3 +116,16 @@ Prisma schema in `backend/prisma/schema.prisma` (reverse-engineered from DB):
 - Frontend port 3001, backend port 3000 (configurable via HTTP_PORT)
 - Code quality: run `npm run check` in frontend before commit (Prettier + ESLint auto-fix)
 - Prettier config: no semicolons, single quotes, trailing commas
+
+### Pre-Commit Quality Gates
+**Pipeline requirement (GitLab CI enforces):**
+- E2E tests must pass: `npm run e2e-tests:ci`
+- This is the only automated gate in pipeline (`e2e-tests` stage)
+- Test setup: DB provisioning, backend/frontend servers, Playwright tests
+- Reports: HTML + JUnit XML artifacts
+
+**Local quality checks (recommended before push, not enforced):**
+- Frontend code quality: `cd frontend && npm run check` (Prettier + ESLint auto-fix)
+- Backend unit tests: `cd backend && npm test` (optional - currently not in pipeline)
+- Frontend unit tests: `cd frontend && npm test` (optional - currently not in pipeline)
+- Combined: `npm test` runs both unit test suites locally

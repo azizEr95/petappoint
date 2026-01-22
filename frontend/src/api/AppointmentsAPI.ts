@@ -47,7 +47,7 @@ export const getAvailableAppointmentsByPracticeId = async (
   return parseAppointmentArray(data)
 }
 
-export const addOneAvailableAppointments = async (appointment: AppointmentsCreateType): Promise<void> => {
+export const addAvailableAppointments = async (appointment: AppointmentsCreateType): Promise<void> => {
   const url = import.meta.env.VITE_API_URL + '/appointments';
   const requestOptions = {
     method: 'POST',
@@ -193,10 +193,6 @@ const parseAppointmentArray = (
   return unsafeAppointments
     .map((x) => {
       const parsed = AppointmentsSchema.safeParse(x)
-      if (parsed.error !== undefined) {
-        // if Zod throws an Error print them
-        console.log(parsed.error)
-      }
       if (parsed.success) {
         return parsed.data
       }

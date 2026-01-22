@@ -14,6 +14,15 @@ animaltypeRouter.get("/all",
     }
 );
 
+animaltypeRouter.get("/:animalTypeId",
+    optionalAuthentication,
+    async (req, res) => {
+        const animalTypeId = PostgresIdSchema.parse(parseInt(req.params.animalTypeId));
+        const animalType: AnimalTypeType = await animalTypeService.getById(animalTypeId);
+        res.send(animalType);
+    }
+);
+
 animaltypeRouter.get("/races/:animalTypeId",
     optionalAuthentication,
     async (req, res) => {

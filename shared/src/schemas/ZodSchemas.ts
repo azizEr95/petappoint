@@ -111,7 +111,7 @@ export const AddressesSchema = z.object({
   street: z.string().min(3).max(80),
   cityCode: z.string().min(3).max(12),
   city: z.string().min(3).max(60),
-  country: z.string().min(3).max(150),
+  country: PostgresIdSchema,
   longitude: z.number(),
   latitude: z.number(),
 });
@@ -219,7 +219,14 @@ export const VeterinaryPracticeCreateSchema = VeterinaryPracticeSchema.omit({
   password: z.string().min(6).max(255),
 });
 
+export const VeterinaryPracticeUpdateSchema = VeterinaryPracticeSchema.omit({
+  id: true,
+}).extend({
+  address: AddressesCreateSchema,
+});
+
 export type VeterinaryPracticesCreateType = z.infer<typeof VeterinaryPracticeCreateSchema>;
+export type VeterinaryPracticeUpdateType = z.infer<typeof VeterinaryPracticeUpdateSchema>;
 export type VeterinaryPracticesType = z.infer<typeof VeterinaryPracticeSchema>;
 
 //Veterinarians:
@@ -228,13 +235,39 @@ export const VeterinariansSchema = z.object({
   firstName: z.string().min(2).max(60),
   lastName: z.string().min(2).max(60),
   infoEmail: z.email().nullable(),
-  veterinaryPracticeId: PostgresIdSchema.nullable(),
+  fk_veterinarypracticeid: PostgresIdSchema.nullable(),
 });
+
+export const VeterinariansDbSchema = z.object({
+  id: PostgresIdSchema, //ist identisch zur Personen ID
+  infoEmail: z.email().nullable(),
+  fk_veterinarypracticeid: PostgresIdSchema.nullable(),
+});
+
+export const VeterinariansUpdateSchema = VeterinariansSchema
 
 export const VeterinariansCreateSchema = VeterinariansSchema; //id muss uebergeben werden, da Referenz zur Person wichtig ist
 
 export type VeterinariansCreateType = z.infer<typeof VeterinariansCreateSchema>;
+export type VeterinariansUpdateType = z.infer<typeof VeterinariansUpdateSchema>;
+export type VeterinariansDbType = z.infer<typeof VeterinariansDbSchema>;
 export type VeterinariansType = z.infer<typeof VeterinariansSchema>;
+
+//Veterinary Can Treat AnimalType:
+export const VeterinaryAnimaltypesSchema = z.object({
+  veterinaryId: PostgresIdSchema,
+  animalTypeIds: z.array(PostgresIdSchema),
+});
+
+export type VeterinaryAnimaltypesType = z.infer<typeof VeterinaryAnimaltypesSchema>;
+
+//Veterinary Has Service:
+export const VeterinaryServicesSchema = z.object({
+  veterinaryId: PostgresIdSchema,
+  serviceIds: z.array(PostgresIdSchema),
+});
+
+export type VeterinaryServicesType = z.infer<typeof VeterinaryServicesSchema>;
 
 //Appointments:
 export const AppointmentsSchema = z.object({
@@ -253,8 +286,9 @@ export const AppointmentsCreateSchema = z.object({
   startTime: DateTimeSchema,
   endTime: DateTimeSchema,
   veterinaryId: PostgresIdSchema,
-  veterinaryPracticeId: PostgresIdSchema,
+  fk_veterinarypracticeid: PostgresIdSchema,
   availableServiceIds: PostgresIdSchema.array().optional().default([]),
+  endDate: DateTimeSchema.optional(),
 });
 
 export const AvailableAppointmentSchema = z.object({
@@ -311,3 +345,11 @@ export const VeterinaryPracticeSearchResultSchema = z.object({
 });
 
 export type VeterinaryPracticeSearchResultType = z.infer<typeof VeterinaryPracticeSearchResultSchema>;
+
+export const CountrySchema = z.object({
+  id: PostgresIdSchema,
+  code: z.string().min(1).max(3),
+  name: z.string()
+});
+
+export type CountryType = z.infer<typeof CountrySchema>;

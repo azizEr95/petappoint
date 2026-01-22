@@ -2,6 +2,7 @@ import { AnimalsSchema } from 'vetilib-shared/schemas/ZodSchemas'
 import type {
   AnimalsCreateType,
   AnimalsType,
+  AppointmentsType,
 } from 'vetilib-shared/schemas/ZodSchemas'
 
 export const getAnimalsFromUser = async (
@@ -152,7 +153,27 @@ export const deleteAnimal = async (animalID: number): Promise<void> => {
     requestOptions,
   )
   if (!res.ok) {
-    throw new Error('Failed to fetch deleteAnimal')
+    const error = await res.json()
+    throw { status: res.status, message: error.error }
+  }
+  return
+}
+
+export const deleteAnimalWithAppointments = async (animalID: number): Promise<void> => {
+  const requestOptions = {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include' as RequestCredentials,
+  }
+
+  const res = await fetch(
+    import.meta.env.VITE_API_URL + '/animals/' + animalID + '/with-appointments',
+    requestOptions,
+  )
+  if (!res.ok) {
+    throw new Error('Failed to delete animal with appointments')
   }
   return
 }
@@ -191,4 +212,19 @@ const parseAnimalArray = (
       return null
     })
     .filter((x) => x !== null)
+}
+
+export const getAppointmentsByAnimal = async (
+  animalId: number,
+): Promise<Array<AppointmentsType>> => {
+  const res = await fetch(
+    import.meta.env.VITE_API_URL + '/animals/' + animalId + '/appointments',
+    { credentials: 'include' },
+  )
+  if (!res.ok) {
+    throw new Error('Failed to fetch getAppointmentsByAnimal')
+  }
+
+  const data = await res.json()
+  return data
 }

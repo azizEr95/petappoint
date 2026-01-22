@@ -1,26 +1,28 @@
-import { useQuery } from "@tanstack/react-query"
-import { useNavigate } from "@tanstack/react-router"
-import { useEffect, useState } from "react"
-import { DashboardAppointmentsSection } from "./DashboardAppointmentsSection"
-import { DashboardFavoritesSection } from "./DashboardFavoritesSection"
-import { DashboardPetsSection } from "./DashboardPetsSection"
-import type { PersonsType } from "vetilib-shared/schemas/ZodSchemas"
-import { AnimalEditNewDialog } from "@/components/animal/AnimalEditNewDialog"
-import { ProfileEditDialog } from "@/components/profile/ProfileEditDialog"
-import { useLoginContext } from "@/LoginContext"
-import { isLoggedInAndVerified } from "@/utils/Authentication"
-import { getPersonById, getPictureURLForPersonId } from "@/api/PersonsAPI"
-import '../../../styles/components/dashboard/DashboardPerson.scss'
+import { useQuery } from "@tanstack/react-query";
+import { useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { DashboardAppointmentsSection } from "./DashboardAppointmentsSection";
+import { DashboardFavoritesSection } from "./DashboardFavoritesSection";
+import { DashboardPetsSection } from "./DashboardPetsSection";
+import type { PersonsType } from "vetilib-shared/schemas/ZodSchemas";
+import { AnimalEditNewDialog } from "@/components/animal/AnimalEditNewDialog";
+import { ProfileEditDialog } from "@/components/profile/ProfileEditDialog";
+import { useLoginContext } from "@/LoginContext";
+import { isLoggedInAndVerified } from "@/utils/Authentication";
+import { getPersonById, getPictureURLForPersonId } from "@/api/PersonsAPI";
+import '../../../styles/components/dashboard/DashboardPerson.scss';
+import { SuccessNotificationToast } from "@/components/SuccessNotificationToast";
 
 export function DashboardPerson() {
-    const navigate = useNavigate()
-    const { login } = useLoginContext()
-    const [showAddPetDialog, setShowAddPetDialog] = useState(false)
-    const [showEditProfileDialog, setShowEditProfileDialog] = useState(false)
-    const [hasAnimals, setHasAnimals] = useState(false)
+    const navigate = useNavigate();
+    const { login } = useLoginContext();
+    const [showAddPetDialog, setShowAddPetDialog] = useState(false);
+    const [showEditProfileDialog, setShowEditProfileDialog] = useState(false);
+    const [hasAnimals, setHasAnimals] = useState(false);
     const [activeTab, setActiveTab] = useState<
         'appointments' | 'pets' | 'favorites'
-    >('appointments')
+    >('appointments');
+     const [showSuccessNotification, setShowSuccessNotification] = useState<boolean>(false);
 
     const userId = login ? login.id : -1; // userId is always !== -1
 
@@ -38,16 +40,16 @@ export function DashboardPerson() {
                 search: {
                     redirect: '/dashboard',
                 },
-            })
+            });
         }
     }, [login])
 
     const handleEditProfile = () => {
-        setShowEditProfileDialog(true)
+        setShowEditProfileDialog(true);
     }
 
     const handleAddPet = () => {
-        setShowAddPetDialog(true)
+        setShowAddPetDialog(true);
     }
 
     const handleBookAppointment = () => {
@@ -58,11 +60,11 @@ export function DashboardPerson() {
                 animalType: '',
                 serviceType: '',
             },
-        })
+        });
     }
 
     if (isLoadingUser || !user) {
-        return <div>Loading...</div>
+        return <div>Loading...</div>;
     }
 
     return (
@@ -160,6 +162,7 @@ export function DashboardPerson() {
                 <AnimalEditNewDialog
                     hideDialogNewAnimal={() => setShowAddPetDialog(false)}
                     animalEdit={undefined}
+                    showSuccessNotification={() => {setShowSuccessNotification(true)}}
                 />
             )}
 
@@ -170,6 +173,12 @@ export function DashboardPerson() {
                     person={user}
                 />
             )}
+
+            {showSuccessNotification &&
+                <SuccessNotificationToast
+                    message={"Das Tier wurde erfolgreich angelegt."}
+                    onClose={() => setShowSuccessNotification(false)} />
+            }
         </>
     )
 

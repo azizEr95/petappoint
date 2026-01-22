@@ -103,6 +103,21 @@ export function AppointmentCard({
       })
     }
 
+    const handleRebook = (e: React.MouseEvent) => {
+      e.stopPropagation()
+      navigate({
+        to: '/practices/$practiceId',
+        params: { practiceId: practice.id.toString() },
+        state: {
+          filterOptions: {
+            animalTypeIds: appointment.animal?.animalTypeId ? [appointment.animal.animalTypeId] : undefined,
+            serviceTypeIds: appointment.service?.id ? [appointment.service.id] : undefined,
+            animal: appointment.animal?.id
+          }
+        }
+      })
+    }
+
     const handleCancel = (e: React.MouseEvent) => {
       e.stopPropagation()
       setShowCancelDialog(true)
@@ -186,6 +201,17 @@ export function AppointmentCard({
               title="Termin absagen"
             >
               <i className="bi bi-x-circle"></i>
+            </button>
+          </div>
+        )}
+        {isPast && (
+          <div className="card-actions">
+            <button
+              className="action-btn action-rebook"
+              onClick={handleRebook}
+              title="Erneut buchen"
+            >
+              <i className="bi bi-arrow-clockwise"></i>
             </button>
           </div>
         )}

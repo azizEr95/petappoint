@@ -1,0 +1,185 @@
+@import '../../variables';
+
+.autocomplete-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.autocomplete-label {
+  font-size: $font-size-sm;
+  font-weight: 500;
+  color: $text-dark;
+  margin: 0;
+}
+
+.autocomplete-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.autocomplete-input {
+  border: 1px solid $border-color;
+  border-radius: $border-radius-sm;
+  padding: 0.7rem 2.5rem 0.7rem 0.85rem !important;
+  font-size: $font-size-sm;
+  transition: all 0.3s;
+  background-color: white;
+  min-height: 44px;
+  color: $text-dark;
+
+  &:focus {
+    border-color: $primary;
+    box-shadow: 0 0 0 3px rgba(44, 138, 89, 0.08);
+    outline: none;
+  }
+
+  &::placeholder {
+    color: $text-light;
+  }
+}
+
+.autocomplete-clear-btn {
+  position: absolute;
+  right: 0.85rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: $text-light;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  transition: color 0.2s;
+
+  &:hover {
+    color: $text-dark;
+  }
+}
+
+.autocomplete-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid $border-color;
+  border-top: none;
+  border-radius: 0 0 $border-radius-sm $border-radius-sm;
+  max-height: 250px;
+  overflow-y: auto;
+  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.autocomplete-option {
+  padding: 0.75rem 0.85rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  color: $text-dark;
+  font-size: $font-size-sm;
+  text-align: left;
+
+  &:hover {
+    background-color: $primary-pale;
+  }
+
+  &.highlighted {
+    background-color: rgba(44, 138, 89, 0.15);
+  }
+
+  &.selected {
+    background-color: $primary-pale;
+    color: $primary;
+    font-weight: 600;
+  }
+}
+
+.autocomplete-no-results {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  padding: 1rem 0.85rem;
+  text-align: center;
+  color: $text-light;
+  font-size: $font-size-sm;
+  background: white;
+  border: 1px solid $border-color;
+  border-top: none;
+  border-radius: 0 0 $border-radius-sm $border-radius-sm;
+  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.location-autocomplete-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  .autocomplete-input-wrapper {
+    flex: 1;
+  }
+}
+
+.autocomplete-container.location-autocomplete {
+  .autocomplete-input-wrapper {
+    position: relative;
+  }
+
+  .autocomplete-dropdown,
+  .autocomplete-no-results {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+  }
+}
+
+.location-geolocation-btn {
+  background: none;
+  border: 1px solid $border-color;
+  border-radius: $border-radius-sm;
+  padding: 0.5rem 0.75rem;
+  min-height: 44px;
+  color: $text-dark;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+  font-size: 1rem;
+
+  &:hover {
+    border-color: $primary;
+    color: $primary;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  i {
+    &.spin {
+      animation: spin 1s linear infinite;
+    }
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
