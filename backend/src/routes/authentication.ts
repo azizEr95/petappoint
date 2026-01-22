@@ -45,3 +45,16 @@ export function checkVerified(req: Request, res: Response, next: NextFunction) {
     }
     next();
 }
+
+export function requiresCompany(req: Request, res: Response, next: NextFunction) {
+    requiresAuthentication(req, res, () => {
+        checkVerified(req, res, () => {
+            if (req.role !== 'company') {
+                res.sendStatus(403);
+                return;
+            }
+
+            next();
+        });
+    });
+}

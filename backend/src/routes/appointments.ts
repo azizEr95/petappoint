@@ -1,7 +1,7 @@
 import express from "express";
 import { appointmentService } from "../service/appointmentService";
 import { AppointmentsCreateSchema, AppointmentsType, BookAppointmentSchema, PostgresIdSchema, AvailableAppointmentSchema, AppointmentsCreateType } from "vetilib-shared/schemas/ZodSchemas";
-import { checkVerified, optionalAuthentication, requiresAuthentication } from "./authentication";
+import { checkVerified, optionalAuthentication, requiresAuthentication, requiresCompany } from "./authentication";
 import { AuthorizationError } from "../exceptions/errors/AuthorizationError";
 import { animalService } from "../service/animalService";
 import { ConstraintError } from "../exceptions/errors/ConstraintError";
@@ -101,7 +101,7 @@ appointmentRouter.put("/:id", requiresAuthentication, checkVerified, async (req,
 appointmentRouter.delete("/:id", requiresAuthentication, checkVerified, async (req, res) => {
   const appointmentId = PostgresIdSchema.parse(parseInt(req.params.id));
 
-  switch(req.role!) {
+  switch (req.role!) {
     case 'person': {
       await ensureUserCanEditAppointment(req.userId!, appointmentId);
 
@@ -122,14 +122,14 @@ appointmentRouter.delete("/:id", requiresAuthentication, checkVerified, async (r
   res.sendStatus(500);
 });
 
-appointmentRouter.patch("/:id", requiresAuthentication, checkVerified, async (req, res) => {
+appointmentRouter.patch("/:id", requiresCompany, async (req, res) => {
   const appointmentId = PostgresIdSchema.parse(parseInt(req.params.id));
   const validatedData = AvailableAppointmentSchema.parse(req.body);
   const updated = await appointmentService.updateAvailableAppointment(appointmentId, validatedData);
   res.status(200).send(updated);
 });
 
-appointmentRouter.patch("/:id/notes", requiresAuthentication, checkVerified, async (req, res) => {
+appointmentRouter.patch("/:id/notes", requiresCompany, async (req, res) => {
   const appointmentId = PostgresIdSchema.parse(parseInt(req.params.id));
   const notes = z.string().min(1).max(1000).optional().parse(req.body);
 
@@ -140,15 +140,12 @@ appointmentRouter.patch("/:id/notes", requiresAuthentication, checkVerified, asy
   res.status(200).send(updated);
 });
 
-// TODO: Check authorization
-appointmentRouter.post('/', async (req, res) => {
-  if (!req.body.endDate) {
-    const appointmentCreationData = AppointmentsCreateSchema.parse(req.body);
-    await appointmentService.create(appointmentCreationData);
-    return res.sendStatus(201);
-  } else {
-    const appointmentCreationData = AppointmentsCreateSchema.parse(req.body);
+appointmentRouter.post('/', requiresCompany, async (req, res) => {
+  const appointmentCreationData = AppointmentsCreateSchema.parse(req.body);
+  if (appointmentCreationData.endDate) {
     await appointmentService.createWeeklyAppointments(appointmentCreationData);
-    return res.sendStatus(201);
+  } else {
+    await appointmentService.create(appointmentCreationData);
   }
+  return res.sendStatus(201);
 });
