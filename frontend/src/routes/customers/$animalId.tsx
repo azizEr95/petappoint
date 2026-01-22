@@ -18,7 +18,7 @@ function AnimalComponent() {
 
   useEffect(() => {
     if (!isLoggedInAndVerified(login) || customer === undefined) {
-      navigate({ to: '/customers', search: { name: '' } })
+      navigate({ to: '/customers', search: { name: "", sortBy: "" } })
     }
   }, [login]);
 
