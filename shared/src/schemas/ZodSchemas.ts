@@ -353,3 +353,10 @@ export const CountrySchema = z.object({
 });
 
 export type CountryType = z.infer<typeof CountrySchema>;
+
+export const VeterinariansWithAnimalTypesSchema = z.object({
+  id: PostgresIdSchema,
+  treatableAnimalTypes: z.array(PostgresIdSchema),
+});
+
+export type VeterinariansWithAnimalTypesType = z.infer<typeof VeterinariansWithAnimalTypesSchema>;

@@ -54,7 +54,7 @@ export function PracticeFilterBar({
     queryKey: ['animals', userId],
     queryFn: () => getAnimalsFromUser(userId),
     retry: false,
-    enabled: userId !== -1,
+    enabled: userId !== -1 && login && login.role !== 'company', // companies have no animals
   })
 
   // Initialize selected service from filter
@@ -101,7 +101,7 @@ export function PracticeFilterBar({
     setFilterServiceType(serviceId ? [serviceId] : [])
   }
 
-  const hasAnimals = userAnimals.length > 0
+  const hasAnimals = login && login.role === "company" ? false : userAnimals.length > 0; // companies have no animals
   const activeFilters = filterAnimalType.length + filterServiceType.length
 
   return (

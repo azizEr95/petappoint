@@ -9,6 +9,7 @@ import {
   VeterinariansType,
   AnimalsType,
   PersonsType,
+  VeterinariansWithAnimalTypesType,
 } from "vetilib-shared/schemas/ZodSchemas";
 import { addressService } from "./addressService";
 import { ResourceNotFoundError } from "../exceptions/errors/ResourceNotFoundError";
@@ -536,5 +537,25 @@ export const veterinaryPracticeService = {
         picturePath: null,
       },
     });
+  },
+  async getTreatableAnimals(practiceId: number): Promise<VeterinariansWithAnimalTypesType[]> {
+    const vets = await prisma.veterinaryCanTreatAnimalType.findMany({
+      where: {
+        veterinarian: {
+          fk_veterinarypracticeid: practiceId
+        }
+      }
+    });
+
+    let veterinarians : VeterinariansWithAnimalTypesType[] = [];
+    vets.forEach(vet => {
+      let vetInList = veterinarians.find(v => v.id === vet.veterinaryId);
+      if (vetInList === undefined) {
+        veterinarians.push({id: vet.veterinaryId, treatableAnimalTypes: [vet.animalTypeId]});
+      }
+      else {
+        vetInList.treatableAnimalTypes.push(vet.animalTypeId);
+      }});
+    return veterinarians;
   }
 };
