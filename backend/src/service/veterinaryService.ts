@@ -59,7 +59,7 @@ export const veterinaryService = {
       },
     });
 
-    return foundVeterinarians.map((vet) => mapToVeterinary(vet as any))
+    return foundVeterinarians.map((vet) => mapToVeterinary(vet))
   },
 
   async getAll(): Promise<VeterinariansType[]> {
@@ -73,7 +73,7 @@ export const veterinaryService = {
         },
       },
     });
-    return foundVets.map((vet) => mapToVeterinary(vet as any))
+    return foundVets.map((vet) => mapToVeterinary(vet))
   },
 
   async update(data: VeterinariansUpdateType): Promise<VeterinariansType> {
@@ -89,7 +89,7 @@ export const veterinaryService = {
       },
       data: data
     });
-    return mapToVeterinary(updated as any);
+    return mapToVeterinary(updated);
   },
 
   async delete(id: number): Promise<void> {

@@ -47,8 +47,8 @@ export function DashboardPractice() {
     return <div>Laden...</div>
   }
 
-  const handleClickAddVeterinarian = () => {
-    navigate({ to: '/veterinarians/create' });
+  const handleClickVeterinarianPage = () => {
+    navigate({ to: '/veterinarians', search: { veterinarianName: "", sortBy: "name-asc", specialization: "" } });
   }
 
   return <>
@@ -89,8 +89,8 @@ export function DashboardPractice() {
         <Button variant="primary" onClick={() => navigate({ to: '/customers', search: { name: "" } })}>
           alle Kunden
         </Button>
-        <Button variant="primary" onClick={handleClickAddVeterinarian} className="ms-2">
-          Tierarzt erstellen
+        <Button variant="primary" onClick={handleClickVeterinarianPage} className="ms-2">
+          Tierärzte
         </Button>
       </div>
 
