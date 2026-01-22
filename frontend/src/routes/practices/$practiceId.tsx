@@ -171,7 +171,7 @@ function VeterinaryPractice() {
             </div>
           </div>
         </div>
-              {login === false || login.role === 'person' && (<>
+              {((login && login.role === 'person')  || (login === false))&& (<>
         <div className="praxis-appointments">
           <div className="appointments-header-section">
 
