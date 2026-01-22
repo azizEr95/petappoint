@@ -21,8 +21,12 @@ export default function Hero() {
   const { login } = useLoginContext()
   const [location, setLocation] = useState('')
   const [filterAnimalType, setFilterAnimalType] = useState<Array<number>>([])
-  const [filterAnimal, setFilterAnimal] = useState<number | undefined>(undefined)
-  const [selectedService, setSelectedService] = useState<number | undefined>(undefined)
+  const [filterAnimal, setFilterAnimal] = useState<number | undefined>(
+    undefined,
+  )
+  const [selectedService, setSelectedService] = useState<number | undefined>(
+    undefined,
+  )
 
   // Fetch animal types
   const { data: animalTypes = [] } = useQuery<Array<AnimalTypeType>>({
@@ -79,7 +83,6 @@ export default function Hero() {
 
   const hasAnimals = userAnimals.length > 0
 
-
   return (
     <section
       id="hero"
@@ -101,7 +104,10 @@ export default function Hero() {
               <div className="filter-group">
                 {login && hasAnimals ? (
                   <Autocomplete
-                    options={userAnimals.map((a) => ({ id: a.id, name: a.name }))}
+                    options={userAnimals.map((a) => ({
+                      id: a.id,
+                      name: a.name,
+                    }))}
                     value={filterAnimal}
                     onChange={setFilterAnimal}
                     placeholder="Nach Tier suchen..."
@@ -109,7 +115,10 @@ export default function Hero() {
                   />
                 ) : (
                   <Autocomplete
-                    options={animalTypes.map((t) => ({ id: t.id, name: t.name }))}
+                    options={animalTypes.map((t) => ({
+                      id: t.id,
+                      name: t.name,
+                    }))}
                     value={filterAnimalType[0]}
                     onChange={(id) => setFilterAnimalType(id ? [id] : [])}
                     placeholder="Nach Tierart suchen..."
@@ -134,7 +143,7 @@ export default function Hero() {
                 <LocationAutocomplete
                   value={location}
                   onChange={setLocation}
-                  placeholder="Stadt, PLZ oder Standort"
+                  placeholder="Nach Stadt suchen..."
                   label="Standort"
                   showGeolocationButton={true}
                 />
@@ -154,16 +163,24 @@ export default function Hero() {
             {/* Helper Text Below Filters */}
             {!login && (
               <small className="hero-filter-help">
-                <a href="#" onClick={handleLoginRedirect} className="hero-filter-link">
+                <a
+                  href="#"
+                  onClick={handleLoginRedirect}
+                  className="hero-filter-link"
+                >
                   Tier hinzufügen
-                </a>
-                {' '}- Anmelden erforderlich
+                </a>{' '}
+                - Anmelden erforderlich
               </small>
             )}
             {login && !hasAnimals && (
               <small className="hero-filter-help">
                 Du hast noch keine Tiere angelegt.{' '}
-                <a href="#" onClick={handleNavigateToAnimalCreate} className="hero-filter-link">
+                <a
+                  href="#"
+                  onClick={handleNavigateToAnimalCreate}
+                  className="hero-filter-link"
+                >
                   Tier hinzufügen
                 </a>
               </small>

@@ -127,7 +127,9 @@ export function InlineFilterBar({
 
   const hasAnimals = userAnimals.length > 0
   const activeFilters =
-    filterAnimalType.length + filterServiceType.length + (filterLocation ? 1 : 0)
+    filterAnimalType.length +
+    filterServiceType.length +
+    (filterLocation ? 1 : 0)
 
   return (
     <div className="inline-filter-bar">
@@ -178,8 +180,8 @@ export function InlineFilterBar({
             <LocationAutocomplete
               value={filterLocation}
               onChange={setFilterLocation}
-              placeholder={'Stadt, PLZ oder Standort'}
-              label='Standort'
+              placeholder={'Nach Stadt suchen...'}
+              label="Standort"
               showGeolocationButton={true}
             />
           </div>
@@ -196,11 +198,7 @@ export function InlineFilterBar({
           >
             Zurücksetzen
           </Button>
-          <Button
-            variant="primary"
-            size="sm"
-            onClick={handleApplyFilters}
-          >
+          <Button variant="primary" size="sm" onClick={handleApplyFilters}>
             Anwenden
           </Button>
         </div>
