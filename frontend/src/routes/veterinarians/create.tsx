@@ -1,76 +1,93 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router';
-import { useMemo, useState } from 'react';
-import { useMutation, useQuery } from '@tanstack/react-query';
-import { Alert, Form, FormGroup } from 'react-bootstrap';
-import Select from 'react-select';
-import { getVeterinarianCreateType, scrollToFirstError, validateVeterinarianFormular } from '../../utils/ValidateForm';
-import { PasswordInput } from '../../components/common/PasswordInput';
-import { checkPersonByEmail, createVeterinarian } from '../../api/VeterinarianAPI';
-import { useLoginContext } from '../../LoginContext';
-import { useTitle } from '../../utils/useTitle';
-import { getAllCountries } from '../../api/CountriesAPI';
-import { getAllAnimalTypes } from '../../api/AnimalTypeAPI';
-import { getAllAvailableServices } from '../../api/ServicesAPI';
-import type { MultiValue, SingleValue } from 'react-select';
-import type { AnimalTypeType, CountryType, ServiceType } from 'vetilib-shared/schemas/ZodSchemas';
-import '../../styles/routes/veterinarianCreate.scss';
-import type { VeterinarianValidateType } from '@/types/validation';
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { useMemo, useState } from 'react'
+import { useMutation, useQuery } from '@tanstack/react-query'
+import { Alert, Form, FormGroup } from 'react-bootstrap'
+import Select from 'react-select'
+import {
+  getVeterinarianCreateType,
+  scrollToFirstError,
+  validateVeterinarianFormular,
+} from '../../utils/ValidateForm'
+import { PasswordInput } from '../../components/common/PasswordInput'
+import {
+  checkPersonByEmail,
+  createVeterinarian,
+} from '../../api/VeterinarianAPI'
+import { useLoginContext } from '../../LoginContext'
+import { useTitle } from '../../utils/useTitle'
+import { getAllCountries } from '../../api/CountriesAPI'
+import { getAllAnimalTypes } from '../../api/AnimalTypeAPI'
+import { getAllAvailableServices } from '../../api/ServicesAPI'
+import type { MultiValue, SingleValue } from 'react-select'
+import type {
+  AnimalTypeType,
+  CountryType,
+  ServiceType,
+} from 'vetilib-shared/schemas/ZodSchemas'
+import '../../styles/routes/veterinarianCreate.scss'
+import type { VeterinarianValidateType } from '@/types/validation'
 
 export const Route = createFileRoute('/veterinarians/create')({
   component: VeterinarianCreate,
-});
+})
 
 function VeterinarianCreate() {
-  useTitle('Tierarzt erstellen');
-  const navigate = useNavigate();
-  const { login } = useLoginContext();
+  useTitle('Tierarzt erstellen')
+  const navigate = useNavigate()
+  const { login } = useLoginContext()
 
-  const [accountMode, setAccountMode] = useState<'new' | 'existing'>('new');
-  const [existingPersonData, setExistingPersonData] = useState<{ firstName: string; lastName: string } | null>(null);
-  const [selectedAnimalTypes, setSelectedAnimalTypes] = useState<Array<number>>([]);
-  const [selectedServices, setSelectedServices] = useState<Array<number>>([]);
+  const [accountMode, setAccountMode] = useState<'new' | 'existing'>('new')
+  const [existingPersonData, setExistingPersonData] = useState<{
+    firstName: string
+    lastName: string
+  } | null>(null)
+  const [selectedAnimalTypes, setSelectedAnimalTypes] = useState<Array<number>>(
+    [],
+  )
+  const [selectedServices, setSelectedServices] = useState<Array<number>>([])
 
-  const [veterinarianData, setVeterinarianData] = useState<VeterinarianValidateType>({
-    firstName: '',
-    lastName: '',
-    infoEmail: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    dateOfBirth: '',
-    sex: undefined,
-    phone: '',
-    address: {
-      country: undefined,
-      street: '',
-      streetNumber: '',
-      cityCode: '',
-      city: '',
-    },
-  });
+  const [veterinarianData, setVeterinarianData] =
+    useState<VeterinarianValidateType>({
+      firstName: '',
+      lastName: '',
+      infoEmail: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+      dateOfBirth: '',
+      sex: undefined,
+      phone: '',
+      address: {
+        country: undefined,
+        street: '',
+        streetNumber: '',
+        cityCode: '',
+        city: '',
+      },
+    })
 
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [errors, setErrors] = useState<{ [key: string]: string }>({})
   const [passwordRequirements, setPasswordRequirements] = useState({
     minLength: false,
     hasUpperCase: false,
     hasNumber: false,
     hasSpecialChar: false,
-  });
+  })
 
   const { data: dataCountries, isSuccess: isSuccessCountries } = useQuery({
     queryKey: ['allCountries'],
     queryFn: () => getAllCountries(),
-  });
+  })
 
   const { data: dataAnimalTypes, isSuccess: isSuccessAnimalTypes } = useQuery({
     queryKey: ['allAnimalTypes'],
     queryFn: () => getAllAnimalTypes(undefined),
-  });
+  })
 
   const { data: dataServices, isSuccess: isSuccessServices } = useQuery({
     queryKey: ['allServices'],
     queryFn: () => getAllAvailableServices(undefined),
-  });
+  })
 
   const checkPasswordRequirements = (pwd: string) => {
     setPasswordRequirements({
@@ -78,150 +95,183 @@ function VeterinarianCreate() {
       hasUpperCase: /[A-Z]/.test(pwd),
       hasNumber: /[0-9]/.test(pwd),
       hasSpecialChar: /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(pwd),
-    });
-  };
+    })
+  }
 
   const getMaxDate = (): string => {
-    const today = new Date();
-    return today.toISOString().split('T')[0];
-  };
+    const today = new Date()
+    return today.toISOString().split('T')[0]
+  }
 
   const { mutate: mutateCreateVeterinarian, isPending } = useMutation({
     mutationFn: (vet: any) => createVeterinarian(vet),
     onSuccess: () => {
-      navigate({ to: '/dashboard' });
+      navigate({ to: '/dashboard' })
     },
     onError: (error: any) => {
       setErrors({
         ...errors,
         [error.field || 'general']: error.message,
-      });
+      })
     },
-  });
+  })
 
   const handleChange = (e: any) => {
-    const { name, value } = e.target;
+    const { name, value } = e.target
 
     setVeterinarianData((prev: VeterinarianValidateType) => ({
       ...prev,
       [name]: value,
-    }));
+    }))
 
     if (name === 'password' && value) {
-      checkPasswordRequirements(value);
-      if (veterinarianData.confirmPassword && value !== veterinarianData.confirmPassword) {
-        setErrors((prev) => ({ ...prev, confirmPassword: 'Passwörter stimmen nicht überein' }));
-      } else if (veterinarianData.confirmPassword && value === veterinarianData.confirmPassword) {
+      checkPasswordRequirements(value)
+      if (
+        veterinarianData.confirmPassword &&
+        value !== veterinarianData.confirmPassword
+      ) {
+        setErrors((prev) => ({
+          ...prev,
+          confirmPassword: 'Passwörter stimmen nicht überein',
+        }))
+      } else if (
+        veterinarianData.confirmPassword &&
+        value === veterinarianData.confirmPassword
+      ) {
         setErrors((prev) => {
-          const newErr = { ...prev };
-          delete newErr.confirmPassword;
-          return newErr;
-        });
+          const newErr = { ...prev }
+          delete newErr.confirmPassword
+          return newErr
+        })
       }
     }
-  };
+  }
 
   const handleAddressChange = (e: any) => {
-    const { name, value } = e.target;
+    const { name, value } = e.target
     setVeterinarianData((prev: VeterinarianValidateType) => ({
       ...prev,
       address: {
         ...prev.address,
         [name]: value,
       },
-    }));
-  };
+    }))
+  }
 
-  const handleCountryChange = (selectedOption: SingleValue<{ value: CountryType; label: string }>) => {
+  const handleCountryChange = (
+    selectedOption: SingleValue<{ value: CountryType; label: string }>,
+  ) => {
     const updatedVet = {
       ...veterinarianData,
       address: {
         ...veterinarianData.address,
         country: selectedOption?.value,
       },
-    };
-    setVeterinarianData(updatedVet);
-  };
+    }
+    setVeterinarianData(updatedVet)
+  }
 
-  const handleAnimalTypesChange = (selectedOptions: MultiValue<{ value: number; label: string }>) => {
-    setSelectedAnimalTypes(selectedOptions.map((opt) => opt.value));
-  };
+  const handleAnimalTypesChange = (
+    selectedOptions: MultiValue<{ value: number; label: string }>,
+  ) => {
+    setSelectedAnimalTypes(selectedOptions.map((opt) => opt.value))
+  }
 
-  const handleServicesChange = (selectedOptions: MultiValue<{ value: number; label: string }>) => {
-    setSelectedServices(selectedOptions.map((opt) => opt.value));
-  };
+  const handleServicesChange = (
+    selectedOptions: MultiValue<{ value: number; label: string }>,
+  ) => {
+    setSelectedServices(selectedOptions.map((opt) => opt.value))
+  }
 
   const handleEmailCheck = async (email: string) => {
-    if (!email || !email.includes('@')) return;
+    if (!email || !email.includes('@')) return
 
     try {
-      const result = await checkPersonByEmail(email);
+      const result = await checkPersonByEmail(email)
       if (result.exists) {
-        if (result.isVeterinarian || result.firstName === undefined || result.lastName === undefined) {
-          setErrors({ ...errors, email: 'Person ist bereits Tierarzt' });
-          setExistingPersonData(null);
+        if (
+          result.isVeterinarian ||
+          result.firstName === undefined ||
+          result.lastName === undefined
+        ) {
+          setErrors({ ...errors, email: 'Person ist bereits Tierarzt' })
+          setExistingPersonData(null)
         } else {
           setExistingPersonData({
             firstName: result.firstName,
             lastName: result.lastName,
-          });
-          setErrors({ ...errors, email: '' });
+          })
+          setErrors({ ...errors, email: '' })
         }
       } else {
-        setErrors({ ...errors, email: 'Person mit dieser Email existiert nicht' });
-        setExistingPersonData(null);
+        setErrors({
+          ...errors,
+          email: 'Person mit dieser Email existiert nicht',
+        })
+        setExistingPersonData(null)
       }
     } catch (err) {
-      console.error('Email check failed:', err);
+      console.error('Email check failed:', err)
     }
-  };
+  }
 
   const countryOptions = useMemo(() => {
     if (!isSuccessCountries) {
-      return [];
+      return []
     }
     return dataCountries.map((country: CountryType) => ({
       value: country,
       label: country.name,
-    }));
-  }, [isSuccessCountries, dataCountries]);
+    }))
+  }, [isSuccessCountries, dataCountries])
 
   const animalTypeOptions = useMemo(() => {
-    if (!isSuccessAnimalTypes) return [];
+    if (!isSuccessAnimalTypes) return []
     return dataAnimalTypes.map((type: AnimalTypeType) => ({
       value: type.id,
       label: type.name,
-    }));
-  }, [isSuccessAnimalTypes, dataAnimalTypes]);
+    }))
+  }, [isSuccessAnimalTypes, dataAnimalTypes])
 
   const serviceOptions = useMemo(() => {
-    if (!isSuccessServices) return [];
+    if (!isSuccessServices) return []
     return dataServices.map((service: ServiceType) => ({
       value: service.id,
       label: service.name,
-    }));
-  }, [isSuccessServices, dataServices]);
+    }))
+  }, [isSuccessServices, dataServices])
 
   const handleBlur = (e: any) => {
-    const name = e.target.name;
-    const newErrors = validateVeterinarianFormular(veterinarianData, errors, name, accountMode);
-    setErrors(newErrors);
-  };
+    const name = e.target.name
+    const newErrors = validateVeterinarianFormular(
+      veterinarianData,
+      errors,
+      name,
+      accountMode,
+    )
+    setErrors(newErrors)
+  }
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+    e.preventDefault()
 
-    const newErrors = validateVeterinarianFormular(veterinarianData, errors, undefined, accountMode);
-    setErrors(newErrors);
+    const newErrors = validateVeterinarianFormular(
+      veterinarianData,
+      errors,
+      undefined,
+      accountMode,
+    )
+    setErrors(newErrors)
 
     if (Object.keys(newErrors).length !== 0) {
       setTimeout(() => {
-        scrollToFirstError(newErrors);
-      }, 100);
-      return;
+        scrollToFirstError(newErrors)
+      }, 100)
+      return
     }
 
-    const practiceId = login && login.role === 'company' ? (login as any).practiceId : undefined;
+    const practiceId =
+      login && login.role === 'company' ? (login as any).practiceId : undefined
 
     if (accountMode === 'existing') {
       // Minimal payload for existing person
@@ -231,19 +281,19 @@ function VeterinarianCreate() {
         fk_veterinarypracticeid: practiceId || null,
         animalTypeIds: selectedAnimalTypes,
         serviceIds: selectedServices,
-      };
-      mutateCreateVeterinarian(payload);
+      }
+      mutateCreateVeterinarian(payload)
     } else {
       // Full payload for new person
-      const vet = getVeterinarianCreateType(veterinarianData, 'new', practiceId);
+      const vet = getVeterinarianCreateType(veterinarianData, 'new', practiceId)
       const payload = {
         ...vet,
         animalTypeIds: selectedAnimalTypes,
         serviceIds: selectedServices,
-      };
-      mutateCreateVeterinarian(payload);
+      }
+      mutateCreateVeterinarian(payload)
     }
-  };
+  }
 
   // Guard: only practice users can create veterinarians
   if (!login || login.role !== 'company') {
@@ -251,7 +301,7 @@ function VeterinarianCreate() {
       <div className="container mt-4">
         <Alert variant="danger">Nur Praxen können Tierärzte erstellen.</Alert>
       </div>
-    );
+    )
   }
 
   return (
@@ -276,9 +326,9 @@ function VeterinarianCreate() {
                 label="Neuer Account"
                 checked={accountMode === 'new'}
                 onChange={() => {
-                  setAccountMode('new');
-                  setErrors({});
-                  setExistingPersonData(null);
+                  setAccountMode('new')
+                  setErrors({})
+                  setExistingPersonData(null)
                 }}
               />
               <Form.Check
@@ -288,9 +338,9 @@ function VeterinarianCreate() {
                 label="Bestehende Email"
                 checked={accountMode === 'existing'}
                 onChange={() => {
-                  setAccountMode('existing');
-                  setErrors({});
-                  setExistingPersonData(null);
+                  setAccountMode('existing')
+                  setErrors({})
+                  setExistingPersonData(null)
                 }}
               />
             </div>
@@ -298,13 +348,15 @@ function VeterinarianCreate() {
 
           {accountMode === 'existing' && (
             <Alert variant="info" className="mb-4">
-              Person muss bereits registriert sein. Nach Email-Eingabe werden Name automatisch geladen.
+              Person muss bereits registriert sein. Nach Email-Eingabe werden
+              Name automatisch geladen.
             </Alert>
           )}
 
           {accountMode === 'new' && (
             <Alert variant="info" className="mb-4">
-              Backend prüft automatisch ob Person existiert. Falls ja, wird nur Tierarzt-Eintrag erstellt.
+              Backend prüft automatisch ob Person existiert. Falls ja, wird nur
+              Tierarzt-Eintrag erstellt.
             </Alert>
           )}
 
@@ -322,13 +374,15 @@ function VeterinarianCreate() {
                     value={veterinarianData.email}
                     onChange={handleChange}
                     onBlur={(e) => {
-                      handleBlur(e);
-                      handleEmailCheck(e.target.value);
+                      handleBlur(e)
+                      handleEmailCheck(e.target.value)
                     }}
                     isInvalid={!!errors.email}
                     placeholder="Email des bestehenden Accounts"
                   />
-                  <Form.Control.Feedback type="invalid">{errors.email}</Form.Control.Feedback>
+                  <Form.Control.Feedback type="invalid">
+                    {errors.email}
+                  </Form.Control.Feedback>
                 </FormGroup>
               )}
 
@@ -336,11 +390,21 @@ function VeterinarianCreate() {
                 <>
                   <FormGroup className="form-group">
                     <Form.Label className="form-label">Vorname</Form.Label>
-                    <Form.Control type="text" value={existingPersonData.firstName} disabled className="bg-light" />
+                    <Form.Control
+                      type="text"
+                      value={existingPersonData.firstName}
+                      disabled
+                      className="bg-light"
+                    />
                   </FormGroup>
                   <FormGroup className="form-group">
                     <Form.Label className="form-label">Nachname</Form.Label>
-                    <Form.Control type="text" value={existingPersonData.lastName} disabled className="bg-light" />
+                    <Form.Control
+                      type="text"
+                      value={existingPersonData.lastName}
+                      disabled
+                      className="bg-light"
+                    />
                   </FormGroup>
                 </>
               )}
@@ -361,7 +425,9 @@ function VeterinarianCreate() {
                       value={veterinarianData.firstName}
                       isInvalid={!!errors.firstName}
                     />
-                    <Form.Control.Feedback type="invalid">{errors.firstName}</Form.Control.Feedback>
+                    <Form.Control.Feedback type="invalid">
+                      {errors.firstName}
+                    </Form.Control.Feedback>
                   </FormGroup>
 
                   <FormGroup className="form-group">
@@ -378,7 +444,9 @@ function VeterinarianCreate() {
                       value={veterinarianData.lastName}
                       isInvalid={!!errors.lastName}
                     />
-                    <Form.Control.Feedback type="invalid">{errors.lastName}</Form.Control.Feedback>
+                    <Form.Control.Feedback type="invalid">
+                      {errors.lastName}
+                    </Form.Control.Feedback>
                   </FormGroup>
                 </div>
               )}
@@ -397,7 +465,9 @@ function VeterinarianCreate() {
                   value={veterinarianData.infoEmail}
                   isInvalid={!!errors.infoEmail}
                 />
-                <Form.Control.Feedback type="invalid">{errors.infoEmail}</Form.Control.Feedback>
+                <Form.Control.Feedback type="invalid">
+                  {errors.infoEmail}
+                </Form.Control.Feedback>
               </FormGroup>
             </div>
 
@@ -406,26 +476,34 @@ function VeterinarianCreate() {
               <h2 className="form-section-title">Spezialisierung</h2>
 
               <FormGroup className="form-group">
-                <Form.Label className="form-label">Behandelbare Tierarten</Form.Label>
+                <Form.Label className="form-label">
+                  Behandelbare Tierarten
+                </Form.Label>
                 <Select
                   isMulti
                   closeMenuOnSelect={false}
                   name="animalTypes"
                   options={animalTypeOptions}
-                  value={animalTypeOptions.filter((opt) => selectedAnimalTypes.includes(opt.value))}
+                  value={animalTypeOptions.filter((opt) =>
+                    selectedAnimalTypes.includes(opt.value),
+                  )}
                   onChange={handleAnimalTypesChange}
                   placeholder="Tierarten auswählen..."
                 />
               </FormGroup>
 
               <FormGroup className="form-group">
-                <Form.Label className="form-label">Angebotene Leistungen</Form.Label>
+                <Form.Label className="form-label">
+                  Angebotene Leistungen
+                </Form.Label>
                 <Select
                   isMulti
                   closeMenuOnSelect={false}
                   name="services"
                   options={serviceOptions}
-                  value={serviceOptions.filter((opt) => selectedServices.includes(opt.value))}
+                  value={serviceOptions.filter((opt) =>
+                    selectedServices.includes(opt.value),
+                  )}
                   onChange={handleServicesChange}
                   placeholder="Leistungen auswählen..."
                 />
@@ -453,7 +531,9 @@ function VeterinarianCreate() {
                         max={getMaxDate()}
                         isInvalid={!!errors.dateOfBirth}
                       />
-                      <Form.Control.Feedback type="invalid">{errors.dateOfBirth}</Form.Control.Feedback>
+                      <Form.Control.Feedback type="invalid">
+                        {errors.dateOfBirth}
+                      </Form.Control.Feedback>
                     </FormGroup>
 
                     <FormGroup className="form-group">
@@ -473,7 +553,9 @@ function VeterinarianCreate() {
                         <option value="female">Weiblich</option>
                         <option value="not_applicable">Divers</option>
                       </Form.Select>
-                      <Form.Control.Feedback type="invalid">{errors.sex}</Form.Control.Feedback>
+                      <Form.Control.Feedback type="invalid">
+                        {errors.sex}
+                      </Form.Control.Feedback>
                     </FormGroup>
                   </div>
 
@@ -492,7 +574,9 @@ function VeterinarianCreate() {
                         value={veterinarianData.email}
                         isInvalid={!!errors.email}
                       />
-                      <Form.Control.Feedback type="invalid">{errors.email}</Form.Control.Feedback>
+                      <Form.Control.Feedback type="invalid">
+                        {errors.email}
+                      </Form.Control.Feedback>
                     </FormGroup>
 
                     <FormGroup className="form-group">
@@ -509,7 +593,9 @@ function VeterinarianCreate() {
                         value={veterinarianData.phone}
                         isInvalid={!!errors.phone}
                       />
-                      <Form.Control.Feedback type="invalid">{errors.phone}</Form.Control.Feedback>
+                      <Form.Control.Feedback type="invalid">
+                        {errors.phone}
+                      </Form.Control.Feedback>
                     </FormGroup>
                   </div>
                 </div>
@@ -524,7 +610,11 @@ function VeterinarianCreate() {
                       options={countryOptions}
                       value={
                         veterinarianData.address.country
-                          ? countryOptions.find((opt) => opt.value.id === veterinarianData.address.country?.id)
+                          ? countryOptions.find(
+                              (opt) =>
+                                opt.value.id ===
+                                veterinarianData.address.country?.id,
+                            )
                           : null
                       }
                       onChange={handleCountryChange}
@@ -546,7 +636,9 @@ function VeterinarianCreate() {
                         value={veterinarianData.address.street}
                         isInvalid={!!errors.street}
                       />
-                      <Form.Control.Feedback type="invalid">{errors.street}</Form.Control.Feedback>
+                      <Form.Control.Feedback type="invalid">
+                        {errors.street}
+                      </Form.Control.Feedback>
                     </FormGroup>
 
                     <FormGroup className="form-group">
@@ -563,7 +655,9 @@ function VeterinarianCreate() {
                         value={veterinarianData.address.streetNumber}
                         isInvalid={!!errors.streetNumber}
                       />
-                      <Form.Control.Feedback type="invalid">{errors.streetNumber}</Form.Control.Feedback>
+                      <Form.Control.Feedback type="invalid">
+                        {errors.streetNumber}
+                      </Form.Control.Feedback>
                     </FormGroup>
                   </div>
 
@@ -582,7 +676,9 @@ function VeterinarianCreate() {
                         value={veterinarianData.address.cityCode}
                         isInvalid={!!errors.cityCode}
                       />
-                      <Form.Control.Feedback type="invalid">{errors.cityCode}</Form.Control.Feedback>
+                      <Form.Control.Feedback type="invalid">
+                        {errors.cityCode}
+                      </Form.Control.Feedback>
                     </FormGroup>
 
                     <FormGroup className="form-group">
@@ -599,7 +695,9 @@ function VeterinarianCreate() {
                         value={veterinarianData.address.city}
                         isInvalid={!!errors.city}
                       />
-                      <Form.Control.Feedback type="invalid">{errors.city}</Form.Control.Feedback>
+                      <Form.Control.Feedback type="invalid">
+                        {errors.city}
+                      </Form.Control.Feedback>
                     </FormGroup>
                   </div>
                 </div>
@@ -636,24 +734,50 @@ function VeterinarianCreate() {
                   />
 
                   <div className="password-requirements">
-                    <p className="requirements-title">Passwort-Anforderungen:</p>
+                    <p className="requirements-title">
+                      Passwort-Anforderungen:
+                    </p>
                     <ul>
-                      <li className={passwordRequirements.minLength ? 'met' : ''}>Mindestens 8 Zeichen</li>
-                      <li className={passwordRequirements.hasUpperCase ? 'met' : ''}>Mindestens ein Großbuchstabe</li>
-                      <li className={passwordRequirements.hasNumber ? 'met' : ''}>Mindestens eine Zahl</li>
-                      <li className={passwordRequirements.hasSpecialChar ? 'met' : ''}>Mindestens ein Sonderzeichen</li>
+                      <li
+                        className={passwordRequirements.minLength ? 'met' : ''}
+                      >
+                        Mindestens 8 Zeichen
+                      </li>
+                      <li
+                        className={
+                          passwordRequirements.hasUpperCase ? 'met' : ''
+                        }
+                      >
+                        Mindestens ein Großbuchstabe
+                      </li>
+                      <li
+                        className={passwordRequirements.hasNumber ? 'met' : ''}
+                      >
+                        Mindestens eine Zahl
+                      </li>
+                      <li
+                        className={
+                          passwordRequirements.hasSpecialChar ? 'met' : ''
+                        }
+                      >
+                        Mindestens ein Sonderzeichen
+                      </li>
                     </ul>
                   </div>
                 </div>
               </>
             )}
 
-            <button type="submit" disabled={isPending} className="btn btn-primary w-100 mt-4">
+            <button
+              type="submit"
+              disabled={isPending}
+              className="btn btn-primary w-100 mt-4"
+            >
               {isPending ? 'Erstelle Tierarzt...' : 'Tierarzt erstellen'}
             </button>
           </Form>
         </div>
       </div>
     </div>
-  );
+  )
 }

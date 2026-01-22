@@ -1,0 +1,61 @@
+.veterinarian-detail-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+.veterinarian-detail-card {
+  border: 1px solid #dee2e6;
+  border-radius: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.veterinarian-image-col {
+  padding: 1rem;
+}
+
+.veterinarian-detail-image {
+  width: 150px;
+  height: 150px;
+  border-radius: 1rem;
+  object-fit: cover;
+}
+
+.veterinarian-heading {
+  text-align: center;
+  padding: 1rem;
+  margin-left: 0;
+}
+
+.btn-primary {
+  color: white;
+}
+
+.veterinarian-edit-form-wrapper {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.back-button {
+  background: none;
+  border: none;
+  color: #198754;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.5rem 0;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s;
+
+  &:hover {
+    color: #157347;
+    text-decoration: underline;
+  }
+
+  i {
+    font-size: 1.1rem;
+  }
+}

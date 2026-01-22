@@ -15,9 +15,11 @@ import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as AnimalsRouteImport } from './routes/animals'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as VeterinariansIndexRouteImport } from './routes/veterinarians/index'
 import { Route as CustomersIndexRouteImport } from './routes/customers/index'
 import { Route as AppointmentsIndexRouteImport } from './routes/appointments/index'
 import { Route as VeterinariansCreateRouteImport } from './routes/veterinarians/create'
+import { Route as VeterinariansVeterinarianIdRouteImport } from './routes/veterinarians/$veterinarianId'
 import { Route as RegistrationVeterinarypracticeRouteImport } from './routes/registration/veterinarypractice'
 import { Route as RegistrationVerifyEmailRouteImport } from './routes/registration/verify-email'
 import { Route as RegistrationPersonRouteImport } from './routes/registration/person'
@@ -31,6 +33,7 @@ import { Route as CustomersAnimalIdRouteImport } from './routes/customers/$anima
 import { Route as BookingConfirmationRouteImport } from './routes/booking/confirmation'
 import { Route as BookingAppointmentIdRouteImport } from './routes/booking/$appointmentId'
 import { Route as AppointmentsCreateRouteImport } from './routes/appointments/create'
+import { Route as VeterinariansVeterinarianIdEditRouteImport } from './routes/veterinarians/$veterinarianId/edit'
 import { Route as RegistrationEmailConfirmationEmailVerifyCodeRouteImport } from './routes/registration/email-confirmation/$emailVerifyCode'
 import { Route as PasswordResetConfirmTokenRouteImport } from './routes/password-reset/confirm.$token'
 import { Route as AppointmentsAppointmentIdRescheduleRouteImport } from './routes/appointments/$appointmentId/reschedule'
@@ -65,6 +68,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const VeterinariansIndexRoute = VeterinariansIndexRouteImport.update({
+  id: '/veterinarians/',
+  path: '/veterinarians/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CustomersIndexRoute = CustomersIndexRouteImport.update({
   id: '/customers/',
   path: '/customers/',
@@ -80,6 +88,12 @@ const VeterinariansCreateRoute = VeterinariansCreateRouteImport.update({
   path: '/veterinarians/create',
   getParentRoute: () => rootRouteImport,
 } as any)
+const VeterinariansVeterinarianIdRoute =
+  VeterinariansVeterinarianIdRouteImport.update({
+    id: '/veterinarians/$veterinarianId',
+    path: '/veterinarians/$veterinarianId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const RegistrationVeterinarypracticeRoute =
   RegistrationVeterinarypracticeRouteImport.update({
     id: '/registration/veterinarypractice',
@@ -146,6 +160,12 @@ const AppointmentsCreateRoute = AppointmentsCreateRouteImport.update({
   path: '/appointments/create',
   getParentRoute: () => rootRouteImport,
 } as any)
+const VeterinariansVeterinarianIdEditRoute =
+  VeterinariansVeterinarianIdEditRouteImport.update({
+    id: '/edit',
+    path: '/edit',
+    getParentRoute: () => VeterinariansVeterinarianIdRoute,
+  } as any)
 const RegistrationEmailConfirmationEmailVerifyCodeRoute =
   RegistrationEmailConfirmationEmailVerifyCodeRouteImport.update({
     id: '/registration/email-confirmation/$emailVerifyCode',
@@ -185,12 +205,15 @@ export interface FileRoutesByFullPath {
   '/registration/person': typeof RegistrationPersonRoute
   '/registration/verify-email': typeof RegistrationVerifyEmailRoute
   '/registration/veterinarypractice': typeof RegistrationVeterinarypracticeRoute
+  '/veterinarians/$veterinarianId': typeof VeterinariansVeterinarianIdRouteWithChildren
   '/veterinarians/create': typeof VeterinariansCreateRoute
   '/appointments': typeof AppointmentsIndexRoute
   '/customers': typeof CustomersIndexRoute
+  '/veterinarians': typeof VeterinariansIndexRoute
   '/appointments/$appointmentId/reschedule': typeof AppointmentsAppointmentIdRescheduleRoute
   '/password-reset/confirm/$token': typeof PasswordResetConfirmTokenRoute
   '/registration/email-confirmation/$emailVerifyCode': typeof RegistrationEmailConfirmationEmailVerifyCodeRoute
+  '/veterinarians/$veterinarianId/edit': typeof VeterinariansVeterinarianIdEditRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -212,12 +235,15 @@ export interface FileRoutesByTo {
   '/registration/person': typeof RegistrationPersonRoute
   '/registration/verify-email': typeof RegistrationVerifyEmailRoute
   '/registration/veterinarypractice': typeof RegistrationVeterinarypracticeRoute
+  '/veterinarians/$veterinarianId': typeof VeterinariansVeterinarianIdRouteWithChildren
   '/veterinarians/create': typeof VeterinariansCreateRoute
   '/appointments': typeof AppointmentsIndexRoute
   '/customers': typeof CustomersIndexRoute
+  '/veterinarians': typeof VeterinariansIndexRoute
   '/appointments/$appointmentId/reschedule': typeof AppointmentsAppointmentIdRescheduleRoute
   '/password-reset/confirm/$token': typeof PasswordResetConfirmTokenRoute
   '/registration/email-confirmation/$emailVerifyCode': typeof RegistrationEmailConfirmationEmailVerifyCodeRoute
+  '/veterinarians/$veterinarianId/edit': typeof VeterinariansVeterinarianIdEditRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -240,12 +266,15 @@ export interface FileRoutesById {
   '/registration/person': typeof RegistrationPersonRoute
   '/registration/verify-email': typeof RegistrationVerifyEmailRoute
   '/registration/veterinarypractice': typeof RegistrationVeterinarypracticeRoute
+  '/veterinarians/$veterinarianId': typeof VeterinariansVeterinarianIdRouteWithChildren
   '/veterinarians/create': typeof VeterinariansCreateRoute
   '/appointments/': typeof AppointmentsIndexRoute
   '/customers/': typeof CustomersIndexRoute
+  '/veterinarians/': typeof VeterinariansIndexRoute
   '/appointments/$appointmentId/reschedule': typeof AppointmentsAppointmentIdRescheduleRoute
   '/password-reset/confirm/$token': typeof PasswordResetConfirmTokenRoute
   '/registration/email-confirmation/$emailVerifyCode': typeof RegistrationEmailConfirmationEmailVerifyCodeRoute
+  '/veterinarians/$veterinarianId/edit': typeof VeterinariansVeterinarianIdEditRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -269,12 +298,15 @@ export interface FileRouteTypes {
     | '/registration/person'
     | '/registration/verify-email'
     | '/registration/veterinarypractice'
+    | '/veterinarians/$veterinarianId'
     | '/veterinarians/create'
     | '/appointments'
     | '/customers'
+    | '/veterinarians'
     | '/appointments/$appointmentId/reschedule'
     | '/password-reset/confirm/$token'
     | '/registration/email-confirmation/$emailVerifyCode'
+    | '/veterinarians/$veterinarianId/edit'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -296,12 +328,15 @@ export interface FileRouteTypes {
     | '/registration/person'
     | '/registration/verify-email'
     | '/registration/veterinarypractice'
+    | '/veterinarians/$veterinarianId'
     | '/veterinarians/create'
     | '/appointments'
     | '/customers'
+    | '/veterinarians'
     | '/appointments/$appointmentId/reschedule'
     | '/password-reset/confirm/$token'
     | '/registration/email-confirmation/$emailVerifyCode'
+    | '/veterinarians/$veterinarianId/edit'
   id:
     | '__root__'
     | '/'
@@ -323,12 +358,15 @@ export interface FileRouteTypes {
     | '/registration/person'
     | '/registration/verify-email'
     | '/registration/veterinarypractice'
+    | '/veterinarians/$veterinarianId'
     | '/veterinarians/create'
     | '/appointments/'
     | '/customers/'
+    | '/veterinarians/'
     | '/appointments/$appointmentId/reschedule'
     | '/password-reset/confirm/$token'
     | '/registration/email-confirmation/$emailVerifyCode'
+    | '/veterinarians/$veterinarianId/edit'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -351,9 +389,11 @@ export interface RootRouteChildren {
   RegistrationPersonRoute: typeof RegistrationPersonRoute
   RegistrationVerifyEmailRoute: typeof RegistrationVerifyEmailRoute
   RegistrationVeterinarypracticeRoute: typeof RegistrationVeterinarypracticeRoute
+  VeterinariansVeterinarianIdRoute: typeof VeterinariansVeterinarianIdRouteWithChildren
   VeterinariansCreateRoute: typeof VeterinariansCreateRoute
   AppointmentsIndexRoute: typeof AppointmentsIndexRoute
   CustomersIndexRoute: typeof CustomersIndexRoute
+  VeterinariansIndexRoute: typeof VeterinariansIndexRoute
   AppointmentsAppointmentIdRescheduleRoute: typeof AppointmentsAppointmentIdRescheduleRoute
   PasswordResetConfirmTokenRoute: typeof PasswordResetConfirmTokenRoute
   RegistrationEmailConfirmationEmailVerifyCodeRoute: typeof RegistrationEmailConfirmationEmailVerifyCodeRoute
@@ -403,6 +443,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/veterinarians/': {
+      id: '/veterinarians/'
+      path: '/veterinarians'
+      fullPath: '/veterinarians'
+      preLoaderRoute: typeof VeterinariansIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/customers/': {
       id: '/customers/'
       path: '/customers'
@@ -422,6 +469,13 @@ declare module '@tanstack/react-router' {
       path: '/veterinarians/create'
       fullPath: '/veterinarians/create'
       preLoaderRoute: typeof VeterinariansCreateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/veterinarians/$veterinarianId': {
+      id: '/veterinarians/$veterinarianId'
+      path: '/veterinarians/$veterinarianId'
+      fullPath: '/veterinarians/$veterinarianId'
+      preLoaderRoute: typeof VeterinariansVeterinarianIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/registration/veterinarypractice': {
@@ -515,6 +569,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppointmentsCreateRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/veterinarians/$veterinarianId/edit': {
+      id: '/veterinarians/$veterinarianId/edit'
+      path: '/edit'
+      fullPath: '/veterinarians/$veterinarianId/edit'
+      preLoaderRoute: typeof VeterinariansVeterinarianIdEditRouteImport
+      parentRoute: typeof VeterinariansVeterinarianIdRoute
+    }
     '/registration/email-confirmation/$emailVerifyCode': {
       id: '/registration/email-confirmation/$emailVerifyCode'
       path: '/registration/email-confirmation/$emailVerifyCode'
@@ -539,6 +600,20 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface VeterinariansVeterinarianIdRouteChildren {
+  VeterinariansVeterinarianIdEditRoute: typeof VeterinariansVeterinarianIdEditRoute
+}
+
+const VeterinariansVeterinarianIdRouteChildren: VeterinariansVeterinarianIdRouteChildren =
+  {
+    VeterinariansVeterinarianIdEditRoute: VeterinariansVeterinarianIdEditRoute,
+  }
+
+const VeterinariansVeterinarianIdRouteWithChildren =
+  VeterinariansVeterinarianIdRoute._addFileChildren(
+    VeterinariansVeterinarianIdRouteChildren,
+  )
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
@@ -559,9 +634,12 @@ const rootRouteChildren: RootRouteChildren = {
   RegistrationPersonRoute: RegistrationPersonRoute,
   RegistrationVerifyEmailRoute: RegistrationVerifyEmailRoute,
   RegistrationVeterinarypracticeRoute: RegistrationVeterinarypracticeRoute,
+  VeterinariansVeterinarianIdRoute:
+    VeterinariansVeterinarianIdRouteWithChildren,
   VeterinariansCreateRoute: VeterinariansCreateRoute,
   AppointmentsIndexRoute: AppointmentsIndexRoute,
   CustomersIndexRoute: CustomersIndexRoute,
+  VeterinariansIndexRoute: VeterinariansIndexRoute,
   AppointmentsAppointmentIdRescheduleRoute:
     AppointmentsAppointmentIdRescheduleRoute,
   PasswordResetConfirmTokenRoute: PasswordResetConfirmTokenRoute,
