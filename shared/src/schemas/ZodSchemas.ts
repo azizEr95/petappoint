@@ -120,6 +120,9 @@ export const AddressesCreateSchema = AddressesSchema.omit({
   id: true,
 });
 
+export const AddressesUpdateSchema = AddressesSchema;
+
+export type AddressesUpdateType = z.infer<typeof AddressesUpdateSchema>;
 export type AddressesCreateType = z.infer<typeof AddressesCreateSchema>;
 export type AddressesType = z.infer<typeof AddressesSchema>;
 
@@ -222,7 +225,7 @@ export const VeterinaryPracticeCreateSchema = VeterinaryPracticeSchema.omit({
 export const VeterinaryPracticeUpdateSchema = VeterinaryPracticeSchema.omit({
   id: true,
 }).extend({
-  address: AddressesCreateSchema,
+  address: AddressesUpdateSchema,
 });
 
 export type VeterinaryPracticesCreateType = z.infer<typeof VeterinaryPracticeCreateSchema>;

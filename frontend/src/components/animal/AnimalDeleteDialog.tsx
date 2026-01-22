@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import { Button, Modal, Alert } from 'react-bootstrap'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { deleteAnimal, deleteAnimalWithAppointments, getAppointmentsByAnimal } from '../../api/AnimalsAPI'
+import { deleteAnimal, deleteAnimalWithAppointments } from '../../api/AnimalsAPI'
 import type { AnimalsType, AppointmentsType } from 'vetilib-shared/schemas/ZodSchemas'
+import { getAppointmentsByAnimal } from '@/api/AppointmentsAPI'
 
 type AnimalDeleteDialogProps = {
   hideDialogDeleteAnimal: () => void

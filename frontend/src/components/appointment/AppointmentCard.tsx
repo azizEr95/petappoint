@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
-import { getVeterinaryPracticesById } from '../../api/VeterinaryPracticeAPI'
+import { getPictureURLForPracticeId, getVeterinaryPracticesById } from '../../api/VeterinaryPracticeAPI'
 import { getPictureURLForAnimalId } from '../../api/AnimalsAPI'
 import { exportToCalendar } from '../../utils/calendarExport'
 import { AppointmentDeleteDialog } from './AppointmentDeleteDialog'
@@ -10,6 +10,7 @@ import type {
   ServiceType,
   VeterinaryPracticesType,
 } from 'vetilib-shared/schemas/ZodSchemas'
+import { useLoginContext } from '@/LoginContext'
 
 type AppointmentCardProps = {
   appointment: AppointmentsType
@@ -28,6 +29,10 @@ export function AppointmentCard({
   compact = false,
   onShowCancelSuccess // this function is important if it is possible here to cancel an appointment
 }: AppointmentCardProps) {
+
+  const { login } = useLoginContext();
+  const loginRole = login ? login.role : null
+
   const practiceID = appointment.veterinaryPractice.id
   const navigate = useNavigate()
   const [showCancelDialog, setShowCancelDialog] = useState(false)
@@ -130,7 +135,7 @@ export function AppointmentCard({
       >
         <div className="compact-animal-image">
           <img
-            src={getPictureURLForAnimalId(appointment.animal?.id || 0)}
+            src={loginRole ? getPictureURLForPracticeId(appointment.veterinaryPractice.id) : getPictureURLForAnimalId(appointment.animal?.id || 0)}
             alt={appointment.animal?.name || 'Tier'}
             onError={(e) => {
               e.currentTarget.src = '/logo192.png'

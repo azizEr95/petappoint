@@ -2,7 +2,6 @@ import { AnimalsSchema } from 'vetilib-shared/schemas/ZodSchemas'
 import type {
   AnimalsCreateType,
   AnimalsType,
-  AppointmentsType,
 } from 'vetilib-shared/schemas/ZodSchemas'
 
 export const getAnimalsFromUser = async (
@@ -212,19 +211,4 @@ const parseAnimalArray = (
       return null
     })
     .filter((x) => x !== null)
-}
-
-export const getAppointmentsByAnimal = async (
-  animalId: number,
-): Promise<Array<AppointmentsType>> => {
-  const res = await fetch(
-    import.meta.env.VITE_API_URL + '/animals/' + animalId + '/appointments',
-    { credentials: 'include' },
-  )
-  if (!res.ok) {
-    throw new Error('Failed to fetch getAppointmentsByAnimal')
-  }
-
-  const data = await res.json()
-  return data
 }
