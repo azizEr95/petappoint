@@ -1,15 +1,13 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
-import { Alert, Form, Button } from 'react-bootstrap'
+import { Alert, Button, Form } from 'react-bootstrap'
 import Select from 'react-select'
-import { getVeterinarianById, updateVeterinarian } from '@/api/VeterinarianAPI'
-import { getAllAnimalTypes } from '@/api/AnimalTypeAPI'
-import { getAllAvailableServices } from '@/api/ServicesAPI'
-import { getAnimaltypesFromVeterinary } from '@/api/AnimalTypeAPI'
-import { getServicesFromVeterinary } from '@/api/ServicesAPI'
 import type { MultiValue } from 'react-select'
 import type { AnimalTypeType, ServiceType } from 'vetilib-shared/schemas/ZodSchemas'
+import { getVeterinarianById, updateVeterinarian } from '@/api/VeterinarianAPI'
+import { getAllAnimalTypes, getAnimaltypesFromVeterinary  } from '@/api/AnimalTypeAPI'
+import { getAllAvailableServices, getServicesFromVeterinary  } from '@/api/ServicesAPI'
 
 type VeterinarianEditFormProps = {
   veterinarianId: number
@@ -57,7 +55,7 @@ export function VeterinarianEditForm({
 
   // Initialize form with vet data
   useEffect(() => {
-    if (isSuccessVet && veterinarian) {
+    if (isSuccessVet) {
       setInfoEmail(veterinarian.infoEmail || '')
     }
   }, [isSuccessVet, veterinarian])
@@ -127,7 +125,7 @@ export function VeterinarianEditForm({
     })
   }
 
-  if (!isSuccessVet || !veterinarian) {
+  if (!isSuccessVet) {
     return <div>Lade Tierarztdaten...</div>
   }
 

@@ -6,10 +6,10 @@ import { isLoggedInAndVerified } from '@/utils/Authentication'
 import { useLoginContext } from '@/LoginContext'
 
 export const Route = createFileRoute('/veterinarians/$veterinarianId')({
-  component: VeterinarianComponent,
+  component: VeterinarianIdComponent,
 })
 
-function VeterinarianComponent() {
+function VeterinarianIdComponent() {
   const { veterinarianId } = Route.useParams()
   const navigate = useNavigate()
   const { login } = useLoginContext()

@@ -28,10 +28,10 @@ import '../../styles/routes/veterinarianCreate.scss'
 import type { VeterinarianValidateType } from '@/types/validation'
 
 export const Route = createFileRoute('/veterinarians/create')({
-  component: VeterinarianCreate,
+  component: VeterinarianCreateComponent,
 })
 
-function VeterinarianCreate() {
+function VeterinarianCreateComponent() {
   useTitle('Tierarzt erstellen')
   const navigate = useNavigate()
   const { login } = useLoginContext()
