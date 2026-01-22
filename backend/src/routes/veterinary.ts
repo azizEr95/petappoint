@@ -7,8 +7,88 @@ import { personService } from "../service/personService";
 import { veterinaryService } from "../service/veterinaryService";
 import { veterinaryCanTreatAnimalTypeService } from "../service/veterinaryCanTreatAnimalTypeService";
 import { veterinaryHasServiceService } from "../service/veterinaryHasServiceService";
+import { prisma } from "../singletonPC";
 
 export const veterinariansRouter = express.Router();
+
+veterinariansRouter.get('/:id', optionalAuthentication, async (req, res, next) => {
+    try {
+        const veterinaryId = PostgresIdSchema.parse(parseInt(req.params.id));
+        const veterinary = await veterinaryService.getById(veterinaryId);
+        res.send(veterinary);
+    } catch (err: any) {
+        res.sendStatus(500);
+        next(err);
+    }
+});
+
+veterinariansRouter.put('/:id', optionalAuthentication, async (req, res, next) => {
+    try {
+        const veterinaryId = PostgresIdSchema.parse(parseInt(req.params.id));
+        const { infoEmail, animalTypeIds = [], serviceIds = [] } = req.body;
+
+        // Update infoEmail
+        const updated = await prisma.veterinarian.update({
+            where: { id: veterinaryId },
+            data: {
+                infoEmail: infoEmail !== undefined ? infoEmail : null,
+            },
+            include: {
+                person: {
+                    select: {
+                        firstName: true,
+                        lastName: true,
+                        phone: true,
+                    }
+                }
+            }
+        });
+
+        // Update animal types if provided
+        if (animalTypeIds.length > 0) {
+            await prisma.veterinaryCanTreatAnimalType.deleteMany({
+                where: { veterinaryId }
+            });
+            for (const animalTypeId of animalTypeIds) {
+                await prisma.veterinaryCanTreatAnimalType.create({
+                    data: {
+                        veterinaryId,
+                        animalTypeId,
+                    }
+                });
+            }
+        }
+
+        // Update services if provided
+        if (serviceIds.length > 0) {
+            await prisma.veterinaryHasService.deleteMany({
+                where: { veterinaryId }
+            });
+            for (const serviceId of serviceIds) {
+                await prisma.veterinaryHasService.create({
+                    data: {
+                        veterinaryId,
+                        serviceId,
+                    }
+                });
+            }
+        }
+
+        // Map to VeterinariansType
+        const result = {
+            id: updated.id,
+            firstName: updated.person.firstName,
+            lastName: updated.person.lastName,
+            infoEmail: updated.infoEmail,
+            fk_veterinarypracticeid: updated.fk_veterinarypracticeid,
+        };
+
+        res.send(result);
+    } catch (err: any) {
+        res.sendStatus(500);
+        next(err);
+    }
+});
 
 veterinariansRouter.get("/:id/animaltypes", optionalAuthentication, async (req, res) => {
     const veterinaryId = PostgresIdSchema.parse(parseInt(req.params.id));

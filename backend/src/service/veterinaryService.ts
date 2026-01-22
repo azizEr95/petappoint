@@ -32,13 +32,10 @@ export const veterinaryService = {
     const foundVeterinary = await prisma.veterinarian.findUnique({
       where: { id },
       include: {
-        appointments: true,
-        veterinaryPractice: true,
         person: true,
         veterinaryHasServices: {
           include: {
             service: true,
-            veterinarian: true,
           },
         },
       },
@@ -46,25 +43,52 @@ export const veterinaryService = {
 
     if (!foundVeterinary) throw new Error(`Veterinary not found with id: ${id}`);
 
-    return mapToVeterinary(foundVeterinary);
+    return mapToVeterinary(foundVeterinary as any);
   },
 
   async getByPractice(practiceId: number): Promise<VeterinariansType[]> {
     const foundVeterinarians = await prisma.veterinarian.findMany({
       where: { fk_veterinarypracticeid: practiceId },
-      include: { person: true },
+      include: {
+        person: true,
+        veterinaryHasServices: {
+          include: {
+            service: true,
+          },
+        },
+      },
     });
 
     return foundVeterinarians.map((vet) => mapToVeterinary(vet))
   },
 
   async getAll(): Promise<VeterinariansType[]> {
-    const foundVets = await prisma.veterinarian.findMany({ include: { person: true } });
+    const foundVets = await prisma.veterinarian.findMany({
+      include: {
+        person: true,
+        veterinaryHasServices: {
+          include: {
+            service: true,
+          },
+        },
+      },
+    });
     return foundVets.map((vet) => mapToVeterinary(vet))
   },
 
   async update(data: VeterinariansUpdateType): Promise<VeterinariansType> {
-    const updated = await prisma.veterinarian.update({ where: { id: data.id }, include: { person: true }, data: data });
+    const updated = await prisma.veterinarian.update({
+      where: { id: data.id },
+      include: {
+        person: {
+          select: {
+            firstName: true,
+            lastName: true,
+          }
+        }
+      },
+      data: data
+    });
     return mapToVeterinary(updated);
   },
 
