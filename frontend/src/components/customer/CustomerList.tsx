@@ -4,21 +4,51 @@ import { CustomerCard } from "./CustomerCard";
 import type { CustomerType } from "@/api/CustomerAPI";
 import "@/styles/components/customer/Customer.scss";
 import type { ChangeEvent } from "react";
+import { Button } from 'react-bootstrap';
+import { PersonEditNewDialog } from '../person/PersonEditNewDialog';
+import { SuccessNotificationToast } from '../SuccessNotificationToast';
+import { useQueryClient } from '@tanstack/react-query';
+import { useLoginContext } from '@/LoginContext';
 
 type CustomerListProps = {
     customers: Array<CustomerType> | undefined
     searchName: string
+    sortBy: string
 }
 
-export function CustomerList({ customers, searchName }: CustomerListProps) {
+export function CustomerList({ customers, searchName, sortBy }: CustomerListProps) {
     const navigate = useNavigate();
     const searchNameURL = searchName || ''; // this empty strigs are important, otherwise it becomes 'undefined'
     const [searchString, setSearchString] = useState<string>(searchNameURL);
     const [filteredCustomers, setFilteredCustomers] = useState<Array<CustomerType> | undefined>(customers);
+    const [sortByState, setSortByState] = useState<string>(sortBy || 'name-asc');
+    const [showPersonDialog, setShowPersonDialog] = useState<boolean>(false);
+    const [showSuccessNotification, setShowSuccessNotification] = useState<boolean>(false);
+
+    const queryClient = useQueryClient();
+    const { login } = useLoginContext();
+    const practiceId = login ? login.id : -1;
 
     useEffect(() => {
         handleFilter();
     }, []);
+
+    const applySorting = (
+        customers: Array<CustomerType>,
+        sort: string,
+    ): Array<CustomerType> => {
+        const copy = [...customers];
+        switch (sort) {
+            case 'name-asc':
+                return copy.sort((a, b) => a.animal.name.localeCompare(b.animal.name));
+            case 'name-desc':
+                return copy.sort((a, b) => b.animal.name.localeCompare(a.animal.name));
+            case 'recent':
+                return copy.sort((a, b) => b.animal.id - a.animal.id);
+            default:
+                return copy;
+        }
+    }
 
     const handleFilter = () => {
         if (!customers) {
@@ -35,17 +65,47 @@ export function CustomerList({ customers, searchName }: CustomerListProps) {
             }
         });
 
-        newfilteredCustomers = newfilteredCustomers.sort((a, b) => a.animal.name.localeCompare(b.animal.name));
+        newfilteredCustomers = applySorting(newfilteredCustomers, sortByState);
         setFilteredCustomers(newfilteredCustomers);
+    }
+
+    const handleSortChange = (newSort: string) => {
+        setSortByState(newSort);
+        if (filteredCustomers) {
+            const sorted = applySorting(filteredCustomers, newSort);
+            setFilteredCustomers(sorted);
+        }
+        updateUrl(newSort);
+    }
+
+    const updateUrl = (newSort?: string) => {
+        navigate({
+            to: '/customers',
+            search: (prev) => ({
+                ...prev,
+                name: searchString,
+                sortBy: newSort || sortByState
+            }),
+            replace: true,
+        })
     }
 
     const handleSearch = () => {
         handleFilter();
-        navigate({
-            to: '/customers',
-            search: (prev) => ({ ...prev, name: searchString }),
-            replace: true,
-        })
+        updateUrl();
+    }
+
+    const handleOpenPersonDialog = () => {
+        setShowPersonDialog(true);
+    }
+
+    const handleClosePersonDialog = () => {
+        setShowPersonDialog(false);
+    }
+
+    const handleShowSuccessNotification = () => {
+        setShowSuccessNotification(true);
+        setTimeout(() => setShowSuccessNotification(false), 4000);
     }
 
     if (!filteredCustomers) {
@@ -78,6 +138,29 @@ export function CustomerList({ customers, searchName }: CustomerListProps) {
                 </div>
             </div>
 
+            {/* Sort and Action Controls */}
+            <div className="customer-controls">
+                <div className="sort-dropdown-wrapper">
+                    <label htmlFor="sort-select">Sortierung:</label>
+                    <select
+                        id="sort-select"
+                        className="form-select sort-select"
+                        value={sortByState}
+                        onChange={(e) => handleSortChange(e.target.value)}
+                    >
+                        <option value="name-asc">Name (A-Z)</option>
+                        <option value="name-desc">Name (Z-A)</option>
+                        <option value="recent">Zuletzt hinzugefügt</option>
+                    </select>
+                </div>
+
+                <div className="customer-create-button">
+                    <Button variant="primary" onClick={handleOpenPersonDialog}>
+                        Kunde anlegen
+                    </Button>
+                </div>
+            </div>
+
             <div className="customer-cards-container">
                 {filteredCustomers.map((customer) => (
                     <CustomerCard key={`${customer.person.id}-${customer.animal.id}`} customer={customer} />
@@ -88,6 +171,20 @@ export function CustomerList({ customers, searchName }: CustomerListProps) {
                     </div>
                 )}
             </div>
+
+            {showPersonDialog && (
+                <PersonEditNewDialog
+                    hideDialogNewPerson={handleClosePersonDialog}
+                    showSuccessNotification={handleShowSuccessNotification}
+                />
+            )}
+
+            {showSuccessNotification && (
+                <SuccessNotificationToast
+                    message="Kunde erfolgreich angelegt"
+                    onClose={() => setShowSuccessNotification(false)}
+                />
+            )}
         </div>
     );
 }

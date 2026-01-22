@@ -10,6 +10,7 @@ import { useTitle } from '@/utils/useTitle';
 
 export type CustomerSearch = {
     name: string
+    sortBy: string
 }
 
 export const Route = createFileRoute('/customers/')({
@@ -23,7 +24,7 @@ function CustomerComponent() {
     useTitle('Kunden und Tiere');
     const { login } = useLoginContext();
     const navigate = useNavigate();
-    const { name } = Route.useSearch();
+    const { name, sortBy } = Route.useSearch();
 
     const practiceID = login ? login.id : -1;
 
@@ -50,5 +51,5 @@ function CustomerComponent() {
         return;
     }
 
-    return <CustomerList customers={dataCustomers} searchName={name} />
+    return <CustomerList customers={dataCustomers} searchName={name} sortBy={sortBy || 'name-asc'} />
 }

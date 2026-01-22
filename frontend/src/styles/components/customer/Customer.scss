@@ -5,11 +5,12 @@
 }
 
 .customer-card {
-    width: 350px;
     border: 1px solid #dee2e6;
     border-radius: 1rem;
     padding: 0.7rem;
-    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
 
     .card-title-text {
         color: #198754;
@@ -19,23 +20,14 @@
 
 .customer-cards-container {
     display: grid;
-    grid-template-columns: repeat(auto-fill, 350px);
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 0.5rem;
     padding: 1.5rem;
     margin-bottom: 5rem;
-    margin-left: 1rem;
-
-    @media (min-width: 768px) {
-        grid-template-columns: repeat(auto-fill, 350px);
-    }
-
-    @media (min-width: 1200px) {
-        grid-template-columns: repeat(auto-fill, 350px);
-    }
-
-    @media (min-width: 1600px) {
-        grid-template-columns: repeat(auto-fill, 350px);
-    }
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 1200px;
+    width: 100%;
 }
 
 .no-customers-message {
@@ -136,4 +128,56 @@
     text-align: center;
     padding: 1rem;
     margin-left: 0;
+}
+
+.customer-controls {
+    display: flex;
+    gap: 2rem;
+    padding: 1rem 1.5rem;
+    align-items: center;
+    justify-content: space-between;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 1200px;
+
+    @media (max-width: 768px) {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+    }
+}
+
+.sort-dropdown-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    label {
+        margin-bottom: 0;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .sort-select {
+        min-width: 200px;
+
+        @media (max-width: 768px) {
+            width: 100%;
+        }
+    }
+}
+
+.customer-create-button {
+    button {
+        font-weight: 600;
+        color: white;
+    }
+
+    @media (max-width: 768px) {
+        width: 100%;
+
+        button {
+            width: 100%;
+        }
+    }
 }
