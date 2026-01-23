@@ -58,3 +58,16 @@ export function requiresCompany(req: Request, res: Response, next: NextFunction)
         });
     });
 }
+
+export function requiresPerson(req: Request, res: Response, next: NextFunction) {
+    requiresAuthentication(req, res, () => {
+        checkVerified(req, res, () => {
+            if (req.role !== 'person') {
+                res.sendStatus(403);
+                return;
+            }
+
+            next();
+        });
+    });
+}
