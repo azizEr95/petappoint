@@ -98,6 +98,12 @@ function SearchComponent() {
             onTotalChange={setTotalResults}
             setCurrentPageNumber={setPage}
             currentPageNumber={page}
+            searchParams={{
+              address: address || '',
+              animalType: animalType || '',
+              serviceType: serviceType || '',
+              animal: animal || '',
+            }}
           />
         ) : (
           <div className="alert alert-info text-center py-5">

@@ -28,7 +28,14 @@ function VeterinaryPractice() {
   const navigate = useNavigate()
   const location = useLocation()
   const { practiceId } = Route.useParams()
-  let filterOptions = location.state.filterOptions
+  const state = location.state as any
+  let filterOptions = state.filterOptions
+  const searchParams = state?.searchParams || {
+    address: '',
+    animalType: '',
+    serviceType: '',
+    animal: '',
+  }
   const [filterServiceType, setFilterServiceType] = useState<Array<number>>(
     filterOptions?.serviceTypeIds !== undefined
       ? filterOptions.serviceTypeIds
@@ -78,7 +85,17 @@ function VeterinaryPractice() {
   }, [isErrorPractice, isSuccessPractice, isPendingPractice])
 
   const handleClickBack = () => {
-    window.history.back()
+    // Convert numbers to strings for URL params
+    const searchParamsForUrl = {
+      address: String(searchParams.address || ''),
+      animalType: searchParams.animalType ? String(searchParams.animalType) : '',
+      serviceType: searchParams.serviceType ? String(searchParams.serviceType) : '',
+      animal: searchParams.animal ? String(searchParams.animal) : '',
+    }
+    navigate({
+      to: '/search',
+      search: searchParamsForUrl
+    })
   }
 
   let practice: VeterinaryPracticesType | undefined = undefined;
@@ -191,6 +208,7 @@ function VeterinaryPractice() {
             <NextAvailableAppointments
               practiceId={practiceId}
               filterOptions={filterOptions}
+              searchParams={searchParams}
             />
           </div>
         </>) : (<div className="calendar-section">

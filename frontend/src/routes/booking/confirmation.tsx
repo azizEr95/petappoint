@@ -5,34 +5,30 @@ import {
 } from '@tanstack/react-router'
 import '../../styles/routes/bookingPage.scss'
 import { useEffect, useState } from 'react'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { bookAppointment, cancelAppointment } from '../../api/AppointmentsAPI'
+import { getAllAvailableServices } from '../../api/ServicesAPI'
 import { dateToInfosString } from '../../utils/DateToStringFormat'
-import type {
-  AnimalsType,
-  AppointmentsType,
-  ServiceType,
-  VeterinaryPracticesType,
-} from 'vetilib-shared/schemas/ZodSchemas'
+import type { ServiceType } from 'vetilib-shared/schemas/ZodSchemas'
 import { useTitle } from '@/utils/useTitle'
 
 export const Route = createFileRoute('/booking/confirmation')({
+  validateSearch: (search: Record<string, unknown>) => {
+    return {
+      address: search.address as string | undefined,
+      animalType: search.animalType as string | undefined,
+      serviceType: search.serviceType as string | undefined,
+      animal: search.animal as string | undefined,
+    }
+  },
   component: ConfirmationComponent,
 })
-
-type LocationState = {
-  appointment: AppointmentsType
-  selectedAnimal: AnimalsType
-  selectedService: ServiceType
-  practice: VeterinaryPracticesType
-  isReschedule?: boolean
-  oldAppointmentId?: number
-}
 
 function ConfirmationComponent() {
   useTitle('Termin bestätigen');
   const navigate = useNavigate()
   const location = useLocation()
+  const { address, animalType, serviceType, animal } = Route.useSearch()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [stateLoaded, setStateLoaded] = useState(false)
   const [bookingStatus, setBookingStatus] = useState<
@@ -40,30 +36,100 @@ function ConfirmationComponent() {
   >('pending')
   const [errorMessage, setErrorMessage] = useState<string>('')
 
-  // Extract state safely
-  const state = location.state as any as LocationState | undefined
+  const state = location.state
+
+  // Fetch services to get correct names
+  const { data: dataServices, isSuccess: isSuccessServices } = useQuery<Array<ServiceType>>({
+    queryKey: ['allAvailableServiceTypes'],
+    queryFn: () => getAllAvailableServices(undefined),
+    retry: false,
+  })
+
+  useEffect(() => {
+    if(isSuccessServices){
+      state.selectedService = dataServices.find((s) => s.id === state.serviceType?.[0]);
+    }
+  }, [isSuccessServices, dataServices]);
 
   // Validate state in useEffect to avoid navigation during render
   useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    if (!state || !state.appointment || !state.selectedAnimal ||!state.selectedService ||!state.practice) {
+    // Check for required fields - can be from /booking/$appointmentId or direct state
+    const hasAppointment = state.appointment
+    const hasAnimal = state.selectedAnimal || state.filterAnimalId
+    const hasService = state.selectedService || (state.serviceType && state.serviceType.length > 0)
+    // Practice can be in state.practice or in state.appointment.veterinaryPractice
+    const hasPractice = state.practice || state.appointment?.veterinaryPractice
+
+    if (!hasAppointment || !hasPractice) {
+      // Critical data missing - go home
       navigate({ to: '/' })
-    } else {
-      setStateLoaded(true)
+      return
     }
+
+    if (!hasAnimal || !hasService) {
+      // Missing animal or service - redirect to booking page to select
+      const searchParamsForUrl = {
+        address: String(address || ''),
+        animalType: animalType ? String(animalType) : '',
+        serviceType: serviceType ? String(serviceType) : '',
+        animal: animal ? String(animal) : '',
+      }
+
+      if (state.appointment) {
+        navigate({
+          to: '/booking/$appointmentId',
+          params: { appointmentId: state.appointment.id.toString() },
+          search: searchParamsForUrl,
+          state: {
+            appointment: state.appointment,
+            serviceType: state.serviceType,
+            filterAnimalId: state.filterAnimalId,
+            filterAnimalTypeId: state.filterAnimalTypeId,
+            searchParams: state.searchParams,
+          },
+          replace: true,
+        })
+      }
+      return
+    }
+
+    setStateLoaded(true)
   }, [])
+
+  // Handle browser back button - go back to search with filters
+  useEffect(() => {
+    const handlePopState = () => {
+      const searchParamsForUrl = {
+        address: String(address || ''),
+        animalType: animalType ? String(animalType) : '',
+        serviceType: serviceType ? String(serviceType) : '',
+        animal: animal ? String(animal) : '',
+      }
+      navigate({
+        to: '/search',
+        search: searchParamsForUrl,
+      })
+    }
+
+    window.addEventListener('popstate', handlePopState)
+    return () => window.removeEventListener('popstate', handlePopState)
+  }, [address, animalType, serviceType, animal, navigate])
 
   // Book appointment mutation
   const { mutate: mutateAppointment } = useMutation({
     mutationFn: async () => {
-      if (!state) throw new Error('Invalid state')
+      // Use actual state values or fallbacks
+      const animalId = state.selectedAnimal?.id || state.filterAnimalId
+      const serviceId = state.selectedService?.id || state.serviceType?.[0]
+
+      if (!animalId || !serviceId) throw new Error('Missing animal or service')
 
       if (state.isReschedule && state.oldAppointmentId) {
         // RESCHEDULE: Book new appointment first
         const newAppointment = await bookAppointment(
-          state.appointment.id,
-          state.selectedAnimal.id,
-          state.selectedService.id,
+          state.appointment!.id,
+          animalId,
+          serviceId,
         )
 
         // Then cancel old appointment (don't throw if this fails)
@@ -75,21 +141,21 @@ function ConfirmationComponent() {
         }
 
         return newAppointment
-      } else {
+      }
         // Normal booking
         return bookAppointment(
-          state.appointment.id,
-          state.selectedAnimal.id,
-          state.selectedService.id,
+          state.appointment!.id,
+          animalId,
+          serviceId,
         )
-      }
+      
     },
     onError: (error: any) => {
       console.error('Booking failed:', error)
       setIsSubmitting(false)
       setBookingStatus('error')
 
-      if (state?.isReschedule) {
+      if (state.isReschedule) {
         if (error?.message?.includes('already taken')) {
           setErrorMessage(
             'Dieser Termin wurde bereits gebucht. Bitte wählen Sie einen anderen.',
@@ -114,7 +180,7 @@ function ConfirmationComponent() {
         state: {
           appointment: bookedAppointment,
           justBooked: true,
-          wasRescheduled: state?.isReschedule,
+          wasRescheduled: state.isReschedule,
         } as any,
         replace: true,
       })
@@ -127,7 +193,7 @@ function ConfirmationComponent() {
   }
 
   const handleBack = () => {
-    if (state) {
+    if (state.practice) {
       if (state.isReschedule && state.oldAppointmentId) {
         // Go back to reschedule page
         navigate({
@@ -138,50 +204,82 @@ function ConfirmationComponent() {
         // Go back to booking page (previous step in flow)
         navigate({
           to:
-            '/praxen/' + state.practice.id + '/booking/' + state.appointment.id,
+            '/praxen/' + state.practice.id + '/booking/' + state.appointment!.id,
         })
       }
     }
   }
 
   const handleSelectDifferentAppointment = () => {
-    if (state) {
-      // Go back to practice page to select different timeslot
-      navigate({ to: '/practices/' + state.practice.id })
-    }
-  }
-
-  const handleCancel = () => {
-    // Go back to search results
-    navigate({
-      to: '/search',
-      search: {
+      // Go back to search results with filters, preserving selected animal and service
+      const rawParams = state.searchParams || {
         address: '',
         animalType: '',
         serviceType: '',
-      },
+        animal: '',
+      }
+      // Convert numbers to strings for URL params
+      const params = {
+        address: String(rawParams.address || ''),
+        animalType: rawParams.animalType ? String(rawParams.animalType) : '',
+        serviceType: state.selectedService?.id ? String(state.selectedService.id) : (rawParams.serviceType ? String(rawParams.serviceType) : ''),
+        animal: state.selectedAnimal?.id ? String(state.selectedAnimal.id) : (rawParams.animal ? String(rawParams.animal) : ''),
+      }
+      navigate({
+        to: '/search',
+        search: params
+      })
+  }
+
+  const handleCancel = () => {
+    // Go back to search results with filters, preserving selected animal and service
+    const rawParams = state.searchParams || {
+      address: '',
+      animalType: '',
+      serviceType: '',
+      animal: '',
+    }
+    // Convert numbers to strings for URL params
+    const params = {
+      address: String(rawParams.address || ''),
+      animalType: rawParams.animalType ? String(rawParams.animalType) : '',
+      serviceType: state.selectedService?.id ? String(state.selectedService.id) : (rawParams.serviceType ? String(rawParams.serviceType) : ''),
+      animal: state.selectedAnimal?.id ? String(state.selectedAnimal.id) : (rawParams.animal ? String(rawParams.animal) : ''),
+    }
+    navigate({
+      to: '/search',
+      search: params,
     })
   }
 
   const handleGoToAppointments = () => {
-    if (state) {
       navigate({
         to: '/appointments',
         state: { appointment: state.appointment },
         replace: true,
       })
-    }
   }
 
   // Don't render until state is validated
-  if (!stateLoaded || !state) {
+  if (!stateLoaded) {
     return <></>
   }
 
-  const { appointment, selectedAnimal, selectedService, practice } = state
+  // Extract appointment, animal, service, practice from state
+  // Handle both direct objects and IDs from NextAvailableAppointments
+  const appointment = state.appointment
+  const selectedAnimal = state.selectedAnimal || (state.filterAnimalId ? {
+    id: state.filterAnimalId,
+    name: 'Tier',
+  } : null)
+  const selectedService = state.selectedService || (state.serviceType?.[0] ? {
+    id: state.serviceType[0],
+    name: 'Leistung',
+  } : null)
+  console.log('selectedService', selectedService); 
+  const practice = state.practice || state.appointment?.veterinaryPractice
 
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-  if (practice === undefined) {
+  if (!appointment || !selectedAnimal || !selectedService || !practice) {
     return
   }
 

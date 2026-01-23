@@ -88,6 +88,12 @@ function RescheduleAppointment() {
 
         navigate({
             to: '/booking/confirmation',
+            search: {
+                address: '',
+                animalType: '',
+                serviceType: appointment.service.id.toString(),
+                animal: appointment.animal.name || '',
+            },
             state: {
                 appointment: newAppointment,
                 selectedAnimal: appointment.animal,
@@ -95,7 +101,7 @@ function RescheduleAppointment() {
                 practice: appointment.veterinaryPractice,
                 isReschedule: true,
                 oldAppointmentId: appointment.id,
-            } as any,
+            },
         })
     }
 

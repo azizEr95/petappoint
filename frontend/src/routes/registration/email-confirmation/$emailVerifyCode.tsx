@@ -57,6 +57,12 @@ function SuccessFailEmailVerification() {
           const appointmentStorage = JSON.parse(appointmentUnparse) as { practiceId: number, appointmentId: number };
           navigate({
             to: "/booking/$appointmentId",
+            search: {
+              address: '',
+              animalType: '',
+              serviceType: '',
+              animal: '',
+            },
             params: {
               appointmentId: appointmentStorage.appointmentId.toString()
             }

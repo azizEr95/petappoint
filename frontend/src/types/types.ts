@@ -5,3 +5,10 @@ type CheckPersonType = {
     firstName?: string;
     lastName?: string;
 };
+
+type SearchParamsType = {
+    address: string;
+    animalType: string;
+    serviceType: string;
+    animal?: string;
+};

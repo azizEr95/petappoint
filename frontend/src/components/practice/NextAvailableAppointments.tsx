@@ -19,12 +19,14 @@ type NextAvailableAppointmentsProps = {
   practiceId: string
   filterOptions: AppointmentFilterType
   onSlotClick?: (termin: AppointmentsType) => void
+  searchParams?: SearchParamsType
 }
 
 export function NextAvailableAppointments({
   practiceId,
   filterOptions,
   onSlotClick,
+  searchParams,
 }: NextAvailableAppointmentsProps) {
   const [dateView, setDateView] = useState(new Date())
   const [expandedDays, setExpandedDays] = useState<Set<number>>(new Set())
@@ -108,22 +110,34 @@ export function NextAvailableAppointments({
       } else {
         appointmentTypeId = null
       }
-      // navigate to booking page for appointment
+      const searchParamsForUrl = {
+        address: String(searchParams?.address || ''),
+        animalType: searchParams?.animalType ? String(searchParams.animalType) : '',
+        serviceType: searchParams?.serviceType ? String(searchParams.serviceType) : '',
+        animal: searchParams?.animal ? String(searchParams.animal) : '',
+      }
+
+      const stateToPass = {
+        appointment: termin,
+        serviceType: appointmentTypeId,
+        filterAnimalId: filterOptions.animal,
+        filterAnimalTypeId:
+          filterOptions.animalTypeIds !== undefined &&
+          filterOptions.animalTypeIds.length > 0
+            ? filterOptions.animalTypeIds[0]
+            : undefined,
+        searchParams: searchParams || {
+          address: '',
+          animalType: '',
+          serviceType: '',
+          animal: '',
+        },
+      }
+      // Navigate directly to confirmation (auto-progression handles the rest)
       navigate({
-        to: '/booking/$appointmentId',
-        params: {
-          appointmentId: termin.id.toString(),
-        },
-        state: {
-          appointment: termin,
-          serviceType: appointmentTypeId,
-          filterAnimalId: filterOptions.animal,
-          filterAnimalTypeId:
-            filterOptions.animalTypeIds !== undefined &&
-            filterOptions.animalTypeIds.length > 0
-              ? filterOptions.animalTypeIds[0]
-              : undefined,
-        },
+        to: '/booking/confirmation',
+        search: searchParamsForUrl,
+        state: stateToPass,
       })
     }
   }
