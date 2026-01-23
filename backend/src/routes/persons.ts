@@ -1,14 +1,15 @@
-import express from "express";
+import express, { Request } from "express";
 import { personService } from "../service/personService";
 import { veterinaryService } from "../service/veterinaryService";
 import { AnimalsType, PersonsCreateSchema, PersonsType, PersonsUpdateSchema, PostgresIdSchema } from "vetilib-shared/schemas/ZodSchemas";
 import { verifyJWT, verifyPasswordAndCreateJWT } from "../service/jwtService";
 import { emailService } from "../service/emailService";
-import { checkVerified, optionalAuthentication, requiresAuthentication } from "./authentication";
+import { checkVerified, optionalAuthentication, requiresAuthentication, requiresPerson } from "./authentication";
 import { AuthorizationError } from "../exceptions/errors/AuthorizationError";
 import multer from "multer";
 import { ConstraintError } from "../exceptions/errors/ConstraintError";
 import z from "zod";
+import { veterinaryPracticeService } from "../service/veterinaryPracticeService";
 
 
 export const personsRouter = express.Router();
@@ -34,22 +35,32 @@ const upload = multer({
     },
 });
 
-personsRouter.get('/all',
-    requiresAuthentication,
-    async (_req, res) => {
-        const persons: PersonsType[] = await personService.getAll();
-        res.send(persons);
+async function ensurePersonIsCustomer(personId: number, praxisId: number) {
+    const hasAccess = await veterinaryPracticeService.isPersonACustomerOfPractice(personId, praxisId);
+    if (!hasAccess) {
+        throw new AuthorizationError("");
     }
-);
+}
+
+async function ensureCallerHasAccess(req: Request, personId: number) {
+    switch (req.role) {
+        case 'person': {
+            if (personId !== req.userId!) {
+                throw new AuthorizationError(`person(${req.userId!}) tried to access animals of person(${personId}).`);
+            }
+            break;
+        }
+        case 'company': await ensurePersonIsCustomer(personId, req.userId!);
+        default: break;
+    }
+}
 
 personsRouter.get('/:id/animals',
     requiresAuthentication,
     async (req, res) => {
         const id = PostgresIdSchema.parse(parseInt(req.params.id));
 
-        if (id !== req.userId!) {
-            throw new AuthorizationError(`person(${req.userId!}) tried to access animals of person(${id}).`);
-        }
+        await ensureCallerHasAccess(req, id);
 
         const animalTypes: AnimalsType[] = await personService.getAnimalsForPersonId(id);
         res.send(animalTypes);
@@ -57,7 +68,7 @@ personsRouter.get('/:id/animals',
 );
 
 personsRouter.get("/:id/favorites",
-    requiresAuthentication,
+    requiresPerson,
     async (req, res) => {
         const id = PostgresIdSchema.parse(parseInt(req.params.id));
 
@@ -99,7 +110,7 @@ personsRouter.post("/",
 
 
 personsRouter.post("/:id/favorites/:practiceId",
-    requiresAuthentication,
+    requiresPerson,
     async (req, res) => {
         const id = PostgresIdSchema.parse(parseInt(req.params.id));
         const practiceId = PostgresIdSchema.parse(parseInt(req.params.practiceId));
@@ -117,7 +128,7 @@ personsRouter.post("/:id/favorites/:practiceId",
 
 
 personsRouter.delete("/:id/favorites/:practiceId",
-    requiresAuthentication,
+    requiresPerson,
     async (req, res) => {
         const id = PostgresIdSchema.parse(parseInt(req.params.id));
         const practiceId = PostgresIdSchema.parse(parseInt(req.params.practiceId));
@@ -133,9 +144,7 @@ personsRouter.get('/:id',
     async (req, res) => {
         const id = PostgresIdSchema.parse(parseInt(req.params.id));
 
-        if (id !== req.userId!) {
-            throw new AuthorizationError(`person(${req.userId!}) tried to access profile of person(${id}).`);
-        }
+        await ensureCallerHasAccess(req, id);
 
         const person: PersonsType = await personService.getById(id);
         res.send(person);
@@ -143,7 +152,7 @@ personsRouter.get('/:id',
 );
 
 personsRouter.put('/:id', // only possible if user is verified
-    requiresAuthentication,
+    requiresPerson,
     async (req, res) => {
         const id = PostgresIdSchema.parse(parseInt(req.params.id));
 
@@ -170,7 +179,7 @@ const EmailSchema = z.object({
 });
 
 personsRouter.put('/:id/email', // is possible if user is logged in but not verified, only editing email
-    requiresAuthentication,
+    requiresPerson,
     async (req, res) => {
         const id = PostgresIdSchema.parse(parseInt(req.params.id));
 
@@ -190,9 +199,7 @@ personsRouter.get('/:id/picture',
     async (req, res) => {
         const id = PostgresIdSchema.parse(parseInt(req.params.id));
 
-        if (id !== req.userId!) {
-            throw new AuthorizationError(`person(${req.userId!}) tried to access picture of person(${id}).`);
-        }
+        await ensureCallerHasAccess(req, id);
 
         const filepath = await personService.getPicturePath(id);
         res.sendFile(filepath);
@@ -205,9 +212,7 @@ personsRouter.post('/:id/picture',
     async (req, res) => {
         const id = PostgresIdSchema.parse(parseInt(req.params.id));
 
-        if (id !== req.userId!) {
-            throw new AuthorizationError(`person(${req.userId!}) tried to update picture of person(${id}).`);
-        }
+        await ensureCallerHasAccess(req, id);
 
         await personService.savePicture(id, req.file?.path ?? null);
         res.sendStatus(200);
@@ -216,7 +221,7 @@ personsRouter.post('/:id/picture',
 
 // email has to be provided in body, returns person if exists
 personsRouter.post('/email', optionalAuthentication, async (req, res, next) => {
-    if(!req.body.email) {
+    if (!req.body.email) {
         res.status(400).json({ error: "Email is required" });
         return;
     }

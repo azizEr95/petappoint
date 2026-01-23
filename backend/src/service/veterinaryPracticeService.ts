@@ -307,6 +307,26 @@ export const veterinaryPracticeService = {
     return serviceArray;
   },
 
+  async isPersonACustomerOfPractice(personId: number, praxisId: number): Promise<boolean> {
+    const appointmentWithAnimal = await prisma.appointment.findMany({
+      where: {
+        veterinaryPracticeId: praxisId,
+        animal: {
+          personHasAnimals: {
+            some: {
+              personId: personId
+            }
+          }
+        }
+      },
+      select: {
+        id: true
+      }
+    });
+
+    return appointmentWithAnimal.length !== 0;
+  },
+
   async getAnimalWithPerson(praxisId: number): Promise<{ animal: AnimalsType; person: PersonsType }[]> {
     const appointmentWithAnimal = await prisma.appointment.findMany({
       where: {

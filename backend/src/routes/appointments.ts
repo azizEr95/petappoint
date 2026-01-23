@@ -7,6 +7,7 @@ import { animalService } from "../service/animalService";
 import { ConstraintError } from "../exceptions/errors/ConstraintError";
 import z from "zod";
 import { emailService } from "../service/emailService";
+import { ensureCallerHasAccess } from "../helper/authorization";
 
 export const appointmentRouter = express.Router();
 
@@ -31,14 +32,10 @@ async function ensureCompanyCanDeleteAppointment(companyId: number, appointmentI
   }
 }
 
-appointmentRouter.get("/all", requiresAuthentication, checkVerified, async (_req, res) => {
-  const allAppointments: AppointmentsType[] = await appointmentService.getAll();
-  res.send(allAppointments);
-});
-
 appointmentRouter.get("/past/:personId", requiresAuthentication, checkVerified, async (req, res) => {
   const personId = PostgresIdSchema.parse(parseInt(req.params.personId));
 
+  // TODO: Only show appointments that the practice
   if (personId !== req.userId!) {
     throw new AuthorizationError(`User(${req.userId!}) is not allowed to access ${personId}`);
   }
@@ -67,9 +64,7 @@ appointmentRouter.get("/:id", optionalAuthentication, async (req, res) => {
       throw new AuthorizationError("Guest is trying to access an active appointment.");
     }
 
-    if (!animalService.canPersonAccessAnimal(req.userId, appointment.animal.id)) {
-      throw new AuthorizationError("User is trying to access an appointment for an unowned animal.");
-    }
+    await ensureCallerHasAccess(req, appointment.animal.id);
   }
 
   res.send(appointment);
@@ -86,14 +81,17 @@ appointmentRouter.put("/:id", requiresAuthentication, checkVerified, async (req,
     ]);
   }
 
-  await ensureUserCanEditAppointment(req.userId!, validatedData.id);
+  if (req.role === 'person') {
+    await ensureUserCanEditAppointment(req.userId!, validatedData.id);
+  }
+  // TODO: Add check for company
 
   const bookedAppointment = await appointmentService.updateAppointmentAsPerson(
     validatedData.id,
     validatedData.animalId,
     validatedData.serviceId
   );
-  // send confirmation email
+
   await emailService.sendAppointmentEmail(req.userId!, bookedAppointment.id, "confirmation");
   res.status(201).send(bookedAppointment);
 });

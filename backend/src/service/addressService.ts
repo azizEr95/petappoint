@@ -64,6 +64,6 @@ export const addressService = {
       select: { city: true },
       orderBy: { city: 'asc' },
     });
-    return addresses.map(a => a.city).filter(city => city !== null) as string[];
+    return addresses.map(a => a.city).filter(city => city !== null);
   },
 };

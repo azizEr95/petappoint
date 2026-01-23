@@ -19,6 +19,7 @@ import multer from "multer";
 import { checkVerified, optionalAuthentication, requiresAuthentication } from "./authentication";
 import { ConstraintError } from "../exceptions/errors/ConstraintError";
 import { AuthorizationError } from "../exceptions/errors/AuthorizationError";
+import { ensureCallerHasAccess } from "../helper/authorization";
 export const animalsRouter = express.Router();
 
 const storage = multer.diskStorage({
@@ -41,22 +42,6 @@ const upload = multer({
     cb(null, true);
   },
 });
-
-async function ensureCompanyCanAccessAnimal(companyId: number, animalId: number) {
-  const hasAccess = await animalService.canCompanyAccessAnimal(companyId, animalId);
-
-  if (!hasAccess) {
-    throw new AuthorizationError("No access");
-  }
-}
-
-async function ensureUserCanAccessAnimal(personId: number, animalId: number) {
-  const hasAccess = await animalService.canPersonAccessAnimal(personId, animalId);
-
-  if (!hasAccess) {
-    throw new AuthorizationError("No access");
-  }
-}
 
 animalsRouter.post("/", requiresAuthentication, checkVerified, async (req, res) => {
   const validatedBody = AnimalsCreateSchema.parse(req.body);
@@ -81,7 +66,7 @@ animalsRouter.put("/:animalId", requiresAuthentication, checkVerified, async (re
     ]);
   }
 
-  await ensureUserCanAccessAnimal(req.userId!, validatedBody.id);
+  await ensureCallerHasAccess(req, animalId);
 
   const animal = await animalService.update(validatedBody);
   return res.send(animal);
@@ -90,12 +75,7 @@ animalsRouter.put("/:animalId", requiresAuthentication, checkVerified, async (re
 animalsRouter.get("/:animalId/picture", requiresAuthentication, checkVerified, async (req, res) => {
   const animalId = PostgresIdSchema.parse(parseInt(req.params.animalId));
 
-  if (req.role === 'person') {
-    await ensureUserCanAccessAnimal(req.userId!, animalId);
-  } else {
-    await ensureCompanyCanAccessAnimal(req.userId!, animalId);
-  }
-
+  await ensureCallerHasAccess(req, animalId);
 
   const filepath = await animalService.getPicturePath(animalId);
   res.sendFile(filepath);
@@ -109,7 +89,7 @@ animalsRouter.get("/unknownPicture", requiresAuthentication, checkVerified, asyn
 animalsRouter.post("/:animalId/picture", requiresAuthentication, checkVerified, upload.single("picture"), async (req, res) => {
   const animalId = PostgresIdSchema.parse(parseInt(req.params.animalId));
 
-  await ensureUserCanAccessAnimal(req.userId!, animalId);
+  await ensureCallerHasAccess(req, animalId);
 
   await animalService.savePicture(animalId, req.file?.path ?? null);
   res.sendStatus(201);
@@ -118,7 +98,7 @@ animalsRouter.post("/:animalId/picture", requiresAuthentication, checkVerified, 
 animalsRouter.delete("/:animalId/picture", requiresAuthentication, checkVerified, async (req, res) => {
   const animalId = PostgresIdSchema.parse(parseInt(req.params.animalId));
 
-  await ensureUserCanAccessAnimal(req.userId!, animalId);
+  await ensureCallerHasAccess(req, animalId);
 
   await animalService.deletePicture(animalId);
   res.sendStatus(204);
@@ -127,7 +107,7 @@ animalsRouter.delete("/:animalId/picture", requiresAuthentication, checkVerified
 animalsRouter.delete("/:animalId", requiresAuthentication, checkVerified, async (req, res) => {
   const animalId = PostgresIdSchema.parse(parseInt(req.params.animalId));
 
-  await ensureUserCanAccessAnimal(req.userId!, animalId);
+  await ensureCallerHasAccess(req, animalId);
 
   await animalService.delete(animalId);
   res.sendStatus(204);
@@ -136,7 +116,7 @@ animalsRouter.delete("/:animalId", requiresAuthentication, checkVerified, async 
 animalsRouter.delete("/:animalId/with-appointments", requiresAuthentication, checkVerified, async (req, res) => {
   const animalId = PostgresIdSchema.parse(parseInt(req.params.animalId));
 
-  await ensureUserCanAccessAnimal(req.userId!, animalId);
+  await ensureCallerHasAccess(req, animalId);
 
   await animalService.deleteWithAppointmentCancellation(animalId);
   res.sendStatus(204);
@@ -145,7 +125,7 @@ animalsRouter.delete("/:animalId/with-appointments", requiresAuthentication, che
 animalsRouter.get("/:animalId/races", requiresAuthentication, checkVerified, async (req, res) => {
   const animalId = PostgresIdSchema.parse(parseInt(req.params.animalId));
 
-  await ensureUserCanAccessAnimal(req.userId!, animalId);
+  await ensureCallerHasAccess(req, animalId);
 
   const animalRaces: AnimalracesType[] = await animalRaceService.getAnimalRaces(animalId);
   return res.send(animalRaces);
@@ -160,7 +140,7 @@ animalsRouter.post("/:animalId/races", requiresAuthentication, checkVerified, as
     return;
   }
 
-  await ensureUserCanAccessAnimal(req.userId!, animalId);
+  await ensureCallerHasAccess(req, animalId);
 
   const animalRace = await animalHasRacesService.create({
     animalId: validatedBody.animalId,
@@ -173,7 +153,7 @@ animalsRouter.post("/:animalId/races", requiresAuthentication, checkVerified, as
 animalsRouter.delete("/:animalId/races", requiresAuthentication, checkVerified, async (req, res) => {
   const animalId = PostgresIdSchema.parse(parseInt(req.params.animalId));
 
-  await ensureUserCanAccessAnimal(req.userId!, animalId);
+  await ensureCallerHasAccess(req, animalId);
 
   await animalHasRacesService.deleteAllRacesFromAnimal(animalId);
   res.sendStatus(204);
@@ -183,7 +163,7 @@ animalsRouter.delete("/:animalId/races/:raceId", requiresAuthentication, checkVe
   const animalId = PostgresIdSchema.parse(parseInt(req.params.animalId));
   const raceId = PostgresIdSchema.parse(parseInt(req.params.raceId));
 
-  await ensureUserCanAccessAnimal(req.userId!, animalId);
+  await ensureCallerHasAccess(req, animalId);
 
   await animalHasRacesService.delete({
     animalId: animalId,
@@ -196,11 +176,7 @@ animalsRouter.delete("/:animalId/races/:raceId", requiresAuthentication, checkVe
 animalsRouter.get("/:animalId/appointments", requiresAuthentication, checkVerified, async (req, res) => {
   const animalId = PostgresIdSchema.parse(parseInt(req.params.animalId));
 
-  if (req.role === 'person') {
-    await ensureUserCanAccessAnimal(req.userId!, animalId);
-  } else {
-    await ensureCompanyCanAccessAnimal(req.userId!, animalId);
-  }
+  await ensureCallerHasAccess(req, animalId);
 
   const appointments = await appointmentService.getAppointmentsByAnimal(animalId);
   res.send(appointments);
