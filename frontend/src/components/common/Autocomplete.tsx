@@ -35,7 +35,6 @@ export function Autocomplete({
 
   // Get selected option
   const selectedOption = options.find((opt) => opt.id === value)
-
   // Handle option selection
   const handleSelectOption = (optionId: number) => {
     onChange(optionId)
@@ -86,6 +85,7 @@ export function Autocomplete({
       ) {
         setIsOpen(false)
         setSearchText('')
+        setIsSearching(false)
       }
     }
 
@@ -94,6 +94,14 @@ export function Autocomplete({
       document.removeEventListener('mousedown', handleClickOutside)
     }
   }, [])
+
+  // Reset isSearching when value changes externally
+  useEffect(() => {
+    if (value !== undefined) {
+      setSearchText('')
+      setIsSearching(false)
+    }
+  }, [value])
 
   // Handle keyboard navigation
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -140,7 +148,7 @@ export function Autocomplete({
           type="text"
           className="form-control autocomplete-input"
           placeholder={placeholder}
-          value={isSearching ? searchText : (selectedOption ? selectedOption.name : searchText)}
+          value={isSearching ? searchText : (selectedOption ? selectedOption.name : '')}
           onChange={handleInputChange}
           onFocus={handleInputFocus}
           onKeyDown={handleKeyDown}
@@ -167,9 +175,8 @@ export function Autocomplete({
           {filteredOptions.map((option, index) => (
             <div
               key={option.id}
-              className={`autocomplete-option ${
-                value === option.id ? 'selected' : ''
-              } ${highlightedIndex === index ? 'highlighted' : ''}`}
+              className={`autocomplete-option ${value === option.id ? 'selected' : ''
+                } ${highlightedIndex === index ? 'highlighted' : ''}`}
               onClick={() => handleSelectOption(option.id)}
               role="option"
               aria-selected={value === option.id}
@@ -177,12 +184,6 @@ export function Autocomplete({
               {option.name}
             </div>
           ))}
-        </div>
-      )}
-
-      {isOpen && searchText && filteredOptions.length === 0 && (
-        <div className="autocomplete-no-results">
-          Keine Ergebnisse für "{searchText}"
         </div>
       )}
     </div>

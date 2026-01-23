@@ -29,6 +29,14 @@ import { useTitle } from '@/utils/useTitle'
 import { SuccessNotificationToast } from '@/components/SuccessNotificationToast'
 
 export const Route = createFileRoute('/booking/$appointmentId')({
+  validateSearch: (search: Record<string, unknown>) => {
+    return {
+      address: search.address as string | undefined,
+      animalType: search.animalType as string | undefined,
+      serviceType: search.serviceType as string | undefined,
+      animal: search.animal as string | undefined,
+    }
+  },
   component: BookingComponent,
 })
 
@@ -38,10 +46,20 @@ function BookingComponent() {
   const location = useLocation()
   const queryClient = useQueryClient()
   const { login } = useLoginContext()
-  const serviceType = location.state.serviceType
-  const animalId = location.state.filterAnimalId
-  const animalTypeId = location.state.filterAnimalTypeId
-  const selectedService = location.state.selectedService
+  const state = location.state
+  const serviceType = state.serviceType
+  const animalId = state.filterAnimalId
+  const animalTypeId = state.filterAnimalTypeId
+  const selectedService = state.selectedService
+  const { address, animalType, serviceType: serviceTypeParam, animal } = Route.useSearch()
+
+  // Use URL search params if available (e.g., from browser back), otherwise use state
+  const searchParams = {
+    address: address || state.searchParams?.address || '',
+    animalType: animalType ? animalType : state.searchParams?.animalType || '',
+    serviceType: serviceTypeParam ? serviceTypeParam : state.searchParams?.serviceType || '',
+    animal: animal ? animal : state.searchParams?.animal || '',
+  }
   const { appointmentId } = Route.useParams()
   const [selectedAppointmentType, setSelectedAppointmentType] =
     useState<ServiceType | null>(null)
@@ -109,7 +127,7 @@ function BookingComponent() {
   useEffect(() => {
     if (isSuccessAnimaltypesVeterinary) {
       if (filterTreatAnimaltypes.length === 0) {
-        const allAnimaltypeIds = dataAnimaltypesVeterinary.map((animalType) => animalType.id);
+        const allAnimaltypeIds = dataAnimaltypesVeterinary.map((animalTypeMap) => animalTypeMap.id);
         setFilterTreatAnimaltypes(allAnimaltypeIds);
       }
       setAllAnimaltypesString(dataAnimaltypesVeterinary.map((at) => at.name).join(", "));
@@ -136,7 +154,7 @@ function BookingComponent() {
     if (filterTreatAnimaltypes.length === 0) return;
 
     const hasMatchingAnimal = dataAnimal.some(
-      (animal) => filterTreatAnimaltypes.includes(animal.animalTypeId)
+      (animalFilter) => filterTreatAnimaltypes.includes(animalFilter.animalTypeId)
     );
 
     if (dataAnimal.length === 0 || !hasMatchingAnimal) {
@@ -151,7 +169,7 @@ function BookingComponent() {
     if (!isSuccessAnimal || filterTreatAnimaltypes.length === 0) return;
 
     const hasMatchingAnimal = dataAnimal.some(
-      (animal) => filterTreatAnimaltypes.includes(animal.animalTypeId)
+      (animalMatch) => filterTreatAnimaltypes.includes(animalMatch.animalTypeId)
     );
 
     if (hasMatchingAnimal) {
@@ -228,11 +246,11 @@ function BookingComponent() {
 
   useEffect(() => {
     if (isSuccessAnimal) {
-      const animal = dataAnimal.find((x) => {
+      const animalFound = dataAnimal.find((x) => {
         return x.id === animalId
       })
-      if (animal !== undefined) {
-        setSelectedAnimal(animal)
+      if (animalId !== undefined && animalFound) {
+        setSelectedAnimal(animalFound)
         if (login) {
           setStatus(StatusBooking.selectAppointmentType)
         } else {
@@ -246,24 +264,37 @@ function BookingComponent() {
     if (status === StatusBooking.selectAppointmentType && selectedAppointmentType !== null && isSuccessAppointment) {
       handleBookAppoinment()
     }
-  }, [status, isSuccessAppointment, selectedService])
+  }, [status, isSuccessAppointment, selectedAppointmentType, selectedAnimal])
+
 
   const handleClickBack = () => {
+    // Convert numbers to strings for URL params
+    const searchParamsForUrl = {
+      address: String(searchParams.address || ''),
+      animalType: searchParams.animalType ? String(searchParams.animalType) : '',
+      serviceType: searchParams.serviceType ? String(searchParams.serviceType) : '',
+      animal: searchParams.animal ? String(searchParams.animal) : '',
+    }
+
     switch (status) {
       case StatusBooking.selectAnimal:
         setSelectedAnimal(null);
-        window.history.back();
+        navigate({ to: '/search', search: searchParamsForUrl });
         break
       case StatusBooking.selectAppointmentType:
+        if(searchParams.animal) { // if animal was in filter selected, go back to search page
+          navigate({ to: '/search', search: searchParamsForUrl });
+          return;
+        }
         setSelectedAppointmentType(null);
         setStatus(StatusBooking.selectAnimal);
         break
       case StatusBooking.createAnimal:
         setShowCreateAnimalDialog(false);
-        window.history.back();
+        navigate({ to: '/search', search: searchParamsForUrl });
         break
       case StatusBooking.login:
-        window.history.back();
+        navigate({ to: '/search', search: searchParamsForUrl });
         break
       default:
         setSelectedAnimal(null)
@@ -274,40 +305,58 @@ function BookingComponent() {
   const handleSelectAppointmentType = (appointmentType: ServiceType) => {
     setSelectedAppointmentType(appointmentType)
 
+    const searchParamsForUrl = {
+      address: String(searchParams.address || ''),
+      animalType: searchParams.animalType ? String(searchParams.animalType) : '',
+      serviceType: searchParams.serviceType ? String(searchParams.serviceType) : '',
+      animal: searchParams.animal ? String(searchParams.animal) : '',
+    }
+
     if (selectedAnimal === null) {
-      navigate({ to: '/booking/$appointmentId', params: { appointmentId } })
+      navigate({ to: '/booking/$appointmentId', params: { appointmentId }, search: searchParamsForUrl })
       return
     }
 
     navigate({
       to: '/booking/confirmation',
+      search: searchParamsForUrl,
       state: {
         appointment: appointment,
         selectedAnimal: selectedAnimal,
         selectedService: appointmentType,
         practice: practice,
+        searchParams: searchParams,
       },
     })
   }
 
   const handleBookAppoinment = () => {
+    const searchParamsForUrl = {
+      address: String(searchParams.address || ''),
+      animalType: searchParams.animalType ? String(searchParams.animalType) : '',
+      serviceType: searchParams.serviceType ? String(searchParams.serviceType) : '',
+      animal: searchParams.animal ? String(searchParams.animal) : '',
+    }
+
     if (selectedAnimal === null || selectedAppointmentType === null) {
-      navigate({ to: '/booking/$appointmentId', params: { appointmentId } })
+      navigate({ to: '/booking/$appointmentId', params: { appointmentId }, search: searchParamsForUrl })
     } else {
       navigate({
         to: '/booking/confirmation',
+        search: searchParamsForUrl,
         state: {
           appointment: appointment,
           selectedAnimal: selectedAnimal,
           selectedService: selectedAppointmentType,
           practice: practice,
+          searchParams: searchParams,
         },
       })
     }
   }
 
-  const handleChangeAnimal = (animal: AnimalsType | null) => {
-    setSelectedAnimal(animal)
+  const handleChangeAnimal = (newAnimal: AnimalsType | null) => {
+    setSelectedAnimal(newAnimal)
   }
 
   const handleAnimalCreated = () => {

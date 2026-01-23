@@ -26,5 +26,8 @@ declare module '@tanstack/react-router' {
     initialTab?: 'upcoming' | 'past'
     fromDashboard?: boolean
     customer?: CustomerType
+    searchParams?: SearchParamsType
+    isReschedule?: boolean
+    oldAppointmentId?: number
   }
 }

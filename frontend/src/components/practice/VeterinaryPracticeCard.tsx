@@ -15,11 +15,13 @@ import { useLoginContext } from '@/LoginContext.ts'
 type VeterinaryPracticeCardProps = {
   practice: VeterinaryPracticesType
   filterOptions: AppointmentFilterType
+  searchParams?: SearchParamsType
 }
 
 export function VeterinaryPracticeCard({
   practice,
   filterOptions,
+  searchParams,
 }: VeterinaryPracticeCardProps) {
   const { login } = useLoginContext();
   const queryClient = useQueryClient()
@@ -37,6 +39,7 @@ export function VeterinaryPracticeCard({
       state: {
         practice: practice,
         filterOptions: filterOptions,
+        searchParams: searchParams,
       },
     })
   }
@@ -124,6 +127,7 @@ export function VeterinaryPracticeCard({
               <NextAvailableAppointments
                 practiceId={practice.id.toString()}
                 filterOptions={filterOptions}
+                searchParams={searchParams}
               />
             </div>
           </div>

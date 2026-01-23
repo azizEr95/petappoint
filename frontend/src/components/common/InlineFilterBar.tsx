@@ -114,6 +114,9 @@ export function InlineFilterBar({
 
   const handleAnimalChange = (id: number | undefined) => {
     setFilterAnimal(id)
+    if (id === undefined) {
+      setFilterAnimalType([])
+    }
   }
 
   const handleAnimalTypeChange = (id: number | undefined) => {

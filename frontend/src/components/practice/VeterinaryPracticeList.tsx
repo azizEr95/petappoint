@@ -15,6 +15,7 @@ type VeterinaryPracticeListProps = {
   onTotalChange?: (total: number) => void
   setCurrentPageNumber: (pageNumber: number) => void
   currentPageNumber: number
+  searchParams?: SearchParamsType
 }
 
 export function VeterinaryPracticeList({
@@ -23,7 +24,8 @@ export function VeterinaryPracticeList({
   filterOptions,
   onTotalChange,
   setCurrentPageNumber,
-  currentPageNumber
+  currentPageNumber,
+  searchParams
 }: VeterinaryPracticeListProps) {
   const [pageSize, setPageSize] = useState(10)
 
@@ -73,6 +75,7 @@ export function VeterinaryPracticeList({
                   key={praxis.id}
                   practice={praxis}
                   filterOptions={filterOptions}
+                  searchParams={searchParams}
                 />
               )
             })}
