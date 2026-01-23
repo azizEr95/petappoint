@@ -33,12 +33,10 @@ export function LocationAutocomplete({
     staleTime: 1000 * 60 * 60, // 1 hour
   })
 
-  // Filter cities based on search text - only show if user typed something
-  const filteredCities = searchText.trim()
-    ? cities
-        .filter((city) => city.toLowerCase().includes(searchText.toLowerCase()))
-        .sort((a, b) => a.localeCompare(b))
-    : []
+  // Filter cities based on search text
+  const filteredCities = cities
+    .filter((city) => city.toLowerCase().includes(searchText.toLowerCase()))
+    .sort((a, b) => a.localeCompare(b))
 
   // Handle city selection
   const handleSelectCity = (city: string) => {
@@ -184,7 +182,7 @@ export function LocationAutocomplete({
             </button>
           )}
 
-          {isOpen && searchText.trim() && filteredCities.length > 0 && (
+          {isOpen && filteredCities.length > 0 && (
             <div className="autocomplete-dropdown" role="listbox">
               {filteredCities.map((city, index) => (
                 <div
