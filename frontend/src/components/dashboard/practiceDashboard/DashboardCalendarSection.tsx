@@ -90,6 +90,12 @@ export function DashboardCalenderSection() {
         }
         let filteredAppointments = dataAvailableAppointments;
 
+        // Filter vergangene Termine aus
+        const now = new Date();
+        filteredAppointments = filteredAppointments.filter(appointment => {
+            return new Date(appointment.startTime) > now;
+        });
+
         if (filterAnimalType.length > 0) {
             filteredAppointments = filteredAppointments.filter(appointment => {
                 for (const animalTypeId of filterAnimalType) {
