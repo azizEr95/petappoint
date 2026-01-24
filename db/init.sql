@@ -1,11 +1,4 @@
 DROP TABLE IF EXISTS person_has_favorized_veterinarypractice;
-DROP TABLE IF EXISTS veterinary_has_invitation;
-DROP TABLE IF EXISTS recipes;
-DROP TABLE IF EXISTS medications;
-DROP TABLE IF EXISTS animal_has_vaccination;
-DROP TABLE IF EXISTS vaccinations;
-DROP TABLE IF EXISTS appointment_has_review;
-DROP TABLE IF EXISTS reviews;
 DROP TABLE IF EXISTS appointment_has_service;
 DROP TABLE IF EXISTS appointments;
 DROP TABLE IF EXISTS veterinary_can_treat_animaltype;
@@ -16,7 +9,6 @@ DROP TABLE IF EXISTS veterinarypractices;
 DROP TABLE IF EXISTS person_has_animal;
 DROP TABLE IF EXISTS animal_has_races;
 DROP TABLE IF EXISTS animals;
-DROP TABLE IF EXISTS animal_groups;
 DROP TABLE IF EXISTS animal_races;
 DROP TABLE IF EXISTS animal_types;
 DROP TABLE IF EXISTS password_reset_tokens;
@@ -349,11 +341,6 @@ CREATE TABLE IF NOT EXISTS animal_races(
   fk_animalTypeId INTEGER NOT NULL REFERENCES animal_types(id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS animal_groups(
-  id SERIAL PRIMARY KEY,
-  name VARCHAR(100) NOT NULL
-);
-
 CREATE TABLE IF NOT EXISTS animals(
   id SERIAL PRIMARY KEY,
   name VARCHAR(100) NOT NULL,
@@ -366,8 +353,7 @@ CREATE TABLE IF NOT EXISTS animals(
   lifestyle lifestyles NOT NULL DEFAULT 'indoor',
   picturePath VARCHAR(256) DEFAULT NULL,
   sex sexes NOT NULL DEFAULT 'not_known',
-  fk_animalTypeId INTEGER NOT NULL REFERENCES animal_types(id) ON DELETE CASCADE,
-  fk_animalGroupId INTEGER REFERENCES animal_groups(id) ON DELETE CASCADE
+  fk_animalTypeId INTEGER NOT NULL REFERENCES animal_types(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS animal_has_races(
@@ -434,58 +420,6 @@ CREATE TABLE IF NOT EXISTS appointment_has_service(
   fk_appointmentId INTEGER NOT NULL REFERENCES appointments(id) ON DELETE CASCADE,
   fk_serviceId INTEGER NOT NULL REFERENCES services(id) ON DELETE CASCADE,
   PRIMARY KEY (fk_appointmentId, fk_serviceId)
-);
-
-CREATE TABLE IF NOT EXISTS reviews(
-  id SERIAL PRIMARY KEY,
-  contentment SMALLINT NOT NULL CHECK (contentment BETWEEN 0 AND 100),
-  waitingTime SMALLINT NOT NULL CHECK (waitingTime BETWEEN 0 AND 100),
-  kindness SMALLINT NOT NULL CHECK (kindness BETWEEN 0 AND 100),
-  serviceQuality SMALLINT NOT NULL CHECK (serviceQuality BETWEEN 0 AND 100),
-  price SMALLINT NOT NULL CHECK (price BETWEEN 0 AND 100),
-  comment TEXT
-);
-
-CREATE TABLE IF NOT EXISTS appointment_has_review(
-  fk_appointmentId INTEGER NOT NULL REFERENCES appointments(id) ON DELETE CASCADE,
-  fk_reviewId INTEGER NOT NULL REFERENCES reviews(id) ON DELETE CASCADE,
-  PRIMARY KEY (fk_appointmentId, fk_reviewId)
-);
-
-CREATE TYPE paymentStatus AS ENUM('unpaid', 'paid', 'cancelled');
-
-CREATE TABLE IF NOT EXISTS vaccinations(
-  id SERIAL PRIMARY KEY,
-  name VARCHAR(100) UNIQUE NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS animal_has_vaccination(
-  id SERIAL PRIMARY KEY,
-  dateOfVaccination DATE NOT NULL,
-  fk_animalId INTEGER NOT NULL REFERENCES animals(id) ON DELETE CASCADE,
-  fk_vaccinationId INTEGER NOT NULL REFERENCES vaccinations(id) ON DELETE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS medications(
-  id SERIAL PRIMARY KEY,
-  name VARCHAR(100) UNIQUE NOT NULL
-);
-
-/* TODO: NICHT FERTIG */
-CREATE TABLE IF NOT EXISTS recipes(
-  id SERIAL PRIMARY KEY,
-  fk_animalId INTEGER NOT NULL REFERENCES animals(id) ON DELETE CASCADE,
-  fk_medicationId INTEGER NOT NULL REFERENCES medications(id) ON DELETE CASCADE,
-  starting DATE NOT NULL,
-  endDate DATE NOT NULL,
-  instructions TEXT
-);
-
-CREATE TABLE IF NOT EXISTS veterinary_has_invitation(
-  fk_veterinaryId INTEGER NOT NULL REFERENCES veterinarians(id) ON DELETE CASCADE,
-  fk_veterinaryPracticeId INTEGER NOT NULL REFERENCES veterinarypractices(id) ON DELETE CASCADE,
-  dateOfInvitation DATE NOT NULL,
-  PRIMARY KEY (fk_veterinaryId, fk_veterinaryPracticeId)
 );
 
 CREATE TABLE IF NOT EXISTS person_has_favorized_veterinarypractice(

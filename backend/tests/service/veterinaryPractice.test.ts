@@ -106,7 +106,6 @@ describe("veterinaryPracticeService Function", () => {
             timeOfDeath: null,
             isCastrated: true,
             animalTypeId: testAnimalType.id,
-            animalGroupId: null,
         })
 
         const testAppointment = {
@@ -269,7 +268,6 @@ describe("veterinaryPracticeService Function", () => {
             timeOfDeath: null,
             isCastrated: true,
             animalTypeId: testAnimalType.id,
-            animalGroupId: null,
         });
 
         const testAnimal2 = await animalService.create({
@@ -283,7 +281,6 @@ describe("veterinaryPracticeService Function", () => {
             timeOfDeath: null,
             isCastrated: false,
             animalTypeId: testAnimalType.id,
-            animalGroupId: null,
         });
 
         // Zwei Appointments
@@ -395,7 +392,6 @@ describe("veterinaryPracticeService Function", () => {
             timeOfDeath: null,
             isCastrated: true,
             animalTypeId: testAnimalType.id,
-            animalGroupId: null,
         });
 
         // Appointment erstellen aber Animal NICHT mit Person verbinden
@@ -503,7 +499,6 @@ describe("veterinaryPracticeService Function", () => {
             timeOfDeath: null,
             isCastrated: true,
             animalTypeId: testAnimalType.id,
-            animalGroupId: null,
         });
 
         const testAnimal2 = await animalService.create({
@@ -517,7 +512,6 @@ describe("veterinaryPracticeService Function", () => {
             timeOfDeath: null,
             isCastrated: false,
             animalTypeId: testAnimalType.id,
-            animalGroupId: null,
         });
 
         // Zwei Appointments mit den gleichen Tieren

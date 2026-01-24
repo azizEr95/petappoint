@@ -23,20 +23,6 @@ const DateTimeSchema = z.iso.datetime().transform((str) => new Date(str));
 
 const lifestyles = z.enum(["indoor", "outdoor", "mixed"]);
 
-//Animalgroup:
-export const AnimalGroupSchema = z.object({
-  id: PostgresIdSchema,
-  name: z.string(),
-});
-
-export const AnimalGroupCreateSchema = AnimalGroupSchema.omit({
-  //alles ohne id (das was beim Erstellen von Objekt vorhanden sein muss)
-  id: true,
-});
-
-export type AnimalGroupCreateType = z.infer<typeof AnimalGroupCreateSchema>;
-export type AnimalGroupType = z.infer<typeof AnimalGroupSchema>;
-
 //Animaltype:
 export const AnimalTypeSchema = z.object({
   id: PostgresIdSchema,
@@ -66,8 +52,7 @@ export const AnimalsSchema = z.object({
   isCastrated: z.boolean(),
   lifestyle: lifestyles,
   sex: sexes,
-  animalTypeId: z.int(),
-  animalGroupId: z.int().nullable(),
+  animalTypeId: z.int()
 });
 
 export const AnimalsCreateSchema = AnimalsSchema.omit({

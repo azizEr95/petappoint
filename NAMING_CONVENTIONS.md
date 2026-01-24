@@ -49,7 +49,7 @@
 
 - **Format**: snake_case, plural → `persons`, `appointments`, `veterinary_practices`
 - **Junction Tables**: `entity1_has_entity2` → `person_has_animal`, `veterinary_has_service`
-- **Exception**: Lookup tables can be singular → `animal_types`, `animal_races`, `animal_groups`
+- **Exception**: Lookup tables can be singular → `animal_types`, `animal_races`
 
 ### Columns
 
