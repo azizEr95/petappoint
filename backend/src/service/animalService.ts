@@ -19,7 +19,6 @@ export const animalService = {
         isCastrated: data.isCastrated,
         sex: data.sex,
         lifestyle: data.lifestyle,
-        animalGroup: data.animalGroupId ? { connect: { id: data.animalGroupId } } : undefined,
         animalType: {
           connect: {
             id: data.animalTypeId,
@@ -39,7 +38,6 @@ export const animalService = {
       sex: created.sex,
       timeOfDeath: created.timeOfDeath,
       weightInGram: created.weightInGram,
-      animalGroupId: created.animalGroupId,
       animalTypeId: created.animalTypeId,
     };
   },
@@ -73,7 +71,6 @@ export const animalService = {
       sex: updated.sex,
       timeOfDeath: updated.timeOfDeath,
       weightInGram: updated.weightInGram,
-      animalGroupId: updated.animalGroupId,
       animalTypeId: updated.animalTypeId,
     };
   },
@@ -96,7 +93,6 @@ export const animalService = {
       sex: foundAnimal.sex,
       timeOfDeath: foundAnimal.timeOfDeath,
       weightInGram: foundAnimal.weightInGram,
-      animalGroupId: foundAnimal.animalGroupId,
       animalTypeId: foundAnimal.animalTypeId,
     };
   },
@@ -124,7 +120,6 @@ export const animalService = {
         sex: animal.sex,
         timeOfDeath: animal.timeOfDeath,
         weightInGram: animal.weightInGram,
-        animalGroupId: animal.animalGroupId,
         animalTypeId: animal.animalTypeId,
       }));
   },
@@ -147,7 +142,6 @@ export const animalService = {
       sex: foundAnimal.sex,
       timeOfDeath: foundAnimal.timeOfDeath,
       weightInGram: foundAnimal.weightInGram,
-      animalGroupId: foundAnimal.animalGroupId,
       animalTypeId: foundAnimal.animalTypeId,
     };
   },
@@ -165,7 +159,6 @@ export const animalService = {
       sex: foundAnimal.sex,
       timeOfDeath: foundAnimal.timeOfDeath,
       weightInGram: foundAnimal.weightInGram,
-      animalGroupId: foundAnimal.animalGroupId,
       animalTypeId: foundAnimal.animalTypeId,
     }));
   },

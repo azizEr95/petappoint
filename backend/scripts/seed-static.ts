@@ -209,22 +209,6 @@ async function seedStatic() {
       console.log("✓ Created animal races");
     }
 
-    const existingGroups = await prisma.animalGroup.count();
-    if (existingGroups > 0) {
-      console.log("✓ Animal groups already exist");
-    } else {
-      await prisma.animalGroup.createMany({
-        data: [
-          { name: "Haustiere" },
-          { name: "Nutztiere" },
-          { name: "Wildtiere" },
-          { name: "Streuner" },
-          { name: "Zucht" },
-        ],
-      });
-      console.log("✓ Created animal groups");
-    }
-
     const services = await prisma.service.findMany({ select: { id: true } });
     const animalTypes = await prisma.animalType.findMany({ select: { id: true } });
 

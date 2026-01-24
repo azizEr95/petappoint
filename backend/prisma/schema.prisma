@@ -25,26 +25,22 @@ model Address {
 }
 
 model Animal {
-  id                    Int                    @id @default(autoincrement())
-  name                  String                 @db.VarChar(100)
-  dateOfBirth           DateTime?              @map("dateofbirth") @db.Date
-  dateOfBirthIsExact    Boolean?               @map("dateofbirthisexact")
-  weightInGram          Int?                   @map("weightingram")
-  heightInCm            Int?                   @map("heightincm")
-  timeOfDeath           DateTime?              @map("timeofdeath") @db.Date
-  isCastrated           Boolean                @map("iscastrated")
-  lifestyle             lifestyles             @default(indoor)
-  picturePath           String?                @map("picturepath") @db.VarChar(256)
-  sex                   Sexes                  @default(not_known)
-  animalTypeId          Int                    @map("fk_animaltypeid")
-  animalGroupId         Int?                   @map("fk_animalgroupid")
-  animalHasRaces        AnimalHasRace[]        @relation("AnimalToRaces")
-  animalHasVaccinations AnimalHasVaccination[]
-  animalGroup           AnimalGroup?           @relation(fields: [animalGroupId], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  animalType            AnimalType             @relation(fields: [animalTypeId], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  appointments          Appointment[]
-  personHasAnimals      PersonHasAnimal[]
-  recipes               Recipe[]
+  id                 Int               @id @default(autoincrement())
+  name               String            @db.VarChar(100)
+  dateOfBirth        DateTime?         @map("dateofbirth") @db.Date
+  dateOfBirthIsExact Boolean?          @map("dateofbirthisexact")
+  weightInGram       Int?              @map("weightingram")
+  heightInCm         Int?              @map("heightincm")
+  timeOfDeath        DateTime?         @map("timeofdeath") @db.Date
+  isCastrated        Boolean           @map("iscastrated")
+  lifestyle          lifestyles        @default(indoor)
+  picturePath        String?           @map("picturepath") @db.VarChar(256)
+  sex                Sexes             @default(not_known)
+  animalTypeId       Int               @map("fk_animaltypeid")
+  animalHasRaces     AnimalHasRace[]   @relation("AnimalToRaces")
+  animalType         AnimalType        @relation(fields: [animalTypeId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  appointments       Appointment[]
+  personHasAnimals   PersonHasAnimal[]
 
   @@map("animals")
 }
@@ -58,7 +54,6 @@ model Appointment {
   veterinaryPracticeId   Int                     @map("fk_veterinarypracticeid")
   serviceId              Int?                    @map("fk_serviceid")
   notes                  String?
-  appointmentHasReviews  AppointmentHasReview[]
   appointmentHasServices AppointmentHasService[]
   animal                 Animal?                 @relation(fields: [animalId], references: [id], onDelete: Cascade, onUpdate: NoAction)
   service                Service?                @relation(fields: [serviceId], references: [id], onDelete: Cascade, onUpdate: NoAction)
@@ -121,7 +116,6 @@ model Veterinarian {
   veterinaryPractice            VeterinaryPractice?            @relation(fields: [fk_veterinarypracticeid], references: [id], onDelete: Cascade, onUpdate: NoAction)
   person                        Person                         @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   veterinaryCanTreatAnimalTypes VeterinaryCanTreatAnimalType[]
-  veterinaryHasInvitations      VeterinaryHasInvitation[]
   veterinaryHasServices         VeterinaryHasService[]
 
   @@map("veterinarians")
@@ -141,7 +135,6 @@ model VeterinaryPractice {
   appointments                              Appointment[]
   personHasFavorizedVeterinaryPractices     PersonHasFavorizedVeterinaryPractice[]
   veterinarians                             Veterinarian[]
-  veterinaryHasInvitations                  VeterinaryHasInvitation[]
   address                                   Address                                    @relation(fields: [addressId], references: [id], onDelete: Cascade, onUpdate: NoAction)
   veterinarypractices_has_confirmation_code veterinarypractices_has_confirmation_code?
 
@@ -158,62 +151,6 @@ model AnimalHasRace {
   @@map("animal_has_races")
 }
 
-model AnimalHasVaccination {
-  id                Int         @id @default(autoincrement())
-  dateOfVaccination DateTime    @map("dateofvaccination") @db.Date
-  animalId          Int         @map("fk_animalid")
-  vaccinationId     Int         @map("fk_vaccinationid")
-  animal            Animal      @relation(fields: [animalId], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  vaccination       Vaccination @relation(fields: [vaccinationId], references: [id], onDelete: Cascade, onUpdate: NoAction)
-
-  @@map("animal_has_vaccination")
-}
-
-model AppointmentHasReview {
-  appointmentId Int         @map("fk_appointmentid")
-  reviewId      Int         @map("fk_reviewid")
-  appointment   Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  review        Review      @relation(fields: [reviewId], references: [id], onDelete: Cascade, onUpdate: NoAction)
-
-  @@id([appointmentId, reviewId])
-  @@map("appointment_has_review")
-}
-
-model Medication {
-  id      Int      @id @default(autoincrement())
-  name    String   @unique @db.VarChar(100)
-  recipes Recipe[]
-
-  @@map("medications")
-}
-
-model Recipe {
-  id           Int        @id @default(autoincrement())
-  animalId     Int        @map("fk_animalid")
-  medicationId Int        @map("fk_medicationid")
-  starting     DateTime   @db.Date
-  endDate      DateTime   @map("enddate") @db.Date
-  instructions String?
-  animal       Animal     @relation(fields: [animalId], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  medication   Medication @relation(fields: [medicationId], references: [id], onDelete: Cascade, onUpdate: NoAction)
-
-  @@map("recipes")
-}
-
-/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
-model Review {
-  id                    Int                    @id @default(autoincrement())
-  contentment           Int                    @db.SmallInt
-  waitingTime           Int                    @map("waitingtime") @db.SmallInt
-  kindness              Int                    @db.SmallInt
-  serviceQuality        Int                    @map("servicequality") @db.SmallInt
-  price                 Int                    @db.SmallInt
-  comment               String?
-  appointmentHasReviews AppointmentHasReview[]
-
-  @@map("reviews")
-}
-
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model Service {
   id                     Int                     @id @default(autoincrement())
@@ -223,25 +160,6 @@ model Service {
   veterinaryHasServices  VeterinaryHasService[]
 
   @@map("services")
-}
-
-model Vaccination {
-  id                    Int                    @id @default(autoincrement())
-  name                  String                 @unique @db.VarChar(100)
-  animalHasVaccinations AnimalHasVaccination[]
-
-  @@map("vaccinations")
-}
-
-model VeterinaryHasInvitation {
-  veterinaryId         Int                @map("fk_veterinaryid")
-  veterinaryPracticeId Int                @map("fk_veterinarypracticeid")
-  dateOfInvitation     DateTime           @map("dateofinvitation") @db.Date
-  veterinarian         Veterinarian       @relation(fields: [veterinaryId], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  veterinaryPractice   VeterinaryPractice @relation(fields: [veterinaryPracticeId], references: [id], onDelete: Cascade, onUpdate: NoAction)
-
-  @@id([veterinaryId, veterinaryPracticeId])
-  @@map("veterinary_has_invitation")
 }
 
 model PersonHasFavorizedVeterinaryPractice {
@@ -283,14 +201,6 @@ model VeterinaryHasService {
 
   @@id([veterinaryId, serviceId])
   @@map("veterinary_has_service")
-}
-
-model AnimalGroup {
-  id      Int      @id @default(autoincrement())
-  name    String   @db.VarChar(100)
-  animals Animal[]
-
-  @@map("animal_groups")
 }
 
 model AnimalRace {
@@ -343,14 +253,6 @@ enum Sexes {
   not_applicable
 
   @@map("sexes")
-}
-
-enum PaymentStatus {
-  unpaid
-  paid
-  cancelled
-
-  @@map("paymentstatus")
 }
 
 enum lifestyles {

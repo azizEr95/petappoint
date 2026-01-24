@@ -12,13 +12,11 @@ export type AnimalPrismaMappedType = {
     isCastrated: boolean,
     lifestyle: lifestyles,
     sex: Sexes,
-    animalTypeId: number,
-    animalGroupId: number | null
+    animalTypeId: number
 }
 
 export function mapToAnimal(animal: AnimalPrismaMappedType): AnimalsType {
     return {
-        animalGroupId: animal.animalGroupId,
         animalTypeId: animal.animalTypeId,
         dateOfBirth: animal.dateOfBirth,
         dateOfBirthIsExact: animal.dateOfBirthIsExact,

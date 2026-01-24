@@ -769,7 +769,6 @@ export function AnimalEditNewDialog({
         isCastrated: castrated === 'castrated' ? true : false,
         lifestyle: lifestyle as 'indoor' | 'outdoor' | 'mixed',
         animalTypeId: animalTypeAnimal !== undefined ? animalTypeAnimal.id : 1,
-        animalGroupId: null, // should be null, Backend Route has to be fixed
       }
       selectedRaces.forEach((race) => {
         // save all ids from the selected races
