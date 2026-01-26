@@ -7,7 +7,7 @@ import { animalService } from "../service/animalService";
 import { ConstraintError } from "../exceptions/errors/ConstraintError";
 import z from "zod";
 import { emailService } from "../service/emailService";
-import { ensureCallerHasAccess } from "../helper/authorization";
+import * as cron from "node-cron"
 
 export const appointmentRouter = express.Router();
 
@@ -93,6 +93,7 @@ appointmentRouter.put("/:id", requiresAuthentication, checkVerified, async (req,
   );
 
   await emailService.sendAppointmentEmail(req.userId!, bookedAppointment.id, "confirmation");
+
   res.status(201).send(bookedAppointment);
 });
 

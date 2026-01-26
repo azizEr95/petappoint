@@ -11,6 +11,12 @@ import { ConstraintError } from "../exceptions/errors/ConstraintError";
 import { APPOINTMENT_INCLUDE_BASE, APPOINTMENT_INCLUDE_WITH_VET_SERVICES } from "../helper/appointmentIncludes";
 import { mapToAppointment } from "../helper/mapToAppointment";
 
+
+// 1 day = 24h  * 60 -> minutes * 60 -> seconds * 1000 -> milliseconds   
+const DAY_IN_MS = 1000 * 60 * 60 * 24;
+const TWELVE_HOUR_PUFFER = 1000 * 60 * 60 * 12;
+const NOW_IN_ONE_DAY = Date.now() + DAY_IN_MS;
+
 export const appointmentService = {
   async create(data: AppointmentsCreateType): Promise<AppointmentsType> {
     const created = await prisma.appointment.create({
@@ -464,6 +470,28 @@ export const appointmentService = {
     });
 
     return found.map((foundAppointment) => mapToAppointment(foundAppointment));
+  },
+
+  async checkReminderIncludesPerson() {
+    // query to find appointments that is +- 1,5 days apart from now which include person 
+    const found = await prisma.appointment.findMany({
+      where: {
+              startTime: {
+                gte: new Date(NOW_IN_ONE_DAY - TWELVE_HOUR_PUFFER),
+                lte: new Date(NOW_IN_ONE_DAY + TWELVE_HOUR_PUFFER)
+              }
+      },
+      include: {
+        email_events: true,
+        animal: {
+          include: {
+            personHasAnimals: true
+              }
+            }
+          }
+        });
+    
+    return found;
   },
 
   async update(data: Appointment): Promise<AppointmentsType> {

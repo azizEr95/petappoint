@@ -2,30 +2,32 @@ import http from "http";
 import https from "https"
 import { app } from "./app";
 import path from "path";
+import * as cron from "node-cron";
 
 import * as dotenv from "dotenv";
+import { emailService } from "./service/emailService";
 
 declare global {
     var appRootDir: string;
 };
 
 declare global {
-  namespace NodeJS {
-    interface ProcessEnv {
-      DATABASE_URL: string;
-      CORS_ORIGIN: string;
-      HTTP_PORT: string;
-      BREVO_API_KEY: string;
-      JWT_SECRET: string;
-      JWT_TTL: string;
+    namespace NodeJS {
+        interface ProcessEnv {
+            DATABASE_URL: string;
+            CORS_ORIGIN: string;
+            HTTP_PORT: string;
+            BREVO_API_KEY: string;
+            JWT_SECRET: string;
+            JWT_TTL: string;
+        }
     }
-  }
 }
 
 global.appRootDir = path.resolve(path.join(__dirname, '..'));
 
 function readEnv() {
-    const result = dotenv.config({override: true});
+    const result = dotenv.config({ override: true });
     if (result.error) {
         console.log("No .env file found.");
     }
@@ -50,11 +52,18 @@ async function start() {
     const httpServer = http.createServer(app);
     httpServer.listen(port, () => {
         console.info(`Listening to HTTP at http://localhost:${port}`)
+    });
+    // send email reminder every 7 days at 6am, 12 pm zum testen erstmal jede minute
+    const task = cron.schedule("0 */12 * * *", async () => {
+        await emailService.sendReminderEmail();
+        console.log("scheduled reminder task");
+    }, {
+        timezone: "UTC"
     })
-    return;
-
     //TODO -- SSL verschluesselung für https server 
+    return;
 }
 
 
 start();
+
