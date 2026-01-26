@@ -443,3 +443,9 @@ CREATE TABLE IF NOT EXISTS veterinarypractices_has_confirmation_code(
   verified BOOLEAN NOT NULL,
   PRIMARY KEY (fk_veterinaryPracticeId)
 );
+
+CREATE TABLE IF NOT EXISTS email_events(
+  fk_appointmentId INTEGER NOT NULL REFERENCES appointments(id) ON DELETE CASCADE,
+  oneDayReminder BOOLEAN NOT NULL,
+  PRIMARY KEY (fk_appointmentId)
+);

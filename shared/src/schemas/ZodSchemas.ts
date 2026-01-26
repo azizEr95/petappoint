@@ -286,6 +286,13 @@ export const AvailableAppointmentSchema = z.object({
   availableServiceIds: PostgresIdSchema.array().optional().default([]),
 })
 
+export const EventSchema = z.object({
+    appointmentId: z.number(),
+    oneDayReminder: z.boolean(),
+});
+
+export type EventType = z.infer<typeof EventSchema>;
+
 export const BookAppointmentSchema = z.object({
   id: PostgresIdSchema,
   animalId: PostgresIdSchema,

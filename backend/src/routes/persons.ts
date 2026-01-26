@@ -4,7 +4,7 @@ import { veterinaryService } from "../service/veterinaryService";
 import { AnimalsType, PersonsCreateSchema, PersonsType, PersonsUpdateSchema, PostgresIdSchema } from "vetilib-shared/schemas/ZodSchemas";
 import { verifyJWT, verifyPasswordAndCreateJWT } from "../service/jwtService";
 import { emailService } from "../service/emailService";
-import { checkVerified, optionalAuthentication, requiresAuthentication, requiresPerson } from "./authentication";
+import { optionalAuthentication, requiresAuthentication, requiresPerson } from "./authentication";
 import { AuthorizationError } from "../exceptions/errors/AuthorizationError";
 import multer from "multer";
 import { ConstraintError } from "../exceptions/errors/ConstraintError";

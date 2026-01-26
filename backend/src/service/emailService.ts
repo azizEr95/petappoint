@@ -3,12 +3,15 @@ import fs from 'fs';
 import path from 'path';
 import { SendSmtpEmail } from "@getbrevo/brevo";
 import { emailServiceSetup } from "../singletonEmail";
-import { PersonsType, VeterinariansType, VeterinaryPracticesType } from 'vetilib-shared/schemas/ZodSchemas';
+import { EventType, PersonsType, VeterinariansType, VeterinaryPracticesType } from 'vetilib-shared/schemas/ZodSchemas';
 import { personService } from './personService';
 import { person_has_confirmation_code, VeterinaryPractice, veterinarypractices_has_confirmation_code } from '../../generated/prisma';
 import { appointmentService } from './appointmentService';
 import { dateFormatter } from '../utils/dateFormatter';
 import { veterinaryPracticeService } from './veterinaryPracticeService';
+import { prisma } from '../singletonPC';
+
+
 
 
 const sender = {
@@ -65,7 +68,7 @@ export async function sendPasswordResetEmail(
 }
 
 export const emailService = {
-    async sendConfirmationEmail(user: PersonsType) {
+    async sendConfirmationEmail(user: PersonsType): Promise<void> {
 
         let generatedCode: string;
         // confirmation Code generator
@@ -80,7 +83,7 @@ export const emailService = {
         await sendConfirmationEmail(userData, createdEntry.code);
     },
 
-    async sendConfirmationEmailVetPractices(user: VeterinaryPracticesType) {
+    async sendConfirmationEmailVetPractices(user: VeterinaryPracticesType): Promise<void> {
 
         let generatedCode: string;
 
@@ -98,7 +101,24 @@ export const emailService = {
         await sendConfirmationEmail(userData, createdEntry.code);
     },
 
-    async sendAppointmentEmail(userid: number, appointmentId: number, type: string) {
+    async sendReminderEmail(): Promise<void> {
+        const appointments = await appointmentService.checkReminderIncludesPerson();
+        if (appointments.length === 0) {
+            console.log("no appointments found");
+            return;
+        }
+        const send = Promise.all(appointments.map(async (appointment) => {
+            appointment.animal?.personHasAnimals.map(async (x) => {
+                await this.sendAppointmentEmail(x.personId,appointment.id,"reminder");
+            })
+            if(appointment.startTime)
+            await setEventFlag(appointment.id,"oneDayReminder")
+        }));
+
+        console.log("email send");
+    },
+
+    async sendAppointmentEmail(userid: number, appointmentId: number, type: "confirmation" | "termination" | "reminder") {
         let emailtype: string = "";
         const user = await personService.getById(userid);
         const appointment = await appointmentService.getById(appointmentId);
@@ -135,7 +155,21 @@ export const emailService = {
                     clinicName: appointment.veterinaryPractice.name
                 }
                 message.subject = "Dein Termin wurde erfolgreich storniert!";
-
+            case "reminder":
+                emailtype = "appointmentReminder";
+                appointmentData = {
+                    firstName: user.firstName,
+                    appointmentDate: dateFormatter(appointment.startTime, "date"),
+                    appointmentTime: dateFormatter(appointment.startTime, "time"),
+                    patientName: appointment.animal?.name ?? "",
+                    serviceName: appointment.service?.name ?? "",
+                    location: appointment.veterinaryPractice.address,
+                    minutesBefore: "15min",
+                    supportEmail: appointment.veterinaryPractice.email,
+                    supportPhone: appointment.veterinaryPractice.phone,
+                    clinicName: appointment.veterinaryPractice.name
+                }
+                message.subject = `Bereiten Sie sich auf Ihren Termin morgen um ${appointment.startTime.getUTCHours()} vor!`;
             default:
                 break;
         }
@@ -179,7 +213,7 @@ export const emailService = {
             }
         } else {
             try {
-                return await veterinaryPracticeService.updateVerified(userId,code);
+                return await veterinaryPracticeService.updateVerified(userId, code);
             } catch (error) {
                 return false;
             }
@@ -189,7 +223,29 @@ export const emailService = {
 
 }
 
-async function sendConfirmationEmail(userData: userDataMail, code: string) {
+
+async function setEventFlag(appointmentId: number, eventType: "oneDayReminder") {
+    const eventData: EventType = {
+        appointmentId: appointmentId,
+        oneDayReminder: eventType === 'oneDayReminder' ? true : false
+    };
+
+    await prisma.email_events.upsert({
+        where: {
+            fk_appointmentid: appointmentId
+        },
+        update: {
+            onedayreminder: eventData.oneDayReminder
+        },
+        create: {
+            fk_appointmentid: appointmentId,
+            onedayreminder: eventData.oneDayReminder
+        }
+    });
+
+}
+
+async function sendConfirmationEmail(userData: userDataMail, code?: string) {
     //template 
     const templatePath = path.join(__dirname, `../../templates/email/confirmationEmail.html`);
     const templateSource = fs.readFileSync(templatePath, 'utf-8');
