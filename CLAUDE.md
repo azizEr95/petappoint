@@ -4,9 +4,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Structure
 
-Veterinary library management system with 3 main components:
+Veterinary library management system with 4 main components:
 - **backend/**: Node.js/Express/TypeScript API with Prisma ORM
 - **frontend/**: React/TypeScript SPA using TanStack Router & Query, Vite, Bootstrap + custom CSS
+- **shared/**: Zod validation schemas used by both backend & frontend
 - **db/**: PostgreSQL database with init scripts
 
 ## Development Commands
@@ -118,6 +119,7 @@ Prisma schema in `backend/prisma/schema.prisma` (reverse-engineered from DB):
 - Prettier config: no semicolons, single quotes, trailing commas
 
 ### Pre-Commit Quality Gates
+
 **Pipeline requirement (GitLab CI enforces):**
 - E2E tests must pass: `npm run e2e-tests:ci`
 - This is the only automated gate in pipeline (`e2e-tests` stage)
@@ -132,3 +134,22 @@ Prisma schema in `backend/prisma/schema.prisma` (reverse-engineered from DB):
 - Backend unit tests: `cd backend && npm test` (optional - currently not in pipeline)
 - Frontend unit tests: `cd frontend && npm test` (optional - currently not in pipeline)
 - Combined: `npm test` runs both unit test suites locally
+
+## Claude Code Workflow
+
+### Plan Mode (before implementation)
+- Use Plan Mode for complex features, bug fixes with unclear root cause, or architectural decisions
+- Phases: (1) Explore existing code, (2) Design solution, (3) Review critical files, (4) Finalize plan
+- Always exit plan mode with `ExitPlanMode` to get user approval before implementation
+
+### Implementation Mode (after approval)
+- Create branch: `git checkout -b mk11/feat/[feature-name]` (or mk11/fix/, mk11/ref/, mk11/chore/)
+- Implement changes according to approved plan
+- Manual testing required before commit: `npm run vetilib`
+- Commit with clear message: `feat: description` or `fix: description`
+
+### Best Practices for Prompts
+- **Include context:** Mention existing files, similar features, test data (accounts, IDs)
+- **Be specific:** Clear problem description + expected behavior + reproduction steps
+- **Provide test cases:** Account email, animal type, service type, location for testing
+- **Define scope:** Backend only? Frontend only? Both? Testing needed?
