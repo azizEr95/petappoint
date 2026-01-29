@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useMemo, useState } from 'react'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Alert, Form, FormGroup } from 'react-bootstrap'
 import Select from 'react-select'
 import {
@@ -35,6 +35,7 @@ function VeterinarianCreateComponent() {
   useTitle('Tierarzt erstellen')
   const navigate = useNavigate()
   const { login } = useLoginContext()
+  const queryClient = useQueryClient()
 
   const [accountMode, setAccountMode] = useState<'new' | 'existing'>('new')
   const [existingPersonData, setExistingPersonData] = useState<{
@@ -106,7 +107,8 @@ function VeterinarianCreateComponent() {
   const { mutate: mutateCreateVeterinarian, isPending } = useMutation({
     mutationFn: (vet: any) => createVeterinarian(vet),
     onSuccess: () => {
-      navigate({ to: '/dashboard' })
+      queryClient.invalidateQueries({ queryKey: ['veterinarians'] });
+      navigate({ to: '/veterinarians', search: { veterinarianName: "", sortBy: "name-asc", specialization: ""} });
     },
     onError: (error: any) => {
       setErrors({
@@ -270,8 +272,7 @@ function VeterinarianCreateComponent() {
       return
     }
 
-    const practiceId =
-      login && login.role === 'company' ? (login as any).practiceId : undefined
+    const practiceId = login && login.role === 'company' ? login.id : undefined;
 
     if (accountMode === 'existing') {
       // Minimal payload for existing person
@@ -611,10 +612,10 @@ function VeterinarianCreateComponent() {
                       value={
                         veterinarianData.address.country
                           ? countryOptions.find(
-                              (opt) =>
-                                opt.value.id ===
-                                veterinarianData.address.country?.id,
-                            )
+                            (opt) =>
+                              opt.value.id ===
+                              veterinarianData.address.country?.id,
+                          )
                           : null
                       }
                       onChange={handleCountryChange}
