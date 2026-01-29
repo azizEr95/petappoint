@@ -55,7 +55,10 @@ async function seedE2ETests() {
             ],
         });
 
-        const germany = await prisma.countries.create({data:{code: 'DEU', name:'Deutschland'}});
+        let germany = await prisma.countries.findUnique({where: {code: 'DEU'}});;
+        if(!germany){
+            germany = await prisma.countries.create({data:{code: 'DEU', name:'Deutschland'}});
+        }
 
         const createdAddresses = await prisma.address.createMany({
             data: [
