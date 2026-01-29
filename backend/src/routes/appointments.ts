@@ -6,6 +6,7 @@ import { AuthorizationError } from "../exceptions/errors/AuthorizationError";
 import { ConstraintError } from "../exceptions/errors/ConstraintError";
 import z from "zod";
 import { emailService } from "../service/emailService";
+import * as cron from "node-cron"
 import { ensureCallerHasAccess } from "../helper/authorization";
 
 export const appointmentRouter = express.Router();

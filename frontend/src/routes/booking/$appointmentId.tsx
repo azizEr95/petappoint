@@ -260,11 +260,11 @@ function BookingComponent() {
     }
   }, [isSuccessAnimal, dataAnimal])
 
-  useEffect(() => {
-    if (status === StatusBooking.selectAppointmentType && selectedAppointmentType !== null && isSuccessAppointment) {
-      handleBookAppoinment()
-    }
-  }, [status, isSuccessAppointment, selectedAppointmentType, selectedAnimal])
+  // useEffect(() => {
+  //   if (status === StatusBooking.selectAppointmentType && selectedAppointmentType !== null && isSuccessAppointment) {
+  //     handleBookAppoinment()
+  //   }
+  // }, [status, isSuccessAppointment, selectedAppointmentType, selectedAnimal])
 
 
   const handleClickBack = () => {
@@ -303,30 +303,33 @@ function BookingComponent() {
   }
 
   const handleSelectAppointmentType = (appointmentType: ServiceType) => {
+    console.log("Appointment Type selected:", appointmentType);
     setSelectedAppointmentType(appointmentType)
 
     const searchParamsForUrl = {
       address: String(searchParams.address || ''),
-      animalType: searchParams.animalType ? String(searchParams.animalType) : '',
-      serviceType: searchParams.serviceType ? String(searchParams.serviceType) : '',
-      animal: searchParams.animal ? String(searchParams.animal) : '',
+      animalType: selectedAnimal?.animalTypeId.toString() || "",
+      serviceType: appointmentType.id.toString(),
+      animal: selectedAnimal?.id.toString() || "",
     }
 
     if (selectedAnimal === null) {
+      console.log("No animal selected, cannot proceed to confirmation.");
       navigate({ to: '/booking/$appointmentId', params: { appointmentId }, search: searchParamsForUrl })
-      return
+      return;
     }
-
+    const payload = {
+      appointment,
+      selectedAnimal,
+      selectedService: appointmentType,
+      practice,
+      searchParams,
+    }
+    console.log("Navigating to confirmation page with state:", payload);
     navigate({
       to: '/booking/confirmation',
       search: searchParamsForUrl,
-      state: {
-        appointment: appointment,
-        selectedAnimal: selectedAnimal,
-        selectedService: appointmentType,
-        practice: practice,
-        searchParams: searchParams,
-      },
+      state: payload,
     })
   }
 
@@ -339,8 +342,16 @@ function BookingComponent() {
     }
 
     if (selectedAnimal === null || selectedAppointmentType === null) {
+      console.log("Animal or Appointment Type not selected, cannot proceed to confirmation.");
       navigate({ to: '/booking/$appointmentId', params: { appointmentId }, search: searchParamsForUrl })
     } else {
+      console.log("Navigating to confirmation page with state:", {
+        appointment,
+        selectedAnimal,
+        selectedAppointmentType,
+        practice,
+        searchParams,
+      });
       navigate({
         to: '/booking/confirmation',
         search: searchParamsForUrl,
@@ -368,12 +379,16 @@ function BookingComponent() {
     if (selectedAnimal === null) {
       return
     }
-    navigate({
-      state: {
-        selectedAnimal: selectedAnimal,
-        serviceType: serviceType
-      }
-    })
+    // navigate({
+    //   state: {
+    //     selectedAnimal: selectedAnimal,
+    //     serviceType: serviceType,
+    //     selectedService: {
+    //       id: 1,
+    //       name: 'Placeholder',
+    //     }
+    //   }
+    // })
 
     if (login) {
       setStatus(StatusBooking.selectAppointmentType)

@@ -36,7 +36,7 @@ function ConfirmationComponent() {
   >('pending')
   const [errorMessage, setErrorMessage] = useState<string>('')
 
-  const state = location.state
+  let state = location.state
 
   // Fetch services to get correct names
   const { data: dataServices, isSuccess: isSuccessServices } = useQuery<Array<ServiceType>>({
@@ -52,49 +52,56 @@ function ConfirmationComponent() {
   }, [isSuccessServices, dataServices]);
 
   // Validate state in useEffect to avoid navigation during render
-  useEffect(() => {
-    // Check for required fields - can be from /booking/$appointmentId or direct state
-    const hasAppointment = state.appointment
-    const hasAnimal = state.selectedAnimal || state.filterAnimalId
-    const hasService = state.selectedService || (state.serviceType && state.serviceType.length > 0)
-    // Practice can be in state.practice or in state.appointment.veterinaryPractice
-    const hasPractice = state.practice || state.appointment?.veterinaryPractice
+  // useEffect(() => {
+  //   console.log("Validating location.state:", location.state);
+    
+  //   // Check for required fields - can be from /booking/$appointmentId or direct state
+  //   const hasAppointment = location.state.appointment
+  //   const hasAnimal = location.state.selectedAnimal || location.state.filterAnimalId
+  //   const hasService = location.state.selectedService || (location.state.serviceType && location.state.serviceType.length > 0)
+  //   // Practice can be in state.practice or in state.appointment.veterinaryPractice
+  //   const hasPractice = location.state.practice || location.state.appointment?.veterinaryPractice
+  //   console.log(location.state.selectedService)
+  //   console.log("hasAppointment:", hasAppointment, "hasAnimal:", hasAnimal, "hasService:", hasService, "hasPractice:", hasPractice);
+  //   if (!hasAppointment || !hasPractice) {
+  //     // Critical data missing - go home
+  //     navigate({ to: '/' })
+  //     return
+  //   }
 
-    if (!hasAppointment || !hasPractice) {
-      // Critical data missing - go home
-      navigate({ to: '/' })
-      return
-    }
+  //   if (!hasAnimal || !hasService) {
+  //     // Missing animal or service - redirect to booking page to select
+  //     console.log("Animal or Service missing, redirecting to booking page");
+  //     const searchParamsForUrl = {
+  //       address: String(address || ''),
+  //       animalType: animalType ? String(animalType) : '',
+  //       serviceType: serviceType ? String(serviceType) : '',
+  //       animal: animal ? String(animal) : '',
+  //     }
 
-    if (!hasAnimal || !hasService) {
-      // Missing animal or service - redirect to booking page to select
-      const searchParamsForUrl = {
-        address: String(address || ''),
-        animalType: animalType ? String(animalType) : '',
-        serviceType: serviceType ? String(serviceType) : '',
-        animal: animal ? String(animal) : '',
-      }
+  //     if (location.state.appointment) {
+  //       console.log("Animal or Service missing, redirecting to booking page.");
+  //       console.log(location.state.selectedAnimal, location.state.filterAnimalId, location.state.selectedService, location.state.serviceType);
+  //       navigate({
+  //         to: '/booking/$appointmentId',
+  //         params: { appointmentId: location.state.appointment.id.toString() },
+  //         search: searchParamsForUrl,
+  //         state: {
+  //           appointment: location.state.appointment,
+  //           serviceType: location.state.serviceType,
+  //           filterAnimalId: location.state.filterAnimalId,
+  //           filterAnimalTypeId: location.state.filterAnimalTypeId,
+  //           searchParams: location.state.searchParams,
+  //         },
+  //         replace: true,
+  //       })
+  //     }
+  //     return
+  //   }
 
-      if (state.appointment) {
-        navigate({
-          to: '/booking/$appointmentId',
-          params: { appointmentId: state.appointment.id.toString() },
-          search: searchParamsForUrl,
-          state: {
-            appointment: state.appointment,
-            serviceType: state.serviceType,
-            filterAnimalId: state.filterAnimalId,
-            filterAnimalTypeId: state.filterAnimalTypeId,
-            searchParams: state.searchParams,
-          },
-          replace: true,
-        })
-      }
-      return
-    }
-
-    setStateLoaded(true)
-  }, [])
+  //   console.log("Validation passed, setting stateLoaded to true");
+  //   setStateLoaded(true)
+  // }, [])
 
   // Handle browser back button - go back to search with filters
   useEffect(() => {
@@ -261,9 +268,11 @@ function ConfirmationComponent() {
   }
 
   // Don't render until state is validated
-  if (!stateLoaded) {
-    return <></>
-  }
+  // if (!stateLoaded) {
+  //   return <></>
+  // }
+
+  state = location.state;
 
   // Extract appointment, animal, service, practice from state
   // Handle both direct objects and IDs from NextAvailableAppointments
