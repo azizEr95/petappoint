@@ -89,7 +89,7 @@ const FIXED_ANIMALS = [
 function generateVets() {
   const vets = [];
   const firstNames = ["Maria", "Daniel", "Joe", "Anna", "Klaus", "Sarah", "Michael", "Lisa", "Thomas", "Julia", "Alexander", "Jennifer", "Peter", "Christina", "Andreas"];
-  const lastNames = ["Schmidt", "Fischer", "Wagner", "Müller", "Bauer", "Weber", "Meyer", "Schneider", "Hoffmann", "König", "Roth", "Richter", "Keller", "Berg", "Lange"];
+  const lastNames = ["Schmidt", "Fischer", "Wagner", "Mueller", "Bauer", "Weber", "Meyer", "Schneider", "Hoffmann", "Koenig", "Roth", "Richter", "Keller", "Berg", "Lange"];
 
   for (let i = 0; i < FIXED_PRACTICES.length; i++) {
     const practice = FIXED_PRACTICES[i];

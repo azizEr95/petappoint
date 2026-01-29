@@ -1,13 +1,12 @@
 import express from "express";
 import { appointmentService } from "../service/appointmentService";
-import { AppointmentsCreateSchema, AppointmentsType, BookAppointmentSchema, PostgresIdSchema, AvailableAppointmentSchema, AppointmentsCreateType } from "vetilib-shared/schemas/ZodSchemas";
+import { AppointmentsCreateSchema, AppointmentsType, BookAppointmentSchema, PostgresIdSchema, AvailableAppointmentSchema } from "vetilib-shared/schemas/ZodSchemas";
 import { checkVerified, optionalAuthentication, requiresAuthentication, requiresCompany } from "./authentication";
 import { AuthorizationError } from "../exceptions/errors/AuthorizationError";
-import { animalService } from "../service/animalService";
 import { ConstraintError } from "../exceptions/errors/ConstraintError";
 import z from "zod";
 import { emailService } from "../service/emailService";
-import * as cron from "node-cron"
+import { ensureCallerHasAccess } from "../helper/authorization";
 
 export const appointmentRouter = express.Router();
 

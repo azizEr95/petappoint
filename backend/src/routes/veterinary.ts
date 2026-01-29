@@ -154,7 +154,7 @@ veterinariansRouter.post('/', optionalAuthentication, async (req, res, next) => 
             firstName: person.firstName,
             lastName: person.lastName,
             infoEmail: req.body.infoEmail || null,
-            fk_veterinarypracticeid: req.body.fk_veterinarypracticeid,
+            fk_veterinarypracticeid: req.body.veterinaryPracticeId,
         };
 
         const vet = await veterinaryService.create(vetData);
