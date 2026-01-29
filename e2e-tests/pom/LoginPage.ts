@@ -21,8 +21,6 @@ export class LoginPage {
     await this.emailInput.fill(email);
     await this.passwordInput.fill(password);
     await this.loginButton.click();
-
-    await this.page.waitForURL('**/dashboard', { waitUntil: 'networkidle' });
   }
 
   async expectOnLoginPage(currentPage: Page) {

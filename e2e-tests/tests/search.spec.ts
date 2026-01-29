@@ -38,5 +38,4 @@ describe('Search Page Tests', () => {
       await expect(page).toHaveURL(/search/);
     });
   });
-
 });

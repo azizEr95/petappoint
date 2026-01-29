@@ -28,6 +28,7 @@ describe('Login Page Tests', () => {
 
         test('login with valid credentials', async ({ page }) => {
             await loginPage.login("e2e-tester@bht-berlin.de", "Hallo123!E2ETest");
+            await page.waitForURL('**/dashboard', { waitUntil: 'networkidle' });
             await dashboardPage.expectOnDashboardPage(page);
         });
 

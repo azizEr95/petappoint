@@ -4,7 +4,7 @@ import { LoginPage } from '../pom/LoginPage';
 import { AnimalPage } from '../pom/AnimalPage';
 import { DashboardPage } from '../pom/DashboardPage';
 
-// these tests are skipped
+
 describe.skip('Animal Page Tests', () => {
     let loginPage: LoginPage;
     let animalPage: AnimalPage;
@@ -17,6 +17,7 @@ describe.skip('Animal Page Tests', () => {
 
         await loginPage.goto();
         await loginPage.login("e2e-tester@bht-berlin.de", "Hallo123!E2ETest");
+        await page.waitForURL('**/dashboard', { waitUntil: 'networkidle' });
         await dashboardPage.expectOnDashboardPage(page);
         await animalPage.goto();
     });

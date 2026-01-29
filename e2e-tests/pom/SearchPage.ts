@@ -4,15 +4,19 @@ import { AbstractPage } from './AbstractPage';
 export class SearchPage extends AbstractPage {
   readonly searchButton: Locator;
   readonly searchPlaceInput: Locator;
+  readonly animalTypeFilter: Locator;
+  readonly appointmentTypeFilter: Locator;
 
   constructor(page: Page) {
     super(page);
     this.searchButton = page.getByTestId('submit-search');
     this.searchPlaceInput = page.getByTestId('search-place-input');
+    this.animalTypeFilter = page.getByTestId('animal-type-filter'); // Assuming a test ID for animal type filter
+    this.appointmentTypeFilter = page.getByTestId('appointment-type-filter'); // Assuming a test ID for treatment filter
   }
 
   async goto() {
-    await this.page.goto('/dashboard');
+    await this.page.goto('/search');
   }
 
   async practicesShown(): Promise<boolean> {

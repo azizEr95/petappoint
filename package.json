@@ -12,14 +12,13 @@
     "buildProject": "npm --prefix ./backend install && npm --prefix ./frontend install && npm --prefix ./e2e-tests install && npm --prefix ./shared install && npm --prefix ./shared run build",
     "migrateDB": "npm --prefix ./backend run prisma",
     "seed": "npm --prefix ./backend run seed",
-    "vetilib:detached": "docker-compose up --build -d",
-    "stop": "docker-compose down",
+    "startDB": "cd db && npm run db",
+    "stopDB": "docker-compose down",
     "e2e-tests": "npm-run-all --parallel startDB e2e-tests:ci",
     "e2e-tests:ci": "cd e2e-tests && npx playwright test",
     "test": "npm run test:backend",
     "test:backend": "cd backend && npm test",
-    "prisma": "cd backend && npm run prisma",
-    "startDB": "cd db && npm run db"
+    "prisma": "cd backend && npm run prisma"
   },
   "devDependencies": {
     "baseline-browser-mapping": "^2.9.10",
