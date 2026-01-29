@@ -201,7 +201,7 @@ export function InlineFilterBar({
           >
             Zurücksetzen
           </Button>
-          <Button variant="primary" size="sm" onClick={handleApplyFilters}>
+          <Button variant="primary" size="sm" onClick={handleApplyFilters} data-testid="submit-search">
             Anwenden
           </Button>
         </div>

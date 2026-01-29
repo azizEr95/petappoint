@@ -3,10 +3,12 @@ import { AbstractPage } from './AbstractPage';
 
 export class SearchPage extends AbstractPage {
   readonly searchButton: Locator;
+  readonly searchPlaceInput: Locator;
 
   constructor(page: Page) {
     super(page);
-    this.searchButton = page.getByRole('button', { name: 'Suchen', exact: true });
+    this.searchButton = page.getByTestId('submit-search');
+    this.searchPlaceInput = page.getByTestId('search-place-input');
   }
 
   async goto() {
@@ -15,11 +17,12 @@ export class SearchPage extends AbstractPage {
 
   async practicesShown(): Promise<boolean> {
     const practices = this.page.locator('[data-testid^="practice-card-"]');
-    if(practices.first()){
-      return true;
-    } else {
-      return false;
-    }
+    const count = await practices.count();
+    return count > 0;
+  }
+
+  async addPlaceInput(place: string) {
+    await this.searchPlaceInput.fill(place);
   }
 
   async expectOnSearchPage(currentPage: Page) {

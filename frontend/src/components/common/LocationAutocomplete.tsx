@@ -26,7 +26,7 @@ export function LocationAutocomplete({
   const inputRef = useRef<HTMLInputElement>(null)
 
   // Fetch available cities
-  const { data: cities = [] } = useQuery<string[]>({
+  const { data: cities = [] } = useQuery<Array<string>>({
     queryKey: ['availableCities'],
     queryFn: getAvailableCities,
     retry: false,
@@ -169,6 +169,7 @@ export function LocationAutocomplete({
             role="combobox"
             aria-expanded={isOpen}
             aria-autocomplete="list"
+            data-testid={"search-place-input"}
           />
 
           {value && (
@@ -187,9 +188,8 @@ export function LocationAutocomplete({
               {filteredCities.map((city, index) => (
                 <div
                   key={city}
-                  className={`autocomplete-option ${
-                    highlightedIndex === index ? 'highlighted' : ''
-                  }`}
+                  className={`autocomplete-option ${highlightedIndex === index ? 'highlighted' : ''
+                    }`}
                   onClick={() => handleSelectCity(city)}
                   role="option"
                   aria-selected={value === city}

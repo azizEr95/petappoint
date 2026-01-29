@@ -18,7 +18,8 @@
     "e2e-tests:ci": "cd e2e-tests && npx playwright test",
     "test": "npm run test:backend",
     "test:backend": "cd backend && npm test",
-    "prisma": "cd backend && npm run prisma"
+    "prisma": "cd backend && npm run prisma",
+    "startDB": "cd db && npm run db"
   },
   "devDependencies": {
     "baseline-browser-mapping": "^2.9.10",
