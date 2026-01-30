@@ -606,7 +606,7 @@ function VeterinarianCreateComponent() {
 
                     <FormGroup className="form-group">
                       <Form.Label htmlFor="phone" className="form-label">
-                        Telefon
+                        Telefon *
                       </Form.Label>
                       <Form.Control
                         id="VetPhone"

@@ -501,7 +501,9 @@ export function validateVeterinarianFormular(
         if (verifyField === "phone" || verifyField === undefined) {
             if (vetData.phone && !/^[\d\s+()/-]+$/.test(vetData.phone)) {
                 newErrors.phone = 'Ungültiges Telefonformat';
-            } else {
+            } if(vetData.phone.length < 5){
+                newErrors.phone = 'Telefon muss mindestens aus 5 Zeichen bestehen';
+            }else {
                 delete newErrors.phone;
             }
         }
@@ -643,7 +645,7 @@ export function getVeterinarianCreateType(
             firstName: vetData.firstName,
             lastName: vetData.lastName,
             infoEmail: vetData.infoEmail || null,
-            veterinaryPracticeId: practiceId || null,
+            fk_veterinarypracticeid: practiceId || null,
             email: vetData.email,
             password: vetData.password,
             dateOfBirth: new Date(vetData.dateOfBirth),
