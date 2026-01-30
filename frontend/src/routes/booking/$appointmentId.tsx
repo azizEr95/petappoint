@@ -63,7 +63,9 @@ function BookingComponent() {
   const { appointmentId } = Route.useParams()
   const [selectedAppointmentType, setSelectedAppointmentType] =
     useState<ServiceType | null>(null)
-  const [selectedAnimal, setSelectedAnimal] = useState<AnimalsType | null>(null)
+  const [selectedAnimal, setSelectedAnimal] = useState<AnimalsType | null>(
+    state.selectedAnimal || null
+  )
   const [status, setStatus] = useState<StatusBooking>(
     StatusBooking.selectAnimal,
   )
@@ -261,7 +263,13 @@ function BookingComponent() {
   }, [isSuccessAnimal, dataAnimal])
 
   useEffect(() => {
-    if (status === StatusBooking.selectAppointmentType && selectedAppointmentType !== null && isSuccessAppointment) {
+    // Only auto-progress if we have BOTH selections and appointment is ready
+    if (
+      status === StatusBooking.selectAppointmentType &&
+      selectedAppointmentType !== null &&
+      selectedAnimal !== null &&
+      isSuccessAppointment
+    ) {
       handleBookAppoinment()
     }
   }, [status, isSuccessAppointment, selectedAppointmentType, selectedAnimal])
@@ -312,17 +320,31 @@ function BookingComponent() {
       animal: searchParams.animal ? String(searchParams.animal) : '',
     }
 
-    if (selectedAnimal === null) {
-      navigate({ to: '/booking/$appointmentId', params: { appointmentId }, search: searchParamsForUrl })
+    // Check for animal in both local state AND navigation state
+    const currentAnimal = selectedAnimal || state.selectedAnimal
+
+    if (currentAnimal === null) {
+      navigate({
+        to: '/booking/$appointmentId',
+        params: { appointmentId },
+        search: searchParamsForUrl,
+        state: {
+          selectedService: appointmentType,
+          serviceType: serviceType,
+          filterAnimalTypeId: animalTypeId,
+          searchParams: searchParams,
+        },
+      })
       return
     }
 
+    // Proceed to confirmation with both animal and service
     navigate({
       to: '/booking/confirmation',
       search: searchParamsForUrl,
       state: {
         appointment: appointment,
-        selectedAnimal: selectedAnimal,
+        selectedAnimal: currentAnimal,
         selectedService: appointmentType,
         practice: practice,
         searchParams: searchParams,
@@ -368,11 +390,25 @@ function BookingComponent() {
     if (selectedAnimal === null) {
       return
     }
+
+    const searchParamsForUrl = {
+      address: String(searchParams.address || ''),
+      animalType: searchParams.animalType ? String(searchParams.animalType) : '',
+      serviceType: searchParams.serviceType ? String(searchParams.serviceType) : '',
+      animal: searchParams.animal ? String(searchParams.animal) : '',
+    }
+
     navigate({
+      to: '/booking/$appointmentId',
+      params: { appointmentId },
+      search: searchParamsForUrl,
       state: {
         selectedAnimal: selectedAnimal,
-        serviceType: serviceType
-      }
+        serviceType: serviceType,
+        filterAnimalId: selectedAnimal.id,
+        filterAnimalTypeId: animalTypeId,
+        searchParams: searchParams,
+      },
     })
 
     if (login) {

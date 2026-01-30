@@ -9,8 +9,10 @@ import { useMutation, useQuery } from '@tanstack/react-query'
 import { bookAppointment, cancelAppointment } from '../../api/AppointmentsAPI'
 import { getAllAvailableServices } from '../../api/ServicesAPI'
 import { dateToInfosString } from '../../utils/DateToStringFormat'
-import type { ServiceType } from 'vetilib-shared/schemas/ZodSchemas'
+import type { AnimalsType, ServiceType } from 'vetilib-shared/schemas/ZodSchemas'
 import { useTitle } from '@/utils/useTitle'
+import { getAnimalsFromUser } from '@/api/AnimalsAPI'
+import { useLoginContext } from '@/LoginContext'
 
 export const Route = createFileRoute('/booking/confirmation')({
   validateSearch: (search: Record<string, unknown>) => {
@@ -28,6 +30,7 @@ function ConfirmationComponent() {
   useTitle('Termin bestätigen');
   const navigate = useNavigate()
   const location = useLocation()
+  const {login} = useLoginContext();
   const { address, animalType, serviceType, animal } = Route.useSearch()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [stateLoaded, setStateLoaded] = useState(false)
@@ -45,11 +48,30 @@ function ConfirmationComponent() {
     retry: false,
   })
 
+  const { data: dataAnimal, isSuccess: isSuccessAnimal } = useQuery<Array<AnimalsType>>({
+    queryKey: ['animals', login ? login.id : -1],
+    queryFn: () => getAnimalsFromUser(login ? login.id : -1),
+    retry: false,
+    enabled: login && login.role === 'person',
+  })
+
   useEffect(() => {
-    if(isSuccessServices){
-      state.selectedService = dataServices.find((s) => s.id === state.serviceType?.[0]);
+    if(isSuccessServices && state.serviceType && state.serviceType.length > 0){
+      // Only override if selectedService is not already set
+      if(!state.selectedService){
+        state.selectedService = dataServices.find((s) => s.id === state.serviceType?.[0]);
+      }
     }
   }, [isSuccessServices, dataServices]);
+
+  useEffect(() => {
+    if(isSuccessAnimal && state.filterAnimalId){
+      // Only override if selectedAnimal is not already set
+      if(!state.selectedAnimal){
+        state.selectedAnimal = dataAnimal.find((s) => s.id === state.filterAnimalId);
+      }
+    }
+  }, [dataAnimal, isSuccessAnimal]);
 
   // Validate state in useEffect to avoid navigation during render
   useEffect(() => {
@@ -96,8 +118,13 @@ function ConfirmationComponent() {
     setStateLoaded(true)
   }, [])
 
-  // Handle browser back button - go back to search with filters
+  // Handle browser back button - go back to search with filters (only if booking still pending)
   useEffect(() => {
+    // Don't intercept back button if booking was successful or is in progress
+    if (bookingStatus !== 'pending') {
+      return
+    }
+
     const handlePopState = () => {
       const searchParamsForUrl = {
         address: String(address || ''),
@@ -113,7 +140,7 @@ function ConfirmationComponent() {
 
     window.addEventListener('popstate', handlePopState)
     return () => window.removeEventListener('popstate', handlePopState)
-  }, [address, animalType, serviceType, animal, navigate])
+  }, [address, animalType, serviceType, animal, navigate, bookingStatus])
 
   // Book appointment mutation
   const { mutate: mutateAppointment } = useMutation({
@@ -276,7 +303,6 @@ function ConfirmationComponent() {
     id: state.serviceType[0],
     name: 'Leistung',
   } : null)
-  console.log('selectedService', selectedService); 
   const practice = state.practice || state.appointment?.veterinaryPractice
 
   if (!appointment || !selectedAnimal || !selectedService || !practice) {
