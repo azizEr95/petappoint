@@ -217,30 +217,52 @@ function VeterinarianCreateComponent() {
     }
   }
 
+  const selectStyles = {
+    control: (base: any, state: any) => ({
+      ...base,
+      borderColor: state.isFocused ? '#2c8a59' : base.borderColor,
+      boxShadow: state.isFocused ? '0 0 0 0.2rem rgba(44, 138, 89, 0.25)' : base.boxShadow,
+      '&:hover': {
+        borderColor: '#2c8a59',
+      },
+    }),
+    option: (base: any, state: any) => ({
+      ...base,
+      backgroundColor: state.isSelected ? '#2c8a59' : state.isFocused ? 'rgba(125, 216, 159, 0.2)' : base.backgroundColor,
+      color: state.isSelected ? 'white' : base.color,
+    }),
+  }
+
   const countryOptions = useMemo(() => {
     if (!isSuccessCountries) {
       return []
     }
-    return dataCountries.map((country: CountryType) => ({
-      value: country,
-      label: country.name,
-    }))
+    return dataCountries
+      .map((country: CountryType) => ({
+        value: country,
+        label: country.name,
+      }))
+      .sort((a, b) => a.label.localeCompare(b.label))
   }, [isSuccessCountries, dataCountries])
 
   const animalTypeOptions = useMemo(() => {
     if (!isSuccessAnimalTypes) return []
-    return dataAnimalTypes.map((type: AnimalTypeType) => ({
-      value: type.id,
-      label: type.name,
-    }))
+    return dataAnimalTypes
+      .map((type: AnimalTypeType) => ({
+        value: type.id,
+        label: type.name,
+      }))
+      .sort((a, b) => a.label.localeCompare(b.label))
   }, [isSuccessAnimalTypes, dataAnimalTypes])
 
   const serviceOptions = useMemo(() => {
     if (!isSuccessServices) return []
-    return dataServices.map((service: ServiceType) => ({
-      value: service.id,
-      label: service.name,
-    }))
+    return dataServices
+      .map((service: ServiceType) => ({
+        value: service.id,
+        label: service.name,
+      }))
+      .sort((a, b) => a.label.localeCompare(b.label))
   }, [isSuccessServices, dataServices])
 
   const handleBlur = (e: any) => {
@@ -490,6 +512,7 @@ function VeterinarianCreateComponent() {
                   )}
                   onChange={handleAnimalTypesChange}
                   placeholder="Tierarten auswählen..."
+                  styles={selectStyles}
                 />
               </FormGroup>
 
@@ -507,6 +530,7 @@ function VeterinarianCreateComponent() {
                   )}
                   onChange={handleServicesChange}
                   placeholder="Leistungen auswählen..."
+                  styles={selectStyles}
                 />
               </FormGroup>
             </div>
@@ -582,7 +606,7 @@ function VeterinarianCreateComponent() {
 
                     <FormGroup className="form-group">
                       <Form.Label htmlFor="phone" className="form-label">
-                        Telefon
+                        Telefon *
                       </Form.Label>
                       <Form.Control
                         id="VetPhone"
@@ -619,6 +643,7 @@ function VeterinarianCreateComponent() {
                           : null
                       }
                       onChange={handleCountryChange}
+                      styles={selectStyles}
                     />
                   </FormGroup>
 
