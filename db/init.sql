@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS countries(
 -- https://de.wikipedia.org/wiki/ISO-3166-1-Kodierliste
 INSERT INTO countries(code, name) VALUES
 ('AFG', 'Afghanistan'),
-('EGY', 'Agypten'),
+('EGY', 'Ägypten'),
 ('ALA', 'Aland'),
 ('ALB', 'Albanien'),
 ('DZA', 'Algerien'),
