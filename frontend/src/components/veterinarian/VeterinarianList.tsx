@@ -38,7 +38,7 @@ export function VeterinarianList({
 
   useEffect(() => {
     handleFilter()
-  }, [])
+  }, [veterinarians, searchString, sortByState, selectedSpecializations])
 
   const handleFilter = () => {
     if (!veterinarians) {
