@@ -514,7 +514,7 @@ export const veterinaryPracticeService = {
 
     if (old.picturePath) {
       const oldImagePath = path.join(appRootDir, old.picturePath);
-      fs.rm(oldImagePath).catch(() => {});
+      fs.rm(oldImagePath).catch(() => { });
     }
 
     await prisma.veterinaryPractice.update({
@@ -546,7 +546,7 @@ export const veterinaryPracticeService = {
 
     if (practice.picturePath) {
       const imagePath = path.join(appRootDir, practice.picturePath);
-      fs.rm(imagePath).catch(() => {});
+      fs.rm(imagePath).catch(() => { });
     }
 
     await prisma.veterinaryPractice.update({
@@ -567,15 +567,16 @@ export const veterinaryPracticeService = {
       }
     });
 
-    let veterinarians : VeterinariansWithAnimalTypesType[] = [];
+    let veterinarians: VeterinariansWithAnimalTypesType[] = [];
     vets.forEach(vet => {
       let vetInList = veterinarians.find(v => v.id === vet.veterinaryId);
       if (vetInList === undefined) {
-        veterinarians.push({id: vet.veterinaryId, treatableAnimalTypes: [vet.animalTypeId]});
+        veterinarians.push({ id: vet.veterinaryId, treatableAnimalTypes: [vet.animalTypeId] });
       }
       else {
         vetInList.treatableAnimalTypes.push(vet.animalTypeId);
-      }});
+      }
+    });
     return veterinarians;
   }
 };

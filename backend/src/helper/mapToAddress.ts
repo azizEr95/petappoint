@@ -11,12 +11,13 @@ export type AddressPrismaMappedType = {
     latitude: number
 }
 
+
 export function mapToAddress(address: AddressPrismaMappedType): AddressesType {
     return {
+        id: address.id,
         city: address.city,
         cityCode: address.cityCode,
         country: address.fk_country,
-        id: address.id,
         latitude: address.latitude,
         longitude: address.longitude,
         street: address.street

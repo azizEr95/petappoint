@@ -5,7 +5,8 @@ export default defineConfig({
   test: {
     globals: true,
     setupFiles: ['./tests/helpers/setup.ts'],
-    include: ['tests/**/*.test.ts', '!src/**'],
+    include: ['tests/**/*.test.ts'],
+    exclude: ['src/**', 'tests/utils/**'],
     maxWorkers: 1,
   }
 })
