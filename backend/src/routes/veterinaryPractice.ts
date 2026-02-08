@@ -177,26 +177,26 @@ veterinaryPracticeRouter.delete("/:id/image", requiresAuthentication, checkVerif
 
 veterinaryPracticeRouter.post("/", optionalAuthentication,
   async (req, res) => {
-  const validatedBody = VeterinaryPracticeCreateSchema.parse(req.body);
-  
-  const createdVeterinaryPractice: VeterinaryPracticesType = await veterinaryPracticeService.create(validatedBody);
+    const validatedBody = VeterinaryPracticeCreateSchema.parse(req.body);
 
-  // TODO: Email Confirmation
-  // TODO: Code verification for companies?
-  await emailService.sendConfirmationEmailVetPractices(createdVeterinaryPractice)
-  const jwt = await verifyPasswordAndCreateJWT(validatedBody.email,validatedBody.password);
-  if (!jwt) {
-    res.sendStatus(401);
-    return;
-  }
+    const createdVeterinaryPractice: VeterinaryPracticesType = await veterinaryPracticeService.create(validatedBody);
 
-  const userdata = verifyJWT(jwt);
-  res.cookie('access_token', jwt, {
-    httpOnly: true,
-    expires: new Date(userdata.exp * 1000),
-    secure: true,
-    sameSite: "none"
+    // TODO: Email Confirmation
+    // TODO: Code verification for companies?
+    await emailService.sendConfirmationEmailVetPractices(createdVeterinaryPractice)
+    const jwt = await verifyPasswordAndCreateJWT(validatedBody.email, validatedBody.password);
+    if (!jwt) {
+      res.sendStatus(401);
+      return;
+    }
+
+    const userdata = verifyJWT(jwt);
+    res.cookie('access_token', jwt, {
+      httpOnly: true,
+      expires: new Date(userdata.exp * 1000),
+      secure: true,
+      sameSite: "none"
+    });
+
+    res.status(201).send(userdata);
   });
-
-  res.status(201).send(userdata);
-});

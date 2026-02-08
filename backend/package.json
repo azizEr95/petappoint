@@ -35,6 +35,7 @@
     "jsdom": "^27.2.0",
     "nodemon": "^3.1.10",
     "prisma": "^6.19.0",
+    "restmatcher": "^1.1.16",
     "supertest": "^7.1.4",
     "ts-node": "^10.9.2",
     "tsx": "^4.20.6",

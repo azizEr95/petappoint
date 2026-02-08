@@ -6,8 +6,10 @@ import { personService } from "../../src/service/personService";
 import { serviceService } from "../../src/service/serviceService";
 import { animalService } from "../../src/service/animalService";
 import { animalTypeService } from "../../src/service/animalTypeService";
-import { CountryType } from "vetilib-shared/schemas/ZodSchemas";
+import { AddressesType, CountryType, VeterinaryPracticesType } from "vetilib-shared/schemas/ZodSchemas";
 import { countryService } from "../../src/service/countryService";
+import { VeterinaryPractice } from "../../generated/prisma";
+import { addressService } from "../../src/service/addressService";
 
 describe("veterinaryPracticeService Function", () => {
     let testCountry: CountryType;
@@ -555,3 +557,138 @@ describe("veterinaryPracticeService Function", () => {
         expect(animalAndPersons[0].person.firstName).toBe("John");
     });
 })
+
+describe('veterinaryPracticeService.update', () => {
+  let testPractice: VeterinaryPracticesType;
+  let testAddress: AddressesType;
+  let testCountry: CountryType;
+
+  beforeEach(async () => {
+    testCountry = await countryService.create({
+      code: "DEU",
+      name: "Deutschland",
+    });
+
+    testAddress = await addressService.create({
+        street: "Knobelsdorffstrasse 105",
+        cityCode: "DE",
+        city: "Berlin",
+        country: testCountry.id,
+        longitude: 1,
+        latitude: 1,
+    })
+
+    testPractice = await veterinaryPracticeService.create({
+      name: "TestPraxis",
+      phone: "017632",
+      email: "testpraxis@info.de",
+      infoEmail: "testpraxis@info.de",
+      website: null,
+      info: null,
+      address: testAddress,
+      password: "Passwort123!"
+    });
+  });
+
+  it('should update practice name, phone and infoEmail successfully', async () => {
+    const updateData = {
+      id: testPractice.id,
+      name: "Updated Praxis Name",
+      phone: "+49987654321", 
+      infoEmail: "newinfo@updated.de",
+      email: testPractice.email,
+      info: "Neue Info",
+      website: "https://updatedpraxis.de",
+      address: testPractice.address, 
+    };
+
+    const updated = await veterinaryPracticeService.update(updateData);
+
+    expect(updated).toMatchObject({
+      id: testPractice.id,
+      name: "Updated Praxis Name",
+      phone: "+49987654321",
+      infoEmail: "newinfo@updated.de",
+      info: "Neue Info",
+      website: "https://updatedpraxis.de",
+      address: expect.objectContaining({
+        street: "Knobelsdorffstrasse 105",
+      }),
+    });
+  });
+
+  it('should update address street and city successfully', async () => {
+    const newAddress = {
+      ...testPractice.address,
+      street: "Neue Straße 42",
+      city: "München",
+    };
+
+    const updateData = {
+      id: testPractice.id,
+      name: testPractice.name,
+      phone: testPractice.phone,
+      email: testPractice.email,
+      infoEmail: testPractice.infoEmail,
+      info: testPractice.info,
+      website: testPractice.website,
+      address: newAddress,
+    };
+
+    const updated = await veterinaryPracticeService.update(updateData);
+
+    expect(updated.address.street).toBe("Neue Straße 42");
+    expect(updated.address.city).toBe("München");
+  });
+
+  it('should throw ConstraintError when id is missing', async () => {
+    const updateData = {
+      id: undefined as any,
+      name: "No ID",
+      phone: "123",
+      email: "no-id@test.de",
+      infoEmail: "info@test.de",
+      info: null,
+      website: null,
+      address: testPractice.address,
+    };
+
+    await expect(veterinaryPracticeService.update(updateData)).rejects.toThrow(
+      "ID is required for update"
+    );
+  });
+
+  it('should throw error when practice does not exist', async () => {
+    const nonExistingData = {
+      id: 999999,
+      name: "Non Existing",
+      phone: "123",
+      email: "nonexisting@test.de",
+      infoEmail: "info@test.de",
+      info: null,
+      website: null,
+      address: testPractice.address,
+    };
+
+    await expect(veterinaryPracticeService.update(nonExistingData)).rejects.toThrow()
+  });
+
+  it('should keep unchanged fields from original data', async () => {
+    const updateDataMinimal = {
+      id: testPractice.id,
+      name: "Minimal Update",
+      // Andere Felder undefined/null → bleiben unverändert
+      phone: testPractice.phone,
+      email: testPractice.email,
+      infoEmail: testPractice.infoEmail,
+      info: testPractice.info,
+      website: testPractice.website,
+      address: testPractice.address,
+    };
+
+    const updated = await veterinaryPracticeService.update(updateDataMinimal);
+    expect(updated.name).toBe("Minimal Update");
+    expect(updated.phone).toBe(testPractice.phone); // Unverändert
+    expect(updated.email).toBe(testPractice.email); // Unverändert
+  });
+});
