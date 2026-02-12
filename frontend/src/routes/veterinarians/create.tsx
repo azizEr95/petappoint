@@ -774,7 +774,7 @@ function VeterinarianCreateComponent() {
                           passwordRequirements.hasUpperCase ? 'met' : ''
                         }
                       >
-                        Mindestens ein Großbuchstabe
+                        Mindestens einen Großbuchstaben
                       </li>
                       <li
                         className={passwordRequirements.hasNumber ? 'met' : ''}
