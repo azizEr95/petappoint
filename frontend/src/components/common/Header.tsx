@@ -57,7 +57,7 @@ export default function Header() {
         <nav className="nav-clean">
           <Link to="/" className="logo-clean">
             <span className="logo-icon">🐾</span>
-            <span className="logo-text">VetiLib</span>
+            <span className="logo-text">Petappoint</span>
           </Link>
 
           <div className="nav-links-clean">

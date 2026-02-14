@@ -4,9 +4,9 @@ import '../../styles/components/landing/FAQ.scss'
 export default function FAQ() {
   const faqTierhalter = [
     {
-      question: 'Ist die Nutzung von vetilib kostenlos?',
+      question: 'Ist die Nutzung von petappoint kostenlos?',
       answer:
-        'Ja, die Terminbuchung über vetilib ist für Tierhalter komplett kostenlos.',
+        'Ja, die Terminbuchung über petappoint ist für Tierhalter komplett kostenlos.',
     },
     {
       question: 'Kann ich einen Termin stornieren?',
@@ -27,7 +27,7 @@ export default function FAQ() {
 
   const faqTieraerzte = [
     {
-      question: 'Wie viel kostet vetilib für meine Praxis?',
+      question: 'Wie viel kostet petappoint für meine Praxis?',
       answer:
         'Die ersten 3 Monate sind kostenlos. Danach zahlen Sie eine faire monatliche Gebühr abhängig von der Praxisgröße. Keine versteckten Kosten.',
     },

@@ -5,7 +5,7 @@ import Select from 'react-select';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import type { MultiValue } from 'react-select';
 import '../../styles/routes/createAppointment.scss';
-import type { AppointmentsCreateType, ServiceType, VeterinariansType } from 'vetilib-shared/schemas/ZodSchemas';
+import type { AppointmentsCreateType, ServiceType, VeterinariansType } from 'petappoint-shared/schemas/ZodSchemas';
 import { useLoginContext } from '@/LoginContext';
 import { getVeterinariansByPracticeId } from '@/api/VeterinarianAPI';
 import { getServicesFromVeterinary } from '@/api/ServicesAPI';

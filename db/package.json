@@ -1,5 +1,5 @@
 {
-  "name": "vetilib-db",
+  "name": "petappoint-db",
   "version": "1.0.0",
   "scripts": {
     "db": "docker compose down && docker compose up -d --build"

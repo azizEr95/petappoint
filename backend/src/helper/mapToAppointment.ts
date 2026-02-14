@@ -1,7 +1,7 @@
-import { AppointmentsType, ServiceType } from "vetilib-shared/schemas/ZodSchemas";
+import { AppointmentsType, ServiceType } from "petappoint-shared/schemas/ZodSchemas";
 
 import { Sexes } from "generated/prisma";
-import { PersonsType } from "vetilib-shared/schemas/ZodSchemas";
+import { PersonsType } from "petappoint-shared/schemas/ZodSchemas";
 import { AnimalPrismaMappedType, mapToAnimal } from "./mapToAnimal";
 import { mapToVeterinaryPractice, VeterinaryPracticePrismaMappedType } from "./mapToVeterinaryPractice";
 import { mapToVeterinary, VeterinaryPrismaMappedType } from "./mapToVeterinary";

@@ -1,4 +1,4 @@
-# vetilib E2E-Tests
+# petappoint E2E-Tests
 
 All E2E Tests are in the subfolder e2e-tests. In the pipeline the e2e-tests are executed automatically.
 

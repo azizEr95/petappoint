@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
-import type { VeterinariansType } from 'vetilib-shared/schemas/ZodSchemas'
+import type { VeterinariansType } from 'petappoint-shared/schemas/ZodSchemas'
 import { getPicturePlaceholderAnimal } from '@/api/AnimalsAPI'
 import { getAnimaltypesFromVeterinary } from '@/api/AnimalTypeAPI'
 import { getServicesFromVeterinary } from '@/api/ServicesAPI'

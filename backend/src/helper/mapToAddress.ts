@@ -1,5 +1,5 @@
 import { lifestyles, Sexes } from "generated/prisma";
-import { AddressesType, AnimalsType } from "vetilib-shared/schemas/ZodSchemas";
+import { AddressesType, AnimalsType } from "petappoint-shared/schemas/ZodSchemas";
 
 export type AddressPrismaMappedType = {
     id: number,

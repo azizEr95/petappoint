@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { addressService } from "../../src/service/addressService";
 import { ResourceNotFoundError } from "../../src/exceptions/errors/ResourceNotFoundError";
 import { ConstraintError } from "../../src/exceptions/errors/ConstraintError";
-import { AddressesCreateType, CountryType } from "vetilib-shared/schemas/ZodSchemas";
+import { AddressesCreateType, CountryType } from "petappoint-shared/schemas/ZodSchemas";
 import { countryService } from "../../src/service/countryService";
 
 describe("adressService CRUD Functions", () => {

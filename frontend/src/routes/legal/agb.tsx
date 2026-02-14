@@ -23,19 +23,19 @@ function AGB() {
           <div className="legal-text">
             <h2>1. Geltungsbereich</h2>
             <p>
-              Diese AGB regeln die Nutzung der VetiLib-Plattform für Tierhalter und
+              Diese AGB regeln die Nutzung der PetiLib-Plattform für Tierhalter und
               Tiermedizinische Praxen.
             </p>
 
             <h2>2. Registrierung und Nutzungskonto</h2>
             <p>
-              Die Nutzung von VetiLib erfordert eine kostenlose Registrierung. Sie sind
+              Die Nutzung von PetiLib erfordert eine kostenlose Registrierung. Sie sind
               verpflichtet, wahrheitsgemäße Angaben zu machen und diese aktuell zu halten.
             </p>
 
             <h2>3. Gebühren</h2>
             <p>
-              Die Nutzung von VetiLib für Tierhalter ist kostenlos. Für Tiermedizinische Praxen
+              Die Nutzung von Petappoint für Tierhalter ist kostenlos. Für Tiermedizinische Praxen
               können anfallen (siehe separate Vereinbarung).
             </p>
 
@@ -52,14 +52,14 @@ function AGB() {
 
             <h2>5. Haftung</h2>
             <p>
-              VetiLib haftet nicht für Schäden, die durch die Nutzung oder Unmöglichkeit der
+              Petappoint haftet nicht für Schäden, die durch die Nutzung oder Unmöglichkeit der
               Nutzung der Plattform entstehen, soweit diese nicht auf Vorsatz oder grobe
               Fahrlässigkeit zurückzuführen sind.
             </p>
 
             <h2>6. Änderungen der AGB</h2>
             <p>
-              VetiLib behält sich das Recht vor, diese AGB jederzeit zu ändern. Änderungen
+              PetiLib behält sich das Recht vor, diese AGB jederzeit zu ändern. Änderungen
               werden den Nutzern rechtzeitig mitgeteilt.
             </p>
 

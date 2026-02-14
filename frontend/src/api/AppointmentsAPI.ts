@@ -1,9 +1,9 @@
-import { AppointmentsSchema } from 'vetilib-shared/schemas/ZodSchemas';
+import { AppointmentsSchema } from 'petappoint-shared/schemas/ZodSchemas';
 import type {
   AppointmentFilterType,
   AppointmentsCreateType,
   AppointmentsType,
-} from 'vetilib-shared/schemas/ZodSchemas';
+} from 'petappoint-shared/schemas/ZodSchemas';
 
 // get one appointment by id
 export const getAppointmentsById = async (

@@ -1,5 +1,5 @@
-import { CountrySchema  } from "vetilib-shared/schemas/ZodSchemas";
-import type {CountryType} from "vetilib-shared/schemas/ZodSchemas";
+import { CountrySchema  } from "petappoint-shared/schemas/ZodSchemas";
+import type {CountryType} from "petappoint-shared/schemas/ZodSchemas";
 
 export const getAllCountries = async (): Promise<Array<CountryType>> => {
   const url = import.meta.env.VITE_API_URL + '/countries/all';

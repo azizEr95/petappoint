@@ -8,7 +8,7 @@ import { AnimalDeleteDialog } from '../animal/AnimalDeleteDialog'
 import { useLoginContext } from '../../LoginContext'
 import { getAllAnimalTypes } from '../../api/AnimalTypeAPI'
 import { SuccessNotificationToast } from '../SuccessNotificationToast'
-import type { AnimalTypeType, AnimalsType } from 'vetilib-shared/schemas/ZodSchemas'
+import type { AnimalTypeType, AnimalsType } from 'petappoint-shared/schemas/ZodSchemas'
 
 type SelectAnimalProps = {
   filteredAnimalTypeId: Array<number>

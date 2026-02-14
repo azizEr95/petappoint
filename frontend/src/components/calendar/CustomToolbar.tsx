@@ -1,6 +1,6 @@
 import moment from 'moment'
 import type { ToolbarProps, View } from 'react-big-calendar'
-import type { AppointmentsType } from "vetilib-shared/schemas/ZodSchemas";
+import type { AppointmentsType } from "petappoint-shared/schemas/ZodSchemas";
 
 interface CustomToolbarProps extends ToolbarProps<AppointmentsType> {
   currentDate: Date

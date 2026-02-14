@@ -1,5 +1,5 @@
 import express from "express";
-import { CountryType, PostgresIdSchema } from "vetilib-shared/schemas/ZodSchemas";
+import { CountryType, PostgresIdSchema } from "petappoint-shared/schemas/ZodSchemas";
 import { optionalAuthentication } from "./authentication";
 import { countryService } from "../service/countryService";
 

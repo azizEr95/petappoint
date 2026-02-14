@@ -9,7 +9,7 @@ import type {
   AppointmentsType,
   ServiceType,
   VeterinaryPracticesType,
-} from 'vetilib-shared/schemas/ZodSchemas'
+} from 'petappoint-shared/schemas/ZodSchemas'
 import { useLoginContext } from '@/LoginContext'
 
 type AppointmentCardProps = {

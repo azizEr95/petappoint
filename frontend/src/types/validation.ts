@@ -1,4 +1,4 @@
-import type { CountryType, sexesType } from "vetilib-shared/schemas/ZodSchemas";
+import type { CountryType, sexesType } from "petappoint-shared/schemas/ZodSchemas";
 
 
 export type VeterinarianValidateType = {

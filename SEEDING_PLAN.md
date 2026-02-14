@@ -1,4 +1,4 @@
-# Vetilib Test Data & Seeding System - Final Implementation Plan
+# Petappoint Test Data & Seeding System - Final Implementation Plan
 
 ## Executive Summary
 
@@ -71,7 +71,7 @@ const practice = await prisma.veterinaryPractice.create({ ... });
 ## Part 2: Dynamic Seed (Date-Relative Data)
 
 **File**: `backend/scripts/seed-dynamic.ts`
-**Execution**: Each system start (`npm run vetilib` → triggers `seed:dynamic`)
+**Execution**: Each system start (`npm run petappoint` → triggers `seed:dynamic`)
 **Data**: Appointments only
 
 ### Appointment Generation
@@ -145,7 +145,7 @@ await prisma.$transaction(async (tx) => {
 
 All passwords plain text in seed files:
 ```typescript
-password: "Vetilib123!"
+password: "Petappoint123!"
 ```
 
 Automatic hashing via Prisma Client Extension in `singletonPC.ts`:
@@ -206,7 +206,7 @@ Result:
 ### Daily Restart
 
 ```bash
-npm run vetilib      # Runs seed:all (triggers seed:dynamic on startup)
+npm run petappoint      # Runs seed:all (triggers seed:dynamic on startup)
 ```
 
 Result:
@@ -228,7 +228,7 @@ Result:
 
 ## Part 6: Test Credentials
 
-All use password: `Vetilib123!`
+All use password: `Petappoint123!`
 
 | Email | Role | Animals | Practice |
 |-------|------|---------|----------|
@@ -253,7 +253,7 @@ All use password: `Vetilib123!`
 
 ### Modified Files
 - `backend/package.json` (seed scripts)
-- `backend/scripts/seed-testdata.ts` → fixed passwords to `Vetilib123!`
+- `backend/scripts/seed-testdata.ts` → fixed passwords to `Petappoint123!`
 - `backend/scripts/seed-appointments.ts` → updated distribution logic
 
 ### Deprecated Files (Renamed)
@@ -266,7 +266,7 @@ All use password: `Vetilib123!`
 
 ## Part 8: Success Criteria
 
-✅ All 6 test accounts login with `Vetilib123!`
+✅ All 6 test accounts login with `Petappoint123!`
 ✅ Static seed runs once, idempotent on re-run
 ✅ Dynamic seed regenerates appointments relative to current date
 ✅ 24 animals with good variety (all 7 types covered)

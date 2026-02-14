@@ -16,7 +16,7 @@ import type { ChangeEvent, KeyboardEvent } from 'react'
 import type {
   CountryType,
   VeterinaryPracticesType,
-} from 'vetilib-shared/schemas/ZodSchemas'
+} from 'petappoint-shared/schemas/ZodSchemas'
 import {
   getPictureURLForPracticeId,
   getVeterinaryPracticesById,

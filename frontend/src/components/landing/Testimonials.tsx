@@ -12,7 +12,7 @@ export default function Testimonials() {
     {
       name: 'Dr. Schmidt',
       role: 'Tierarztpraxis München',
-      text: 'vetilib hat unsere Terminverwaltung revolutioniert. Weniger Anrufe, weniger No-Shows, zufriedenere Patienten.',
+      text: 'petappoint hat unsere Terminverwaltung revolutioniert. Weniger Anrufe, weniger No-Shows, zufriedenere Patienten.',
       rating: 5,
     },
     {

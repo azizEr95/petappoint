@@ -14,7 +14,7 @@ import {
   PostgresIdSchema,
   AnimalsType,
   PersonsType,
-} from "vetilib-shared/schemas/ZodSchemas";
+} from "petappoint-shared/schemas/ZodSchemas";
 import { checkVerified, optionalAuthentication, requiresAuthentication } from "./authentication";
 import { createJWT, verifyJWT, verifyPasswordAndCreateJWT } from "../service/jwtService";
 import { emailService } from "../service/emailService";

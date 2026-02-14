@@ -4,8 +4,8 @@ services:
     build: ./db
     container_name: postgres-db
     environment:
-      POSTGRES_USER: vetilib
+      POSTGRES_USER: petappoint
       POSTGRES_PASSWORD: 123
-      POSTGRES_DB: vetilib-db
+      POSTGRES_DB: petappoint-db
     ports:
       - "5432:5432"

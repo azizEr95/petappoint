@@ -23,7 +23,7 @@ import type {
   AnimalTypeType,
   CountryType,
   ServiceType,
-} from 'vetilib-shared/schemas/ZodSchemas'
+} from 'petappoint-shared/schemas/ZodSchemas'
 import '../../styles/routes/veterinarianCreate.scss'
 import type { VeterinarianValidateType } from '@/types/validation'
 

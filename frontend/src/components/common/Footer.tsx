@@ -9,13 +9,13 @@ export default function Footer() {
           {/* Logo & Description & Copyright */}
           <Col lg={5} md={6}>
             <div className="footer-brand">
-              <h5 className="fw-bold text-success mb-3">VetiLib</h5>
+              <h5 className="fw-bold text-success mb-3">Petappoint</h5>
               <p className="text-light small mb-4">
                 Ihre moderne Plattform für einfache und schnelle
                 Tierarzt-Terminbuchungen.
               </p>
               <small className="text-light opacity-75 d-block">
-                © {new Date().getFullYear()} vetilib.<br />
+                © {new Date().getFullYear()} petappoint.<br />
                 Alle Rechte vorbehalten.
               </small>
             </div>
@@ -37,6 +37,7 @@ export default function Footer() {
             </ul>
           </Col>
 
+
           {/* Contact */}
           <Col lg={4} md={6}>
             <h6 className="text-white fw-bold mb-3 opacity-90">Kontakt & Info</h6>
@@ -45,9 +46,9 @@ export default function Footer() {
                 <a href="/about" className="footer-link small">Über uns</a>
               </li>
               <li className="mb-2">
-                <a href="mailto:info@vetilib.de" className="footer-link small">
+                <a href="mailto:info@petappoint.de" className="footer-link small">
                   <i className="bi bi-envelope me-2"></i>
-                  info@vetilib.de
+                  info@petappoint.de
                 </a>
               </li>
               <li>

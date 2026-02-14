@@ -1,7 +1,7 @@
 import { Link } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
 import { getVeterinaryPracticesById } from '../../api/VeterinaryPracticeAPI'
-import type { VeterinaryPracticesType } from 'vetilib-shared/schemas/ZodSchemas'
+import type { VeterinaryPracticesType } from 'petappoint-shared/schemas/ZodSchemas'
 import '../../styles/components/practice/FavoritePracticeCard.scss'
 
 type FavoritePracticeCardProps = {

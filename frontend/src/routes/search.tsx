@@ -5,7 +5,7 @@ import { VeterinaryPracticeList } from '../components/practice/VeterinaryPractic
 import { stringToArray } from '../utils/ArrayStringFormat'
 import type {
   AppointmentFilterType,
-} from 'vetilib-shared/schemas/ZodSchemas'
+} from 'petappoint-shared/schemas/ZodSchemas'
 import { useTitle } from '@/utils/useTitle'
 
 export type VeterinaryPracticeSearch = {

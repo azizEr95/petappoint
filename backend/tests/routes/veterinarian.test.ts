@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import request from 'supertest';
 import { app } from '../../src/app';
 import { personService } from '../../src/service/personService'
-import { AddressesCreateType, CountryType, PersonsType, VeterinaryPracticesType } from 'vetilib-shared/schemas/ZodSchemas';
+import { AddressesCreateType, CountryType, PersonsType, VeterinaryPracticesType } from 'petappoint-shared/schemas/ZodSchemas';
 import { countryService } from '../../src/service/countryService';
 import { veterinaryPracticeService } from '../../src/service/veterinaryPracticeService';
 import { veterinaryService } from '../../src/service/veterinaryService';

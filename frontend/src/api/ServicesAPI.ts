@@ -1,5 +1,5 @@
-import { ServiceSchemaArray } from "vetilib-shared/schemas/ZodSchemas";
-import type {ServiceType} from "vetilib-shared/schemas/ZodSchemas";
+import { ServiceSchemaArray } from "petappoint-shared/schemas/ZodSchemas";
+import type {ServiceType} from "petappoint-shared/schemas/ZodSchemas";
 
 
 export const getServicesFromPractice = async (

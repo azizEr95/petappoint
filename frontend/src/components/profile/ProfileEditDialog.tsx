@@ -23,7 +23,7 @@ import type {
   CountryType,
   PersonsType,
   PersonsUpdateType,
-} from 'vetilib-shared/schemas/ZodSchemas';
+} from 'petappoint-shared/schemas/ZodSchemas';
 import '../../styles/components/ProfileDialog.scss';
 import { getAllCountries } from '@/api/CountriesAPI';
 import { validatePersonFormular } from '@/utils/ValidateForm';

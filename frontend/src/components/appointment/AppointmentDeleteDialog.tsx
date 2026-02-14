@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { dateToDateString, dateToTimeString } from '../../utils/DateToStringFormat'
 import { cancelAppointment } from '../../api/AppointmentsAPI'
-import type { AppointmentsType } from 'vetilib-shared/schemas/ZodSchemas'
+import type { AppointmentsType } from 'petappoint-shared/schemas/ZodSchemas'
 
 type AppointmentDeleteDialogProps = {
   hideDialogDeleteAppointment: () => void

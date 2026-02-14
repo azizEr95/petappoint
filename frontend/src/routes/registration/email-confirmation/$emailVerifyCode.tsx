@@ -7,7 +7,7 @@ import { EmailVerificationCode } from '../../../components/registration/EmailVer
 import '../../../styles/routes/emailVerification.scss'
 import { ChangeEmailDialog } from '../../../components/registration/ChangeEmailDialog'
 import { getPersonById } from '../../../api/PersonsAPI'
-import type { LoginType, PersonsType } from 'vetilib-shared/schemas/ZodSchemas'
+import type { LoginType, PersonsType } from 'petappoint-shared/schemas/ZodSchemas'
 import { useTitle } from '@/utils/useTitle'
 
 export const Route = createFileRoute(

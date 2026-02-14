@@ -1,5 +1,5 @@
 import type { PersonsValidateType, PracticeValidateType, VeterinarianValidateType } from "@/types/validation";
-import type { PersonsCreateType, VeterinariansCreateType, VeterinaryPracticesCreateType} from "vetilib-shared/schemas/ZodSchemas";
+import type { PersonsCreateType, VeterinariansCreateType, VeterinaryPracticesCreateType} from "petappoint-shared/schemas/ZodSchemas";
 
 // if verifyField is undefined, validate all fields
 export function validatePersonFormular(personData: PersonsValidateType, oldErrors: { [key: string]: string }, verifyField?: string): { [key: string]: string } {

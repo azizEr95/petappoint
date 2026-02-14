@@ -1,4 +1,4 @@
-import type { AppointmentsType } from 'vetilib-shared/schemas/ZodSchemas'
+import type { AppointmentsType } from 'petappoint-shared/schemas/ZodSchemas'
 
 export const exportToCalendar = (
   appointment: AppointmentsType,
@@ -17,7 +17,7 @@ export const exportToCalendar = (
   const icsContent = [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
-    'PRODID:-//vetilib//Appointment//DE',
+    'PRODID:-//petappoint//Appointment//DE',
     'CALSCALE:GREGORIAN',
     'METHOD:PUBLISH',
     'BEGIN:VEVENT',
@@ -26,7 +26,7 @@ export const exportToCalendar = (
     `SUMMARY:${escapeICSString(`Tierarzttermin bei ${practiceName}`)}`,
     `DESCRIPTION:${escapeICSString(serviceName ? `Service: ${serviceName}` : 'Tierarzttermin')}`,
     `LOCATION:${escapeICSString(practiceAddress)}`,
-    `UID:${appointment.id}@vetilib.app`,
+    `UID:${appointment.id}@petappoint.app`,
     `DTSTAMP:${formatICSDate(new Date())}`,
     'STATUS:CONFIRMED',
     'SEQUENCE:0',

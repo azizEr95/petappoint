@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "vetilib-shared",
+  "name": "petappoint-shared",
   "version": "1.0.0",
   "description": "Contains shared code between backend and frontend",
   "license": "ISC",
@@ -10,7 +10,7 @@
     "build": "tsc"
   },
   "dependencies": {
-    "vetilib": "file:..",
+    "petappoint": "file:..",
     "zod": "^4.1.12"
   },
   "devDependencies": {

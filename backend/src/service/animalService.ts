@@ -1,6 +1,6 @@
 import { prisma } from "../singletonPC";
 import { Animal, Prisma } from "../../generated/prisma";
-import { AnimalsCreateType, AnimalsType, AnimalUpdateType } from "vetilib-shared/schemas/ZodSchemas";
+import { AnimalsCreateType, AnimalsType, AnimalUpdateType } from "petappoint-shared/schemas/ZodSchemas";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { ResourceNotFoundError } from "../exceptions/errors/ResourceNotFoundError";

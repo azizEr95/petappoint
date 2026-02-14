@@ -1,8 +1,8 @@
-import { VeterinariansSchema } from 'vetilib-shared/schemas/ZodSchemas'
+import { VeterinariansSchema } from 'petappoint-shared/schemas/ZodSchemas'
 import type {
   VeterinariansCreateType,
   VeterinariansType,
-} from 'vetilib-shared/schemas/ZodSchemas'
+} from 'petappoint-shared/schemas/ZodSchemas'
 
 export const getVeterinariansByPracticeId = async (
   practiceId: string,

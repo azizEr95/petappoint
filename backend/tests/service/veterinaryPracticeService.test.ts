@@ -6,7 +6,7 @@ import { personService } from "../../src/service/personService";
 import { serviceService } from "../../src/service/serviceService";
 import { animalService } from "../../src/service/animalService";
 import { animalTypeService } from "../../src/service/animalTypeService";
-import { AddressesType, CountryType, VeterinaryPracticesType } from "vetilib-shared/schemas/ZodSchemas";
+import { AddressesType, CountryType, VeterinaryPracticesType } from "petappoint-shared/schemas/ZodSchemas";
 import { countryService } from "../../src/service/countryService";
 import { VeterinaryPractice } from "../../generated/prisma";
 import { addressService } from "../../src/service/addressService";

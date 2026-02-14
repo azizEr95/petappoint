@@ -1,6 +1,6 @@
 import express from "express";
 import { appointmentService } from "../service/appointmentService";
-import { AppointmentsCreateSchema, AppointmentsType, BookAppointmentSchema, PostgresIdSchema, AvailableAppointmentSchema } from "vetilib-shared/schemas/ZodSchemas";
+import { AppointmentsCreateSchema, AppointmentsType, BookAppointmentSchema, PostgresIdSchema, AvailableAppointmentSchema } from "petappoint-shared/schemas/ZodSchemas";
 import { checkVerified, optionalAuthentication, requiresAuthentication, requiresCompany } from "./authentication";
 import { AuthorizationError } from "../exceptions/errors/AuthorizationError";
 import { ConstraintError } from "../exceptions/errors/ConstraintError";

@@ -4,7 +4,7 @@ import type { CustomerType } from "@/api/CustomerAPI";
 import { getPictureFromAnimal, getPicturePlaceholderAnimal } from "@/api/AnimalsAPI";
 import { getAnimaltypeById } from "@/api/AnimalTypeAPI";
 import { AppointmentCard } from "@/components/appointment/AppointmentCard";
-import type { AppointmentsType } from "vetilib-shared/schemas/ZodSchemas";
+import type { AppointmentsType } from "petappoint-shared/schemas/ZodSchemas";
 import "@/styles/components/customer/CustomerDetails.scss";
 import { getAppointmentsByAnimal } from "@/api/AppointmentsAPI";
 

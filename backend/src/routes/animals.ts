@@ -8,7 +8,7 @@ import {
   AddRacesToAnimalSchema,
   AnimalsCreateType,
   PostgresIdSchema,
-} from "vetilib-shared/schemas/ZodSchemas";
+} from "petappoint-shared/schemas/ZodSchemas";
 import { animalService } from "../service/animalService";
 import { personService } from "../service/personService";
 import { animalRaceService } from "../service/animalRaceService";

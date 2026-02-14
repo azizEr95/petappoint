@@ -1,4 +1,4 @@
-import type { AnimalsType, PersonsType } from "vetilib-shared/schemas/ZodSchemas";
+import type { AnimalsType, PersonsType } from "petappoint-shared/schemas/ZodSchemas";
 
 export type CustomerType = { animal: AnimalsType; person: PersonsType };
 

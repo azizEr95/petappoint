@@ -1,4 +1,4 @@
-import { VeterinariansType } from "vetilib-shared/schemas/ZodSchemas";
+import { VeterinariansType } from "petappoint-shared/schemas/ZodSchemas";
 
 export type VeterinaryPrismaMappedType = {
     id: number,

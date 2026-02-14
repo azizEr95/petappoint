@@ -5,7 +5,7 @@ import { veterinaryPracticeService } from "../../src/service/veterinaryPracticeS
 import { personService } from "../../src/service/personService";
 import { serviceService } from "../../src/service/serviceService";
 import { countryService } from "../../src/service/countryService";
-import { AppointmentsType, CountryType } from "vetilib-shared/schemas/ZodSchemas";
+import { AppointmentsType, CountryType } from "petappoint-shared/schemas/ZodSchemas";
 import { createDateTime } from "../../src/helper/createDateTime";
 
 describe("appointmentService CRUD Functions", () => {

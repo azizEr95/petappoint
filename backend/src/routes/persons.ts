@@ -1,7 +1,7 @@
 import express, { Request } from "express";
 import { personService } from "../service/personService";
 import { veterinaryService } from "../service/veterinaryService";
-import { AnimalsType, PersonsCreateSchema, PersonsType, PersonsUpdateSchema, PostgresIdSchema } from "vetilib-shared/schemas/ZodSchemas";
+import { AnimalsType, PersonsCreateSchema, PersonsType, PersonsUpdateSchema, PostgresIdSchema } from "petappoint-shared/schemas/ZodSchemas";
 import { verifyJWT, verifyPasswordAndCreateJWT } from "../service/jwtService";
 import { emailService } from "../service/emailService";
 import { optionalAuthentication, requiresAuthentication, requiresPerson } from "./authentication";

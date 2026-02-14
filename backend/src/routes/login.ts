@@ -1,6 +1,6 @@
 import express from "express";
 import { verifyJWT, verifyPasswordAndCreateJWT } from "../service/jwtService";
-import { loginValidator } from "vetilib-shared/schemas/ZodSchemas";
+import { loginValidator } from "petappoint-shared/schemas/ZodSchemas";
 import { optionalAuthentication } from "./authentication";
 import { personService } from "../service/personService";
 import { veterinaryPracticeService } from "../service/veterinaryPracticeService";

@@ -1,4 +1,4 @@
-# vetilib Naming Conventions
+# petappoint Naming Conventions
 
 ## 1. General Principles
 

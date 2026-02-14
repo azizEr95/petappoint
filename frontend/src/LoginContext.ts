@@ -1,5 +1,5 @@
 import React from 'react'
-import type { LoginType } from 'vetilib-shared/schemas/ZodSchemas'
+import type { LoginType } from 'petappoint-shared/schemas/ZodSchemas'
 
 interface LoginContextType {
   login: LoginType | false

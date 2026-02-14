@@ -1,6 +1,6 @@
 import { prisma } from "../singletonPC";
 import { Service } from "../../generated/prisma";
-import { ServiceType } from "vetilib-shared/schemas/ZodSchemas";
+import { ServiceType } from "petappoint-shared/schemas/ZodSchemas";
 
 export const serviceService = {
   async create(data: Service): Promise<Service> {

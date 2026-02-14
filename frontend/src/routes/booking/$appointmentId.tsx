@@ -24,7 +24,7 @@ import type {
   AnimalsType,
   AppointmentsType,
   ServiceType,
-} from 'vetilib-shared/schemas/ZodSchemas'
+} from 'petappoint-shared/schemas/ZodSchemas'
 import { useTitle } from '@/utils/useTitle'
 import { SuccessNotificationToast } from '@/components/SuccessNotificationToast'
 

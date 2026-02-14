@@ -7,7 +7,7 @@ import { EmailVerificationCode } from '../../components/registration/EmailVerifi
 import { getPersonById } from '../../api/PersonsAPI'
 import { ChangeEmailDialog } from '../../components/registration/ChangeEmailDialog'
 import { useTitle } from '@/utils/useTitle'
-import type { PersonsType, VeterinaryPracticesType } from 'vetilib-shared/schemas/ZodSchemas'
+import type { PersonsType, VeterinaryPracticesType } from 'petappoint-shared/schemas/ZodSchemas'
 import { getVeterinaryPracticesById } from '@/api/VeterinaryPracticeAPI'
 
 export const Route = createFileRoute('/registration/verify-email')({
