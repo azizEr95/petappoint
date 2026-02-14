@@ -237,7 +237,7 @@ async function seedStatic() {
           phone: practiceData.phone,
           infoEmail: `info-${practiceData.email}`,
           email: practiceData.email,
-          password: "Vetilib123!",
+          password: "Petappoint123!",
           website: `https://www.tierarzt-${practiceData.city.toLowerCase().replace(/\s/g, "-")}.de`,
           info: "Moderne Tierarztpraxis mit umfassendem Leistungsspektrum.",
           address: {
@@ -295,7 +295,7 @@ async function seedStatic() {
           dateOfBirth: new Date("1990-01-01"),
           phone: "+49 30 000000",
           email: personData.email,
-          password: "Vetilib123!",
+          password: "Petappoint123!",
           address: {
             create: {
               street: `Hauptstraße 1`,
@@ -355,7 +355,7 @@ async function seedStatic() {
           dateOfBirth: new Date("1985-01-01"),
           phone: "+49 30 111111",
           email: vetData.email,
-          password: "Vetilib123!",
+          password: "Petappoint123!",
           address: {
             create: {
               street: `Hauptstraße 1`,

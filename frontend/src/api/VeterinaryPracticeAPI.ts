@@ -1,12 +1,12 @@
 import {
   VeterinaryPracticeSchema,
   VeterinaryPracticeSearchResultSchema,
-} from 'vetilib-shared/schemas/ZodSchemas'
+} from 'petappoint-shared/schemas/ZodSchemas'
 import type {
   VeterinaryPracticeSearchQueryType,
   VeterinaryPracticeSearchResultType,
   VeterinaryPracticesType,
-} from 'vetilib-shared/schemas/ZodSchemas'
+} from 'petappoint-shared/schemas/ZodSchemas'
 
 export const getVeterinaryPracticesByNameAddress = async (
   searchParams: VeterinaryPracticeSearchQueryType,

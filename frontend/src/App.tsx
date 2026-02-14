@@ -2,7 +2,7 @@ import { RouterProvider } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 import { LoginContext } from './LoginContext'
 import { checkLogin } from './api/LoginAPI'
-import type { LoginType } from 'vetilib-shared/schemas/ZodSchemas'
+import type { LoginType } from 'petappoint-shared/schemas/ZodSchemas'
 
 type AppProps = {
   router: any

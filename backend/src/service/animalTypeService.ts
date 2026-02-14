@@ -1,6 +1,6 @@
 import { prisma } from "../singletonPC";
 import { AnimalType } from "../../generated/prisma";
-import { AnimalTypeType } from "vetilib-shared/schemas/ZodSchemas";
+import { AnimalTypeType } from "petappoint-shared/schemas/ZodSchemas";
 
 export const animalTypeService = {
   async create(data: AnimalType): Promise<AnimalTypeType> {

@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
 import { useEffect } from 'react'
-import type { VeterinariansType } from 'vetilib-shared/schemas/ZodSchemas'
+import type { VeterinariansType } from 'petappoint-shared/schemas/ZodSchemas'
 import { useLoginContext } from '@/LoginContext'
 import { getVeterinariansByPracticeId } from '@/api/VeterinarianAPI'
 import { isLoggedInAndVerified } from '@/utils/Authentication'

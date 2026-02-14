@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Button } from 'react-bootstrap'
 import { useNavigate } from '@tanstack/react-router'
 import { VeterinarianCard } from './VeterinarianCard'
-import type { VeterinariansType } from 'vetilib-shared/schemas/ZodSchemas'
+import type { VeterinariansType } from 'petappoint-shared/schemas/ZodSchemas'
 import type { ChangeEvent } from 'react'
 import '@/styles/components/veterinarian/Veterinarian.scss'
 

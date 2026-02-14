@@ -8,7 +8,7 @@ export default function AppPromo() {
         <Row className="align-items-start">
           <Col lg={6} className="mb-4 mb-lg-0">
             <h2 className="app-promo-title mb-3">
-              Noch bequemer mit der VetiLib App
+              Noch bequemer mit der petappoint App
             </h2>
             <p className="app-promo-description mb-4">
               Verwalten Sie alle Termine unterwegs, erhalten Sie
@@ -29,11 +29,11 @@ export default function AppPromo() {
               <div className="app-promo-qr-note mb-3">
                 <small>Oder scannen Sie den QR-Code</small>
               </div>
-              <img src="/vetilib-qr-code.png" alt="VetiLib QR Code" className="qr-code-image" />
+              <img src="/petappoint-qr-code.png" alt="petappoint QR Code" className="qr-code-image" />
             </div>
           </Col>
           <Col lg={6} className="d-flex align-items-end justify-content-center">
-            <img src="/vetilib-mockup.png" alt="VetiLib App Mockup" className="mockup-image" />
+            <img src="/petappoint-mockup.png" alt="petappoint App Mockup" className="mockup-image" />
           </Col>
         </Row>
       </Container>

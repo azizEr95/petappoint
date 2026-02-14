@@ -6,7 +6,7 @@ import type {
   PersonsType,
   ServiceType,
   VeterinaryPracticesType,
-} from 'vetilib-shared/schemas/ZodSchemas'
+} from 'petappoint-shared/schemas/ZodSchemas'
 import type { CustomerType } from './api/CustomerAPI'
 
 // erweitert History State, damit Praxis auch als State uebergeben werden kann

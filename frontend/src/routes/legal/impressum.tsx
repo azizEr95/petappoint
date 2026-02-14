@@ -23,7 +23,7 @@ function Impressum() {
           <div className="legal-text">
             <h2>Anbieter</h2>
             <p>
-              VetiLib GmbH<br />
+              Petappoint GmbH<br />
               Beispielstraße 123<br />
               10115 Berlin<br />
               Deutschland
@@ -31,7 +31,7 @@ function Impressum() {
 
             <h2>Kontakt</h2>
             <p>
-              E-Mail: info@vetilib.de<br />
+              E-Mail: info@petappoint.de<br />
               Telefon: +49 (0) 800 123 4567
             </p>
 

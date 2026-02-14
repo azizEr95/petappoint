@@ -14,7 +14,7 @@ function About() {
     <main className="about-page">
       <section className="about-hero">
         <Container>
-          <h1>Über VetiLib</h1>
+          <h1>Über petappoint</h1>
         </Container>
       </section>
 
@@ -23,7 +23,7 @@ function About() {
           <div className="about-content">
             <h2>Unsere Mission</h2>
             <p>
-              VetiLib verbindet Tierhalter mit qualifizierten Tierärztinnen und Tierärzten.
+              petappoint verbindet Tierhalter mit qualifizierten Tierärztinnen und Tierärzten.
               Wir glauben, dass die Gesundheit von Haustieren zu wichtig ist, um bei der Buchung
               von Terminen Komplikationen zu haben.
             </p>
@@ -38,7 +38,7 @@ function About() {
       <section className="about-team">
         <Container>
           <div className="team-image-wrapper">
-            <img src="/vetilib-teambild-1200x800.jpg" alt="VetiLib Team" className="team-image" />
+            <img src="/petappoint-teambild-1200x800.jpg" alt="petappoint Team" className="team-image" />
           </div>
         </Container>
       </section>
@@ -52,7 +52,7 @@ function About() {
               und Tierärztinnen und Tierärzte unterstützen, ihre Praxen effizienter zu führen.
             </p>
             <p>
-              Mit VetiLib sparen Sie Zeit, reduzieren Verwaltungsaufwand und können sich mehr auf
+              Mit petappoint sparen Sie Zeit, reduzieren Verwaltungsaufwand und können sich mehr auf
               das konzentrieren, was zählt: die beste Betreuung für Ihre Patienten und Haustiere.
             </p>
           </div>

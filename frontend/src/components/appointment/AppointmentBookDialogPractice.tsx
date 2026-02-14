@@ -28,7 +28,7 @@ import type {
   AnimalTypeType,
   AppointmentsType,
   PersonsType,
-} from 'vetilib-shared/schemas/ZodSchemas'
+} from 'petappoint-shared/schemas/ZodSchemas'
 import type { SingleValue } from 'react-select'
 
 type AppointmentBookDialogPracticeProps = {

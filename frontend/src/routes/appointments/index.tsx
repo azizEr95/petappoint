@@ -10,7 +10,7 @@ import { AppointmentDetails } from '../../components/appointment/AppointmentDeta
 import { AppointmentList } from '../../components/appointment/AppointmentList'
 import { useLoginContext } from '../../LoginContext'
 import { isLoggedInAndVerified } from '../../utils/Authentication'
-import type { AppointmentsType } from 'vetilib-shared/schemas/ZodSchemas'
+import type { AppointmentsType } from 'petappoint-shared/schemas/ZodSchemas'
 import '../../styles/routes/appointments.scss'
 import { SuccessNotificationToast } from '@/components/SuccessNotificationToast'
 import { useTitle } from '@/utils/useTitle'

@@ -5,7 +5,7 @@ import { CustomToolbar } from './CustomToolbar';
 import type {ToolbarProps, View} from 'react-big-calendar';
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import '@/styles/components/calendar/CalendarPractice.scss'
-import type { AppointmentsType } from "vetilib-shared/schemas/ZodSchemas";
+import type { AppointmentsType } from "petappoint-shared/schemas/ZodSchemas";
 import { getVeterinarianColor } from '@/utils/veterinarianColors';
 
 // Deutsches Locale manuell definieren

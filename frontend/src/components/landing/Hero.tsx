@@ -14,7 +14,7 @@ import type {
   AnimalTypeType,
   AnimalsType,
   ServiceType,
-} from 'vetilib-shared/schemas/ZodSchemas'
+} from 'petappoint-shared/schemas/ZodSchemas'
 
 export default function Hero() {
   const navigate = useNavigate()

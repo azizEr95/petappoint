@@ -8,7 +8,7 @@ import { StatusBooking } from '../../types/booking'
 import { useLoginContext } from '../../LoginContext'
 import { PasswordInput } from '../common/PasswordInput'
 import type { ChangeEvent, FormEvent } from 'react'
-import type { AppointmentsType, LoginType } from 'vetilib-shared/schemas/ZodSchemas'
+import type { AppointmentsType, LoginType } from 'petappoint-shared/schemas/ZodSchemas'
 
 type LoginProps = {
   setStatusBookingProcess?: (status: StatusBooking) => void // only if Login is in Booking Process
@@ -164,7 +164,7 @@ export function LoginForm({
       </div>
 
       <div className="auth-option-card">
-        <p className="option-text">Neu bei vetilib?</p>
+        <p className="option-text">Neu bei petappoint?</p>
         <button
           type="button"
           className="option-button"

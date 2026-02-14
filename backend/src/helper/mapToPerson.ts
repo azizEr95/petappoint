@@ -1,5 +1,5 @@
 import { Sexes } from "generated/prisma";
-import { PersonsType } from "vetilib-shared/schemas/ZodSchemas";
+import { PersonsType } from "petappoint-shared/schemas/ZodSchemas";
 import { AddressPrismaMappedType, mapToAddress } from "./mapToAddress";
 
 export type PersonPrismaMappedType = {

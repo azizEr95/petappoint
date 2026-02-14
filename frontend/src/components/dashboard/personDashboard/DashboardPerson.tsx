@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { DashboardAppointmentsSection } from "./DashboardAppointmentsSection";
 import { DashboardFavoritesSection } from "./DashboardFavoritesSection";
 import { DashboardPetsSection } from "./DashboardPetsSection";
-import type { PersonsType } from "vetilib-shared/schemas/ZodSchemas";
+import type { PersonsType } from "petappoint-shared/schemas/ZodSchemas";
 import { AnimalEditNewDialog } from "@/components/animal/AnimalEditNewDialog";
 import { ProfileEditDialog } from "@/components/profile/ProfileEditDialog";
 import { useLoginContext } from "@/LoginContext";

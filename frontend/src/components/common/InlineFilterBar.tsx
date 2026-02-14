@@ -12,7 +12,7 @@ import type {
   AnimalTypeType,
   AnimalsType,
   ServiceType,
-} from 'vetilib-shared/schemas/ZodSchemas'
+} from 'petappoint-shared/schemas/ZodSchemas'
 import '../../styles/components/common/InlineFilterBar.scss'
 
 type InlineFilterBarProps = {

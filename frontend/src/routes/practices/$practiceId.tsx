@@ -14,7 +14,7 @@ import { FavoritePractice } from '../../components/practice/FavoritePractice'
 import type {
   AnimalTypeType,
   VeterinaryPracticesType,
-} from 'vetilib-shared/schemas/ZodSchemas'
+} from 'petappoint-shared/schemas/ZodSchemas'
 import { useTitle } from '@/utils/useTitle'
 import { useLoginContext } from '@/LoginContext'
 

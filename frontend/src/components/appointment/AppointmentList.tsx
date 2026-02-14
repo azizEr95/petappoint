@@ -1,5 +1,5 @@
 import { AppointmentCard } from './AppointmentCard'
-import type { AppointmentsType } from 'vetilib-shared/schemas/ZodSchemas'
+import type { AppointmentsType } from 'petappoint-shared/schemas/ZodSchemas'
 
 type AppointmentListProps = {
   dataAppointments: Array<AppointmentsType>

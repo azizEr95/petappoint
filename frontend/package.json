@@ -31,8 +31,8 @@
     "react-dom": "^19.0.0",
     "react-select": "^5.10.2",
     "tailwindcss": "^4.0.6",
-    "vetilib": "file:..",
-    "vetilib-shared": "file:../shared",
+    "petappoint": "file:..",
+    "petappoint-shared": "file:../shared",
     "zod": "^4.1.12",
     "zustand": "^5.0.8"
   },

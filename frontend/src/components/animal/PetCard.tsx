@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getPictureFromAnimal } from '../../api/AnimalsAPI';
 import { mapMonthsToAgeRange } from '../../utils/AgeRangeMapper';
 import '../../styles/components/animal/PetCard.scss';
-import type { AnimalsType } from 'vetilib-shared/schemas/ZodSchemas';
+import type { AnimalsType } from 'petappoint-shared/schemas/ZodSchemas';
 
 type PetCardProps = {
   animal: AnimalsType

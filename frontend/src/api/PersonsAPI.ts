@@ -1,8 +1,8 @@
-import { PersonsSchema } from 'vetilib-shared/schemas/ZodSchemas'
+import { PersonsSchema } from 'petappoint-shared/schemas/ZodSchemas'
 import type {
   PersonsType,
   PersonsUpdateType,
-} from 'vetilib-shared/schemas/ZodSchemas'
+} from 'petappoint-shared/schemas/ZodSchemas'
 
 export const getPersonById = async (personId: number): Promise<PersonsType> => {
   const res = await fetch(

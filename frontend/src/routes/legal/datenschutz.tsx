@@ -23,10 +23,10 @@ function Datenschutz() {
           <div className="legal-text">
             <h2>1. Verantwortlicher</h2>
             <p>
-              VetiLib GmbH<br />
+              Petappoint GmbH<br />
               Beispielstraße 123<br />
               10115 Berlin<br />
-              E-Mail: datenschutz@vetilib.de
+              E-Mail: datenschutz@petappoint.de
             </p>
 
             <h2>2. Erhebung und Verarbeitung personenbezogener Daten</h2>
@@ -61,7 +61,7 @@ function Datenschutz() {
             <h2>5. Kontakt zum Datenschutzbeauftragten</h2>
             <p>
               Bei Fragen zur Verarbeitung Ihrer Daten kontaktieren Sie uns unter:<br />
-              E-Mail: datenschutz@vetilib.de
+              E-Mail: datenschutz@petappoint.de
             </p>
           </div>
         </Container>

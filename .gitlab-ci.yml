@@ -34,11 +34,11 @@ e2e-tests:
     - name: postgres:15
       alias: db
       variables:
-        POSTGRES_DB: vetilib-e2e-test
-        POSTGRES_USER: vetilib
+        POSTGRES_DB: petappoint-e2e-test
+        POSTGRES_USER: petappoint
         POSTGRES_PASSWORD: 123
   variables:
-    DATABASE_URL: "postgresql://vetilib:123@db:5432/vetilib-e2e-test"
+    DATABASE_URL: "postgresql://petappoint:123@db:5432/petappoint-e2e-test"
     CORS_ORIGIN: "http://localhost:3001"
     HTTP_PORT: 3000
     BREVO_API_KEY: $BREVO_API_KEY

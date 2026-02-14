@@ -1,10 +1,10 @@
-import { LoginSchema } from 'vetilib-shared/schemas/ZodSchemas'
+import { LoginSchema } from 'petappoint-shared/schemas/ZodSchemas'
 import type {
   LoginType,
   LoginValidatorType,
   PersonsCreateType,
   VeterinaryPracticesCreateType,
-} from 'vetilib-shared/schemas/ZodSchemas'
+} from 'petappoint-shared/schemas/ZodSchemas'
 
 export const loginUser = async (
   email: string,

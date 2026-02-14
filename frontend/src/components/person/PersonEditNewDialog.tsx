@@ -5,7 +5,7 @@ import Select from 'react-select';
 import { getPersonCreateType, validatePersonFormular } from '../../utils/ValidateForm';
 import { getAllCountries } from '../../api/CountriesAPI';
 import type { SingleValue } from 'react-select';
-import type { CountryType, PersonsCreateType } from 'vetilib-shared/schemas/ZodSchemas';
+import type { CountryType, PersonsCreateType } from 'petappoint-shared/schemas/ZodSchemas';
 import type { PersonsValidateType } from '@/types/validation';
 import { personRegistration } from '@/api/LoginAPI';
 

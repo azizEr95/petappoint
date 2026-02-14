@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import type { AppointmentsType } from "vetilib-shared/schemas/ZodSchemas";
+import type { AppointmentsType } from "petappoint-shared/schemas/ZodSchemas";
 import { CalendarPractice } from "@/components/calendar/CalendarPractice";
 import { getAvailableAppointmentsByPracticeId, getBookedAppointmentsByPractice } from "@/api/AppointmentsAPI";
 import { useLoginContext } from "@/LoginContext";

@@ -1,6 +1,6 @@
 import { prisma } from "../singletonPC";
 import { AnimalHasRace, AnimalRace } from "../../generated/prisma";
-import { AnimalracesCreateType, AnimalracesType } from "vetilib-shared/schemas/ZodSchemas";
+import { AnimalracesCreateType, AnimalracesType } from "petappoint-shared/schemas/ZodSchemas";
 import { ResourceNotFoundError } from "../exceptions/errors/ResourceNotFoundError";
 
 export const animalRaceService = {

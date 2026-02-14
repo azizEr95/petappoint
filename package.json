@@ -1,9 +1,9 @@
 {
-  "name": "vetilib",
+  "name": "petappoint",
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "vetilib": "npm --prefix ./db run db && npm-run-all migrateDB seed && npm-run-all --parallel startBackend startFrontend",
+    "petappoint": "npm --prefix ./db run db && npm-run-all migrateDB seed && npm-run-all --parallel startBackend startFrontend",
     "startBackendFrontend": "npm-run-all --parallel startBackend startFrontend",
     "startBackend": "npm --prefix ./backend run start",
     "startFrontend": "npm --prefix ./frontend run dev",
@@ -12,7 +12,7 @@
     "buildProject": "npm --prefix ./backend install && npm --prefix ./frontend install && npm --prefix ./e2e-tests install && npm --prefix ./shared install && npm --prefix ./shared run build",
     "migrateDB": "npm --prefix ./backend run prisma",
     "seed": "npm --prefix ./backend run seed",
-    "vetilib:detached": "docker-compose up --build -d",
+    "petappoint:detached": "docker-compose up --build -d",
     "stop": "docker-compose down",
     "e2e-tests": "npm-run-all --parallel startDB e2e-tests:ci",
     "e2e-tests:ci": "cd e2e-tests && npx playwright test",

@@ -1,5 +1,5 @@
 import express from "express";
-import { AnimalTypeType, PersonsCreateSchema, PostgresIdSchema, VeterinariansCreateSchema, } from "vetilib-shared/schemas/ZodSchemas";
+import { AnimalTypeType, PersonsCreateSchema, PostgresIdSchema, VeterinariansCreateSchema, } from "petappoint-shared/schemas/ZodSchemas";
 import { optionalAuthentication, requiresAuthentication } from "./authentication";
 import { animalTypeService } from "../service/animalTypeService";
 import { appointmentService } from "../service/appointmentService";

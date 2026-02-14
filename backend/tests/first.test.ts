@@ -1,7 +1,7 @@
 import { addressService } from "../src/service/addressService";
 import { test, expect, beforeEach } from 'vitest';
 import { countryService } from "../src/service/countryService";
-import { CountryType } from "vetilib-shared/schemas/ZodSchemas";
+import { CountryType } from "petappoint-shared/schemas/ZodSchemas";
 
 let testCountry: CountryType;
 

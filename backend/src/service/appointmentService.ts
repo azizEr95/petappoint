@@ -4,7 +4,7 @@ import {
   AppointmentFilterType,
   AppointmentsCreateType,
   AppointmentsType,
-} from "vetilib-shared/schemas/ZodSchemas";
+} from "petappoint-shared/schemas/ZodSchemas";
 import { animalService } from "./animalService";
 import { ResourceNotFoundError } from "../exceptions/errors/ResourceNotFoundError";
 import { ConstraintError } from "../exceptions/errors/ConstraintError";

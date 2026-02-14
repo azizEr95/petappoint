@@ -5,7 +5,7 @@ import {
   PersonsType,
   PersonsUpdateType,
   PostgresIdSchema,
-} from "vetilib-shared/schemas/ZodSchemas";
+} from "petappoint-shared/schemas/ZodSchemas";
 import { addressService } from "./addressService";
 import { ResourceNotFoundError } from "../exceptions/errors/ResourceNotFoundError";
 import fs from "node:fs/promises";

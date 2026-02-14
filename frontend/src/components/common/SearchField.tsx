@@ -3,7 +3,7 @@ import { useNavigate } from '@tanstack/react-router'
 import type { ChangeEvent } from 'react'
 import '../../styles/routes/search.scss'
 import '../../styles/components/common/SearchField.scss'
-import type { VeterinaryPracticeSearchQueryType } from 'vetilib-shared/schemas/ZodSchemas'
+import type { VeterinaryPracticeSearchQueryType } from 'petappoint-shared/schemas/ZodSchemas'
 
 type SearchFieldProps = {
   searchFilter: VeterinaryPracticeSearchQueryType

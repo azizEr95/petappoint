@@ -1,8 +1,8 @@
-import { AnimalsSchema } from 'vetilib-shared/schemas/ZodSchemas'
+import { AnimalsSchema } from 'petappoint-shared/schemas/ZodSchemas'
 import type {
   AnimalsCreateType,
   AnimalsType,
-} from 'vetilib-shared/schemas/ZodSchemas'
+} from 'petappoint-shared/schemas/ZodSchemas'
 
 export const getAnimalsFromUser = async (
   userId: number,

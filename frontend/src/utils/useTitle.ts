@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 
 export function useTitle(title: string) {
-    title = title + ' - Vetilib';
+    title = title + ' - petappoint';
     useEffect(() => {
         document.title = title;
     }, [title]);

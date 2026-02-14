@@ -10,7 +10,7 @@ import { PetCard } from '../../animal/PetCard';
 import type {
   AnimalsType,
   AppointmentsType,
-} from 'vetilib-shared/schemas/ZodSchemas';
+} from 'petappoint-shared/schemas/ZodSchemas';
 import '../../../styles/components/dashboard/DashboardPetsSection.scss';
 import { useLoginContext } from '@/LoginContext';
 import { SuccessNotificationToast } from '@/components/SuccessNotificationToast';

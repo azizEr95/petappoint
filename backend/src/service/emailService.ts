@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import { SendSmtpEmail } from "@getbrevo/brevo";
 import { emailServiceSetup } from "../singletonEmail";
-import { EventType, PersonsType, VeterinariansType, VeterinaryPracticesType } from 'vetilib-shared/schemas/ZodSchemas';
+import { EventType, PersonsType, VeterinariansType, VeterinaryPracticesType } from 'petappoint-shared/schemas/ZodSchemas';
 import { personService } from './personService';
 import { person_has_confirmation_code, VeterinaryPractice, veterinarypractices_has_confirmation_code } from '../../generated/prisma';
 import { appointmentService } from './appointmentService';
@@ -15,7 +15,7 @@ import { prisma } from '../singletonPC';
 
 
 const sender = {
-    name: "vetilib",
+    name: "petappoint",
     email: "aziz.erol@outlook.de"
 }
 
@@ -53,7 +53,7 @@ export async function sendPasswordResetEmail(
     const htmlContent = template(data);
 
     const message = new SendSmtpEmail();
-    message.subject = "Passwort zurücksetzen - vetilib";
+    message.subject = "Passwort zurücksetzen - petappoint";
     message.htmlContent = htmlContent;
     message.sender = sender;
     message.to = [{ email }];

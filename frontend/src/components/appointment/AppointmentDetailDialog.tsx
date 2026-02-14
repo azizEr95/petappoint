@@ -1,7 +1,7 @@
 import { Button, ListGroup, Modal } from 'react-bootstrap';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { dateToDateString, dateToTimeString } from '../../utils/DateToStringFormat';
-import type { AnimalTypeType, AppointmentsType } from 'vetilib-shared/schemas/ZodSchemas';
+import type { AnimalTypeType, AppointmentsType } from 'petappoint-shared/schemas/ZodSchemas';
 import { getAnimaltypeById } from '@/api/AnimalTypeAPI';
 import { cancelAppointment } from '@/api/AppointmentsAPI';
 

@@ -1,4 +1,4 @@
-import { CountryType } from "vetilib-shared/schemas/ZodSchemas";
+import { CountryType } from "petappoint-shared/schemas/ZodSchemas";
 import { prisma } from "../singletonPC";
 import { ResourceNotFoundError } from "../exceptions/errors/ResourceNotFoundError";
 

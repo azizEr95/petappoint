@@ -1,6 +1,6 @@
 import { prisma } from "../singletonPC";
 import { mapToVeterinary } from "../helper/mapToVeterinary";
-import { VeterinariansCreateType, VeterinariansDbType, VeterinariansType, VeterinariansUpdateType } from "vetilib-shared/schemas/ZodSchemas";
+import { VeterinariansCreateType, VeterinariansDbType, VeterinariansType, VeterinariansUpdateType } from "petappoint-shared/schemas/ZodSchemas";
 
 export const veterinaryService = {
   async create(data: VeterinariansCreateType): Promise<VeterinariansType> {

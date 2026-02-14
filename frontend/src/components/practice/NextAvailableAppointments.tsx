@@ -13,7 +13,7 @@ import {
 import type {
   AppointmentFilterType,
   AppointmentsType,
-} from 'vetilib-shared/schemas/ZodSchemas'
+} from 'petappoint-shared/schemas/ZodSchemas'
 
 type NextAvailableAppointmentsProps = {
   practiceId: string

@@ -1,6 +1,6 @@
 import { prisma } from "../singletonPC";
 import bcrypt from "bcrypt";
-import { AuthenticatedType, PostgresIdType, RoleEnum } from "vetilib-shared/schemas/ZodSchemas";
+import { AuthenticatedType, PostgresIdType, RoleEnum } from "petappoint-shared/schemas/ZodSchemas";
 
 type LoginCompareType = {
   id: PostgresIdType,

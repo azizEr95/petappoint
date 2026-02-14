@@ -1,4 +1,4 @@
-import { LoginType, AuthenticatedType, RoleEnum } from "vetilib-shared/schemas/ZodSchemas";
+import { LoginType, AuthenticatedType, RoleEnum } from "petappoint-shared/schemas/ZodSchemas";
 import { login } from "./authenticationService";
 import { JsonWebTokenError, JwtPayload, sign, verify } from "jsonwebtoken";
 import { personService } from "./personService";
