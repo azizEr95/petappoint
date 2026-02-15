@@ -20,6 +20,7 @@ import { mapToAnimal } from "../helper/mapToAnimal";
 import { mapToPerson } from "../helper/mapToPerson";
 import fs from "node:fs/promises";
 import path from "node:path";
+import VetPractices from "../models/VetPractices"
 
 async function checkCreateEmailConstraint(veterinaryPracticeRe: VeterinaryPracticesCreateType) {
   const query = {
@@ -43,51 +44,12 @@ async function checkCreateEmailConstraint(veterinaryPracticeRe: VeterinaryPracti
 
 export const veterinaryPracticeService = {
   async create(veterinaryPracticeRe: VeterinaryPracticesCreateType): Promise<VeterinaryPracticesType> {
-    await checkCreateEmailConstraint(veterinaryPracticeRe);
-
-    const created = await prisma.veterinaryPractice.create({
-      include: {
-        address: true,
-      },
-      data: {
-        name: veterinaryPracticeRe.name,
-        phone: veterinaryPracticeRe.phone,
-        infoEmail: veterinaryPracticeRe.infoEmail,
-        email: veterinaryPracticeRe.email,
-        password: veterinaryPracticeRe.password,
-        address: {
-          create: {
-            city: veterinaryPracticeRe.address.city,
-            cityCode: veterinaryPracticeRe.address.cityCode,
-            latitude: veterinaryPracticeRe.address.latitude,
-            longitude: veterinaryPracticeRe.address.longitude,
-            street: veterinaryPracticeRe.address.street,
-            fk_country: veterinaryPracticeRe.address.country
-          },
-        },
-      },
-    });
-
-    return mapToVeterinaryPractice(created);
+    await checkCreateEmailConstraint(veterinaryPracticeRe)
+    return await VetPractices.create(veterinaryPracticeRe)
   },
 
   async getById(id: number): Promise<VeterinaryPracticesType> {
-    const foundPractice = await prisma.veterinaryPractice.findUnique({
-      include: {
-        address: true,
-      },
-      omit: {
-        addressId: true,
-      },
-      where: {
-        id: id,
-      },
-    });
-
-    if (!foundPractice) {
-      throw new ResourceNotFoundError("Veterinary Practice not found with id:", "id", id);
-    }
-    return mapToVeterinaryPractice(foundPractice);
+    return await VetPractices.getById(id)
   },
 
   async search(query: VeterinaryPracticeSearchQueryType): Promise<VeterinaryPracticeSearchResultType> {
@@ -221,61 +183,19 @@ export const veterinaryPracticeService = {
   },
 
   async getByEmail(email: string): Promise<VeterinaryPracticesType | null> {
-    const found = await prisma.veterinaryPractice.findFirst({
-      include: {
-        address: true,
-      },
-
-      where: {
-        email,
-      },
-    });
-
-    if (!found) {
-      return null;
-    }
-
-    return mapToVeterinaryPractice(found);
+    return await VetPractices.getByEmail(email)
   },
 
   async getAll(): Promise<VeterinaryPracticesType[]> {
-    const allPractices = await prisma.veterinaryPractice.findMany({
-      include: {
-        address: true,
-      },
-    });
-
-    return allPractices.map(x => mapToVeterinaryPractice(x));
+    return await VetPractices.getAll()
   },
 
   async update(data: VeterinaryPracticesType): Promise<VeterinaryPracticesType> {
-    if (!data.id) {
-      throw new ConstraintError("ID is required for update", [{ path: "veterinarypractice.id", value: data.id }]);
-    }
-
-    await addressService.update(data.address);
-
-    const updatedPractice = await prisma.veterinaryPractice.update({
-      where: { id: data.id },
-      data: {
-        name: data.name,
-        phone: data.phone,
-        email: data.email,
-        //password: data.password,
-        infoEmail: data.infoEmail,
-        info: data.info,
-        website: data.website,
-      },
-      include: { address: true },
-    });
-
-    return mapToVeterinaryPractice(updatedPractice);
+    return await VetPractices.update(data)
   },
 
   async delete(id: number): Promise<void> {
-    await prisma.veterinaryPractice.delete({
-      where: { id },
-    });
+    return await VetPractices.delete(id)
   },
 
   async getServicesForPractice(veterinaryPracticeId: number): Promise<ServiceType[]> {

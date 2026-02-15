@@ -8,6 +8,7 @@ export default defineConfig({
     include: ['tests/**/*.test.ts'],
     exclude: ['src/**', 'tests/utils/**'],
     maxWorkers: 1,
+    silent: true // if you want to see the errors, then comment this line out
   }
 })
 

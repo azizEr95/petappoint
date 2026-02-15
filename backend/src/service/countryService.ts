@@ -1,29 +1,16 @@
 import { CountryType } from "petappoint-shared/schemas/ZodSchemas";
-import { prisma } from "../singletonPC";
-import { ResourceNotFoundError } from "../exceptions/errors/ResourceNotFoundError";
+import Countries from "../models/Countries";
 
 export const countryService = {
   async create(data: any): Promise<CountryType> {
-    return await prisma.countries.create({
-      data: data,
-    });
+    return await Countries.create(data)
   },
 
   async getAll(): Promise<CountryType[]> {
-    return await prisma.countries.findMany({});
+    return await Countries.getAll()
   },
 
   async getById(id: number): Promise<CountryType> {
-    const country = await prisma.countries.findUnique({
-      where: {
-        id: id,
-      },
-    });
-
-    if (!country) {
-      throw new ResourceNotFoundError("No country found with given id", "id", id);
-    }
-
-    return country;
+    return await Countries.getById(id)
   },
 };
