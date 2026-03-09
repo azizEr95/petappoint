@@ -72,6 +72,12 @@ animalsRouter.put("/:animalId", requiresAuthentication, checkVerified, async (re
   return res.send(animal);
 });
 
+// muss irgendwann raus
+animalsRouter.get("/", async (_req, res) => {
+  const animals = await animalService.getAll()
+  return res.send(animals)
+})
+
 animalsRouter.get("/:animalId/picture", requiresAuthentication, checkVerified, async (req, res) => {
   const animalId = PostgresIdSchema.parse(parseInt(req.params.animalId));
 

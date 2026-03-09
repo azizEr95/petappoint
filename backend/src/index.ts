@@ -16,6 +16,7 @@ declare global {
         interface ProcessEnv {
             DATABASE_URL: string;
             CORS_ORIGIN: string;
+            CORS_ORIGIN_APP: string;
             HTTP_PORT: string;
             BREVO_API_KEY: string;
             JWT_SECRET: string;
