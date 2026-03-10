@@ -2,8 +2,18 @@
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "paths": {
-      "@/*": ["./*"],
-      "petappoint-shared/*": ["../shared/src/*"]
+      "@/*": [
+        "./*",
+      ],
+      "@src/*": [
+        "./src/*",
+      ],
+      "petappoint-shared/*": [
+        "../shared/src/*"
+      ],
+      "tailwind.config": [
+        "./tailwind.config.js"
+      ]
     },
     "strict": true
   },
@@ -14,7 +24,8 @@
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "env.ts",
-    "expo-env.d.ts"
+    "expo-env.d.ts",
+    "nativewind-env.d.ts"
   ],
   "exclude": [
     "node_modules",
