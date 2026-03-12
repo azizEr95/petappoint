@@ -1,8 +1,8 @@
-import React from 'react';
+import { Box } from '@src/components/ui/box'
 
-import { ExternalLink } from './ExternalLink';
-import { Box } from '@src/components/ui/box';
-import { Text } from '@src/components/ui/text';
+import { Text } from '@src/components/ui/text'
+import * as React from 'react'
+import { ExternalLink } from './ExternalLink'
 
 export default function EditScreenInfo({ path }: { path: string }) {
   return (
@@ -35,5 +35,5 @@ export default function EditScreenInfo({ path }: { path: string }) {
         </ExternalLink>
       </Box>
     </Box>
-  );
+  )
 }

@@ -1,8 +1,8 @@
-import React from 'react';
-import { createImage } from '@gluestack-ui/core/image/creator';
-import { Platform, Image as RNImage } from 'react-native';
-import { tva } from '@gluestack-ui/utils/nativewind-utils';
-import type { VariantProps } from '@gluestack-ui/utils/nativewind-utils';
+import type { VariantProps } from '@gluestack-ui/utils/nativewind-utils'
+import { createImage } from '@gluestack-ui/core/image/creator'
+import { tva } from '@gluestack-ui/utils/nativewind-utils'
+import * as React from 'react'
+import { Platform, Image as RNImage } from 'react-native'
 
 const imageStyle = tva({
   base: 'max-w-full',
@@ -19,16 +19,13 @@ const imageStyle = tva({
       'none': '',
     },
   },
-});
+})
 
-const UIImage = createImage({ Root: RNImage });
+const UIImage = createImage({ Root: RNImage })
 
-type ImageProps = VariantProps<typeof imageStyle> &
-  React.ComponentProps<typeof UIImage>;
-const Image = React.forwardRef<
-  React.ComponentRef<typeof UIImage>,
-  ImageProps & { className?: string }
->(function Image({ size = 'md', className, ...props }, ref) {
+type ImageProps = VariantProps<typeof imageStyle>
+  & React.ComponentProps<typeof UIImage>
+function Image({ ref, size = 'md', className, ...props }: ImageProps & { className?: string } & { ref?: React.RefObject<React.ComponentRef<typeof UIImage> | null> }) {
   return (
     <UIImage
       className={imageStyle({ size, class: className })}
@@ -41,8 +38,8 @@ const Image = React.forwardRef<
           : undefined
       }
     />
-  );
-});
+  )
+}
 
-Image.displayName = 'Image';
-export { Image };
+Image.displayName = 'Image'
+export { Image }

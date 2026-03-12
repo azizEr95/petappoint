@@ -1,41 +1,27 @@
-import React, { forwardRef } from 'react';
-import type { VariantProps } from '@gluestack-ui/utils/nativewind-utils';
-import { Animated, Easing, Platform, View } from 'react-native';
-import { skeletonStyle, skeletonTextStyle } from './styles';
+import type { VariantProps } from '@gluestack-ui/utils/nativewind-utils'
+import * as React from 'react'
+import { Animated, Easing, Platform, View } from 'react-native'
+import { skeletonStyle, skeletonTextStyle } from './styles'
 
-type ISkeletonProps = React.ComponentProps<typeof View> &
-  VariantProps<typeof skeletonStyle> & {
-    isLoaded?: boolean;
-    startColor?: string;
-    speed?: number | string;
-  };
+type ISkeletonProps = React.ComponentProps<typeof View>
+  & VariantProps<typeof skeletonStyle> & {
+    isLoaded?: boolean
+    startColor?: string
+    speed?: number | string
+  }
 
-type ISkeletonTextProps = React.ComponentProps<typeof View> &
-  VariantProps<typeof skeletonTextStyle> & {
-    _lines?: number;
-    isLoaded?: boolean;
-    startColor?: string;
-  };
+type ISkeletonTextProps = React.ComponentProps<typeof View>
+  & VariantProps<typeof skeletonTextStyle> & {
+    _lines?: number
+    isLoaded?: boolean
+    startColor?: string
+  }
 
-const Skeleton = forwardRef<
-  React.ComponentRef<typeof Animated.View>,
-  ISkeletonProps
->(function Skeleton(
-  {
-    className,
-    variant,
-    children,
-    startColor = 'bg-background-200',
-    isLoaded = false,
-    speed = 2,
-    ...props
-  },
-  ref
-) {
-  const pulseAnim = new Animated.Value(1);
-  const customTimingFunction = Easing.bezier(0.4, 0, 0.6, 1);
-  const fadeDuration = 0.6;
-  const animationDuration = (fadeDuration * 10000) / Number(speed); // Convert seconds to milliseconds
+function Skeleton({ ref, className, variant, children, startColor = 'bg-background-200', isLoaded = false, speed = 2, ...props }: ISkeletonProps & { ref?: React.RefObject<React.ComponentRef<typeof Animated.View> | null> }) {
+  const pulseAnim = new Animated.Value(1)
+  const customTimingFunction = Easing.bezier(0.4, 0, 0.6, 1)
+  const fadeDuration = 0.6
+  const animationDuration = (fadeDuration * 10000) / Number(speed) // Convert seconds to milliseconds
 
   const pulse = Animated.sequence([
     Animated.timing(pulseAnim, {
@@ -56,10 +42,10 @@ const Skeleton = forwardRef<
       easing: customTimingFunction,
       useNativeDriver: Platform.OS !== 'web',
     }),
-  ]);
+  ])
 
   if (!isLoaded) {
-    Animated.loop(pulse).start();
+    Animated.loop(pulse).start()
     return (
       <Animated.View
         style={{ opacity: pulseAnim }}
@@ -70,29 +56,16 @@ const Skeleton = forwardRef<
         {...props}
         ref={ref}
       />
-    );
-  } else {
-    Animated.loop(pulse).stop();
-
-    return children;
+    )
   }
-});
+  else {
+    Animated.loop(pulse).stop()
 
-const SkeletonText = forwardRef<
-  React.ComponentRef<typeof View>,
-  ISkeletonTextProps
->(function SkeletonText(
-  {
-    className,
-    _lines,
-    isLoaded = false,
-    startColor = 'bg-background-200',
-    gap = 2,
-    children,
-    ...props
-  },
-  ref
-) {
+    return children
+  }
+}
+
+function SkeletonText({ ref, className, _lines, isLoaded = false, startColor = 'bg-background-200', gap = 2, children, ...props }: ISkeletonTextProps & { ref?: React.RefObject<React.ComponentRef<typeof View> | null> }) {
   if (!isLoaded) {
     if (_lines) {
       return (
@@ -112,8 +85,9 @@ const SkeletonText = forwardRef<
             />
           ))}
         </View>
-      );
-    } else {
+      )
+    }
+    else {
       return (
         <Skeleton
           className={`${startColor} ${skeletonTextStyle({
@@ -122,14 +96,15 @@ const SkeletonText = forwardRef<
           {...props}
           ref={ref}
         />
-      );
+      )
     }
-  } else {
-    return children;
   }
-});
+  else {
+    return children
+  }
+}
 
-Skeleton.displayName = 'Skeleton';
-SkeletonText.displayName = 'SkeletonText';
+Skeleton.displayName = 'Skeleton'
+SkeletonText.displayName = 'SkeletonText'
 
-export { Skeleton, SkeletonText };
+export { Skeleton, SkeletonText }

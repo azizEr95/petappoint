@@ -1,8 +1,8 @@
-import EditScreenInfo from '@src/components/EditScreenInfo';
-import { Center } from '@src/components/ui/center';
-import { Divider } from '@src/components/ui/divider';
-import { Heading } from '@src/components/ui/heading';
-import { Text } from '@src/components/ui/text';
+import EditScreenInfo from '@src/components/EditScreenInfo'
+import { Center } from '@src/components/ui/center'
+import { Divider } from '@src/components/ui/divider'
+import { Heading } from '@src/components/ui/heading'
+import { Text } from '@src/components/ui/text'
 
 export default function Tab2() {
   return (
@@ -12,5 +12,5 @@ export default function Tab2() {
       <Text className="p-4">Example below to use gluestack-ui components.</Text>
       <EditScreenInfo path="app/(app)/(tabs)/tab1.tsx" />
     </Center>
-  );
+  )
 }

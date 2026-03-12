@@ -1,65 +1,68 @@
-import { GluestackUIProvider } from '@src/components/ui/gluestack-ui-provider';
-import '@/global.css';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
+import FontAwesome from '@expo/vector-icons/FontAwesome'
 import {
   DarkTheme,
   DefaultTheme,
   ThemeProvider,
-} from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import * as SplashScreen from 'expo-splash-screen';
-import { useEffect, useState } from 'react';
-import { useColorScheme } from '@src/components/useColorScheme';
-import { Slot, usePathname } from 'expo-router';
-import { Fab, FabIcon } from '@src/components/ui/fab';
-import { MoonIcon, SunIcon, SlashIcon } from '@src/components/ui/icon';
+} from '@react-navigation/native'
+import { Fab, FabIcon } from '@src/components/ui/fab'
+import { GluestackUIProvider } from '@src/components/ui/gluestack-ui-provider'
+import { MoonIcon, SlashIcon, SunIcon } from '@src/components/ui/icon'
+import { useColorScheme } from '@src/components/useColorScheme'
+import { useFonts } from 'expo-font'
+import { Slot, usePathname } from 'expo-router'
+import * as SplashScreen from 'expo-splash-screen'
+import { useEffect, useState } from 'react'
+import '@/global.css'
 
 export {
   // Catch any errors thrown by the Layout component.
   ErrorBoundary,
-} from 'expo-router';
+} from 'expo-router'
 
-SplashScreen.preventAutoHideAsync();
+SplashScreen.preventAutoHideAsync()
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
     ...FontAwesome.font,
-  });
+  })
 
-  const [styleLoaded, setStyleLoaded] = useState(false);
+  const [styleLoaded, setStyleLoaded] = useState(false)
   // Expo Router uses Error Boundaries to catch errors in the navigation tree.
   useEffect(() => {
-    if (error) throw error;
-  }, [error]);
+    if (error)
+      throw error
+  }, [error])
 
   useEffect(() => {
     if (loaded) {
-      SplashScreen.hideAsync();
+      SplashScreen.hideAsync()
     }
-  }, [loaded]);
-  return <RootLayoutNav />;
+  }, [loaded])
+  return <RootLayoutNav />
 }
 
 function RootLayoutNav() {
-  const pathname = usePathname();
-  const systemColorScheme = useColorScheme();
-  const [mode, setMode] = useState<'system' | 'light' | 'dark'>('system');
+  const pathname = usePathname()
+  const systemColorScheme = useColorScheme()
+  const [mode, setMode] = useState<'system' | 'light' | 'dark'>('system')
 
   // Determine effective color scheme
   const effectiveColorScheme = mode === 'system'
     ? (systemColorScheme ?? 'light')
-    : mode;
+    : mode
 
   const handleToggleTheme = () => {
     if (mode === 'system') {
-      setMode('light');
-    } else if (mode === 'light') {
-      setMode('dark');
-    } else {
-      setMode('system');
+      setMode('light')
     }
-  };
+    else if (mode === 'light') {
+      setMode('dark')
+    }
+    else {
+      setMode('system')
+    }
+  }
 
   return (
     <GluestackUIProvider mode={mode}>
@@ -76,5 +79,5 @@ function RootLayoutNav() {
         )}
       </ThemeProvider>
     </GluestackUIProvider>
-  );
+  )
 }

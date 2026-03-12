@@ -39,6 +39,8 @@ export default antfu(
       'cli/',
       'expo-env.d.ts',
       'migration/*',
+      'components/',
+      'tailwind.config.js',
     ],
   },
 
