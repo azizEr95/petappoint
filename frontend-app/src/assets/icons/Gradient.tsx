@@ -1,7 +1,7 @@
-import React from 'react';
-import { Svg, G, Ellipse, Defs, RadialGradient, Stop } from 'react-native-svg';
+import * as React from 'react'
+import { Defs, Ellipse, G, RadialGradient, Stop, Svg } from 'react-native-svg'
 
-const SvgComponent = () => {
+function SvgComponent() {
   return (
     <Svg width="965" height="1078" viewBox="0 0 965 1078" fill="none">
       <G opacity="1">
@@ -49,7 +49,7 @@ const SvgComponent = () => {
         </RadialGradient>
       </Defs>
     </Svg>
-  );
-};
+  )
+}
 
-export default SvgComponent;
+export default SvgComponent

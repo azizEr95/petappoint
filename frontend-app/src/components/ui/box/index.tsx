@@ -1,19 +1,18 @@
-import React from 'react';
-import { View, ViewProps } from 'react-native';
+import type { VariantProps } from '@gluestack-ui/utils/nativewind-utils'
+import type { ViewProps } from 'react-native'
+import * as React from 'react'
 
-import type { VariantProps } from '@gluestack-ui/utils/nativewind-utils';
-import { boxStyle } from './styles';
+import { View } from 'react-native'
+import { boxStyle } from './styles'
 
-type IBoxProps = ViewProps &
-  VariantProps<typeof boxStyle> & { className?: string };
+type IBoxProps = ViewProps
+  & VariantProps<typeof boxStyle> & { className?: string }
 
-const Box = React.forwardRef<React.ComponentRef<typeof View>, IBoxProps>(
-  function Box({ className, ...props }, ref) {
-    return (
-      <View ref={ref} {...props} className={boxStyle({ class: className })} />
-    );
-  }
-);
+function Box({ ref, className, ...props }: IBoxProps & { ref?: React.RefObject<React.ComponentRef<typeof View> | null> }) {
+  return (
+    <View ref={ref} {...props} className={boxStyle({ class: className })} />
+  )
+}
 
-Box.displayName = 'Box';
-export { Box };
+Box.displayName = 'Box'
+export { Box }
