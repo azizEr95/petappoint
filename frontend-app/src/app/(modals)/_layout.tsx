@@ -6,19 +6,19 @@ export default function ModalLayout() {
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen
           name='search'
-          options={{ presentation: 'modal' }}
+          options={{ presentation: 'fullScreenModal' }}
         />
         <Stack.Screen 
           name='result' 
-          options={{ presentation: 'modal' }}
+          options={{ presentation: 'fullScreenModal' }}
         />
         <Stack.Screen 
           name='practice' 
-          options={{ presentation: 'modal' }} 
+          options={{ presentation: 'fullScreenModal' }} 
         />
         <Stack.Screen 
           name='process' 
-          options={{ presentation: 'modal' }} 
+          options={{ presentation: 'fullScreenModal' }} 
         />
       </Stack>
     </>

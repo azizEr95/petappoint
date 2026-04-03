@@ -84,12 +84,12 @@ function RootLayoutNav() {
           {/* Modal‑Stack für search / booking */}
           <Stack.Screen
             name="(modals)"
-            options={{ presentation: 'formSheet' }}
+            options={{ presentation: 'fullScreenModal' }}
           />
         </Stack>
 
         {/* Deinen Button nur für den Start‑Pfad */}
-        {usePathname() === '/' && (
+        {usePathname() === '/login' && (
           <Fab onPress={handleToggleTheme} className="m-6" size="lg">
             <FabIcon
               as={
