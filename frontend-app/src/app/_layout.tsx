@@ -73,7 +73,7 @@ function RootLayoutNav() {
           }}
         >
           {/* Auth screens (login / register) */}
-          <Stack.Screen name="(auth)" />
+          <Stack.Screen name="(auth)"/>
 
           {/* Tabs (z.B. in (tabs)) */}
           <Stack.Screen

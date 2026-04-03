@@ -37,17 +37,26 @@ export default function SucheModal() {
   const router = useRouter()
   return (
     <>
-      {/** Header */}
-      <Box className='flex-row justify-between items-center pt-6 px-8 pb-3 border-b-hairline'>
-        <Text className='text-xl font-semibold'>Termin suchen</Text>
-        <ButtonGroup>
-          <Button
-            className='bg-primary-100 rounded-3xl'
-            onPress={() => router.back()}
-          >
-            <FontAwesomeIcon name='times' color='#374151' size={20} />
-          </Button>
-        </ButtonGroup>
+      {/** Top green are */}
+      <Box className='h-[23%] bg-primary-500 rounded-b-3xl justify-center px-6 pb-4 pt-16'>
+        <Box className='flex-row justify-between items-start'>
+          <Box>
+            <Text size='3xl' className='font-bold text-white'>
+              Termin suchen
+            </Text>
+            <Text size='lg' className='text-white/70 mt-1'>
+              Finde die passende Praxis
+            </Text>
+          </Box>
+          <ButtonGroup>
+            <Button
+              className='bg-white/20 rounded-3xl'
+              onPress={() => router.back()}
+            >
+              <FontAwesomeIcon name='times' color='#ffffff' size={20} />
+            </Button>
+          </ButtonGroup>
+        </Box>
       </Box>
       <Box className='flex-col px-5 py-3'>
         <Box className='p-2'>

@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from '@/src/custom-components/tabbar-icon'
 import {
   Box,
   Button,
+  ButtonGroup,
   ButtonText,
   Card,
   HStack,
@@ -59,14 +60,28 @@ export default function Process() {
   return (
     <Box className='flex-1 bg-slate-100'>
       <ScrollView>
+        {/** Top green area */}
+        <Box className='h-[30%] bg-primary-500 rounded-b-3xl justify-center px-6 pb-4 pt-16'>
+          <Box className='flex-row justify-between items-start'>
+            <Box>
+              <Text size='3xl' className='font-bold text-white'>
+                Buchung bestätigen
+              </Text>
+              <Text size='lg' className='text-white/70 mt-1'>
+                Überprüfe deine Angaben
+              </Text>
+            </Box>
+            <ButtonGroup>
+              <Button
+                className='bg-white/20 rounded-3xl'
+                onPress={() => router.back()}
+              >
+                <FontAwesomeIcon name='times' color='#ffffff' size={20} />
+              </Button>
+            </ButtonGroup>
+          </Box>
+        </Box>
         <Box className='px-5 pt-6 pb-32'>
-          {/* Header */}
-          <Text size='2xl' className='font-bold text-gray-800 mb-1'>
-            Buchung bestätigen
-          </Text>
-          <Text size='sm' className='text-gray-400 mb-6'>
-            Bitte überprüfe deine Angaben vor der Buchung.
-          </Text>
 
           {/* Ort & Zeit */}
           <SectionCard

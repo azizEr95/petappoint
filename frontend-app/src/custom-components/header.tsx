@@ -11,7 +11,7 @@ import {
 export function Header() {
   return (
     <>
-      <Box className='flex-1 bg-primary-500 rounded-b-3xl px-5 pt-4 pb-8'>
+      <Box className='bg-primary-500 rounded-b-3xl px-5 pt-16 pb-8'>
         <Box className='flex-row items-center justify-between mb-6'>
           <Box>
             <Text className=' text-white'>Guten Tag,</Text>

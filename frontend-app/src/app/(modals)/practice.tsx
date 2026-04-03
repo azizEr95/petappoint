@@ -79,14 +79,30 @@ export default function Practice() {
   const params = useLocalSearchParams<{ name: string }>()
   return (
     <>
-      <Box className='bg-slate-100'>
-        <ScrollView>
-          <Box className='h-[200px] bg-primary-500 rounded-b-3xl' />
+      <ScrollView>
+        <Box className='bg-slate-100'>
+          <Box className='h-[200px] bg-primary-500 rounded-b-3xl justify-center px-6 pt-10'>
+            <Box className='flex-row justify-between items-start'>
+              <Box>
+                <Text size='3xl' className='font-bold text-white'>
+                  {vetInfo.name}
+                </Text>
+              </Box>
+              <ButtonGroup>
+                <Button
+                  className='bg-white/20 rounded-3xl'
+                  onPress={() => router.back()}
+                >
+                  <FontAwesomeIcon name='times' color='#ffffff' size={20} />
+                </Button>
+              </ButtonGroup>
+            </Box>
+          </Box>
           <Box className='px-5 pt-4 pb-8 -mt-8'>
             {/**Vorstellung*/}
             <Box className='bg-white rounded-lg shadow-lg justify-center'>
               <Box className='flex-row rounded-lg mx-3 mb-3 mt-2 justify-between'>
-                <Text size='xl' className='font-bold text-gray-700'>
+                <Text size='xl' className='font-bold text-gray-700 flex-1 mr-2'>
                   {vetInfo.name}
                 </Text>
                 <Box className='bg-primary-100 justify-center rounded-full px-3 py-1'>
@@ -253,8 +269,8 @@ export default function Practice() {
               </Box>
             </Box>
           </Box>
-        </ScrollView>
-      </Box>
+        </Box>
+      </ScrollView>
     </>
   )
 }
