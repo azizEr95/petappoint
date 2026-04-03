@@ -1,6 +1,6 @@
-import { Box } from '@src/components/ui/box'
+import { Box } from '@src/gluestack-components/ui/box'
 
-import { Text } from '@src/components/ui/text'
+import { Text } from '@src/gluestack-components/ui/text'
 import * as React from 'react'
 import { ExternalLink } from './ExternalLink'
 

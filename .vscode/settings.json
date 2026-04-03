@@ -15,5 +15,6 @@
   "github.copilot.nextEditSuggestions.enabled": false,
   "github.copilot.renameSuggestions.triggerAutomatically": false,
   "github.copilot.selectedCompletionModel": "none",
-  "testing.automaticallyOpenTestResults": "neverOpen"
+  "testing.automaticallyOpenTestResults": "neverOpen",
+  "java.configuration.updateBuildConfiguration": "interactive"
 }

@@ -41,6 +41,7 @@ export default antfu(
       'migration/*',
       'components/',
       'tailwind.config.js',
+      'src/gluestack-components',
     ],
   },
 
