@@ -52,7 +52,13 @@
     "postcss"
   ],
 
-  "typescript.tsdk": "node_modules/typescript/lib",
+  "java.import.exclusions": [
+    "**/node_modules/**",
+    "**/android/**",
+    "**/.expo/**"
+  ],
+
+  "js/ts.tsdk.path": "./node_modules/typescript/lib",
   "cSpell.words": "Flashlist",
   "i18n-ally.localesPaths": ["src/translations/"],
   "i18n-ally.keystyle": "nested",

@@ -1,83 +1,108 @@
-import FontAwesome from '@expo/vector-icons/FontAwesome'
+import { Stack, usePathname } from 'expo-router';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 import {
   DarkTheme,
   DefaultTheme,
   ThemeProvider,
-} from '@react-navigation/native'
-import { Fab, FabIcon } from '@src/components/ui/fab'
-import { GluestackUIProvider } from '@src/components/ui/gluestack-ui-provider'
-import { MoonIcon, SlashIcon, SunIcon } from '@src/components/ui/icon'
-import { useColorScheme } from '@src/components/useColorScheme'
-import { useFonts } from 'expo-font'
-import { Slot, usePathname } from 'expo-router'
-import * as SplashScreen from 'expo-splash-screen'
-import { useEffect, useState } from 'react'
-import '@/global.css'
+} from '@react-navigation/native';
+import { Fab, FabIcon } from '@src/gluestack-components/ui/fab';
+import { MoonIcon, SlashIcon, SunIcon } from '@src/gluestack-components/ui/icon';
+import { GluestackUIProvider } from '@src/gluestack-components/ui/gluestack-ui-provider';
+import { useColorScheme } from '@src/gluestack-components/useColorScheme';
+import { useFonts } from 'expo-font';
+import * as SplashScreen from 'expo-splash-screen';
+import { useEffect, useState } from 'react';
+import '@/global.css';
 
+// --- für ErrorBoundary kannst du deinen bestehenden hängen lassen ---
 export {
-  // Catch any errors thrown by the Layout component.
   ErrorBoundary,
-} from 'expo-router'
+} from 'expo-router';
 
-SplashScreen.preventAutoHideAsync()
+SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
     ...FontAwesome.font,
-  })
+  });
 
-  const [styleLoaded, setStyleLoaded] = useState(false)
-  // Expo Router uses Error Boundaries to catch errors in the navigation tree.
   useEffect(() => {
-    if (error)
-      throw error
-  }, [error])
+    if (error) throw error;
+  }, [error]);
 
   useEffect(() => {
     if (loaded) {
-      SplashScreen.hideAsync()
+      SplashScreen.hideAsync();
     }
-  }, [loaded])
-  return <RootLayoutNav />
+  }, [loaded]);
+
+  if (!loaded) {
+    return null;
+  }
+
+  return <RootLayoutNav />;
 }
 
 function RootLayoutNav() {
-  const pathname = usePathname()
-  const systemColorScheme = useColorScheme()
-  const [mode, setMode] = useState<'system' | 'light' | 'dark'>('system')
+  const systemColorScheme = useColorScheme();
+  const [mode, setMode] = useState<'system' | 'light' | 'dark'>('system');
 
-  // Determine effective color scheme
-  const effectiveColorScheme = mode === 'system'
-    ? (systemColorScheme ?? 'light')
-    : mode
+  const effectiveColorScheme =
+    mode === 'system' ? (systemColorScheme ?? 'light') : mode;
 
   const handleToggleTheme = () => {
     if (mode === 'system') {
-      setMode('light')
+      setMode('light');
+    } else if (mode === 'light') {
+      setMode('dark');
+    } else {
+      setMode('system');
     }
-    else if (mode === 'light') {
-      setMode('dark')
-    }
-    else {
-      setMode('system')
-    }
-  }
+  };
 
   return (
     <GluestackUIProvider mode={mode}>
-      <ThemeProvider value={effectiveColorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <Slot />
-        {pathname === '/' && (
-          <Fab
-            onPress={handleToggleTheme}
-            className="m-6"
-            size="lg"
-          >
-            <FabIcon as={mode === 'system' ? SlashIcon : (effectiveColorScheme === 'dark' ? MoonIcon : SunIcon)} />
+      <ThemeProvider
+        value={effectiveColorScheme === 'dark' ? DarkTheme : DefaultTheme}
+      >
+        {/* Haupt‑Stack mit Tabs + Modals */}
+        <Stack
+          screenOptions={{
+            headerShown: false,
+          }}
+        >
+          {/* Auth screens (login / register) */}
+          <Stack.Screen name="(auth)" />
+
+          {/* Tabs (z.B. in (tabs)) */}
+          <Stack.Screen
+            name="(tabs)"
+            options={{presentation: 'fullScreenModal'}}
+          />
+
+          {/* Modal‑Stack für search / booking */}
+          <Stack.Screen
+            name="(modals)"
+            options={{ presentation: 'formSheet' }}
+          />
+        </Stack>
+
+        {/* Deinen Button nur für den Start‑Pfad */}
+        {usePathname() === '/' && (
+          <Fab onPress={handleToggleTheme} className="m-6" size="lg">
+            <FabIcon
+              as={
+                mode === 'system'
+                  ? SlashIcon
+                  : effectiveColorScheme === 'dark'
+                  ? MoonIcon
+                  : SunIcon
+              }
+            />
           </Fab>
         )}
       </ThemeProvider>
     </GluestackUIProvider>
-  )
+  );
 }
