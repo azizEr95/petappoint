@@ -5,6 +5,13 @@ import { optionalAuthentication } from "./authentication";
 import { personService } from "../service/personService";
 import { veterinaryPracticeService } from "../service/veterinaryPracticeService";
 
+function extractTokenFromRequest(req: express.Request): string | undefined {
+    if (req.cookies?.access_token) return req.cookies.access_token;
+    const authHeader = req.headers.authorization;
+    if (authHeader?.startsWith('Bearer ')) return authHeader.slice(7);
+    return undefined;
+}
+
 export const loginRouter = express.Router();
 
 loginRouter.post("/",
@@ -33,7 +40,7 @@ loginRouter.post("/",
             */
             sameSite: "none"
         });
-        res.status(201).send(logRes);
+        res.status(201).send({ ...logRes, token: jwtString });
         return;
     }
 );
@@ -42,9 +49,9 @@ loginRouter.get("/",
     optionalAuthentication,
     async (req, res) => {
         try {
-            const jwtString = req.cookies.access_token;
-            const loginRes = verifyJWT(jwtString);
-            res.send(loginRes);
+            const jwtString = extractTokenFromRequest(req);
+            const loginRes = verifyJWT(jwtString!);
+            res.send({ ...loginRes, token: jwtString });
             return;
         } catch (err) {
             res.clearCookie("access_token");

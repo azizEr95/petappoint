@@ -10,6 +10,7 @@ import {
   Text,
   VStack,
 } from '@/src/gluestack-components/ui'
+import { useLogout } from '@src/hooks/useLogout'
 
 const menuSections = [
   {
@@ -33,6 +34,7 @@ const menuSections = [
 ] as const
 
 export default function Profile() {
+  const { mutate: logout, isPending } = useLogout()
 
   return (
     <Box className='flex-1 bg-slate-100'>
@@ -115,11 +117,17 @@ export default function Profile() {
 
             {/* Logout */}
             <Card className='rounded-xl overflow-hidden bg-white shadow-sm'>
-              <Pressable className='flex-row items-center gap-3 p-4'>
+              <Pressable
+                className='flex-row items-center gap-3 p-4'
+                onPress={() => logout()}
+                disabled={isPending}
+              >
                 <Box className='w-10 h-10 rounded-full bg-red-50 items-center justify-center'>
                   <FontAwesomeIcon name='sign-out' color='#ef4444' size={18} />
                 </Box>
-                <Text className='font-medium text-red-500'>Abmelden</Text>
+                <Text className='font-medium text-red-500'>
+                  {isPending ? 'Abmelden…' : 'Abmelden'}
+                </Text>
               </Pressable>
             </Card>
 
