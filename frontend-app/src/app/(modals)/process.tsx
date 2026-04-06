@@ -63,10 +63,7 @@ export default function Process() {
       { appointmentId: aptId, animalId: selectedAnimalId!, serviceId: selectedServiceId! },
       {
         onSuccess: () => {
-          // Navigate to appointment tab first (updates tab state while modal is still open),
-          // then dismiss the modal stack — (tabs) will already be on appointment when revealed
-          router.navigate({ pathname: '/(tabs)/appointment' })
-          router.dismiss()
+          router.dismissTo('/(tabs)/appointment')
         },
         onError: (e) => setBookingError(e instanceof Error ? e.message : 'Buchung fehlgeschlagen.'),
       },
