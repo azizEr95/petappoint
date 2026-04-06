@@ -11,6 +11,8 @@ import {
   VStack,
 } from '@/src/gluestack-components/ui'
 import { useLogout } from '@src/hooks/useLogout'
+import { useMyAnimals } from '@src/hooks/useMyAnimals'
+import { useMyAppointments } from '@src/hooks/useMyAppointments'
 
 const menuSections = [
   {
@@ -35,6 +37,9 @@ const menuSections = [
 
 export default function Profile() {
   const { mutate: logout, isPending } = useLogout()
+  const { data: animals } = useMyAnimals()
+  const { future, past } = useMyAppointments()
+  const totalAppointments = future.length + past.length
 
   return (
     <Box className='flex-1 bg-slate-100'>
@@ -48,7 +53,7 @@ export default function Profile() {
             <HStack className='justify-around'>
               <VStack className='items-center'>
                 <Text size='2xl' className='font-bold text-primary-500'>
-                  3
+                  {animals?.length ?? '–'}
                 </Text>
                 <Text size='xs' className='text-gray-400'>
                   Haustiere
@@ -57,7 +62,7 @@ export default function Profile() {
               <Divider orientation='vertical' className='h-10' />
               <VStack className='items-center'>
                 <Text size='2xl' className='font-bold text-primary-500'>
-                  12
+                  {totalAppointments}
                 </Text>
                 <Text size='xs' className='text-gray-400'>
                   Termine

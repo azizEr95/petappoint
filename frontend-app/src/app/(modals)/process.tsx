@@ -9,57 +9,83 @@ import {
   HStack,
   Pressable,
   ScrollView,
+  Spinner,
   Text,
 } from '@/src/gluestack-components/ui'
-import { router } from 'expo-router'
+import { router, useLocalSearchParams } from 'expo-router'
+import { useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { getAppointment } from '@src/api/appointments'
+import { useMyAnimals } from '@src/hooks/useMyAnimals'
+import { useBookAppointment } from '@src/hooks/useBookAppointment'
+import { useAnimalTypes } from '@src/hooks/useAnimalTypes'
 
-// Mock data — replace with real params/state later
-const booking = {
-  practice: 'Tierarztpraxis am Park',
-  address: 'Parkstraße 12, 10115 Berlin',
-  date: 'Donnerstag, 14.03.2026',
-  time: '10:00 Uhr',
-  pet: 'Bello',
-  petType: 'Hund',
-  treatment: 'Allgemeine Untersuchung',
-}
-
-function SectionCard({
-  icon,
-  title,
-  children,
-  onEdit,
-}: {
-  icon: string
-  title: string
-  children: React.ReactNode
-  onEdit: () => void
-}) {
-  return (
-    <Card className='bg-white rounded-xl shadow-sm p-4 mb-3'>
-      <HStack className='justify-between items-center mb-2'>
-        <HStack className='items-center gap-2'>
-          <FontAwesomeIcon name='clock-o' color='#2e8a59' size={18} />
-          <Text size='sm' className='font-semibold text-gray-500 uppercase'>
-            {title}
-          </Text>
-        </HStack>
-        <Pressable onPress={onEdit} className='flex-row items-center gap-1'>
-          <FontAwesomeIcon name='pencil' color='#2e8a59' size={14} />
-          <Text size='sm' className='text-primary-500 font-medium'>
-            Ändern
-          </Text>
-        </Pressable>
-      </HStack>
-      {children}
-    </Card>
-  )
+function formatDateTime(date: Date): { date: string; time: string } {
+  return {
+    date: date.toLocaleDateString('de-DE', {
+      weekday: 'long',
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    }),
+    time: date.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }) + ' Uhr',
+  }
 }
 
 export default function Process() {
+  const { appointmentId } = useLocalSearchParams<{ appointmentId: string }>()
+
+  const aptId = Number(appointmentId)
+
+  const { data: appointment, isLoading: aptLoading } = useQuery({
+    queryKey: ['appointment', aptId],
+    queryFn: () => getAppointment(aptId),
+    enabled: !!aptId,
+  })
+
+  const { data: animals, isLoading: animalsLoading } = useMyAnimals()
+  const { data: animalTypes } = useAnimalTypes()
+  const { mutate: book, isPending: isBooking } = useBookAppointment()
+
+  const [selectedAnimalId, setSelectedAnimalId] = useState<number | null>(null)
+  const [selectedServiceId, setSelectedServiceId] = useState<number | null>(null)
+
+  const typeNameById = Object.fromEntries((animalTypes ?? []).map((t) => [t.id, t.name]))
+
+  const [bookingError, setBookingError] = useState<string | null>(null)
+  const isLoading = aptLoading || animalsLoading
+  const canBook = !!selectedAnimalId && !!selectedServiceId && !isBooking
+
+  function handleBook() {
+    if (!canBook) return
+    setBookingError(null)
+    book(
+      { appointmentId: aptId, animalId: selectedAnimalId!, serviceId: selectedServiceId! },
+      {
+        onSuccess: () => {
+          // Navigate to appointment tab first (updates tab state while modal is still open),
+          // then dismiss the modal stack — (tabs) will already be on appointment when revealed
+          router.navigate({ pathname: '/(tabs)/appointment' })
+          router.dismiss()
+        },
+        onError: (e) => setBookingError(e instanceof Error ? e.message : 'Buchung fehlgeschlagen.'),
+      },
+    )
+  }
+
+  if (isLoading) {
+    return (
+      <Box className='flex-1 items-center justify-center'>
+        <Spinner size='large' />
+      </Box>
+    )
+  }
+
+  const formatted = appointment ? formatDateTime(appointment.startTime) : null
+
   return (
     <Box className='flex-1 bg-slate-100'>
-      {/** Top green area — outside ScrollView so % height resolves correctly */}
+      {/** Top green area */}
       <Box className='bg-primary-500 rounded-b-3xl justify-center px-6 pb-4 pt-16'>
         <Box className='flex-row justify-between items-start'>
           <Box>
@@ -71,90 +97,141 @@ export default function Process() {
             </Text>
           </Box>
           <ButtonGroup>
-            <Button
-              className='bg-white/20 rounded-3xl'
-              onPress={() => router.back()}
-            >
+            <Button className='bg-white/20 rounded-3xl' onPress={() => router.back()}>
               <FontAwesomeIcon name='times' color='#ffffff' size={20} />
             </Button>
           </ButtonGroup>
         </Box>
       </Box>
+
       <ScrollView contentContainerStyle={{ paddingBottom: 16 }}>
         <Box className='px-5 pt-6'>
 
           {/* Ort & Zeit */}
-          <SectionCard
-            icon='map-marker'
-            title='Ort & Zeit'
-            onEdit={() => router.back()}
-          >
+          <Card className='bg-white rounded-xl shadow-sm p-4 mb-3'>
+            <HStack className='items-center gap-2 mb-2'>
+              <FontAwesomeIcon name='clock-o' color='#2e8a59' size={18} />
+              <Text size='sm' className='font-semibold text-gray-500 uppercase'>
+                Ort & Zeit
+              </Text>
+            </HStack>
             <Text size='md' className='font-semibold text-gray-800'>
-              {booking.practice}
+              {appointment?.veterinaryPractice.name ?? '–'}
             </Text>
             <Text size='sm' className='text-gray-500 mt-0.5'>
-              {booking.address}
+              {appointment
+                ? `${appointment.veterinaryPractice.address.street}, ${appointment.veterinaryPractice.address.cityCode} ${appointment.veterinaryPractice.address.city}`
+                : '–'}
             </Text>
-            <HStack className='items-center gap-2 mt-2'>
-              <FontAwesomeIcon name='calendar' color='#374151' size={14} />
-              <Text size='sm' className='text-gray-700'>
-                {booking.date}
+            {formatted && (
+              <>
+                <HStack className='items-center gap-2 mt-2'>
+                  <FontAwesomeIcon name='calendar' color='#374151' size={14} />
+                  <Text size='sm' className='text-gray-700'>{formatted.date}</Text>
+                </HStack>
+                <HStack className='items-center gap-2 mt-1'>
+                  <FontAwesomeIcon name='clock-o' color='#374151' size={14} />
+                  <Text size='sm' className='text-gray-700'>{formatted.time}</Text>
+                </HStack>
+              </>
+            )}
+          </Card>
+
+          {/* Haustier auswählen */}
+          <Card className='bg-white rounded-xl shadow-sm p-4 mb-3'>
+            <HStack className='items-center gap-2 mb-3'>
+              <FontAwesomeIcon name='paw' color='#2e8a59' size={18} />
+              <Text size='sm' className='font-semibold text-gray-500 uppercase'>
+                Haustier
               </Text>
             </HStack>
-            <HStack className='items-center gap-2 mt-1'>
-              <FontAwesomeIcon name='clock-o' color='#374151' size={14} />
-              <Text size='sm' className='text-gray-700'>
-                {booking.time}
+            <Box className='flex-row flex-wrap gap-2'>
+              {(animals ?? []).map((animal) => {
+                const isSelected = selectedAnimalId === animal.id
+                return (
+                  <Pressable
+                    key={animal.id}
+                    onPress={() => setSelectedAnimalId(animal.id)}
+                    className={`px-3 py-2 rounded-lg border ${
+                      isSelected
+                        ? 'bg-primary-100 border-primary-400'
+                        : 'bg-gray-50 border-gray-200'
+                    }`}
+                  >
+                    <Text
+                      size='sm'
+                      className={`font-semibold ${isSelected ? 'text-primary-600' : 'text-gray-700'}`}
+                    >
+                      {animal.name}
+                    </Text>
+                    <Text size='xs' className='text-gray-400'>
+                      {typeNameById[animal.animalTypeId] ?? '–'}
+                    </Text>
+                  </Pressable>
+                )
+              })}
+              {!animals?.length && (
+                <Text className='text-gray-400'>Keine Haustiere gefunden.</Text>
+              )}
+            </Box>
+          </Card>
+
+          {/* Behandlung auswählen */}
+          <Card className='bg-white rounded-xl shadow-sm p-4 mb-3'>
+            <HStack className='items-center gap-2 mb-3'>
+              <FontAwesomeIcon name='stethoscope' color='#2e8a59' size={18} />
+              <Text size='sm' className='font-semibold text-gray-500 uppercase'>
+                Behandlung
               </Text>
             </HStack>
-          </SectionCard>
+            <Box className='flex-row flex-wrap gap-2'>
+              {(appointment?.availableServices ?? []).map((service) => {
+                const isSelected = selectedServiceId === service.id
+                return (
+                  <Pressable
+                    key={service.id}
+                    onPress={() => setSelectedServiceId(service.id)}
+                    className={`px-3 py-2 rounded-full border ${
+                      isSelected
+                        ? 'bg-primary-100 border-primary-400'
+                        : 'bg-gray-50 border-gray-200'
+                    }`}
+                  >
+                    <Text
+                      size='sm'
+                      className={`font-medium ${isSelected ? 'text-primary-600' : 'text-gray-700'}`}
+                    >
+                      {service.name}
+                    </Text>
+                  </Pressable>
+                )
+              })}
+              {!appointment?.availableServices?.length && (
+                <Text className='text-gray-400'>Keine Leistungen verfügbar.</Text>
+              )}
+            </Box>
+          </Card>
 
-          {/* Haustier */}
-          <SectionCard
-            icon='paw'
-            title='Haustier'
-            onEdit={() => router.push('/(tabs)/pets')}
-          >
-            <HStack className='items-center gap-3'>
-              <Box className='bg-primary-100 rounded-full w-10 h-10 items-center justify-center'>
-                <FontAwesomeIcon name='paw' color='#2e8a59' size={18} />
-              </Box>
-              <Box>
-                <Text size='md' className='font-semibold text-gray-800'>
-                  {booking.pet}
-                </Text>
-                <Text size='sm' className='text-gray-500'>
-                  {booking.petType}
-                </Text>
-              </Box>
-            </HStack>
-          </SectionCard>
-
-          {/* Behandlung */}
-          <SectionCard
-            icon='stethoscope'
-            title='Behandlung'
-            onEdit={() => router.back()}
-          >
-            <HStack className='items-center gap-3'>
-              <Box className='bg-primary-100 rounded-full px-3 py-1 self-start'>
-                <Text size='sm' className='text-primary-500 font-medium'>
-                  {booking.treatment}
-                </Text>
-              </Box>
-            </HStack>
-          </SectionCard>
         </Box>
       </ScrollView>
-      {/* Bottom button — outside ScrollView so it stays fixed at the bottom */}
+
+      {/* Bottom button — fixed outside ScrollView */}
       <Box className='bg-white px-5 py-4 shadow-lg'>
+        {bookingError && (
+          <Text className='text-red-500 text-sm mb-2 text-center'>{bookingError}</Text>
+        )}
         <Button
           className='w-full h-12 rounded-xl bg-primary-500'
-          onPress={() => router.dismissTo('/(tabs)/appointment')}
+          disabled={!canBook}
+          onPress={handleBook}
         >
-          <ButtonText className='text-white font-bold'>
-            Buchung bestätigen
-          </ButtonText>
+          {isBooking ? (
+            <Spinner size='small' />
+          ) : (
+            <ButtonText className='text-white font-bold'>
+              {canBook ? 'Buchung bestätigen' : 'Haustier & Behandlung wählen'}
+            </ButtonText>
+          )}
         </Button>
       </Box>
     </Box>

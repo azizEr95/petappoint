@@ -20,14 +20,9 @@ function formatTime(date: Date): string {
 }
 
 export function UpcomingApt() {
-  const { data: allAppointments, isLoading } = useMyAppointments()
+  const { future, isLoading } = useMyAppointments()
 
-  const now = new Date()
-  const upcoming = (allAppointments ?? [])
-    .filter((a) => a.startTime > now)
-    .sort((a, b) => a.startTime.getTime() - b.startTime.getTime())
-
-  const next = upcoming[0]
+  const next = [...future].sort((a, b) => a.startTime.getTime() - b.startTime.getTime())[0]
 
   if (isLoading) {
     return (

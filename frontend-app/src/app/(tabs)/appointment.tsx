@@ -29,13 +29,10 @@ function formatTime(date: Date): string {
 }
 
 export default function Appointment() {
-  const { data: allAppointments, isLoading, isError } = useMyAppointments()
+  const { future, past, isLoading, isError } = useMyAppointments()
   const [activeTab, setActiveTab] = useState<boolean>(true)
 
-  const now = new Date()
-  const upcoming = (allAppointments ?? []).filter((a) => a.startTime > now)
-  const past = (allAppointments ?? []).filter((a) => a.startTime <= now)
-  const displayed = activeTab ? upcoming : past
+  const displayed = activeTab ? future : past
 
   return (
     <>

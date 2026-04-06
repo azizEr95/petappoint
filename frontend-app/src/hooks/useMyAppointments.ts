@@ -1,19 +1,26 @@
-import { useQueries } from '@tanstack/react-query'
-import { getAnimalAppointments } from '@src/api/animals'
-import { useMyAnimals } from '@src/hooks/useMyAnimals'
+import { useQuery } from '@tanstack/react-query'
+import { getFutureAppointments, getPastAppointments } from '@src/api/appointments'
+import { useAuthStore } from '@src/stores/authStore'
 
 export function useMyAppointments() {
-  const { data: animals } = useMyAnimals()
+  const user = useAuthStore((s) => s.user)
 
-  return useQueries({
-    queries: (animals ?? []).map((animal) => ({
-      queryKey: ['animalAppointments', animal.id],
-      queryFn: () => getAnimalAppointments(animal.id),
-    })),
-    combine: (results) => ({
-      data: results.flatMap((r) => r.data ?? []),
-      isLoading: results.some((r) => r.isLoading),
-      isError: results.some((r) => r.isError),
-    }),
+  const future = useQuery({
+    queryKey: ['appointments', 'future', user?.id],
+    queryFn: () => getFutureAppointments(user!.id),
+    enabled: !!user?.id,
   })
+
+  const past = useQuery({
+    queryKey: ['appointments', 'past', user?.id],
+    queryFn: () => getPastAppointments(user!.id),
+    enabled: !!user?.id,
+  })
+
+  return {
+    future: future.data ?? [],
+    past: past.data ?? [],
+    isLoading: future.isLoading || past.isLoading,
+    isError: future.isError || past.isError,
+  }
 }
