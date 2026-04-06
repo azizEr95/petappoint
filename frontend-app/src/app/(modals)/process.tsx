@@ -59,29 +59,29 @@ function SectionCard({
 export default function Process() {
   return (
     <Box className='flex-1 bg-slate-100'>
-      <ScrollView>
-        {/** Top green area */}
-        <Box className='h-[30%] bg-primary-500 rounded-b-3xl justify-center px-6 pb-4 pt-16'>
-          <Box className='flex-row justify-between items-start'>
-            <Box>
-              <Text size='3xl' className='font-bold text-white'>
-                Buchung bestätigen
-              </Text>
-              <Text size='lg' className='text-white/70 mt-1'>
-                Überprüfe deine Angaben
-              </Text>
-            </Box>
-            <ButtonGroup>
-              <Button
-                className='bg-white/20 rounded-3xl'
-                onPress={() => router.back()}
-              >
-                <FontAwesomeIcon name='times' color='#ffffff' size={20} />
-              </Button>
-            </ButtonGroup>
+      {/** Top green area — outside ScrollView so % height resolves correctly */}
+      <Box className='bg-primary-500 rounded-b-3xl justify-center px-6 pb-4 pt-16'>
+        <Box className='flex-row justify-between items-start'>
+          <Box>
+            <Text size='3xl' className='font-bold text-white'>
+              Buchung bestätigen
+            </Text>
+            <Text size='lg' className='text-white/70 mt-1'>
+              Überprüfe deine Angaben
+            </Text>
           </Box>
+          <ButtonGroup>
+            <Button
+              className='bg-white/20 rounded-3xl'
+              onPress={() => router.back()}
+            >
+              <FontAwesomeIcon name='times' color='#ffffff' size={20} />
+            </Button>
+          </ButtonGroup>
         </Box>
-        <Box className='px-5 pt-6 pb-32'>
+      </Box>
+      <ScrollView contentContainerStyle={{ paddingBottom: 16 }}>
+        <Box className='px-5 pt-6'>
 
           {/* Ort & Zeit */}
           <SectionCard
@@ -145,18 +145,18 @@ export default function Process() {
             </HStack>
           </SectionCard>
         </Box>
-        {/* Sticky bottom button */}
-        <Box className='absolute bottom-0 left-0 right-0 bg-white px-5 py-4 shadow-lg'>
-          <Button
-            className='w-full h-12 rounded-xl bg-primary-500'
-            onPress={() => router.dismissTo('/(tabs)/appointment')}
-          >
-            <ButtonText className='text-white font-bold'>
-              Buchung bestätigen
-            </ButtonText>
-          </Button>
-        </Box>
       </ScrollView>
+      {/* Bottom button — outside ScrollView so it stays fixed at the bottom */}
+      <Box className='bg-white px-5 py-4 shadow-lg'>
+        <Button
+          className='w-full h-12 rounded-xl bg-primary-500'
+          onPress={() => router.dismissTo('/(tabs)/appointment')}
+        >
+          <ButtonText className='text-white font-bold'>
+            Buchung bestätigen
+          </ButtonText>
+        </Button>
+      </Box>
     </Box>
   )
 }
