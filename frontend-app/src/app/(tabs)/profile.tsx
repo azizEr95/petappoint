@@ -68,7 +68,7 @@ export default function Profile() {
                   Termine
                 </Text>
               </VStack>
-              <Divider orientation='vertical' className='h-10' />
+              {/*<Divider orientation='vertical' className='h-10' />
               <VStack className='items-center'>
                 <Text size='2xl' className='font-bold text-primary-500'>
                   4
@@ -76,7 +76,7 @@ export default function Profile() {
                 <Text size='xs' className='text-gray-400'>
                   Bewertungen
                 </Text>
-              </VStack>
+              </VStack>*/}
             </HStack>
           </Card>
 
