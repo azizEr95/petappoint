@@ -13,7 +13,9 @@
     "lint:fix": "eslint . --fix",
     "build": "tsc",
     "type-check": "tsc --noemit",
-    "test": "jest"
+    "test": "jest",
+    "seed": "cd ../backend && npm run seed:all",
+    "dev:fresh": "npm run seed && expo start"
   },
   "dependencies": {
     "@expo/html-elements": "^0.10.1",
