@@ -57,8 +57,11 @@ export function AppAvatar({
 
   const avatarEl = (
     <Avatar size={size} className={className ?? 'bg-primary-400'}>
-      {imageUri ? <AvatarImage source={{ uri: imageUri }} /> : null}
-      <AvatarFallbackText>{getInitials(name)}</AvatarFallbackText>
+      {imageUri ? (
+        <AvatarImage source={{ uri: imageUri }} />
+      ) : (
+        <AvatarFallbackText>{getInitials(name)}</AvatarFallbackText>
+      )}
     </Avatar>
   )
 

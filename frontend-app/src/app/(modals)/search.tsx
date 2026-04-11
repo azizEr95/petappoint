@@ -8,9 +8,9 @@ import {
   Input,
   InputField,
   Card,
-  Avatar,
   Spinner,
 } from '@src/gluestack-components/ui'
+import { AppAvatar } from '@/src/custom-components/app-avatar'
 import { useRouter } from 'expo-router'
 import { useState } from 'react'
 import { useAnimalTypes } from '@src/hooks/useAnimalTypes'
@@ -94,7 +94,7 @@ export default function SucheModal() {
         : 'bg-gray-50 border-gray-200'
     }`}
                       >
-                        <Avatar size='sm' className='bg-primary-400' />
+                        <AppAvatar size='sm' name={pet.name} />
                         <ButtonText
                           className={`text-lg font-semibold ${
                             isSelected ? 'text-primary-500' : 'text-gray-700'
