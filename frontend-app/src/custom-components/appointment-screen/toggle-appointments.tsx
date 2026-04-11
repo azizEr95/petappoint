@@ -8,12 +8,14 @@ import {
 interface ToggleAptProps {
   activeTab: any
   setActiveTab: any
-  appointments: any[]
+  futureCount: number
+  pastCount: number
 }
 export function ToggleApt({
   activeTab,
   setActiveTab,
-  appointments,
+  futureCount,
+  pastCount,
 }: ToggleAptProps) {
   return (
     <>
@@ -28,7 +30,7 @@ export function ToggleApt({
             className={`flex rounded-lg font-medium ${activeTab ? 'bg-white shadow-sm' : 'bg-primary-100 shadow-none'}`}
           >
             <ButtonText className='text-gray-700'>
-              Kommend ({appointments.length})
+              Kommend ({futureCount})
             </ButtonText>
           </Button>
 
@@ -38,7 +40,7 @@ export function ToggleApt({
             className={`flex rounded-lg font-medium ${!activeTab ? 'bg-white shadow-sm' : 'bg-primary-100 shadow-none'}`}
           >
             <ButtonText className='text-gray-700'>
-              Vergangen ({appointments.length})
+              Vergangen ({pastCount})
             </ButtonText>
           </Button>
         </ButtonGroup>

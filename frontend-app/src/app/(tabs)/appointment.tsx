@@ -62,7 +62,8 @@ export default function Appointment() {
             <ToggleApt
               activeTab={activeTab}
               setActiveTab={setActiveTab}
-              appointments={displayed}
+              futureCount={future.length}
+              pastCount={past.length}
             />
 
             {isLoading && (
