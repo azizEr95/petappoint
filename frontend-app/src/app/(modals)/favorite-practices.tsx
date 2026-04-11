@@ -1,7 +1,6 @@
 // app/(modals)/favorite-practices.tsx
 import { FontAwesomeIcon } from '@/src/custom-components/tabbar-icon'
 import {
-  Avatar,
   Box,
   Button,
   ButtonGroup,
@@ -10,6 +9,7 @@ import {
   Spinner,
   Text,
 } from '@/src/gluestack-components/ui'
+import { AppAvatar } from '@/src/custom-components/app-avatar'
 import { Link, router } from 'expo-router'
 import { ScrollView } from 'react-native'
 import { useAllPractices } from '@src/hooks/useAllPractices'
@@ -72,7 +72,7 @@ export default function FavoritePracticesScreen() {
               >
                 <Box className='flex-row items-start gap-3'>
                   <Box>
-                    <Avatar size='lg' className='bg-primary-400' />
+                    <AppAvatar size='lg' name={practice.name} />
                   </Box>
                   <Box className='flex-1'>
                     <Text className='text-gray-700 text-md font-semibold'>{practice.name}</Text>

@@ -1,5 +1,4 @@
 import {
-  Avatar,
   Box,
   Button,
   ButtonGroup,
@@ -8,6 +7,7 @@ import {
   Spinner,
   Text,
 } from '@src/gluestack-components/ui'
+import { AppAvatar } from '@/src/custom-components/app-avatar'
 import { useState } from 'react'
 import { Alert, ScrollView } from 'react-native'
 import { FontAwesomeIcon } from '@/src/custom-components/tabbar-icon'
@@ -92,7 +92,7 @@ export default function Appointment() {
                 <Box className='flex-row items-start gap-3'>
                   {/* Haustier‑Icon */}
                   <Box>
-                    <Avatar size='lg' className='bg-primary-400' />
+                    <AppAvatar size='lg' name={apt.animal?.name} />
                   </Box>
 
                   {/* Inhalt */}

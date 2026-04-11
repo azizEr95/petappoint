@@ -1,6 +1,7 @@
 import { FontAwesomeIcon } from '@/src/custom-components/tabbar-icon'
-import { Avatar, Box, Card, Spinner, Text } from '@/src/gluestack-components/ui'
+import { Box, Card, Spinner, Text } from '@/src/gluestack-components/ui'
 import { useMyAppointments } from '@src/hooks/useMyAppointments'
+import { AppAvatar } from '@/src/custom-components/app-avatar'
 
 function formatDate(date: Date): string {
   const today = new Date()
@@ -52,7 +53,7 @@ export function UpcomingApt() {
             <Box className='flex-row items-start gap-3'>
               {/* Haustier‑Icon */}
               <Box>
-                <Avatar size='lg' className='bg-primary-400' />
+                <AppAvatar size='lg' name={next.animal?.name} />
               </Box>
 
               {/* Inhalt */}

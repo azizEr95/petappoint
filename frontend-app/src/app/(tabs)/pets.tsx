@@ -1,6 +1,7 @@
 import { Header } from '@/src/custom-components/header'
 import { SearchApt } from '@/src/custom-components/home-screen/search-apt'
 import { FontAwesomeIcon } from '@/src/custom-components/tabbar-icon'
+import { AppAvatar } from '@/src/custom-components/app-avatar'
 import {
   Box,
   ButtonGroup,
@@ -8,13 +9,13 @@ import {
   ButtonText,
   Text,
   Card,
-  Avatar,
   Spinner,
 } from '@src/gluestack-components/ui'
 import { useRouter } from 'expo-router'
 import { ScrollView } from 'react-native'
 import { useMyAnimals } from '@src/hooks/useMyAnimals'
 import { useAnimalTypes } from '@src/hooks/useAnimalTypes'
+import { useStoredImage } from '@src/hooks/useStoredImage'
 
 const PET_COLORS = ['#dbeafe', '#fce7f3', '#d1fae5', '#fef9c3', '#ede9fe', '#ffedd5']
 
@@ -39,6 +40,18 @@ function calcAge(dateOfBirth: Date | null): string {
 function formatWeight(grams: number | null): string {
   if (!grams) return '–'
   return grams >= 1000 ? `${(grams / 1000).toFixed(1)} kg` : `${grams} g`
+}
+
+function PetAvatar({ animalId, name }: { animalId: number; name: string }) {
+  const [imageUri, saveImageUri] = useStoredImage(`avatar_animal_${animalId}`)
+  return (
+    <AppAvatar
+      size='lg'
+      name={name}
+      imageUri={imageUri}
+      onUpload={saveImageUri}
+    />
+  )
 }
 
 export default function Pets() {
@@ -82,7 +95,7 @@ export default function Pets() {
                     <Box className='flex-row items-start justify-between gap-3'>
                       {/* Haustier‑Icon */}
                       <Box className='flex items-center'>
-                        <Avatar size='lg' className='bg-primary-400' />
+                        <PetAvatar animalId={pet.id} name={pet.name} />
                       </Box>
 
                       {/**Pet Daten */}

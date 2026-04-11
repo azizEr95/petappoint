@@ -1,8 +1,9 @@
-import { Avatar, Box, Card, Text } from '@/src/gluestack-components/ui'
+import { Box, Card, Text } from '@/src/gluestack-components/ui'
 import { FontAwesomeIcon } from '../tabbar-icon'
 import { Link } from 'expo-router'
 import { useAllPractices } from '@src/hooks/useAllPractices'
 import { useFavorites } from '@src/hooks/useFavorites'
+import { AppAvatar } from '../app-avatar'
 
 export function FavoritePractices() {
   const { data: practices } = useAllPractices()
@@ -24,7 +25,7 @@ export function FavoritePractices() {
           >
             <Box className='flex-row items-start gap-3'>
               <Box>
-                <Avatar size='lg' className='bg-primary-400' />
+                <AppAvatar size='lg' name={practice.name} />
               </Box>
               <Box className='flex-1'>
                 <Box className='flex-row justify-between items-center'>

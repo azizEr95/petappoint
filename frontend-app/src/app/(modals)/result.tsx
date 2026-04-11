@@ -6,9 +6,9 @@ import {
   Button,
   ButtonGroup,
   Card,
-  Avatar,
   Spinner,
 } from '@src/gluestack-components/ui'
+import { AppAvatar } from '@/src/custom-components/app-avatar'
 import { ScrollView } from 'react-native'
 import { usePracticeSearch } from '@src/hooks/usePracticeSearch'
 import { useFavorites } from '@src/hooks/useFavorites'
@@ -81,7 +81,7 @@ export default function ResultModal() {
                 >
                   <Box className='flex-row items-start gap-3'>
                     <Box>
-                      <Avatar size='lg' className='bg-primary-400' />
+                      <AppAvatar size='lg' name={practice.name} />
                     </Box>
                     <Box className='flex-1'>
                       <Box className='flex-row justify-between items-center'>
