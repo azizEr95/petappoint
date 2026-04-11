@@ -42,8 +42,9 @@ export default function Register() {
       return
     }
 
-    // Convert YYYY-MM-DD to ISO datetime string
-    const isoDate = dateOfBirth ? `${dateOfBirth}T00:00:00.000Z` : ''
+    // Convert DD.MM.YYYY to ISO datetime string
+    const [dd, mm, yyyy] = dateOfBirth.split('.')
+    const isoDate = dateOfBirth ? `${yyyy}-${mm}-${dd}T00:00:00.000Z` : ''
 
     register({
       firstName,
@@ -151,7 +152,7 @@ export default function Register() {
             <Text size='lg' className='font-medium text-gray-600'>Geburtsdatum</Text>
             <Input className='bg-white rounded-xl border-0 shadow-sm h-12'>
               <InputField
-                placeholder='JJJJ-MM-TT (z.B. 1990-01-15)'
+                placeholder='TT.MM.JJJJ (z.B. 15.01.1990)'
                 value={dateOfBirth}
                 onChangeText={setDateOfBirth}
                 keyboardType='numbers-and-punctuation'

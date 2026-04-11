@@ -10,6 +10,7 @@ import {
   Text,
   VStack,
 } from '@/src/gluestack-components/ui'
+import { router } from 'expo-router'
 import { useLogout } from '@src/hooks/useLogout'
 import { useMyAnimals } from '@src/hooks/useMyAnimals'
 import { useMyAppointments } from '@src/hooks/useMyAppointments'
@@ -19,9 +20,9 @@ const menuSections = [
     id: 'account',
     label: 'Konto',
     items: [
-      { icon: 'user', label: 'Persönliche Daten' },
+      { icon: 'user', label: 'Persönliche Daten', onPress: () => router.push('/(modals)/edit-profile') },
       // { icon: 'bell', label: 'Benachrichtigungen' },
-      { icon: 'heart', label: 'Lieblings-Tierärzte' },
+      { icon: 'heart', label: 'Lieblings-Tierärzte', onPress: undefined },
     ],
   },
   /*{
@@ -90,7 +91,7 @@ export default function Profile() {
                 <Card className='rounded-xl overflow-hidden bg-white shadow-lg'>
                   {section.items.map((item, index) => (
                     <Box key={item.label}>
-                      <Pressable className='flex-row items-center justify-between p-4'>
+                      <Pressable className='flex-row items-center justify-between p-4' onPress={item.onPress}>
                         <HStack className='items-center gap-3'>
                           <Box className='w-10 h-10 rounded-full bg-slate-100 items-center justify-center'>
                             <FontAwesomeIcon

@@ -16,9 +16,13 @@ export default function ModalLayout() {
           name='practice' 
           options={{ presentation: 'fullScreenModal' }} 
         />
-        <Stack.Screen 
-          name='process' 
-          options={{ presentation: 'fullScreenModal' }} 
+        <Stack.Screen
+          name='process'
+          options={{ presentation: 'fullScreenModal' }}
+        />
+        <Stack.Screen
+          name='edit-profile'
+          options={{ presentation: 'fullScreenModal' }}
         />
       </Stack>
     </>
