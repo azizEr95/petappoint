@@ -32,6 +32,10 @@ export default function ModalLayout() {
           name='add-pet'
           options={{ presentation: 'fullScreenModal' }}
         />
+        <Stack.Screen
+          name='favorite-practices'
+          options={{ presentation: 'fullScreenModal' }}
+        />
       </Stack>
     </>
   )

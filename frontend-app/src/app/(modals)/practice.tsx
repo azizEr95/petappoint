@@ -5,7 +5,6 @@ import {
   Button,
   Text,
   ButtonText,
-  ButtonGroup,
   ScrollView,
   Card,
   HStack,
@@ -15,6 +14,8 @@ import {
 import { router, useLocalSearchParams } from 'expo-router'
 import { useMemo, useState } from 'react'
 import { usePracticeDetails } from '@src/hooks/usePracticeDetails'
+import { useFavorites } from '@src/hooks/useFavorites'
+import { useToggleFavorite } from '@src/hooks/useToggleFavorite'
 
 function formatDate(date: Date): string {
   const today = new Date()
@@ -42,6 +43,9 @@ export default function Practice() {
   const practiceId = Number(id)
 
   const { practice, services, appointments } = usePracticeDetails(practiceId)
+  const { favoriteIds } = useFavorites()
+  const { mutate: toggle } = useToggleFavorite()
+  const isFav = favoriteIds.has(practiceId)
 
   const groupedDates = useMemo(() => {
     if (!appointments.data) return []
@@ -93,20 +97,28 @@ export default function Practice() {
       <ScrollView>
         <Box className='bg-slate-100'>
           <Box className='h-[200px] bg-primary-500 rounded-b-3xl justify-center px-6 pt-10'>
-            <Box className='flex-row justify-between items-start'>
-              <Box>
-                <Text size='3xl' className='font-bold text-white'>
-                  {vet.name}
-                </Text>
-              </Box>
-              <ButtonGroup>
-                <Button
-                  className='bg-white/20 rounded-3xl'
-                  onPress={() => router.back()}
-                >
-                  <FontAwesomeIcon name='times' color='#ffffff' size={20} />
-                </Button>
-              </ButtonGroup>
+            <Box className='flex-row justify-between items-center'>
+              <Button
+                className='bg-white/20 rounded-3xl'
+                onPress={() => toggle({ practiceId, isFavorite: isFav })}
+              >
+                <FontAwesomeIcon
+                  name={isFav ? 'heart' : 'heart-o'}
+                  color={isFav ? '#ef4444' : '#ffffff'}
+                  size={20}
+                />
+              </Button>
+              <Button
+                className='bg-white/20 rounded-3xl'
+                onPress={() => router.back()}
+              >
+                <FontAwesomeIcon name='times' color='#ffffff' size={20} />
+              </Button>
+            </Box>
+            <Box className='mt-3'>
+              <Text size='3xl' className='font-bold text-white'>
+                {vet.name}
+              </Text>
             </Box>
           </Box>
           <Box className='px-5 pt-4 pb-8 -mt-8'>

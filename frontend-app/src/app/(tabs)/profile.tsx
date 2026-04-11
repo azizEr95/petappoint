@@ -11,33 +11,26 @@ import {
   VStack,
 } from '@/src/gluestack-components/ui'
 import { router } from 'expo-router'
+import type { ComponentProps } from 'react'
+import FontAwesome from '@expo/vector-icons/FontAwesome'
 import { useLogout } from '@src/hooks/useLogout'
 import { useMyAnimals } from '@src/hooks/useMyAnimals'
 import { useMyAppointments } from '@src/hooks/useMyAppointments'
 
-const menuSections = [
-  {
-    id: 'account',
-    label: 'Konto',
-    items: [
-      { icon: 'user', label: 'Persönliche Daten', onPress: () => router.push('/(modals)/edit-profile') },
-      // { icon: 'bell', label: 'Benachrichtigungen' },
-      { icon: 'heart', label: 'Lieblings-Tierärzte', onPress: undefined },
-    ],
-  },
-  /*{
-    id: 'support',
-    label: 'Hilfe & Support',
-    items: [
-      { icon: 'question-circle', label: 'Hilfe-Center' },
-      { icon: 'file-text-o', label: 'AGB & Datenschutz' },
-      { icon: 'shield', label: 'Sicherheit' },
-    ],
-  },*/
-] as const
 
 export default function Profile() {
   const { mutate: logout, isPending } = useLogout()
+
+  const menuSections = [
+    {
+      id: 'account',
+      label: 'Konto',
+      items: [
+        { icon: 'user', label: 'Persönliche Daten', onPress: () => router.push('/(modals)/edit-profile') },
+        { icon: 'heart', label: 'Lieblings-Tierarztpraxen', onPress: () => router.push('/(modals)/favorite-practices') },
+      ],
+    },
+  ]
   const { data: animals } = useMyAnimals()
   const { future, past } = useMyAppointments()
   const totalAppointments = future.length + past.length
@@ -95,7 +88,7 @@ export default function Profile() {
                         <HStack className='items-center gap-3'>
                           <Box className='w-10 h-10 rounded-full bg-slate-100 items-center justify-center'>
                             <FontAwesomeIcon
-                              name={item.icon}
+                              name={item.icon as ComponentProps<typeof FontAwesome>['name']}
                               color='#2e8a59'
                               size={18}
                             />

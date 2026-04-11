@@ -11,6 +11,7 @@ import {
 } from '@src/gluestack-components/ui'
 import { ScrollView } from 'react-native'
 import { usePracticeSearch } from '@src/hooks/usePracticeSearch'
+import { useFavorites } from '@src/hooks/useFavorites'
 
 export default function ResultModal() {
   const router = useRouter()
@@ -23,6 +24,7 @@ export default function ResultModal() {
     animalTypeId: animalTypeId ?? undefined,
     serviceId: serviceId ?? undefined,
   })
+  const { favoriteIds } = useFavorites()
 
   const practices = data?.data ?? []
 
@@ -70,33 +72,36 @@ export default function ResultModal() {
             </Box>
           )}
 
-          {practices.map((practice) => (
-            <Card
-              key={practice.id}
-              className='border-primary-500 border-l-4 shadow-sm mb-3'
-            >
-              <Link href={{ pathname: '/(modals)/practice', params: { id: String(practice.id) } }}>
-                <Box className='flex-row items-start gap-3'>
-                  <Box>
-                    <Avatar size='lg' className='bg-primary-400' />
-                  </Box>
-                  <Box className='flex-1'>
-                    <Box className='flex-row items-center justify-between'>
-                      <Text className='text-gray-700 text-md font-semibold'>
-                        {practice.name}
-                      </Text>
+          {practices.map((practice) => {
+            const isFav = favoriteIds.has(practice.id)
+            return (
+              <Card key={practice.id} className='border-primary-500 border-l-4 shadow-sm mb-3'>
+                <Link
+                  href={{ pathname: '/(modals)/practice', params: { id: String(practice.id) } }}
+                >
+                  <Box className='flex-row items-start gap-3'>
+                    <Box>
+                      <Avatar size='lg' className='bg-primary-400' />
                     </Box>
-                    <Box className='flex-row items-start gap-1 py-3'>
-                      <FontAwesomeIcon name='map-marker' color='#374151' size={15} />
-                      <Text className='text-gray-700 text-md font-semibold'>
-                        {practice.address.street}, {practice.address.cityCode} {practice.address.city}
-                      </Text>
+                    <Box className='flex-1'>
+                      <Box className='flex-row justify-between items-center'>
+                        <Text className='text-gray-700 text-md font-semibold flex-1'>{practice.name}</Text>
+                        {isFav && (
+                          <FontAwesomeIcon name='heart' color='#ef4444' size={16} />
+                        )}
+                      </Box>
+                      <Box className='flex-row items-start gap-1 py-3'>
+                        <FontAwesomeIcon name='map-marker' color='#374151' size={15} />
+                        <Text className='text-gray-700 text-md font-semibold'>
+                          {practice.address.street}, {practice.address.cityCode} {practice.address.city}
+                        </Text>
+                      </Box>
                     </Box>
                   </Box>
-                </Box>
-              </Link>
-            </Card>
-          ))}
+                </Link>
+              </Card>
+            )
+          })}
         </Box>
       </ScrollView>
     </>
