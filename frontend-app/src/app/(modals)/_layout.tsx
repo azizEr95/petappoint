@@ -28,6 +28,10 @@ export default function ModalLayout() {
           name='edit-pet'
           options={{ presentation: 'fullScreenModal' }}
         />
+        <Stack.Screen
+          name='add-pet'
+          options={{ presentation: 'fullScreenModal' }}
+        />
       </Stack>
     </>
   )

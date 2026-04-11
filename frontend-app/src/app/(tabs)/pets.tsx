@@ -166,15 +166,17 @@ export default function Pets() {
               ))}
             </Box>
 
-            <Box>
-              <ButtonGroup className='items-center p-2'>
-                <Button variant='outline' className='rounded-xl'>
-                  <FontAwesomeIcon name='plus' color='#341579' size={15} />
-                  <ButtonText className='text-gray-700 text-lg font-medium'>
-                    Haustier hinzufügen
-                  </ButtonText>
-                </Button>
-              </ButtonGroup>
+            <Box className='py-2'>
+              <Button
+                variant='outline'
+                className='w-full h-14 rounded-xl'
+                onPress={() => router.push('/(modals)/add-pet')}
+              >
+                <FontAwesomeIcon name='plus' color='#341579' size={18} />
+                <ButtonText className='text-gray-700 text-lg font-medium ml-2'>
+                  Haustier hinzufügen
+                </ButtonText>
+              </Button>
             </Box>
           </Box>
         </ScrollView>
