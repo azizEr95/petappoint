@@ -19,6 +19,10 @@ export async function getPastAppointments(personId: number): Promise<Appointment
   return z.array(AppointmentsSchema).parse(raw)
 }
 
+export async function cancelAppointment(appointmentId: number): Promise<void> {
+  await apiRequest<unknown>(`/api/appointments/${appointmentId}`, { method: 'DELETE' })
+}
+
 export async function bookAppointment(
   appointmentId: number,
   animalId: number,

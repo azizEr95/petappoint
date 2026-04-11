@@ -9,12 +9,14 @@ import {
   Text,
 } from '@src/gluestack-components/ui'
 import { useState } from 'react'
-import { ScrollView } from 'react-native'
+import { Alert, ScrollView } from 'react-native'
 import { FontAwesomeIcon } from '@/src/custom-components/tabbar-icon'
 import { SearchApt } from '@/src/custom-components/home-screen/search-apt'
 import { Header } from '@/src/custom-components/header'
 import { ToggleApt } from '@/src/custom-components/appointment-screen/toggle-appointments'
 import { useMyAppointments } from '@src/hooks/useMyAppointments'
+import { useRouter } from 'expo-router'
+import { useCancelAppointment } from '@src/hooks/useCancelAppointment'
 
 function formatAppointmentDate(date: Date): string {
   return date.toLocaleDateString('de-DE', {
@@ -29,8 +31,21 @@ function formatTime(date: Date): string {
 }
 
 export default function Appointment() {
+  const router = useRouter()
   const { future, past, isLoading, isError } = useMyAppointments()
+  const { mutate: cancel } = useCancelAppointment()
   const [activeTab, setActiveTab] = useState<boolean>(true)
+
+  function handleCancel(aptId: number, aptName: string) {
+    Alert.alert(
+      'Termin absagen',
+      `Möchtest du den Termin für ${aptName} wirklich absagen?`,
+      [
+        { text: 'Nein', style: 'cancel' },
+        { text: 'Ja, absagen', style: 'destructive', onPress: () => cancel(aptId) },
+      ],
+    )
+  }
 
   const displayed = activeTab ? future : past
 
@@ -116,6 +131,7 @@ export default function Appointment() {
                         variant='outline'
                         action='negative'
                         className='rounded-lg font-medium'
+                        onPress={() => handleCancel(apt.id, apt.animal?.name ?? 'dieses Tier')}
                       >
                         <ButtonText className='text-red-500'>Absagen</ButtonText>
                       </Button>
@@ -125,6 +141,7 @@ export default function Appointment() {
                         variant='outline'
                         action='positive'
                         className='rounded-lg font-medium'
+                        onPress={() => router.push({ pathname: '/(modals)/process', params: { appointmentId: apt.id } })}
                       >
                         <ButtonText>Bearbeiten</ButtonText>
                       </Button>

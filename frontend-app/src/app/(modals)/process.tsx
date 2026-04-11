@@ -13,7 +13,7 @@ import {
   Text,
 } from '@/src/gluestack-components/ui'
 import { router, useLocalSearchParams } from 'expo-router'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { getAppointment } from '@src/api/appointments'
 import { useMyAnimals } from '@src/hooks/useMyAnimals'
@@ -47,8 +47,20 @@ export default function Process() {
   const { data: animalTypes } = useAnimalTypes()
   const { mutate: book, isPending: isBooking } = useBookAppointment()
 
+  const isEditMode = !!(appointment?.animal?.id)
+
   const [selectedAnimalId, setSelectedAnimalId] = useState<number | null>(null)
   const [selectedServiceId, setSelectedServiceId] = useState<number | null>(null)
+
+  // Pre-select current values when editing an existing appointment
+  useEffect(() => {
+    if (appointment?.animal?.id && selectedAnimalId === null) {
+      setSelectedAnimalId(appointment.animal.id)
+    }
+    if (appointment?.service?.id && selectedServiceId === null) {
+      setSelectedServiceId(appointment.service.id)
+    }
+  }, [appointment])
 
   const typeNameById = Object.fromEntries((animalTypes ?? []).map((t) => [t.id, t.name]))
 
@@ -87,10 +99,10 @@ export default function Process() {
         <Box className='flex-row justify-between items-start'>
           <Box>
             <Text size='3xl' className='font-bold text-white'>
-              Buchung bestätigen
+              {isEditMode ? 'Termin bearbeiten' : 'Buchung bestätigen'}
             </Text>
             <Text size='lg' className='text-white/70 mt-1'>
-              Überprüfe deine Angaben
+              {isEditMode ? 'Tier oder Behandlung ändern' : 'Überprüfe deine Angaben'}
             </Text>
           </Box>
           <ButtonGroup>
@@ -226,7 +238,7 @@ export default function Process() {
             <Spinner size='small' />
           ) : (
             <ButtonText className='text-white font-bold'>
-              {canBook ? 'Buchung bestätigen' : 'Haustier & Behandlung wählen'}
+              {isEditMode ? 'Änderungen speichern' : canBook ? 'Buchung bestätigen' : 'Haustier & Behandlung wählen'}
             </ButtonText>
           )}
         </Button>
