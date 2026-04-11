@@ -104,7 +104,10 @@ export default function Pets() {
                       {/**Change Button */}
                       <Box className='items-center'>
                         <ButtonGroup className='bg-white flex rounded-full'>
-                          <Button className='bg-white rounded-full'>
+                          <Button
+                            className='bg-white rounded-full'
+                            onPress={() => router.push({ pathname: '/(modals)/edit-pet', params: { animalId: pet.id } })}
+                          >
                             <FontAwesomeIcon
                               name='pencil'
                               color='#374151'

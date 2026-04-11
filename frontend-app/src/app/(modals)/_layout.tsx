@@ -24,6 +24,10 @@ export default function ModalLayout() {
           name='edit-profile'
           options={{ presentation: 'fullScreenModal' }}
         />
+        <Stack.Screen
+          name='edit-pet'
+          options={{ presentation: 'fullScreenModal' }}
+        />
       </Stack>
     </>
   )
