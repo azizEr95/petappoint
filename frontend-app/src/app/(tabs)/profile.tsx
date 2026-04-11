@@ -20,11 +20,11 @@ const menuSections = [
     label: 'Konto',
     items: [
       { icon: 'user', label: 'Persönliche Daten' },
-      { icon: 'bell', label: 'Benachrichtigungen' },
+      // { icon: 'bell', label: 'Benachrichtigungen' },
       { icon: 'heart', label: 'Lieblings-Tierärzte' },
     ],
   },
-  {
+  /*{
     id: 'support',
     label: 'Hilfe & Support',
     items: [
@@ -32,7 +32,7 @@ const menuSections = [
       { icon: 'file-text-o', label: 'AGB & Datenschutz' },
       { icon: 'shield', label: 'Sicherheit' },
     ],
-  },
+  },*/
 ] as const
 
 export default function Profile() {
