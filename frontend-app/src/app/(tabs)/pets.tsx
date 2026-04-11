@@ -16,6 +16,8 @@ import { ScrollView } from 'react-native'
 import { useMyAnimals } from '@src/hooks/useMyAnimals'
 import { useAnimalTypes } from '@src/hooks/useAnimalTypes'
 
+const PET_COLORS = ['#dbeafe', '#fce7f3', '#d1fae5', '#fef9c3', '#ede9fe', '#ffedd5']
+
 const SEX_LABEL: Record<string, string> = {
   male: 'Männlich',
   female: 'Weiblich',
@@ -73,10 +75,10 @@ export default function Pets() {
             )}
 
             <Box>
-              {(animals ?? []).map((pet) => (
+              {(animals ?? []).map((pet, index) => (
                 <Card key={pet.id} className='shadow-sm mb-3'>
                   {/** Pet Header */}
-                  <Box className='bg-primary-50 -mx-4 p-4'>
+                  <Box className='-mx-4 p-4' style={{ backgroundColor: PET_COLORS[index % PET_COLORS.length] }}>
                     <Box className='flex-row items-start justify-between gap-3'>
                       {/* Haustier‑Icon */}
                       <Box className='flex items-center'>
@@ -132,7 +134,7 @@ export default function Pets() {
                     </Box>
                   </Box>
 
-                  {/** Krankenakte Button und neuen Termin */}
+                  {/* * Krankenakte Button und neuen Termin
                   <Box className='flex-1 mt-4 pt-3 border-t border-border'>
                     <ButtonGroup className='flex-row justify-center rounded-lg p-2'>
                       <Button
@@ -159,7 +161,7 @@ export default function Pets() {
                         </ButtonText>
                       </Button>
                     </ButtonGroup>
-                  </Box>
+                  </Box> */}
                 </Card>
               ))}
             </Box>
