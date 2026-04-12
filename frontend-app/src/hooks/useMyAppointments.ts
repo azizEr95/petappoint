@@ -18,8 +18,8 @@ export function useMyAppointments() {
   })
 
   return {
-    future: future.data ?? [],
-    past: past.data ?? [],
+    future: (future.data ?? []).slice().sort((a, b) => a.startTime.getTime() - b.startTime.getTime()),
+    past: (past.data ?? []).slice().sort((a, b) => b.startTime.getTime() - a.startTime.getTime()),
     isLoading: future.isLoading || past.isLoading,
     isError: future.isError || past.isError,
   }

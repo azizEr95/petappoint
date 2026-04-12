@@ -72,7 +72,7 @@ export default function Process() {
     if (!canBook) return
     setBookingError(null)
     book(
-      { appointmentId: aptId, animalId: selectedAnimalId!, serviceId: selectedServiceId! },
+      { appointmentId: aptId, animalId: selectedAnimalId!, serviceId: selectedServiceId!, practiceId: appointment!.veterinaryPractice.id },
       {
         onSuccess: () => {
           router.dismissTo('/(tabs)/appointment')
