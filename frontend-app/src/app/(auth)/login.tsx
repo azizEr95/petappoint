@@ -92,7 +92,7 @@ export default function Login() {
             </Input>
           </VStack>
 
-          <Pressable className='self-end'>
+          <Pressable className='self-end' onPress={() => router.push('/(auth)/forgot-password')}>
             <Text size='lg' className='text-primary-500 font-medium'>
               Passwort vergessen?
             </Text>

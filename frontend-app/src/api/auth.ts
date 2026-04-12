@@ -42,3 +42,24 @@ export async function verifyEmailApi(code: string): Promise<void> {
 export async function resendVerificationApi(): Promise<void> {
   await apiRequest<void>('/api/registration/', { method: 'POST' })
 }
+
+export async function forgotPasswordApi(data: { email: string }): Promise<void> {
+  await apiRequest<void>('/api/password-reset/request', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
+}
+
+export async function verifyResetTokenApi(data: { token: string }): Promise<void> {
+  await apiRequest<void>('/api/password-reset/verify', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
+}
+
+export async function resetPasswordApi(data: { token: string; newPassword: string }): Promise<void> {
+  await apiRequest<void>('/api/password-reset/confirm', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
+}
