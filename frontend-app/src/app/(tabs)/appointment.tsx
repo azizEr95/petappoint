@@ -158,6 +158,7 @@ export default function Appointment() {
                         variant='solid'
                         action='positive'
                         className='rounded-lg font-medium'
+                        onPress={() => router.push({ pathname: '/(modals)/practice', params: { id: apt.veterinaryPractice.id, animalId: apt.animal?.id } })}
                       >
                         <ButtonText className='text-white'>Erneut buchen</ButtonText>
                       </Button>

@@ -39,7 +39,7 @@ function formatTime(date: Date): string {
 }
 
 export default function Practice() {
-  const { id } = useLocalSearchParams<{ id: string }>()
+  const { id, animalId: preselectedAnimalId } = useLocalSearchParams<{ id: string; animalId?: string }>()
   const practiceId = Number(id)
 
   const { practice, services, appointments } = usePracticeDetails(practiceId)
@@ -325,6 +325,7 @@ export default function Practice() {
                         params: {
                           appointmentId: String(selectedAppointmentId),
                           practiceId: String(practiceId),
+                          ...(preselectedAnimalId ? { animalId: preselectedAnimalId } : {}),
                         },
                       })
                     }

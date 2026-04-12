@@ -33,7 +33,7 @@ function formatDateTime(date: Date): { date: string; time: string } {
 }
 
 export default function Process() {
-  const { appointmentId } = useLocalSearchParams<{ appointmentId: string }>()
+  const { appointmentId, animalId: preselectedAnimalId } = useLocalSearchParams<{ appointmentId: string; animalId?: string }>()
 
   const aptId = Number(appointmentId)
 
@@ -52,15 +52,16 @@ export default function Process() {
   const [selectedAnimalId, setSelectedAnimalId] = useState<number | null>(null)
   const [selectedServiceId, setSelectedServiceId] = useState<number | null>(null)
 
-  // Pre-select current values when editing an existing appointment
+  // Pre-select current values when editing, or preselected animal when rebooking
   useEffect(() => {
-    if (appointment?.animal?.id && selectedAnimalId === null) {
-      setSelectedAnimalId(appointment.animal.id)
+    if (selectedAnimalId === null) {
+      const initial = appointment?.animal?.id ?? (preselectedAnimalId ? Number(preselectedAnimalId) : null)
+      if (initial) setSelectedAnimalId(initial)
     }
     if (appointment?.service?.id && selectedServiceId === null) {
       setSelectedServiceId(appointment.service.id)
     }
-  }, [appointment])
+  }, [appointment, preselectedAnimalId])
 
   const typeNameById = Object.fromEntries((animalTypes ?? []).map((t) => [t.id, t.name]))
 
