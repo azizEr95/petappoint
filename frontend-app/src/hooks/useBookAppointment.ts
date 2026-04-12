@@ -18,6 +18,7 @@ export function useBookAppointment() {
       practiceId: number
     }) => bookAppointment(appointmentId, animalId, serviceId),
     onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['appointment', variables.appointmentId] })
       queryClient.invalidateQueries({ queryKey: ['appointments', 'future', user?.id] })
       queryClient.invalidateQueries({ queryKey: ['appointments', 'past', user?.id] })
       queryClient.invalidateQueries({ queryKey: ['practice', variables.practiceId, 'appointments', 'available'] })
