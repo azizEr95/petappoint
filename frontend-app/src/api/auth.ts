@@ -34,3 +34,11 @@ export async function getSessionApi(): Promise<MobileLoginType> {
   const raw = await apiRequest<unknown>('/api/login', { method: 'GET' })
   return MobileLoginSchema.parse(raw)
 }
+
+export async function verifyEmailApi(code: string): Promise<void> {
+  await apiRequest<unknown>(`/api/registration/${code}`, { method: 'GET' })
+}
+
+export async function resendVerificationApi(): Promise<void> {
+  await apiRequest<void>('/api/registration/', { method: 'POST' })
+}

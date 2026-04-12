@@ -26,6 +26,7 @@ type AuthState = {
   token: string | null
   isLoading: boolean
   setAuth: (user: LoginType, token: string) => Promise<void>
+  setVerified: () => void
   clearAuth: () => Promise<void>
   hydrateFromStorage: () => Promise<void>
 }
@@ -38,6 +39,12 @@ export const useAuthStore = create<AuthState>((set) => ({
   setAuth: async (user, token) => {
     await storage.setItem(TOKEN_KEY, token)
     set({ user, token })
+  },
+
+  setVerified: () => {
+    set((state) => ({
+      user: state.user ? { ...state.user, verified: true } : null,
+    }))
   },
 
   clearAuth: async () => {

@@ -8,12 +8,16 @@ export function useLogin() {
 
   return useMutation({
     mutationFn: loginApi,
-    onSuccess: async (data) => {
+    onSuccess: async (data, variables) => {
       await setAuth(
         { id: data.id, role: data.role, verified: data.verified, exp: data.exp },
         data.token,
       )
-      router.replace('/(tabs)/home')
+      if (!data.verified) {
+        router.replace({ pathname: '/(auth)/verify-email', params: { email: variables.email } })
+      } else {
+        router.replace('/(tabs)/home')
+      }
     },
   })
 }
