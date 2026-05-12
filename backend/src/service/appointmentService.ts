@@ -525,15 +525,6 @@ export const appointmentService = {
       );
     }
 
-    if (appointment.animalId) {
-      throw new ConstraintError("Appointment is already taken.", [
-        {
-          path: "id",
-          value: id,
-        },
-      ]);
-    }
-
     const updated = await prisma.appointment.update({
       include: APPOINTMENT_INCLUDE_BASE,
       where: { id },

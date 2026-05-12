@@ -14,7 +14,7 @@ export function configureCORS(app: express.Express) {
         var corsOptions: CorsOptions = {
             origin: corsArr,
             methods: "GET,PUT,POST,DELETE",
-            allowedHeaders: "Origin,Content-Type",
+            allowedHeaders: "Origin,Content-Type,Authorization",
             optionsSuccessStatus: 200,
             credentials: true
         }

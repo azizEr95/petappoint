@@ -167,6 +167,12 @@ export const LoginSchema = z.object({
 
 export type LoginType = z.infer<typeof LoginSchema>;
 
+// Mobile login response — extends LoginSchema with the raw JWT token for Bearer auth
+export const MobileLoginSchema = LoginSchema.extend({
+  token: z.string(),
+});
+export type MobileLoginType = z.infer<typeof MobileLoginSchema>;
+
 
 //Person has Animal:
 export const Person_has_AnimalSchema = z.object({

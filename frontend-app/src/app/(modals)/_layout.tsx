@@ -6,19 +6,35 @@ export default function ModalLayout() {
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen
           name='search'
-          options={{ presentation: 'modal' }}
+          options={{ presentation: 'fullScreenModal' }}
         />
         <Stack.Screen 
           name='result' 
-          options={{ presentation: 'modal' }}
+          options={{ presentation: 'fullScreenModal' }}
         />
         <Stack.Screen 
           name='practice' 
-          options={{ presentation: 'modal' }} 
+          options={{ presentation: 'fullScreenModal' }} 
         />
-        <Stack.Screen 
-          name='process' 
-          options={{ presentation: 'modal' }} 
+        <Stack.Screen
+          name='process'
+          options={{ presentation: 'fullScreenModal' }}
+        />
+        <Stack.Screen
+          name='edit-profile'
+          options={{ presentation: 'fullScreenModal' }}
+        />
+        <Stack.Screen
+          name='edit-pet'
+          options={{ presentation: 'fullScreenModal' }}
+        />
+        <Stack.Screen
+          name='add-pet'
+          options={{ presentation: 'fullScreenModal' }}
+        />
+        <Stack.Screen
+          name='favorite-practices'
+          options={{ presentation: 'fullScreenModal' }}
         />
       </Stack>
     </>
