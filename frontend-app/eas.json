@@ -11,7 +11,7 @@
     },
     "preview": {
       "distribution": "internal",
-      "npm": true
+      "prebuildCommand": "prebuild --npm"
     },
     "production": {
       "autoIncrement": true
