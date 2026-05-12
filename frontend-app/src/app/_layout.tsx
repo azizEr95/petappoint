@@ -13,6 +13,8 @@ import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useState } from 'react';
 import '@/global.css';
+import { QueryProvider } from '@src/providers/QueryProvider';
+import { useAuthStore } from '@src/stores/authStore';
 
 // --- für ErrorBoundary kannst du deinen bestehenden hängen lassen ---
 export {
@@ -26,6 +28,7 @@ export default function RootLayout() {
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
     ...FontAwesome.font,
   });
+  const hydrateFromStorage = useAuthStore((s) => s.hydrateFromStorage);
 
   useEffect(() => {
     if (error) throw error;
@@ -33,7 +36,9 @@ export default function RootLayout() {
 
   useEffect(() => {
     if (loaded) {
-      SplashScreen.hideAsync();
+      hydrateFromStorage().then(() => {
+        SplashScreen.hideAsync();
+      });
     }
   }, [loaded]);
 
@@ -41,7 +46,11 @@ export default function RootLayout() {
     return null;
   }
 
-  return <RootLayoutNav />;
+  return (
+    <QueryProvider>
+      <RootLayoutNav />
+    </QueryProvider>
+  );
 }
 
 function RootLayoutNav() {
@@ -73,7 +82,7 @@ function RootLayoutNav() {
           }}
         >
           {/* Auth screens (login / register) */}
-          <Stack.Screen name="(auth)" />
+          <Stack.Screen name="(auth)"/>
 
           {/* Tabs (z.B. in (tabs)) */}
           <Stack.Screen
@@ -84,12 +93,12 @@ function RootLayoutNav() {
           {/* Modal‑Stack für search / booking */}
           <Stack.Screen
             name="(modals)"
-            options={{ presentation: 'formSheet' }}
+            options={{ presentation: 'fullScreenModal' }}
           />
         </Stack>
 
         {/* Deinen Button nur für den Start‑Pfad */}
-        {usePathname() === '/' && (
+        {usePathname() === '/login' && (
           <Fab onPress={handleToggleTheme} className="m-6" size="lg">
             <FabIcon
               as={

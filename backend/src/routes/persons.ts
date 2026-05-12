@@ -104,7 +104,7 @@ personsRouter.post("/",
             sameSite: "none"
         })
 
-        res.status(201).send(userdata);
+        res.status(201).send({ ...userdata, token: jwt });
     }
 );
 

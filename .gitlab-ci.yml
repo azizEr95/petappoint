@@ -29,7 +29,7 @@ stages:
 
 e2e-tests:
   stage: e2e-test
-  image: mcr.microsoft.com/playwright:v1.60.0-jammy
+  image: mcr.microsoft.com/playwright:v1.60.1-jammy
   services:
     - name: postgres:15
       alias: db

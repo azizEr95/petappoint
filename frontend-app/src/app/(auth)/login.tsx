@@ -11,17 +11,26 @@ import {
   Text,
   VStack,
 } from '@/src/gluestack-components/ui'
-import { router } from 'expo-router'
 import { useState } from 'react'
+import { router } from 'expo-router'
+import { useLogin } from '@src/hooks/useLogin'
+import { ApiError } from '@src/api/client'
 
 export default function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const { mutate: login, isPending, error } = useLogin()
 
   const handleLogin = () => {
-    // TODO: connect to backend
-    router.replace('/(tabs)/home')
+    login({ email, password })
   }
+
+  const errorMessage =
+    error instanceof ApiError && error.status === 401
+      ? 'Falsche E-Mail oder Passwort'
+      : error
+        ? 'Ein Fehler ist aufgetreten. Bitte versuche es erneut.'
+        : null
 
   return (
     <Box className='flex-1 bg-slate-100'>
@@ -83,17 +92,26 @@ export default function Login() {
             </Input>
           </VStack>
 
-          <Pressable className='self-end'>
+          <Pressable className='self-end' onPress={() => router.push('/(auth)/forgot-password')}>
             <Text size='lg' className='text-primary-500 font-medium'>
               Passwort vergessen?
             </Text>
           </Pressable>
 
+          {errorMessage && (
+            <Text size='sm' className='text-red-500 text-center'>
+              {errorMessage}
+            </Text>
+          )}
+
           <Button
             className='w-full h-12 rounded-xl bg-primary-500 mt-2'
             onPress={handleLogin}
+            disabled={isPending}
           >
-            <ButtonText className='font-bold'>Anmelden</ButtonText>
+            <ButtonText className='font-bold'>
+              {isPending ? 'Anmelden…' : 'Anmelden'}
+            </ButtonText>
           </Button>
         </VStack>
 
