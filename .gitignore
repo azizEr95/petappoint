@@ -153,6 +153,7 @@ vite.config.ts.timestamp-*
 .vite/
 
 **/package-lock.json
+!frontend-app/package-lock.json
 
 # Playwright
 /test-results/
