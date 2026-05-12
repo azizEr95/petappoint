@@ -1,0 +1,123 @@
+@import '../../variables';
+
+.app-promo-section {
+  background: var(--color-primary);
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.app-promo-with-mockup {
+  padding-bottom: 0 !important;
+
+  .col-lg-6:first-child {
+    margin-top: 4rem;
+  }
+}
+
+.app-promo-title {
+  font-size: $h2-font-size;
+  color: white !important;
+  font-weight: 700;
+  margin-bottom: $spacing-md;
+}
+
+.app-promo-description {
+  font-size: $font-size-lg;
+  line-height: $line-height-base;
+  opacity: 0.95;
+}
+
+.app-feature-badge {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  padding: $spacing-xs $spacing-md;
+  border-radius: $border-radius-pill;
+  font-size: $font-size-sm;
+  display: inline-flex;
+  align-items: center;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.25);
+  }
+
+  i {
+    margin-right: 0.5rem;
+    color: rgba(255, 255, 255, 0.9);
+  }
+}
+
+.btn-app-store,
+.btn-play-store {
+  background: white !important;
+  color: var(--color-primary) !important;
+  border: none !important;
+  border-radius: $border-radius-pill !important;
+  padding: $spacing-xs $spacing-lg !important;
+  font-weight: 600 !important;
+  font-size: $font-size-base !important;
+  transition: all 0.3s ease !important;
+  box-shadow: $box-shadow-md !important;
+
+  &:hover {
+    background: white !important;
+    color: var(--color-primary) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: $box-shadow-lg !important;
+  }
+
+  &:active,
+  &:focus {
+    background: var(--color-primary-lightest) !important;
+    color: var(--color-primary) !important;
+  }
+
+  i {
+    margin-right: 0.5rem !important;
+    color: var(--color-primary) !important;
+  }
+}
+
+.app-promo-qr-note {
+  color: rgba(255, 255, 255, 0.95);
+  font-size: $font-size-sm;
+  font-weight: 500;
+}
+
+.mockup-image {
+  max-width: 140%;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  margin-bottom: -1px;
+  margin-top: auto;
+}
+
+.app-promo-qr-section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.qr-code-image {
+  max-width: 120px;
+  height: auto;
+  object-fit: contain;
+}
+
+@media (max-width: 768px) {
+  .app-promo-title {
+    font-size: 1.8rem;
+  }
+
+  .mockup-phone i {
+    font-size: 10rem;
+  }
+
+  .btn-app-store,
+  .btn-play-store {
+    padding: $spacing-xs $spacing-md;
+    font-size: $font-size-sm;
+  }
+}

@@ -1,0 +1,271 @@
+// Base Styles
+// Typography, global elements, and layout primitives
+
+@import 'variables';
+
+// ============================================
+// GLOBAL STYLES
+// ============================================
+
+body {
+  font-family: $font-family-base;
+  line-height: $line-height-base;
+  color: $body-color;
+  margin: 0;
+  padding: 0;
+}
+
+// ============================================
+// TYPOGRAPHY
+// ============================================
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: $primary;
+  font-weight: 700;
+  line-height: 1.2;
+  margin: 0 0 1rem;
+}
+
+h1 {
+  font-size: $h1-font-size;
+}
+h2 {
+  font-size: $h2-font-size;
+}
+h3 {
+  font-size: $h3-font-size;
+}
+h4 {
+  font-size: $h4-font-size;
+}
+
+// ============================================
+// LAYOUT PRIMITIVES
+// ============================================
+
+// Container
+.container {
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+  padding: 0 var(--container-padding);
+}
+
+// Grid
+.grid {
+  display: grid;
+  gap: var(--spacing-lg);
+}
+
+.grid-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.grid-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.grid-4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.grid-auto {
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+// Sections
+.section {
+  padding: var(--spacing-3xl) 0;
+}
+
+.section-padding {
+  padding: 4rem 0;
+}
+
+.section-bg {
+  background: var(--color-bg-light);
+}
+
+.section-bg-gradient {
+  background: linear-gradient(
+    135deg,
+    var(--color-primary-bg) 0%,
+    var(--color-primary-lightest) 100%
+  );
+}
+
+.section-title {
+  text-align: center;
+  font-size: $h2-font-size;
+  color: $primary;
+  margin-bottom: 1rem;
+}
+
+.section-subtitle {
+  text-align: center;
+  font-size: $font-size-lg;
+  color: $text-light;
+  margin-bottom: var(--spacing-xl);
+}
+
+// Hero Section
+.hero-section {
+  position: relative;
+  min-height: 600px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(0, 0, 0, 0.4) 0%,
+    rgba(88, 192, 88, 0.3) 100%
+  );
+}
+
+.hero-content {
+  position: relative;
+  z-index: 10;
+  color: white;
+  text-align: center;
+  padding: 2rem;
+}
+
+.hero-title {
+  font-size: 3.5rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.hero-subtitle {
+  font-size: 1.5rem;
+  margin-bottom: 2.5rem;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
+}
+
+// ============================================
+// UTILITIES
+// ============================================
+
+// Text
+.text-center {
+  text-align: center;
+}
+
+.text-primary {
+  color: var(--color-primary) !important;
+}
+
+.text-muted {
+  color: var(--color-text-muted);
+}
+
+// Spacing
+.mb-0 {
+  margin-bottom: 0;
+}
+.mb-1 {
+  margin-bottom: var(--spacing-xs);
+}
+.mb-2 {
+  margin-bottom: var(--spacing-sm);
+}
+.mb-3 {
+  margin-bottom: var(--spacing-md);
+}
+.mb-4 {
+  margin-bottom: var(--spacing-lg);
+}
+
+.mt-0 {
+  margin-top: 0;
+}
+.mt-2 {
+  margin-top: var(--spacing-sm);
+}
+.mt-3 {
+  margin-top: var(--spacing-md);
+}
+.mt-4 {
+  margin-top: var(--spacing-lg);
+}
+
+// Legacy utilities (for backward compatibility)
+.ueberschrift {
+  font-weight: bold;
+}
+
+.backButton {
+  position: absolute;
+  top: 20px;
+  left: 30px;
+}
+
+.background-green {
+  background-color: $primary;
+  padding: 1em;
+  padding-bottom: 4em;
+}
+
+.flex-row {
+  display: flex;
+  flex-direction: row;
+}
+
+.button {
+  margin: 1em;
+}
+
+// ============================================
+// RESPONSIVE
+// ============================================
+
+@media (max-width: 768px) {
+  :root {
+    --container-padding: #{$container-padding-mobile};
+  }
+
+  h1 {
+    font-size: 2rem;
+  }
+  h2 {
+    font-size: 1.8rem;
+  }
+
+  .hero-title {
+    font-size: 2rem;
+  }
+
+  .hero-subtitle {
+    font-size: 1.1rem;
+  }
+
+  .section-title {
+    font-size: 1.8rem;
+  }
+
+  .grid-2,
+  .grid-3,
+  .grid-4 {
+    grid-template-columns: 1fr;
+  }
+
+  .section {
+    padding: var(--spacing-xl) 0;
+  }
+}

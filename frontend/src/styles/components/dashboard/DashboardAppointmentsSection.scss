@@ -1,0 +1,128 @@
+@import '../../variables';
+
+.dashboard-appointments-section {
+  width: 100%;
+}
+
+.appointments-tabs {
+  display: flex;
+  gap: var(--spacing-sm, 1rem);
+  padding-top: var(--spacing-md, 1.5rem);
+  margin-bottom: var(--spacing-lg, 2rem);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.tab-button {
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  padding: var(--spacing-sm, 1rem) var(--spacing-md, 1.5rem);
+  font-size: $font-size-base;
+  font-weight: 600;
+  color: var(--text-light, $text-light);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs, 0.5rem);
+  margin-bottom: -2px;
+
+  i {
+    font-size: 1.1rem;
+  }
+
+  &:hover {
+    color: var(--color-primary, $primary);
+  }
+
+  &.active {
+    color: var(--color-primary, $primary);
+    border-bottom-color: var(--color-primary, $primary);
+  }
+}
+
+.appointments-content {
+  min-height: 200px;
+}
+
+.appointments-loading {
+  text-align: center;
+  padding: var(--spacing-2xl, 4rem);
+  color: var(--text-muted, $text-muted);
+}
+
+.appointments-empty {
+  text-align: center;
+  padding: var(--spacing-3xl, 5rem) var(--spacing-xl, 3rem);
+  color: var(--text-muted, $text-muted);
+
+  i {
+    font-size: 3rem;
+    margin-bottom: var(--spacing-lg, 2rem);
+    color: var(--text-muted, $text-muted);
+  }
+
+  p {
+    font-size: $font-size-lg;
+    margin-bottom: var(--spacing-lg, 2rem);
+  }
+
+  .empty-state-hint {
+    font-size: $font-size-base;
+    color: var(--text-muted, $text-muted);
+    margin-bottom: var(--spacing-lg, 2rem);
+  }
+
+  .btn {
+    margin-top: var(--spacing-lg);
+    padding: 0.75rem 2rem;
+    font-size: $font-size-base;
+    font-weight: 500;
+    border-radius: 50px;
+
+    &.btn-primary {
+      color: white;
+
+      i {
+        color: white;
+      }
+
+      &:hover {
+        color: white;
+      }
+    }
+
+    i {
+      margin-right: 0.5rem;
+      font-size: 1.1rem;
+    }
+  }
+}
+
+.appointments-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md, 1.5rem);
+}
+
+.view-all-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs, 0.5rem);
+  margin-top: var(--spacing-lg, 2rem);
+  color: var(--color-primary, $primary);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: $font-size-base;
+  transition: all 0.2s ease;
+
+  &:hover {
+    gap: var(--spacing-sm, 1rem);
+    color: var(--color-primary-dark, $primary-dark);
+  }
+
+  i {
+    font-size: 1rem;
+    transition: transform 0.2s ease;
+  }
+}

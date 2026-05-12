@@ -1,0 +1,20 @@
+{
+  "chat.agent.enabled": false,
+  "chat.commandCenter.enabled": false,
+  "github.copilot.chat.agent.runTasks": false,
+  "github.copilot.chat.agent.thinkingTool": false,
+  "github.copilot.chat.reviewSelection.enabled": false,
+  "github.copilot.chat.search.semanticTextResults": false,
+  "github.copilot.enable": {
+    "*": true,
+    "plaintext": false,
+    "markdown": false,
+    "scminput": false
+  },
+  "github.copilot.editor.enableCodeActions": false,
+  "github.copilot.nextEditSuggestions.enabled": false,
+  "github.copilot.renameSuggestions.triggerAutomatically": false,
+  "github.copilot.selectedCompletionModel": "none",
+  "testing.automaticallyOpenTestResults": "neverOpen",
+  "java.configuration.updateBuildConfiguration": "interactive"
+}

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terminbestätigung</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333333;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #2c8a59 0%, #16a34a 100%);
+            color: #ffffff;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 26px;
+        }
+        .content {
+            padding: 32px 20px;
+        }
+        .content p {
+            margin: 0 0 18px 0;
+            font-size: 15px;
+        }
+        .appointment-box {
+            background-color: #f4f4f4;
+            padding: 18px;
+            border-radius: 6px;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+        .appointment-box strong {
+            display: inline-block;
+            width: 110px;
+        }
+        .primary-link {
+            display: inline-block;
+            background-color: #22c55e;
+            color: #ffffff;
+            padding: 12px 28px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            margin: 18px 0;
+            text-align: center;
+        }
+        .primary-link:hover {
+            background-color: #16a34a;
+        }
+        .info-box {
+            background-color: #fff3cd;
+            border: 1px solid #ffc107;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+            font-size: 13px;
+            color: #856404;
+        }
+        .footer {
+            background-color: #f4f4f4;
+            padding: 18px;
+            text-align: center;
+            font-size: 12px;
+            color: #666666;
+            border-top: 1px solid #dddddd;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>Bestätigung Ihres Termins</h1>
+    </div>
+
+    <div class="content">
+        <p>Hallo {{firstName}},</p>
+
+        <p>vielen Dank für deine Buchung. Hiermit bestätigen wir dir deinen Termin.</p>
+
+        <div class="appointment-box">
+            <p><strong>Datum:</strong> {{appointmentDate}}</p>
+            <p><strong>Uhrzeit:</strong> {{appointmentTime}}</p>
+            <p><strong>Tier / Patient:</strong> {{patientName}}</p>
+            <p><strong>Behandlung:</strong> {{serviceName}}</p>
+            <p><strong>Ort:</strong> {{location}}</p>
+        </div>
+
+        <div style="text-align: center;">
+            <a href="{{appointmentLink}}" class="primary-link">
+                Termin ansehen / verwalten
+            </a>
+        </div>
+
+        <div class="info-box">
+            <strong>Hinweis:</strong> Sie können Ihren Termin bis {{cancellationDeadline}}
+            kostenfrei verschieben oder stornieren. Bitte kontaktieren Sie uns, falls Sie verhindert sind.
+        </div>
+
+        <p>Bei Fragen erreichst du die Praxis unter
+            <a href="mailto:{{supportEmail}}">{{supportEmail}}</a>
+            oder telefonisch unter {{supportPhone}}.
+        </p>
+
+        <p>Beste Grüße<br>
+            <strong>{{clinicName}}</strong>
+        </p>
+    </div>
+
+    <div class="footer">
+        <p>&copy; {{year}} petappoint. Alle Rechte vorbehalten.</p>
+        <p>Diese Nachricht wurde automatisch generiert. Bitte nicht direkt darauf antworten.</p>
+    </div>
+</div>
+</body>
+</html>

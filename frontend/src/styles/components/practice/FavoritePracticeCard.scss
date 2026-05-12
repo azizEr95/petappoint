@@ -1,0 +1,142 @@
+@import '../../variables';
+
+.favorite-practice-card {
+  background: white;
+  border: 2px solid var(--color-border, $border-color);
+  border-radius: var(--radius-md, 12px);
+  overflow: hidden;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md, 0 4px 15px rgba(0, 0, 0, 0.1));
+    border-color: var(--color-primary-light, $primary-light);
+
+    .view-details-text {
+      gap: var(--spacing-sm, 1rem);
+      color: var(--color-primary-dark, $primary-dark);
+    }
+  }
+
+  &.loading {
+    padding: var(--spacing-xl, 3rem);
+    text-align: center;
+    color: var(--text-muted, $text-muted);
+    min-height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.practice-header {
+  background: linear-gradient(
+    135deg,
+    var(--color-primary-pale, $primary-pale),
+    var(--color-primary-lightest, $primary-lightest)
+  );
+  padding: var(--spacing-lg, 2rem);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.practice-logo {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: linear-gradient(
+    135deg,
+    var(--color-primary, $primary),
+    var(--color-primary-light, $primary-light)
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.5rem;
+}
+
+.remove-favorite-btn {
+  background: white;
+  border: 2px solid var(--color-danger, $danger);
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-danger, $danger);
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: var(--color-danger, $danger);
+    color: white;
+    transform: scale(1.1);
+  }
+
+  i {
+    font-size: 0.9rem;
+  }
+}
+
+.practice-body {
+  padding: var(--spacing-lg, 2rem);
+}
+
+.practice-name {
+  font-size: $h4-font-size;
+  color: var(--color-primary, $primary);
+  font-weight: 700;
+  margin: 0 0 var(--spacing-md, 1.5rem) 0;
+
+  @media (max-width: 768px) {
+    font-size: $font-size-lg;
+  }
+}
+
+.practice-address,
+.practice-contact {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-xs, 0.5rem);
+  color: var(--text-dark, $text-dark);
+  font-size: $font-size-sm;
+  margin-bottom: var(--spacing-sm, 1rem);
+
+  i {
+    color: var(--color-primary, $primary);
+    font-size: 1rem;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  span {
+    word-break: break-word;
+  }
+}
+
+.practice-actions {
+  margin-top: var(--spacing-md, 1.5rem);
+  padding-top: var(--spacing-md, 1.5rem);
+  border-top: 1px solid var(--color-bg-light, $bg-light);
+}
+
+.view-details-text {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs, 0.5rem);
+  color: var(--color-primary, $primary);
+  font-weight: 600;
+  font-size: $font-size-sm;
+  transition: all 0.2s ease;
+
+  i {
+    font-size: 0.9rem;
+    transition: transform 0.2s ease;
+  }
+}

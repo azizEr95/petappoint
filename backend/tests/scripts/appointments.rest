@@ -1,0 +1,10 @@
+POST http://localhost:3000/api/appointments/ HTTP/1.1
+content-type: application/json
+
+{
+    "startTime": "{{$datetime iso8601 5 m}}",
+    "endTime": "{{$datetime iso8601 45 m}}",
+    "veterinaryId": 1,
+    "veterinaryPracticeId": 1,
+    "availableServiceIds": [1, 2, 3]
+}

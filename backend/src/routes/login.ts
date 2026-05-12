@@ -1,0 +1,68 @@
+import express from "express";
+import { verifyJWT, verifyPasswordAndCreateJWT } from "../service/jwtService";
+import { loginValidator } from "petappoint-shared/schemas/ZodSchemas";
+import { optionalAuthentication } from "./authentication";
+import { personService } from "../service/personService";
+import { veterinaryPracticeService } from "../service/veterinaryPracticeService";
+
+function extractTokenFromRequest(req: express.Request): string | undefined {
+    if (req.cookies?.access_token) return req.cookies.access_token;
+    const authHeader = req.headers.authorization;
+    if (authHeader?.startsWith('Bearer ')) return authHeader.slice(7);
+    return undefined;
+}
+
+export const loginRouter = express.Router();
+
+loginRouter.post("/",
+    optionalAuthentication,
+    async (req, res) => {
+        const validatedBody = loginValidator.parse(req.body);
+        const jwtString = await verifyPasswordAndCreateJWT(validatedBody.email, validatedBody.password);
+        if (!jwtString) {
+            return res.sendStatus(401);
+        }
+
+        const logRes = verifyJWT(jwtString);
+        res.cookie("access_token", jwtString, {
+            httpOnly: true,
+            // läuft zu dem Datum und zu der Zeit ab
+            // Beim Cookie werden numerische Werte als Millisekunden interpretiert,
+            // beim jsonwebtoken werden numerische Werte als Sekunden interpretiert,
+            // deshalb * 1000, um von Milli zu Sekunden umzuwandeln
+            expires: new Date(logRes.exp * 1000),
+            secure: true, // cookie kann nur über eine sichere Verbindung verschickt werden -> https
+            /**
+            * None- Cookies werden in allen Kontexten gesendet, 
+            * d.h. das Senden von Cross-Origin ist zulässig. 
+            * Der Browser sendet das Cookie mit 
+            * standortübergreifenden Anforderungen.
+            */
+            sameSite: "none"
+        });
+        res.status(201).send({ ...logRes, token: jwtString });
+        return;
+    }
+);
+
+loginRouter.get("/",
+    optionalAuthentication,
+    async (req, res) => {
+        try {
+            const jwtString = extractTokenFromRequest(req);
+            const loginRes = verifyJWT(jwtString!);
+            res.send({ ...loginRes, token: jwtString });
+            return;
+        } catch (err) {
+            res.clearCookie("access_token");
+            res.status(401).send(false);
+            return;
+        }
+    })
+
+loginRouter.delete("/",
+    optionalAuthentication,
+    async (_req, res) => {
+        res.clearCookie("access_token");
+        res.sendStatus(204);
+    })

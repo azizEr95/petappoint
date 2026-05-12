@@ -1,0 +1,80 @@
+image: node:latest
+
+stages:
+  #- test
+  - e2e-test
+  - deploy
+
+#test:
+#  stage: test
+#  coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/
+#  before_script:
+#    - cd backend
+#    - npm install
+#  script:
+#    - npm run test
+#  cache:
+#    paths:
+#      - ./backend/coverage
+#  artifacts:
+#    paths:
+#      - ./backend/coverage
+#    when: always
+#    reports:
+#      junit:
+#        - junit.xml
+#      coverage_report:
+#        coverage_format: cobertura
+#        path: backend/coverage/cobertura-coverage.xml
+
+e2e-tests:
+  stage: e2e-test
+  image: mcr.microsoft.com/playwright:v1.60.0-jammy
+  services:
+    - name: postgres:15
+      alias: db
+      variables:
+        POSTGRES_DB: petappoint-e2e-test
+        POSTGRES_USER: petappoint
+        POSTGRES_PASSWORD: 123
+  variables:
+    DATABASE_URL: "postgresql://petappoint:123@db:5432/petappoint-e2e-test"
+    CORS_ORIGIN: "http://localhost:3001"
+    HTTP_PORT: 3000
+    BREVO_API_KEY: $BREVO_API_KEY
+    JWT_SECRET: $JWT_SECRET
+    JWT_TTL: 900
+    VITE_API_URL: "http://localhost:3000/api"
+    VITE_PUBLIC_POSTHOG_KEY: $VITE_PUBLIC_POSTHOG_KEY
+    VITE_PUBLIC_POSTHOG_HOST: "https://eu.i.posthog.com"
+  before_script:
+    - npm run buildProject # install all and build shared
+    - npm install
+    - npx wait-on tcp:db:5432 --timeout 60000 # wait for database to be ready
+    - cd backend
+    - npx prisma db push --schema=./prisma/schema.prisma # initialize database schema
+    - cd ..
+  script:
+    - npm run e2e-tests:ci # run playwright tests, backend, frontend and seed-e2e-tests should be started in the test script
+  artifacts:
+    when: always
+    expose_as: 'Playwright-HTML-Report'
+    paths:
+      - e2e-tests/playwright-report/
+    reports:
+      junit: e2e-tests/results.xml
+    expire_in: 1 week
+
+pages:
+  stage: deploy
+  #dependencies:
+    #- test
+  script:
+      - mkdir .public
+      - cp -r coverage/* .public
+      - mv .public .public
+  artifacts:
+    paths:
+      - public
+  only:
+    - master

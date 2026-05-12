@@ -1,0 +1,49 @@
+.appointment-time-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.appointment-start-time {
+  flex: 1;
+  margin-right: 10px; // Moved from inline style
+}
+
+.appointment-end-time {
+  flex: 1;
+}
+
+.weekly-appointment-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+
+  .form-label {
+    margin: 0;
+  }
+
+  .form-check {
+    margin: 0;
+  }
+}
+
+.weekday-selection {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.appointment-buttons {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+
+  .btn:first-child {
+    width: 20%;
+  }
+
+  .btn:last-child {
+    width: 20%;
+    margin-left: auto;
+  }
+}

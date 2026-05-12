@@ -1,0 +1,11 @@
+services:
+  # PostgreSQL Datenbank Service
+  db:
+    build: ./db
+    container_name: postgres-db
+    environment:
+      POSTGRES_USER: petappoint
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: petappoint-db
+    ports:
+      - "5432:5432"

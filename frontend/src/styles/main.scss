@@ -1,0 +1,15 @@
+// petappoint Main Stylesheet
+// Single entry point for all global styles
+// Component-specific styles are imported locally in each component
+
+// 1. Variables (design tokens)
+@import 'variables';
+
+// 2. Bootstrap (with overrides)
+@import 'bootstrap';
+
+// 3. Base styles (typography, layout, utilities)
+@import 'base';
+
+// 4. Component-specific styles (error pages)
+@import 'components/Error';

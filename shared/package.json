@@ -1,0 +1,30 @@
+{
+  "private": true,
+  "name": "petappoint-shared",
+  "version": "1.0.0",
+  "description": "Contains shared code between backend and frontend",
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "petappoint": "file:..",
+    "zod": "^4.1.12"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  },
+  "exports": {
+    ".": "./dist/index.js",
+    "./schemas/ZodSchemas": {
+      "types": "./dist/schemas/ZodSchemas.d.ts",
+      "import": "./dist/schemas/ZodSchemas.js",
+      "require": "./dist/schemas/ZodSchemas.js"
+    },
+    "./package.json": "./package.json"
+  }
+}

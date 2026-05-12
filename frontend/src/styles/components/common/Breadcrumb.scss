@@ -1,0 +1,72 @@
+@import '../../variables';
+
+.breadcrumb-nav {
+  background: white;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid $gray-200;
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin: 0 !important;
+  margin-bottom: 0 !important;
+  padding: 0;
+  list-style: none;
+  font-size: 0.8125rem;
+  color: $text-muted;
+  background: transparent;
+}
+
+.breadcrumb-item {
+  display: flex;
+  align-items: center;
+
+  &::before {
+    display: none !important;
+    content: none !important;
+  }
+
+  &:not(:last-child)::after {
+    content: '/';
+    color: $gray-600;
+    font-size: 0.8125rem;
+    opacity: 0.4;
+    margin: 0 0.5rem;
+  }
+
+  &.active {
+    color: $text-dark;
+  }
+}
+
+.breadcrumb-link {
+  color: $text-light;
+  text-decoration: none;
+  transition: color 0.15s ease;
+
+  &:hover {
+    color: $primary;
+  }
+}
+
+.breadcrumb-current {
+  color: $primary;
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .breadcrumb-nav {
+    padding: 0.5rem 0;
+  }
+
+  .breadcrumb {
+    font-size: 0.75rem;
+  }
+
+  .breadcrumb-item:not(:last-child)::after {
+    margin: 0 0.4rem;
+    font-size: 0.75rem;
+  }
+}
