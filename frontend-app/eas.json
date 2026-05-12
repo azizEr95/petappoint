@@ -7,7 +7,7 @@
     "development": {
       "developmentClient": true,
       "distribution": "internal",
-      "npm": true
+      "prebuildCommand": "prebuild --npm"
     },
     "preview": {
       "distribution": "internal",
