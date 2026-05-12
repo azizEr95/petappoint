@@ -13,7 +13,6 @@
     "module": "ESNext",
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "types": ["vite/client"],
-    "ignoreDeprecations": "6.0",
 
     /* Bundler mode */
     "moduleResolution": "bundler",
@@ -28,7 +27,6 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
-    "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
     }

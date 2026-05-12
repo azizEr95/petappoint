@@ -27,9 +27,7 @@
     /* Modules */
     "module": "NodeNext",                                  /* Specify what module code is generated. (Do not use ESxxxx für Node.js!) */
     "rootDir": "./src",                                  /* Specify the root folder within your source files. */
-    // "moduleResolution": "node",                       /* Specify how TypeScript looks up a file from a given module specifier. */
-    "ignoreDeprecations": "6.0",
-    "baseUrl": "./",                                     /* Specify the base directory to resolve non-relative module names. */
+    // "moduleResolution": "node",                       /* Specify how TypeScript looks up a file from a given module specifier. */                                  /* Specify the base directory to resolve non-relative module names. */
     // "paths": { "@/*": [ "src/*" ] },                  /* Specify a set of entries that re-map imports to additional lookup locations. */
     //"rootDirs": ["./src", "../shared"],                                   /* Allow multiple folders to be treated as one when resolving modules. */
     // "typeRoots": [],                                  /* Specify multiple folders that act like './node_modules/@types'. */
