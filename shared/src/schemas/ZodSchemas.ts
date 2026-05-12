@@ -1,4 +1,4 @@
-import { z } from "zod/v4";
+import { z } from "zod";
 
 export const PostgresIdSchema = z.number().int();
 export type PostgresIdType = z.infer<typeof PostgresIdSchema>;
