@@ -11,5 +11,6 @@ config.watchFolders = [sharedRoot]
 config.resolver.extraNodeModules = {
   'petappoint-shared': path.resolve(sharedRoot, 'src'),
 }
+config.resolver.unstable_enablePackageExports = true
 
 module.exports = withNativeWind(config, { input: './global.css' })
