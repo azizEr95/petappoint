@@ -38,7 +38,6 @@
     "restmatcher": "^1.1.16",
     "supertest": "^7.1.4",
     "ts-node": "^10.9.2",
-    "tsx": "^4.20.6",
     "typescript": "^5.9.3",
     "petappoint-shared": "file:../shared",
     "vitest": "^4.0.16"
@@ -61,6 +60,7 @@
     "prisma-zod-generator": "^1.31.2",
     "petappoint": "file:..",
     "vitest-mock-extended": "^3.1.0",
+    "tsx": "^4.20.6",
     "zod": "^4.1.12"
   }
 }
