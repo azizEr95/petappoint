@@ -8,6 +8,7 @@ const sharedRoot = path.resolve(projectRoot, '../shared')
 const config = getDefaultConfig(projectRoot)
 
 config.watchFolders = [sharedRoot]
+config.resolver.nodeModulesPaths = [path.resolve(projectRoot, 'node_modules')]
 config.resolver.extraNodeModules = {
   'petappoint-shared': path.resolve(sharedRoot, 'src'),
 }
