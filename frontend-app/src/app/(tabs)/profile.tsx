@@ -10,29 +10,30 @@ import {
   Text,
   VStack,
 } from '@/src/gluestack-components/ui'
+import { router } from 'expo-router'
+import type { ComponentProps } from 'react'
+import FontAwesome from '@expo/vector-icons/FontAwesome'
+import { useLogout } from '@src/hooks/useLogout'
+import { useMyAnimals } from '@src/hooks/useMyAnimals'
+import { useMyAppointments } from '@src/hooks/useMyAppointments'
 
-const menuSections = [
-  {
-    id: 'account',
-    label: 'Konto',
-    items: [
-      { icon: 'user', label: 'Persönliche Daten' },
-      { icon: 'bell', label: 'Benachrichtigungen' },
-      { icon: 'heart', label: 'Lieblings-Tierärzte' },
-    ],
-  },
-  {
-    id: 'support',
-    label: 'Hilfe & Support',
-    items: [
-      { icon: 'question-circle', label: 'Hilfe-Center' },
-      { icon: 'file-text-o', label: 'AGB & Datenschutz' },
-      { icon: 'shield', label: 'Sicherheit' },
-    ],
-  },
-] as const
 
 export default function Profile() {
+  const { mutate: logout, isPending } = useLogout()
+
+  const menuSections = [
+    {
+      id: 'account',
+      label: 'Konto',
+      items: [
+        { icon: 'user', label: 'Persönliche Daten', onPress: () => router.push('/(modals)/edit-profile') },
+        { icon: 'heart', label: 'Lieblings-Tierarztpraxen', onPress: () => router.push('/(modals)/favorite-practices') },
+      ],
+    },
+  ]
+  const { data: animals } = useMyAnimals()
+  const { future, past } = useMyAppointments()
+  const totalAppointments = future.length + past.length
 
   return (
     <Box className='flex-1 bg-slate-100'>
@@ -46,7 +47,7 @@ export default function Profile() {
             <HStack className='justify-around'>
               <VStack className='items-center'>
                 <Text size='2xl' className='font-bold text-primary-500'>
-                  3
+                  {animals?.length ?? '–'}
                 </Text>
                 <Text size='xs' className='text-gray-400'>
                   Haustiere
@@ -55,13 +56,13 @@ export default function Profile() {
               <Divider orientation='vertical' className='h-10' />
               <VStack className='items-center'>
                 <Text size='2xl' className='font-bold text-primary-500'>
-                  12
+                  {totalAppointments}
                 </Text>
                 <Text size='xs' className='text-gray-400'>
                   Termine
                 </Text>
               </VStack>
-              <Divider orientation='vertical' className='h-10' />
+              {/*<Divider orientation='vertical' className='h-10' />
               <VStack className='items-center'>
                 <Text size='2xl' className='font-bold text-primary-500'>
                   4
@@ -69,7 +70,7 @@ export default function Profile() {
                 <Text size='xs' className='text-gray-400'>
                   Bewertungen
                 </Text>
-              </VStack>
+              </VStack>*/}
             </HStack>
           </Card>
 
@@ -83,11 +84,11 @@ export default function Profile() {
                 <Card className='rounded-xl overflow-hidden bg-white shadow-lg'>
                   {section.items.map((item, index) => (
                     <Box key={item.label}>
-                      <Pressable className='flex-row items-center justify-between p-4'>
+                      <Pressable className='flex-row items-center justify-between p-4' onPress={item.onPress}>
                         <HStack className='items-center gap-3'>
                           <Box className='w-10 h-10 rounded-full bg-slate-100 items-center justify-center'>
                             <FontAwesomeIcon
-                              name={item.icon}
+                              name={item.icon as ComponentProps<typeof FontAwesome>['name']}
                               color='#2e8a59'
                               size={18}
                             />
@@ -115,11 +116,17 @@ export default function Profile() {
 
             {/* Logout */}
             <Card className='rounded-xl overflow-hidden bg-white shadow-sm'>
-              <Pressable className='flex-row items-center gap-3 p-4'>
+              <Pressable
+                className='flex-row items-center gap-3 p-4'
+                onPress={() => logout()}
+                disabled={isPending}
+              >
                 <Box className='w-10 h-10 rounded-full bg-red-50 items-center justify-center'>
                   <FontAwesomeIcon name='sign-out' color='#ef4444' size={18} />
                 </Box>
-                <Text className='font-medium text-red-500'>Abmelden</Text>
+                <Text className='font-medium text-red-500'>
+                  {isPending ? 'Abmelden…' : 'Abmelden'}
+                </Text>
               </Pressable>
             </Card>
 

@@ -1,54 +1,53 @@
 import {
-  Avatar,
   Box,
   Button,
   ButtonGroup,
   ButtonText,
   Card,
+  Spinner,
   Text,
 } from '@src/gluestack-components/ui'
+import { AnimalAvatar } from '@/src/custom-components/animal-avatar'
 import { useState } from 'react'
-import { ScrollView } from 'react-native'
+import { Alert, ScrollView } from 'react-native'
 import { FontAwesomeIcon } from '@/src/custom-components/tabbar-icon'
 import { SearchApt } from '@/src/custom-components/home-screen/search-apt'
 import { Header } from '@/src/custom-components/header'
 import { ToggleApt } from '@/src/custom-components/appointment-screen/toggle-appointments'
+import { useMyAppointments } from '@src/hooks/useMyAppointments'
+import { useRouter } from 'expo-router'
+import { useCancelAppointment } from '@src/hooks/useCancelAppointment'
+
+function formatAppointmentDate(date: Date): string {
+  return date.toLocaleDateString('de-DE', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  })
+}
+
+function formatTime(date: Date): string {
+  return date.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })
+}
 
 export default function Appointment() {
-  const appointments = [
-    {
-      id: 1,
-      pet: 'Bambi',
-      petEmoji: '🐱',
-      petType: 'Katze',
-      vet: 'Dr. Schmidt',
-      clinic: 'Tierarztpraxis am Park',
-      address: 'Parkstraße 12, 10115 Berlin',
-      date: '15. März 2026',
-      time: '10:30',
-      type: 'Impfung',
-      status: 'confirmed',
-    },
-    {
-      id: 2,
-      pet: 'Luna',
-      petEmoji: '🐕',
-      petType: 'Hund',
-      vet: 'Dr. Müller',
-      clinic: 'Dr. Müller & Team',
-      address: 'Hauptstraße 45, 10115 Berlin',
-      date: '22. März 2026',
-      time: '14:00',
-      type: 'Vorsorge',
-      status: 'pending',
-    },
-  ]
-
+  const router = useRouter()
+  const { future, past, isLoading, isError } = useMyAppointments()
+  const { mutate: cancel } = useCancelAppointment()
   const [activeTab, setActiveTab] = useState<boolean>(true)
 
-  const formater = (date: any, time: any) => {
-    return `${date}, ${time} Uhr`
+  function handleCancel(aptId: number, aptName: string) {
+    Alert.alert(
+      'Termin absagen',
+      `Möchtest du den Termin für ${aptName} wirklich absagen?`,
+      [
+        { text: 'Nein', style: 'cancel' },
+        { text: 'Ja, absagen', style: 'destructive', onPress: () => cancel(aptId) },
+      ],
+    )
   }
+
+  const displayed = activeTab ? future : past
 
   return (
     <>
@@ -63,9 +62,29 @@ export default function Appointment() {
             <ToggleApt
               activeTab={activeTab}
               setActiveTab={setActiveTab}
-              appointments={appointments}
+              futureCount={future.length}
+              pastCount={past.length}
             />
-            {appointments.map((apt) => (
+
+            {isLoading && (
+              <Box className='items-center py-8'>
+                <Spinner size='large' />
+              </Box>
+            )}
+
+            {isError && (
+              <Text className='text-red-500 text-center py-4'>
+                Fehler beim Laden der Termine.
+              </Text>
+            )}
+
+            {!isLoading && !isError && displayed.length === 0 && (
+              <Text className='text-gray-500 text-center py-4'>
+                {activeTab ? 'Keine kommenden Termine.' : 'Keine vergangenen Termine.'}
+              </Text>
+            )}
+
+            {displayed.map((apt) => (
               <Card
                 key={apt.id}
                 className='border-primary-500 border-l-4 shadow-sm mb-3'
@@ -73,39 +92,33 @@ export default function Appointment() {
                 <Box className='flex-row items-start gap-3'>
                   {/* Haustier‑Icon */}
                   <Box>
-                    <Avatar size='lg' className='bg-primary-400' />
+                    <AnimalAvatar size='lg' animalId={apt.animal?.id} name={apt.animal?.name} />
                   </Box>
 
                   {/* Inhalt */}
                   <Box className='flex-1'>
                     <Box className='flex-row items-center justify-between'>
                       <Text className='text-gray-700 text-md font-semibold'>
-                        {apt.pet}
+                        {apt.animal?.name ?? '–'}
                       </Text>
                       <Box className='bg-primary-100 rounded-full px-3 py-1'>
-                        <Text className='text-gray-700'>{apt.type}</Text>
+                        <Text className='text-gray-700'>
+                          {apt.service?.name ?? apt.availableServices[0]?.name ?? '–'}
+                        </Text>
                       </Box>
                     </Box>
                     <Box className='flex-row items-start gap-1 py-2'>
-                      <FontAwesomeIcon
-                        name='map-marker'
-                        color='#374151'
-                        size={15}
-                      />
+                      <FontAwesomeIcon name='map-marker' color='#374151' size={15} />
                       <Text className='text-gray-700 text-md font-semibold'>
-                        {apt.clinic}
+                        {apt.veterinaryPractice.name}
                       </Text>
                     </Box>
 
                     {/* Uhrzeit‑Zeile */}
                     <Box className='flex-row items-center gap-1'>
-                      <FontAwesomeIcon
-                        name='clock-o'
-                        color='#374151'
-                        size={15}
-                      />
+                      <FontAwesomeIcon name='clock-o' color='#374151' size={15} />
                       <Text className='text-gray-700 font-semibold'>
-                        {formater(apt.date, apt.time)}
+                        {formatAppointmentDate(apt.startTime)}, {formatTime(apt.startTime)} Uhr
                       </Text>
                     </Box>
                   </Box>
@@ -119,10 +132,9 @@ export default function Appointment() {
                         variant='outline'
                         action='negative'
                         className='rounded-lg font-medium'
+                        onPress={() => handleCancel(apt.id, apt.animal?.name ?? 'dieses Tier')}
                       >
-                        <ButtonText className='text-red-500'>
-                          Absagen
-                        </ButtonText>
+                        <ButtonText className='text-red-500'>Absagen</ButtonText>
                       </Button>
 
                       <Button
@@ -130,6 +142,7 @@ export default function Appointment() {
                         variant='outline'
                         action='positive'
                         className='rounded-lg font-medium'
+                        onPress={() => router.push({ pathname: '/(modals)/process', params: { appointmentId: apt.id } })}
                       >
                         <ButtonText>Bearbeiten</ButtonText>
                       </Button>
@@ -145,10 +158,9 @@ export default function Appointment() {
                         variant='solid'
                         action='positive'
                         className='rounded-lg font-medium'
+                        onPress={() => router.push({ pathname: '/(modals)/practice', params: { id: apt.veterinaryPractice.id, animalId: apt.animal?.id } })}
                       >
-                        <ButtonText className='text-white'>
-                          Erneut buchen
-                        </ButtonText>
+                        <ButtonText className='text-white'>Erneut buchen</ButtonText>
                       </Button>
                     </ButtonGroup>
                   </Box>

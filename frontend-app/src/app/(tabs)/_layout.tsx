@@ -8,7 +8,7 @@ export default function Layout() {
 
   return (
     <Tabs screenOptions={{
-      headerShown: useClientOnlyValue(false, true),
+      headerShown: useClientOnlyValue(false, false),
     }}
     >
       <Tabs.Screen

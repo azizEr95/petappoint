@@ -12,8 +12,15 @@ declare global {
     }
 }
 
+function extractToken(req: Request): string | undefined {
+    if (req.cookies.access_token) return req.cookies.access_token;
+    const authHeader = req.headers.authorization;
+    if (authHeader?.startsWith('Bearer ')) return authHeader.slice(7);
+    return undefined;
+}
+
 export function requiresAuthentication(req: Request, res: Response, next: NextFunction) {
-    const jwtString = req.cookies.access_token;
+    const jwtString = extractToken(req);
     if (!jwtString) {
         res.sendStatus(401);
         return;
@@ -23,7 +30,7 @@ export function requiresAuthentication(req: Request, res: Response, next: NextFu
 }
 
 export function optionalAuthentication(req: Request, res: Response, next: NextFunction) {
-    const jwtString = req.cookies.access_token;
+    const jwtString = extractToken(req);
     if (jwtString) {
         try {
             const loginRes = verifyJWT(jwtString);
