@@ -40,8 +40,8 @@ function readEnv() {
     }
 
     if (!process.env.HTTP_PORT) {
-        console.log("No HTTP_PORT set in environment, using default: 3000");
-        process.env.HTTP_PORT = "3000";
+        process.env.HTTP_PORT = process.env.PORT ?? "3000";
+        console.log(`No HTTP_PORT set in environment, using: ${process.env.HTTP_PORT}`);
     }
 }
 
