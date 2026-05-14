@@ -1,4 +1,5 @@
 import { useRouter, useLocalSearchParams, Link } from 'expo-router'
+import { routes } from '@src/constants/routes'
 import { FontAwesomeIcon } from '@/src/custom-components/tabbar-icon'
 import { useColorScheme } from 'nativewind'
 import {
@@ -80,7 +81,7 @@ export default function ResultModal() {
             return (
               <Card key={practice.id} className='border-primary-500 border-l-4 shadow-sm mb-3'>
                 <Link
-                  href={{ pathname: '/(modals)/practice', params: { id: String(practice.id) } }}
+                  href={{ pathname: routes.modals.practice, params: { id: String(practice.id) } }}
                 >
                   <Box className='flex-row items-start gap-3'>
                     <Box>

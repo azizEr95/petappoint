@@ -36,6 +36,10 @@ export default function ModalLayout() {
           name='favorite-practices'
           options={{ presentation: 'fullScreenModal' }}
         />
+        <Stack.Screen
+          name='booking-confirmation'
+          options={{ presentation: 'fullScreenModal' }}
+        />
       </Stack>
     </>
   )

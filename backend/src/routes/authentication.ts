@@ -39,6 +39,7 @@ export function optionalAuthentication(req: Request, res: Response, next: NextFu
             req.verified = loginRes.verified;
         } catch (err) {
             res.sendStatus(401);
+            return;
         }
     }
 

@@ -17,6 +17,7 @@ import { useMyAnimals } from '@src/hooks/useMyAnimals'
 import { useAnimalTypes } from '@src/hooks/useAnimalTypes'
 import { useStoredImage } from '@src/hooks/useStoredImage'
 import { useColorScheme } from 'nativewind'
+import { routes } from '@src/constants/routes'
 
 const PET_COLORS = ['#dbeafe', '#fce7f3', '#d1fae5', '#fef9c3', '#ede9fe', '#ffedd5']
 
@@ -124,7 +125,7 @@ export default function Pets() {
                         <ButtonGroup className='bg-white flex rounded-full'>
                           <Button
                             className='bg-white rounded-full'
-                            onPress={() => router.push({ pathname: '/(modals)/edit-pet', params: { animalId: pet.id } })}
+                            onPress={() => router.push({ pathname: routes.modals.editPet, params: { animalId: pet.id } })}
                           >
                             <FontAwesomeIcon
                               name='pencil'
@@ -186,7 +187,7 @@ export default function Pets() {
               <Button
                 variant='outline'
                 className='w-full h-14 rounded-xl'
-                onPress={() => router.push('/(modals)/add-pet')}
+                onPress={() => router.push(routes.modals.addPet)}
               >
                 <FontAwesomeIcon name='plus' color='#341579' size={18} />
                 <ButtonText className='text-typography-700 text-lg font-medium ml-2'>

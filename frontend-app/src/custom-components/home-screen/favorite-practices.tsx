@@ -5,6 +5,7 @@ import { useAllPractices } from '@src/hooks/useAllPractices'
 import { useFavorites } from '@src/hooks/useFavorites'
 import { AppAvatar } from '../app-avatar'
 import { useColorScheme } from 'nativewind'
+import { routes } from '@src/constants/routes'
 
 export function FavoritePractices() {
   const { data: practices } = useAllPractices()
@@ -24,7 +25,7 @@ export function FavoritePractices() {
       {favorites.map((practice) => (
         <Card key={practice.id} className='border-red-400 border-l-4 shadow-sm mb-3'>
           <Link
-            href={{ pathname: '/(modals)/practice', params: { id: String(practice.id) } }}
+            href={{ pathname: routes.modals.practice, params: { id: String(practice.id) } }}
           >
             <Box className='flex-row items-start gap-3'>
               <Box>

@@ -14,6 +14,7 @@ import {
 } from '@/src/gluestack-components/ui'
 import { useState } from 'react'
 import { useLocalSearchParams, router } from 'expo-router'
+import { routes } from '@src/constants/routes'
 import { useQuery } from '@tanstack/react-query'
 import { verifyResetTokenApi } from '@src/api/auth'
 import { useResetPassword } from '@src/hooks/useResetPassword'
@@ -97,7 +98,7 @@ export default function ResetPassword() {
             <Text size='lg' className='text-red-500 text-center font-medium'>
               Ungültiger oder abgelaufener Link
             </Text>
-            <Pressable onPress={() => router.replace('/(auth)/forgot-password')}>
+            <Pressable onPress={() => router.replace(routes.auth.forgotPassword)}>
               <Text size='lg' className='text-primary-500 font-medium'>
                 Neuen Link anfordern
               </Text>
@@ -155,7 +156,7 @@ export default function ResetPassword() {
               </ButtonText>
             </Button>
 
-            <Pressable className='items-center mt-2' onPress={() => router.replace('/(auth)/login')}>
+            <Pressable className='items-center mt-2' onPress={() => router.replace(routes.auth.login)}>
               <Text size='lg' className='text-typography-500 font-medium'>
                 Zurück zum Login
               </Text>

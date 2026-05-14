@@ -13,6 +13,7 @@ import {
 import { Switch } from '@/src/gluestack-components/ui/switch'
 import { router } from 'expo-router'
 import type { ComponentProps } from 'react'
+import { routes } from '@src/constants/routes'
 import FontAwesome from '@expo/vector-icons/FontAwesome'
 import { useLogout } from '@src/hooks/useLogout'
 import { useMyAnimals } from '@src/hooks/useMyAnimals'
@@ -30,8 +31,8 @@ export default function Profile() {
       id: 'account',
       label: 'Konto',
       items: [
-        { icon: 'user', label: 'Persönliche Daten', onPress: () => router.push('/(modals)/edit-profile') },
-        { icon: 'heart', label: 'Lieblings-Tierarztpraxen', onPress: () => router.push('/(modals)/favorite-practices') },
+        { icon: 'user', label: 'Persönliche Daten', onPress: () => router.push(routes.modals.editProfile) },
+        { icon: 'heart', label: 'Lieblings-Tierarztpraxen', onPress: () => router.push(routes.modals.favoritePractices) },
       ],
     },
   ]

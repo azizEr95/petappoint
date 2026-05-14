@@ -13,6 +13,7 @@ import {
 } from '@/src/gluestack-components/ui'
 import { useState } from 'react'
 import { router } from 'expo-router'
+import { routes } from '@src/constants/routes'
 import { useLogin } from '@src/hooks/useLogin'
 import { ApiError } from '@src/api/client'
 import { useColorScheme } from 'nativewind'
@@ -95,7 +96,7 @@ export default function Login() {
             </Input>
           </VStack>
 
-          <Pressable className='self-end' onPress={() => router.push('/(auth)/forgot-password')}>
+          <Pressable className='self-end' onPress={() => router.push(routes.auth.forgotPassword)}>
             <Text size='lg' className='text-primary-500 font-medium'>
               Passwort vergessen?
             </Text>
@@ -123,7 +124,7 @@ export default function Login() {
           <Text size='lg' className='text-typography-500'>
             Noch kein Konto?{' '}
           </Text>
-          <Pressable onPress={() => router.push('/(auth)/register')}>
+          <Pressable onPress={() => router.push(routes.auth.register)}>
             <Text size='lg' className='text-primary-500 font-semibold'>
               Registrieren
             </Text>

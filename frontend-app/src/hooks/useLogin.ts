@@ -1,6 +1,7 @@
 import { useMutation } from '@tanstack/react-query'
 import { router } from 'expo-router'
 import { loginApi } from '@src/api/auth'
+import { routes } from '@src/constants/routes'
 import { useAuthStore } from '@src/stores/authStore'
 
 export function useLogin() {
@@ -14,9 +15,9 @@ export function useLogin() {
         data.token,
       )
       if (!data.verified) {
-        router.replace({ pathname: '/(auth)/verify-email', params: { email: variables.email } })
+        router.replace({ pathname: routes.auth.verifyEmail, params: { email: variables.email } })
       } else {
-        router.replace('/(tabs)/home')
+        router.replace(routes.tabs.home)
       }
     },
   })

@@ -18,6 +18,7 @@ import { useMyAppointments } from '@src/hooks/useMyAppointments'
 import { useRouter } from 'expo-router'
 import { useCancelAppointment } from '@src/hooks/useCancelAppointment'
 import { useColorScheme } from 'nativewind'
+import { routes } from '@src/constants/routes'
 
 function formatAppointmentDate(date: Date): string {
   return date.toLocaleDateString('de-DE', {
@@ -145,7 +146,7 @@ export default function Appointment() {
                         variant='outline'
                         action='positive'
                         className='rounded-lg font-medium'
-                        onPress={() => router.push({ pathname: '/(modals)/process', params: { appointmentId: apt.id } })}
+                        onPress={() => router.push({ pathname: routes.modals.process, params: { appointmentId: apt.id } })}
                       >
                         <ButtonText>Bearbeiten</ButtonText>
                       </Button>
@@ -161,7 +162,7 @@ export default function Appointment() {
                         variant='solid'
                         action='positive'
                         className='rounded-lg font-medium'
-                        onPress={() => router.push({ pathname: '/(modals)/practice', params: { id: apt.veterinaryPractice.id, animalId: apt.animal?.id } })}
+                        onPress={() => router.push({ pathname: routes.modals.practice, params: { id: apt.veterinaryPractice.id, animalId: apt.animal?.id } })}
                       >
                         <ButtonText className='text-white'>Erneut buchen</ButtonText>
                       </Button>

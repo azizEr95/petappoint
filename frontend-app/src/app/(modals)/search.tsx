@@ -13,6 +13,7 @@ import {
 import { AppAvatar } from '@/src/custom-components/app-avatar'
 import { useRouter } from 'expo-router'
 import { useState } from 'react'
+import { routes } from '@src/constants/routes'
 import { useAnimalTypes } from '@src/hooks/useAnimalTypes'
 import { useServices } from '@src/hooks/useServices'
 import { ScrollView } from 'react-native'
@@ -160,7 +161,7 @@ export default function SucheModal() {
                 action='positive'
                 onPress={() =>
                   router.push({
-                    pathname: '/(modals)/result',
+                    pathname: routes.modals.result,
                     params: {
                       animalTypeId: selectedPet,
                       serviceId: selectedTreatment,

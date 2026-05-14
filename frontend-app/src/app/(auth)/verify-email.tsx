@@ -14,6 +14,7 @@ import {
 } from '@/src/gluestack-components/ui'
 import { useState } from 'react'
 import { useLocalSearchParams, router } from 'expo-router'
+import { routes } from '@src/constants/routes'
 import { useVerifyEmail } from '@src/hooks/useVerifyEmail'
 import { useResendVerification } from '@src/hooks/useResendVerification'
 import { useAuthStore } from '@src/stores/authStore'
@@ -28,7 +29,7 @@ export default function VerifyEmail() {
 
   const handleBackToLogin = async () => {
     await clearAuth()
-    router.replace('/(auth)/login')
+    router.replace(routes.auth.login)
   }
 
   const { mutate: verify, isPending, error } = useVerifyEmail()

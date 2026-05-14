@@ -16,6 +16,7 @@ import { useAllPractices } from '@src/hooks/useAllPractices'
 import { useFavorites } from '@src/hooks/useFavorites'
 import { useToggleFavorite } from '@src/hooks/useToggleFavorite'
 import { useColorScheme } from 'nativewind'
+import { routes } from '@src/constants/routes'
 
 export default function FavoritePracticesScreen() {
   const { data: practices, isLoading } = useAllPractices()
@@ -70,7 +71,7 @@ export default function FavoritePracticesScreen() {
           <Card key={practice.id} className='border-red-400 border-l-4 shadow-sm mb-3'>
             <Box className='flex-row items-center'>
               <Link
-                href={{ pathname: '/(modals)/practice', params: { id: String(practice.id) } }}
+                href={{ pathname: routes.modals.practice, params: { id: String(practice.id) } }}
                 style={{ flex: 1 }}
               >
                 <Box className='flex-row items-start gap-3'>

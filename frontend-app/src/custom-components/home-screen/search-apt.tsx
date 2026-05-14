@@ -2,6 +2,7 @@ import { useRouter } from 'expo-router'
 import { Button, ButtonText, Card } from '@/src/gluestack-components/ui'
 import { FontAwesomeIcon } from '@src/custom-components/tabbar-icon'
 import { useColorScheme } from 'nativewind'
+import { routes } from '@src/constants/routes'
 
 export function SearchApt() {
   const router = useRouter()
@@ -14,7 +15,7 @@ export function SearchApt() {
         <Button
           variant='solid'
           action='positive'
-          onPress={() => router.push('/(modals)/search')}
+          onPress={() => router.push(routes.modals.search)}
           className='bg-primary-100 rounded-xl '
         >
           <FontAwesomeIcon name='search' color={iconColor} size={20} />

@@ -20,6 +20,7 @@ import { getAppointment } from '@src/api/appointments'
 import { useMyAnimals } from '@src/hooks/useMyAnimals'
 import { useBookAppointment } from '@src/hooks/useBookAppointment'
 import { useAnimalTypes } from '@src/hooks/useAnimalTypes'
+import { routes } from '@src/constants/routes'
 
 function formatDateTime(date: Date): { date: string; time: string } {
   return {
@@ -64,6 +65,14 @@ export default function Process() {
     }
   }, [appointment, preselectedAnimalId])
 
+  if (!appointmentId || isNaN(aptId)) {
+    return (
+      <Box className='flex-1 items-center justify-center'>
+        <Text className='text-red-500'>Ungültige Termin-ID.</Text>
+      </Box>
+    )
+  }
+
   const typeNameById = Object.fromEntries((animalTypes ?? []).map((t) => [t.id, t.name]))
 
   const { colorScheme } = useColorScheme()
@@ -76,11 +85,24 @@ export default function Process() {
   function handleBook() {
     if (!canBook) return
     setBookingError(null)
+    const formatted = appointment ? formatDateTime(appointment.startTime) : null
+    const selectedAnimal = (animals ?? []).find((a) => a.id === selectedAnimalId)
+    const selectedService = (appointment?.availableServices ?? []).find((s) => s.id === selectedServiceId)
+
     book(
       { appointmentId: aptId, animalId: selectedAnimalId!, serviceId: selectedServiceId!, practiceId: appointment!.veterinaryPractice.id },
       {
         onSuccess: () => {
-          router.dismiss()
+          router.replace({
+            pathname: routes.modals.bookingConfirmation,
+            params: {
+              practiceName: appointment!.veterinaryPractice.name,
+              date: formatted?.date ?? '',
+              time: formatted?.time ?? '',
+              serviceName: selectedService?.name ?? '',
+              animalName: selectedAnimal?.name ?? '',
+            },
+          })
         },
         onError: (e) => setBookingError(e instanceof Error ? e.message : 'Buchung fehlgeschlagen.'),
       },

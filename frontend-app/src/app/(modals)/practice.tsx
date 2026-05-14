@@ -17,6 +17,7 @@ import { usePracticeDetails } from '@src/hooks/usePracticeDetails'
 import { useFavorites } from '@src/hooks/useFavorites'
 import { useToggleFavorite } from '@src/hooks/useToggleFavorite'
 import { useColorScheme } from 'nativewind'
+import { routes } from '@src/constants/routes'
 
 function formatDate(date: Date): string {
   const today = new Date()
@@ -47,6 +48,14 @@ export default function Practice() {
   const { favoriteIds } = useFavorites()
   const { mutate: toggle } = useToggleFavorite()
   const isFav = favoriteIds.has(practiceId)
+
+  if (!id || isNaN(practiceId)) {
+    return (
+      <Box className='flex-1 items-center justify-center'>
+        <Text className='text-red-500'>Ungültige Praxis-ID.</Text>
+      </Box>
+    )
+  }
 
   const groupedDates = useMemo(() => {
     if (!appointments.data) return []
@@ -325,7 +334,7 @@ export default function Practice() {
                     disabled={!selectedAppointmentId}
                     onPress={() =>
                       router.push({
-                        pathname: '/(modals)/process',
+                        pathname: routes.modals.process,
                         params: {
                           appointmentId: String(selectedAppointmentId),
                           practiceId: String(practiceId),
