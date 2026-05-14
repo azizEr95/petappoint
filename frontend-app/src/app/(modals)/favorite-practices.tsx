@@ -15,16 +15,19 @@ import { ScrollView } from 'react-native'
 import { useAllPractices } from '@src/hooks/useAllPractices'
 import { useFavorites } from '@src/hooks/useFavorites'
 import { useToggleFavorite } from '@src/hooks/useToggleFavorite'
+import { useColorScheme } from 'nativewind'
 
 export default function FavoritePracticesScreen() {
   const { data: practices, isLoading } = useAllPractices()
   const { favoriteIds } = useFavorites()
   const { mutate: toggle } = useToggleFavorite()
+  const { colorScheme } = useColorScheme()
+  const iconColor = colorScheme === 'dark' ? '#d1d5db' : '#374151'
 
   const favorites = (practices ?? []).filter((p) => favoriteIds.has(p.id))
 
   return (
-    <Box className='flex-1 bg-slate-100'>
+    <Box className='flex-1 bg-background-100'>
       {/* Top green area */}
       <Box className='bg-primary-500 rounded-b-3xl justify-center px-6 pb-4 pt-16'>
         <Box className='flex-row justify-between items-start'>
@@ -54,10 +57,10 @@ export default function FavoritePracticesScreen() {
         {!isLoading && favorites.length === 0 && (
           <Box className='items-center py-8'>
             <FontAwesomeIcon name='heart-o' color='#9ca3af' size={40} />
-            <Text className='text-gray-400 mt-3 text-center'>
+            <Text className='text-typography-400 mt-3 text-center'>
               Noch keine Favoriten hinzugefügt.
             </Text>
-            <Text className='text-gray-400 text-center text-sm mt-1'>
+            <Text className='text-typography-400 text-center text-sm mt-1'>
               Tippe auf das Herz-Symbol bei einer Praxis.
             </Text>
           </Box>
@@ -75,10 +78,10 @@ export default function FavoritePracticesScreen() {
                     <AppAvatar size='lg' name={practice.name} />
                   </Box>
                   <Box className='flex-1'>
-                    <Text className='text-gray-700 text-md font-semibold'>{practice.name}</Text>
+                    <Text className='text-typography-700 text-md font-semibold'>{practice.name}</Text>
                     <Box className='flex-row items-start gap-1 py-3'>
-                      <FontAwesomeIcon name='map-marker' color='#374151' size={15} />
-                      <Text className='text-gray-700 text-md font-semibold'>
+                      <FontAwesomeIcon name='map-marker' color={iconColor} size={15} />
+                      <Text className='text-typography-700 text-md font-semibold'>
                         {practice.address.street}, {practice.address.cityCode} {practice.address.city}
                       </Text>
                     </Box>

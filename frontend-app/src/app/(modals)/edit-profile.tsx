@@ -85,7 +85,7 @@ export default function EditProfile() {
   }
 
   return (
-    <Box className='flex-1 bg-slate-100'>
+    <Box className='flex-1 bg-background-100'>
       {/* Top green area */}
       <Box className='bg-primary-500 rounded-b-3xl justify-center px-6 pb-4 pt-16'>
         <Box className='flex-row justify-between items-start'>
@@ -108,13 +108,13 @@ export default function EditProfile() {
       <ScrollView className='flex-1 px-5' contentContainerStyle={{ paddingTop: 24, paddingBottom: 40 }}>
         <VStack className='gap-4'>
           {/* Name */}
-          <Card className='bg-white rounded-xl shadow-sm p-4'>
-            <Text size='sm' className='font-semibold text-gray-500 uppercase mb-3'>
+          <Card className='bg-background-0 rounded-xl shadow-sm p-4'>
+            <Text size='sm' className='font-semibold text-typography-500 uppercase mb-3'>
               Name
             </Text>
             <VStack className='gap-3'>
               <VStack className='gap-1'>
-                <Text size='sm' className='font-medium text-gray-600'>Vorname</Text>
+                <Text size='sm' className='font-medium text-typography-600'>Vorname</Text>
                 <Input className='bg-slate-50 rounded-xl border-0 shadow-sm h-12'>
                   <InputField
                     placeholder='Max'
@@ -124,7 +124,7 @@ export default function EditProfile() {
                 </Input>
               </VStack>
               <VStack className='gap-1'>
-                <Text size='sm' className='font-medium text-gray-600'>Nachname</Text>
+                <Text size='sm' className='font-medium text-typography-600'>Nachname</Text>
                 <Input className='bg-slate-50 rounded-xl border-0 shadow-sm h-12'>
                   <InputField
                     placeholder='Mustermann'
@@ -137,13 +137,13 @@ export default function EditProfile() {
           </Card>
 
           {/* Kontakt */}
-          <Card className='bg-white rounded-xl shadow-sm p-4'>
-            <Text size='sm' className='font-semibold text-gray-500 uppercase mb-3'>
+          <Card className='bg-background-0 rounded-xl shadow-sm p-4'>
+            <Text size='sm' className='font-semibold text-typography-500 uppercase mb-3'>
               Kontakt
             </Text>
             <VStack className='gap-3'>
               <VStack className='gap-1'>
-                <Text size='sm' className='font-medium text-gray-600'>Telefon</Text>
+                <Text size='sm' className='font-medium text-typography-600'>Telefon</Text>
                 <Input className='bg-slate-50 rounded-xl border-0 shadow-sm h-12'>
                   <InputField
                     placeholder='+49 123 456789'
@@ -154,7 +154,7 @@ export default function EditProfile() {
                 </Input>
               </VStack>
               <VStack className='gap-1'>
-                <Text size='sm' className='font-medium text-gray-600'>E-Mail</Text>
+                <Text size='sm' className='font-medium text-typography-600'>E-Mail</Text>
                 <Input className='bg-slate-50 rounded-xl border-0 shadow-sm h-12'>
                   <InputField
                     placeholder='max@mustermann.de'
@@ -169,13 +169,13 @@ export default function EditProfile() {
           </Card>
 
           {/* Adresse */}
-          <Card className='bg-white rounded-xl shadow-sm p-4'>
-            <Text size='sm' className='font-semibold text-gray-500 uppercase mb-3'>
+          <Card className='bg-background-0 rounded-xl shadow-sm p-4'>
+            <Text size='sm' className='font-semibold text-typography-500 uppercase mb-3'>
               Adresse
             </Text>
             <VStack className='gap-3'>
               <VStack className='gap-1'>
-                <Text size='sm' className='font-medium text-gray-600'>Straße & Hausnummer</Text>
+                <Text size='sm' className='font-medium text-typography-600'>Straße & Hausnummer</Text>
                 <Input className='bg-slate-50 rounded-xl border-0 shadow-sm h-12'>
                   <InputField
                     placeholder='Musterstraße 1'
@@ -186,7 +186,7 @@ export default function EditProfile() {
               </VStack>
               <Box className='flex-row gap-3'>
                 <VStack className='gap-1' style={{ width: 100 }}>
-                  <Text size='sm' className='font-medium text-gray-600'>PLZ</Text>
+                  <Text size='sm' className='font-medium text-typography-600'>PLZ</Text>
                   <Input className='bg-slate-50 rounded-xl border-0 shadow-sm h-12'>
                     <InputField
                       placeholder='12345'
@@ -197,7 +197,7 @@ export default function EditProfile() {
                   </Input>
                 </VStack>
                 <VStack className='flex-1 gap-1'>
-                  <Text size='sm' className='font-medium text-gray-600'>Stadt</Text>
+                  <Text size='sm' className='font-medium text-typography-600'>Stadt</Text>
                   <Input className='bg-slate-50 rounded-xl border-0 shadow-sm h-12'>
                     <InputField
                       placeholder='Berlin'

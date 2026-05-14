@@ -16,6 +16,7 @@ import { useState } from 'react'
 import { useAnimalTypes } from '@src/hooks/useAnimalTypes'
 import { useServices } from '@src/hooks/useServices'
 import { ScrollView } from 'react-native'
+import { useColorScheme } from 'nativewind'
 
 export default function SucheModal() {
   const { data: animalTypes, isLoading: animalTypesLoading } = useAnimalTypes()
@@ -25,6 +26,8 @@ export default function SucheModal() {
   const [selectedTreatment, setSelectedTreatment] = useState('')
 
   const router = useRouter()
+  const { colorScheme } = useColorScheme()
+  const iconColor = colorScheme === 'dark' ? '#d1d5db' : '#374151'
   return (
     <Box className='flex-1'>
       {/** Top green area — fixed, outside ScrollView so % height resolves correctly */}
@@ -57,18 +60,18 @@ export default function SucheModal() {
               <Input
                 variant='outline'
                 size='xl'
-                className='bg-white rounded-lg mt-2'
+                className='bg-background-0 rounded-lg mt-2'
               >
-                <Button size='xs' className='bg-white rounded-lg'>
+                <Button size='xs' className='bg-background-0 rounded-lg'>
                   <FontAwesomeIcon
                     name='map-marker'
-                    color='#374151'
+                    color={iconColor}
                     size={20}
                   />
                 </Button>
                 <InputField
                   placeholder='Stadt oder PLZ eingeben...'
-                  className='text-gray-700 font-semibold'
+                  className='text-typography-700 font-semibold'
                 />
               </Input>
             </Box>
@@ -91,13 +94,13 @@ export default function SucheModal() {
     ${
       isSelected
         ? 'bg-primary-100 border-primary-400 border-2'
-        : 'bg-gray-50 border-gray-200'
+        : 'bg-background-50 border-outline-200'
     }`}
                       >
                         <AppAvatar size='sm' name={pet.name} />
                         <ButtonText
                           className={`text-lg font-semibold ${
-                            isSelected ? 'text-primary-500' : 'text-gray-700'
+                            isSelected ? 'text-primary-500' : 'text-typography-700'
                           }`}
                         >
                           {pet.name}
@@ -132,12 +135,12 @@ export default function SucheModal() {
     ${
       isSelected
         ? 'bg-primary-100 border-primary-400 border-2'
-        : 'bg-gray-50 border-gray-200'
+        : 'bg-background-50 border-outline-200'
     }`}
                       >
                         <ButtonText
                           className={`text-lg font-semibold ${
-                            isSelected ? 'text-primary-500' : 'text-gray-700'
+                            isSelected ? 'text-primary-500' : 'text-typography-700'
                           }`}
                         >
                           {treat.name}
@@ -166,8 +169,8 @@ export default function SucheModal() {
                 }
                 className='bg-primary-100 rounded-xl '
               >
-                <FontAwesomeIcon name='search' color='#374151' size={20} />
-                <ButtonText className='text-gray-700 text-2xl'>
+                <FontAwesomeIcon name='search' color={iconColor} size={20} />
+                <ButtonText className='text-typography-700 text-2xl'>
                   Praxen suchen
                 </ButtonText>
               </Button>

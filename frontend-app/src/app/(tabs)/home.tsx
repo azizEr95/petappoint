@@ -9,7 +9,7 @@ import { UpcomingApt } from '@/src/custom-components/home-screen/upcoming-apt'
 export default function Home() {
   return (
     <>
-      <Box className='h-full bg-slate-100'>
+      <Box className='h-full bg-background-100'>
         <ScrollView>
           <Header />
           <Box className='px-5 -mt-4'>
@@ -17,7 +17,7 @@ export default function Home() {
             <UpcomingApt />
             <FavoritePractices />
             <Box className='mb-3'>
-              <Text className='text-gray-700 font-semibold text-lg'>
+              <Text className='text-typography-700 font-semibold text-lg'>
                 Tierarztpraxen in der Nähe
               </Text>
             </Box>

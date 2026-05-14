@@ -1,5 +1,6 @@
 // app/(auth)/verify-email.tsx
 import { FontAwesomeIcon } from '@/src/custom-components/tabbar-icon'
+import { useColorScheme } from 'nativewind'
 import {
   Box,
   Button,
@@ -19,6 +20,8 @@ import { useAuthStore } from '@src/stores/authStore'
 import { ApiError } from '@src/api/client'
 
 export default function VerifyEmail() {
+  const { colorScheme } = useColorScheme()
+  const iconColor = colorScheme === 'dark' ? '#d1d5db' : '#374151'
   const { email } = useLocalSearchParams<{ email: string }>()
   const [code, setCode] = useState('')
   const clearAuth = useAuthStore((s) => s.clearAuth)
@@ -47,7 +50,7 @@ export default function VerifyEmail() {
         : null
 
   return (
-    <Box className='flex-1 bg-slate-100'>
+    <Box className='flex-1 bg-background-100'>
       {/* Top green area */}
       <Box className='bg-primary-500 h-[25%] rounded-b-3xl justify-end px-6 pb-8'>
         <Text size='3xl' className='font-bold text-white'>
@@ -66,8 +69,8 @@ export default function VerifyEmail() {
             action='positive'
             className='bg-primary-100 rounded-xl'
           >
-            <FontAwesomeIcon name='envelope' color='#374151' size={20} />
-            <ButtonText className='text-gray-700 text-2xl'>
+            <FontAwesomeIcon name='envelope' color={iconColor} size={20} />
+            <ButtonText className='text-typography-700 text-2xl'>
               Petappoint
             </ButtonText>
           </Button>
@@ -77,17 +80,17 @@ export default function VerifyEmail() {
       {/* Form */}
       <Box className='flex-1 px-6 pt-4'>
         <VStack className='gap-4'>
-          <Text size='sm' className='text-gray-500 text-center'>
+          <Text size='sm' className='text-typography-500 text-center'>
             {email
               ? `Wir haben einen Code an ${email} gesendet.`
               : 'Wir haben dir einen Bestätigungscode per E-Mail gesendet.'}
           </Text>
 
           <VStack className='gap-1'>
-            <Text size='lg' className='font-medium text-gray-600'>
+            <Text size='lg' className='font-medium text-typography-600'>
               6-stelliger Code
             </Text>
-            <Input className='bg-white rounded-xl border-0 shadow-sm h-12'>
+            <Input className='bg-background-0 rounded-xl border-0 shadow-sm h-12'>
               <InputField
                 placeholder='123456'
                 value={code}
@@ -131,14 +134,14 @@ export default function VerifyEmail() {
           </Pressable>
 
           {/* Divider */}
-          <Box className='border-t border-gray-200 mt-2' />
+          <Box className='border-t border-outline-200 mt-2' />
 
-          <Text size='sm' className='text-gray-400 text-center'>
+          <Text size='sm' className='text-typography-400 text-center'>
             {email ? `Angemeldet als: ${email}` : 'Falsche E-Mail-Adresse?'}
           </Text>
 
           <Pressable className='items-center' onPress={handleBackToLogin}>
-            <Text size='lg' className='text-gray-500 font-medium'>
+            <Text size='lg' className='text-typography-500 font-medium'>
               Zurück zum Login
             </Text>
           </Pressable>

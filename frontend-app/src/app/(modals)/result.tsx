@@ -1,5 +1,6 @@
 import { useRouter, useLocalSearchParams, Link } from 'expo-router'
 import { FontAwesomeIcon } from '@/src/custom-components/tabbar-icon'
+import { useColorScheme } from 'nativewind'
 import {
   Box,
   Text,
@@ -15,6 +16,8 @@ import { useFavorites } from '@src/hooks/useFavorites'
 
 export default function ResultModal() {
   const router = useRouter()
+  const { colorScheme } = useColorScheme()
+  const iconColor = colorScheme === 'dark' ? '#d1d5db' : '#374151'
   const { animalTypeId, serviceId } = useLocalSearchParams<{
     animalTypeId?: string
     serviceId?: string
@@ -68,7 +71,7 @@ export default function ResultModal() {
 
           {!isLoading && !isError && practices.length === 0 && (
             <Box className='items-center py-8'>
-              <Text className='text-gray-500'>Keine Praxen gefunden.</Text>
+              <Text className='text-typography-500'>Keine Praxen gefunden.</Text>
             </Box>
           )}
 
@@ -85,14 +88,14 @@ export default function ResultModal() {
                     </Box>
                     <Box className='flex-1'>
                       <Box className='flex-row justify-between items-center'>
-                        <Text className='text-gray-700 text-md font-semibold flex-1'>{practice.name}</Text>
+                        <Text className='text-typography-700 text-md font-semibold flex-1'>{practice.name}</Text>
                         {isFav && (
                           <FontAwesomeIcon name='heart' color='#ef4444' size={16} />
                         )}
                       </Box>
                       <Box className='flex-row items-start gap-1 py-3'>
-                        <FontAwesomeIcon name='map-marker' color='#374151' size={15} />
-                        <Text className='text-gray-700 text-md font-semibold'>
+                        <FontAwesomeIcon name='map-marker' color={iconColor} size={15} />
+                        <Text className='text-typography-700 text-md font-semibold'>
                           {practice.address.street}, {practice.address.cityCode} {practice.address.city}
                         </Text>
                       </Box>

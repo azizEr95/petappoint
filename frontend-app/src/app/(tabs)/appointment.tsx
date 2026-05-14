@@ -17,6 +17,7 @@ import { ToggleApt } from '@/src/custom-components/appointment-screen/toggle-app
 import { useMyAppointments } from '@src/hooks/useMyAppointments'
 import { useRouter } from 'expo-router'
 import { useCancelAppointment } from '@src/hooks/useCancelAppointment'
+import { useColorScheme } from 'nativewind'
 
 function formatAppointmentDate(date: Date): string {
   return date.toLocaleDateString('de-DE', {
@@ -35,6 +36,8 @@ export default function Appointment() {
   const { future, past, isLoading, isError } = useMyAppointments()
   const { mutate: cancel } = useCancelAppointment()
   const [activeTab, setActiveTab] = useState<boolean>(true)
+  const { colorScheme } = useColorScheme()
+  const iconColor = colorScheme === 'dark' ? '#d1d5db' : '#374151'
 
   function handleCancel(aptId: number, aptName: string) {
     Alert.alert(
@@ -51,7 +54,7 @@ export default function Appointment() {
 
   return (
     <>
-      <Box className='h-full bg-slate-100'>
+      <Box className='h-full bg-background-100'>
         <ScrollView>
           <Header />
 
@@ -98,26 +101,26 @@ export default function Appointment() {
                   {/* Inhalt */}
                   <Box className='flex-1'>
                     <Box className='flex-row items-center justify-between'>
-                      <Text className='text-gray-700 text-md font-semibold'>
+                      <Text className='text-typography-700 text-md font-semibold'>
                         {apt.animal?.name ?? '–'}
                       </Text>
                       <Box className='bg-primary-100 rounded-full px-3 py-1'>
-                        <Text className='text-gray-700'>
+                        <Text className='text-typography-700'>
                           {apt.service?.name ?? apt.availableServices[0]?.name ?? '–'}
                         </Text>
                       </Box>
                     </Box>
                     <Box className='flex-row items-start gap-1 py-2'>
-                      <FontAwesomeIcon name='map-marker' color='#374151' size={15} />
-                      <Text className='text-gray-700 text-md font-semibold'>
+                      <FontAwesomeIcon name='map-marker' color={iconColor} size={15} />
+                      <Text className='text-typography-700 text-md font-semibold'>
                         {apt.veterinaryPractice.name}
                       </Text>
                     </Box>
 
                     {/* Uhrzeit‑Zeile */}
                     <Box className='flex-row items-center gap-1'>
-                      <FontAwesomeIcon name='clock-o' color='#374151' size={15} />
-                      <Text className='text-gray-700 font-semibold'>
+                      <FontAwesomeIcon name='clock-o' color={iconColor} size={15} />
+                      <Text className='text-typography-700 font-semibold'>
                         {formatAppointmentDate(apt.startTime)}, {formatTime(apt.startTime)} Uhr
                       </Text>
                     </Box>

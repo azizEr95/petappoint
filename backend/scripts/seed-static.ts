@@ -47,42 +47,42 @@ const FIXED_PERSONS = [
 // 24 animals: 1 per race + variation across all 7 animal types
 const FIXED_ANIMALS = [
   // Hund (4 races, 1 per race)
-  { name: "Rex", ownerEmail: "joe@doe.de", animalTypeId: 1, raceId: 1 }, // Labrador
-  { name: "Buddy", ownerEmail: "daniel@daniel.de", animalTypeId: 1, raceId: 2 }, // Pudel
-  { name: "Charlie", ownerEmail: "james@jay.de", animalTypeId: 1, raceId: 3 }, // Schäferhund
-  { name: "Duke", ownerEmail: "m@m.de", animalTypeId: 1, raceId: 4 }, // Pitbull
+  { name: "Rex", ownerEmail: "joe@doe.de", animalTypeName: "Hund", raceName: "Labrador" },
+  { name: "Buddy", ownerEmail: "daniel@daniel.de", animalTypeName: "Hund", raceName: "Pudel" },
+  { name: "Charlie", ownerEmail: "james@jay.de", animalTypeName: "Hund", raceName: "Schäferhund" },
+  { name: "Duke", ownerEmail: "m@m.de", animalTypeName: "Hund", raceName: "Pitbull" },
 
   // Katze (1 race, 2 animals for Aziz ONLY)
-  { name: "Bambi", ownerEmail: "aziz@erol.de", animalTypeId: 2, raceId: 5 }, // Britisch Kurzhaar
-  { name: "Maya", ownerEmail: "aziz@erol.de", animalTypeId: 2, raceId: 5 },
+  { name: "Bambi", ownerEmail: "aziz@erol.de", animalTypeName: "Katze", raceName: "Britisch Kurzhaar" },
+  { name: "Maya", ownerEmail: "aziz@erol.de", animalTypeName: "Katze", raceName: "Britisch Kurzhaar" },
 
   // Kleintier (3 races, 1 per race)
-  { name: "Hoppy", ownerEmail: "joe@doe.de", animalTypeId: 3, raceId: 6 }, // Kaninchen
-  { name: "Whiskers", ownerEmail: "daniel@daniel.de", animalTypeId: 3, raceId: 7 }, // Meerschweinchen
-  { name: "Nibbles", ownerEmail: "james@jay.de", animalTypeId: 3, raceId: 8 }, // Hamster
+  { name: "Hoppy", ownerEmail: "joe@doe.de", animalTypeName: "Kleintier", raceName: "Kaninchen" },
+  { name: "Whiskers", ownerEmail: "daniel@daniel.de", animalTypeName: "Kleintier", raceName: "Meerschweinchen" },
+  { name: "Nibbles", ownerEmail: "james@jay.de", animalTypeName: "Kleintier", raceName: "Hamster" },
 
   // Vogel (6 races, 1 per race)
-  { name: "Polly", ownerEmail: "m@m.de", animalTypeId: 4, raceId: 9 }, // Papagei
-  { name: "Tweety", ownerEmail: "joey@doey.de", animalTypeId: 4, raceId: 10 }, // Wellensittich
-  { name: "Taube1", ownerEmail: "joe@doe.de", animalTypeId: 4, raceId: 11 }, // Taube
-  { name: "Falky", ownerEmail: "daniel@daniel.de", animalTypeId: 4, raceId: 12 }, // Falke
-  { name: "Krähe1", ownerEmail: "james@jay.de", animalTypeId: 4, raceId: 13 }, // Krähe
-  { name: "Raven", ownerEmail: "joey@doey.de", animalTypeId: 4, raceId: 14 }, // Rabe
-  { name: "Geier1", ownerEmail: "joe@doe.de", animalTypeId: 4, raceId: 15 }, // Aasgeier
+  { name: "Polly", ownerEmail: "m@m.de", animalTypeName: "Vogel", raceName: "Papagei" },
+  { name: "Tweety", ownerEmail: "joey@doey.de", animalTypeName: "Vogel", raceName: "Wellensittich" },
+  { name: "Taube1", ownerEmail: "joe@doe.de", animalTypeName: "Vogel", raceName: "Taube" },
+  { name: "Falky", ownerEmail: "daniel@daniel.de", animalTypeName: "Vogel", raceName: "Falke" },
+  { name: "Krähe1", ownerEmail: "james@jay.de", animalTypeName: "Vogel", raceName: "Krähe" },
+  { name: "Raven", ownerEmail: "joey@doey.de", animalTypeName: "Vogel", raceName: "Rabe" },
+  { name: "Geier1", ownerEmail: "joe@doe.de", animalTypeName: "Vogel", raceName: "Aasgeier" },
 
   // Reptil (2 races, 1 per race)
-  { name: "Lizzy", ownerEmail: "m@m.de", animalTypeId: 5, raceId: 16 }, // Eidechse
-  { name: "Slinky", ownerEmail: "joey@doey.de", animalTypeId: 5, raceId: 17 }, // Schlange
+  { name: "Lizzy", ownerEmail: "m@m.de", animalTypeName: "Reptil", raceName: "Eidechse" },
+  { name: "Slinky", ownerEmail: "joey@doey.de", animalTypeName: "Reptil", raceName: "Schlange" },
 
   // Pferd (2 races, 1 per race)
-  { name: "Pegasus", ownerEmail: "james@jay.de", animalTypeId: 6, raceId: 18 }, // Pegasus
-  { name: "Pony1", ownerEmail: "daniel@daniel.de", animalTypeId: 6, raceId: 19 }, // Pony
+  { name: "Pegasus", ownerEmail: "james@jay.de", animalTypeName: "Pferd", raceName: "Pegasus" },
+  { name: "Pony1", ownerEmail: "daniel@daniel.de", animalTypeName: "Pferd", raceName: "Pony" },
 
   // Nutztier (4 races, 1 per race)
-  { name: "Huhn1", ownerEmail: "m@m.de", animalTypeId: 7, raceId: 20 }, // Huhn
-  { name: "Schaf1", ownerEmail: "james@jay.de", animalTypeId: 7, raceId: 21 }, // Schaf
-  { name: "Cow1", ownerEmail: "joey@doey.de", animalTypeId: 7, raceId: 22 }, // Kuh
-  { name: "Bull1", ownerEmail: "daniel@daniel.de", animalTypeId: 7, raceId: 23 }, // Rind
+  { name: "Huhn1", ownerEmail: "m@m.de", animalTypeName: "Nutztier", raceName: "Huhn" },
+  { name: "Schaf1", ownerEmail: "james@jay.de", animalTypeName: "Nutztier", raceName: "Schaf" },
+  { name: "Cow1", ownerEmail: "joey@doey.de", animalTypeName: "Nutztier", raceName: "Kuh" },
+  { name: "Bull1", ownerEmail: "daniel@daniel.de", animalTypeName: "Nutztier", raceName: "Rind" },
 ];
 
 // Generate 2-3 vets per practice (total ~40 vets)
@@ -451,31 +451,34 @@ async function seedStatic() {
     if (existingRaces > 0) {
       console.log("✓ Animal races already exist");
     } else {
+      const types = await prisma.animalType.findMany({ select: { id: true, name: true } });
+      const typeByName = Object.fromEntries(types.map((t) => [t.name, t.id]));
+
       await prisma.animalRace.createMany({
         data: [
-          { name: "Labrador", animalTypeId: 1 },
-          { name: "Pudel", animalTypeId: 1 },
-          { name: "Schäferhund", animalTypeId: 1 },
-          { name: "Pitbull", animalTypeId: 1 },
-          { name: "Britisch Kurzhaar", animalTypeId: 2 },
-          { name: "Kaninchen", animalTypeId: 3 },
-          { name: "Meerschweinchen", animalTypeId: 3 },
-          { name: "Hamster", animalTypeId: 3 },
-          { name: "Papagei", animalTypeId: 4 },
-          { name: "Wellensittich", animalTypeId: 4 },
-          { name: "Taube", animalTypeId: 4 },
-          { name: "Falke", animalTypeId: 4 },
-          { name: "Krähe", animalTypeId: 4 },
-          { name: "Rabe", animalTypeId: 4 },
-          { name: "Aasgeier", animalTypeId: 4 },
-          { name: "Eidechse", animalTypeId: 5 },
-          { name: "Schlange", animalTypeId: 5 },
-          { name: "Pegasus", animalTypeId: 6 },
-          { name: "Pony", animalTypeId: 6 },
-          { name: "Huhn", animalTypeId: 7 },
-          { name: "Schaf", animalTypeId: 7 },
-          { name: "Kuh", animalTypeId: 7 },
-          { name: "Rind", animalTypeId: 7 },
+          { name: "Labrador", animalTypeId: typeByName["Hund"] },
+          { name: "Pudel", animalTypeId: typeByName["Hund"] },
+          { name: "Schäferhund", animalTypeId: typeByName["Hund"] },
+          { name: "Pitbull", animalTypeId: typeByName["Hund"] },
+          { name: "Britisch Kurzhaar", animalTypeId: typeByName["Katze"] },
+          { name: "Kaninchen", animalTypeId: typeByName["Kleintier"] },
+          { name: "Meerschweinchen", animalTypeId: typeByName["Kleintier"] },
+          { name: "Hamster", animalTypeId: typeByName["Kleintier"] },
+          { name: "Papagei", animalTypeId: typeByName["Vogel"] },
+          { name: "Wellensittich", animalTypeId: typeByName["Vogel"] },
+          { name: "Taube", animalTypeId: typeByName["Vogel"] },
+          { name: "Falke", animalTypeId: typeByName["Vogel"] },
+          { name: "Krähe", animalTypeId: typeByName["Vogel"] },
+          { name: "Rabe", animalTypeId: typeByName["Vogel"] },
+          { name: "Aasgeier", animalTypeId: typeByName["Vogel"] },
+          { name: "Eidechse", animalTypeId: typeByName["Reptil"] },
+          { name: "Schlange", animalTypeId: typeByName["Reptil"] },
+          { name: "Pegasus", animalTypeId: typeByName["Pferd"] },
+          { name: "Pony", animalTypeId: typeByName["Pferd"] },
+          { name: "Huhn", animalTypeId: typeByName["Nutztier"] },
+          { name: "Schaf", animalTypeId: typeByName["Nutztier"] },
+          { name: "Kuh", animalTypeId: typeByName["Nutztier"] },
+          { name: "Rind", animalTypeId: typeByName["Nutztier"] },
         ],
       });
       console.log("✓ Created animal races");
@@ -670,6 +673,12 @@ async function seedStatic() {
 
     let animalsCreated = 0;
 
+    const animalTypeList = await prisma.animalType.findMany({ select: { id: true, name: true } });
+    const animalTypeByName = Object.fromEntries(animalTypeList.map((t) => [t.name, t.id]));
+
+    const animalRaces = await prisma.animalRace.findMany({ select: { id: true, name: true } });
+    const raceByName = Object.fromEntries(animalRaces.map((r) => [r.name, r.id]));
+
     for (const animalData of FIXED_ANIMALS) {
       const ownerPersonId = personMap.get(animalData.ownerEmail);
       if (!ownerPersonId) {
@@ -699,7 +708,7 @@ async function seedStatic() {
           isCastrated: true,
           lifestyle: "indoor",
           sex: "female",
-          animalTypeId: animalData.animalTypeId,
+          animalTypeId: animalTypeByName[animalData.animalTypeName],
         },
       });
 

@@ -1,9 +1,12 @@
 import { useRouter } from 'expo-router'
 import { Button, ButtonText, Card } from '@/src/gluestack-components/ui'
 import { FontAwesomeIcon } from '@src/custom-components/tabbar-icon'
+import { useColorScheme } from 'nativewind'
 
 export function SearchApt() {
   const router = useRouter()
+  const { colorScheme } = useColorScheme()
+  const iconColor = colorScheme === 'dark' ? '#d1d5db' : '#374151'
 
   return (
     <>
@@ -14,8 +17,8 @@ export function SearchApt() {
           onPress={() => router.push('/(modals)/search')}
           className='bg-primary-100 rounded-xl '
         >
-          <FontAwesomeIcon name='search' color='#374151' size={20} />
-          <ButtonText className='text-gray-700 text-2xl'>
+          <FontAwesomeIcon name='search' color={iconColor} size={20} />
+          <ButtonText className='text-typography-700 text-2xl'>
             Termin buchen
           </ButtonText>
         </Button>

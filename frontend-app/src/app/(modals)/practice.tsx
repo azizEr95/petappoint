@@ -16,6 +16,7 @@ import { useMemo, useState } from 'react'
 import { usePracticeDetails } from '@src/hooks/usePracticeDetails'
 import { useFavorites } from '@src/hooks/useFavorites'
 import { useToggleFavorite } from '@src/hooks/useToggleFavorite'
+import { useColorScheme } from 'nativewind'
 
 function formatDate(date: Date): string {
   const today = new Date()
@@ -65,6 +66,9 @@ export default function Practice() {
     }))
   }, [appointments.data])
 
+  const { colorScheme } = useColorScheme()
+  const iconColor = colorScheme === 'dark' ? '#d1d5db' : '#374151'
+
   const [selectedDateIndex, setSelectedDateIndex] = useState(0)
   const [selectedAppointmentId, setSelectedAppointmentId] = useState<
     number | null
@@ -95,7 +99,7 @@ export default function Practice() {
   return (
     <>
       <ScrollView>
-        <Box className='bg-slate-100'>
+        <Box className='bg-background-100'>
           <Box className='h-[200px] bg-primary-500 rounded-b-3xl justify-center px-6 pt-10'>
             <Box className='flex-row justify-between items-center'>
               <Button
@@ -123,9 +127,9 @@ export default function Practice() {
           </Box>
           <Box className='px-5 pt-4 pb-8 -mt-8'>
             {/**Vorstellung*/}
-            <Box className='bg-white rounded-lg shadow-lg justify-center'>
+            <Box className='bg-background-0 rounded-lg shadow-lg justify-center'>
               <Box className='flex-row rounded-lg mx-3 mb-3 mt-2 justify-between'>
-                <Text size='xl' className='font-bold text-gray-700 flex-1 mr-2'>
+                <Text size='xl' className='font-bold text-typography-700 flex-1 mr-2'>
                   {vet.name}
                 </Text>
                 <Box className='bg-primary-100 justify-center rounded-full px-3 py-1'>
@@ -135,29 +139,29 @@ export default function Practice() {
                 </Box>
               </Box>
               <HStack className='flex-row mx-3 mb-3'>
-                <FontAwesomeIcon name='map-marker' color='#374151' size={20} />
-                <Text className='text-gray-700 ml-2'>
+                <FontAwesomeIcon name='map-marker' color={iconColor} size={20} />
+                <Text className='text-typography-700 ml-2'>
                   {vet.address.street}, {vet.address.cityCode}{' '}
                   {vet.address.city}
                 </Text>
               </HStack>
               <HStack className='flex-row mx-3 mb-3'>
-                <FontAwesomeIcon name='phone' color='#374151' size={20} />
-                <Text className='text-gray-700 ml-2'>{vet.phone}</Text>
+                <FontAwesomeIcon name='phone' color={iconColor} size={20} />
+                <Text className='text-typography-700 ml-2'>{vet.phone}</Text>
               </HStack>
               {vet.website && (
                 <HStack className='flex-row mx-3 mb-3'>
-                  <FontAwesomeIcon name='globe' color='#374151' size={20} />
-                  <Text className='text-gray-700 ml-2'>{vet.website}</Text>
+                  <FontAwesomeIcon name='globe' color={iconColor} size={20} />
+                  <Text className='text-typography-700 ml-2'>{vet.website}</Text>
                 </HStack>
               )}
             </Box>
 
             {/** Oeffnungszeiten */}
             {/*
-            <Box className='bg-white rounded-lg shadow-lg mt-4'>
+            <Box className='bg-background-0 rounded-lg shadow-lg mt-4'>
               <Box className='py-2 rounded-lg mx-3 '>
-                <Text size='xl' className='font-bold text-gray-700'>
+                <Text size='xl' className='font-bold text-typography-700'>
                   Öffnungszeiten
                 </Text>
                 <Box className='py-2'>
@@ -174,14 +178,14 @@ export default function Practice() {
                 </Box>
               </Box>
             </Box>/*}
-            <Box className='bg-white rounded-lg shadow-lg mt-4'>
+            <Box className='bg-background-0 rounded-lg shadow-lg mt-4'>
               <Box className='py-2 rounded-lg mx-3'>
-                <Text size='xl' className='font-bold text-gray-700'>
+                <Text size='xl' className='font-bold text-typography-700'>
                   Öffnungszeiten
                 </Text>
                 <Box className='py-2 flex-row items-center gap-2'>
                   <FontAwesomeIcon name='clock-o' color='#9ca3af' size={16} />
-                  <Text className='text-gray-400 italic'>
+                  <Text className='text-typography-400 italic'>
                     Öffnungszeiten müssen noch hinzugefügt werden.
                   </Text>
                 </Box>
@@ -190,9 +194,9 @@ export default function Practice() {
 
             {/*Leistungen */}
             {services.data && services.data.length > 0 && (
-              <Box className='bg-white mt-4 rounded-lg'>
+              <Box className='bg-background-0 mt-4 rounded-lg'>
                 <Box className='m-3'>
-                  <Text size='xl' className='font-bold text-gray-700'>
+                  <Text size='xl' className='font-bold text-typography-700'>
                     Leistungen
                   </Text>
                   <Box className='flex-row flex-wrap gap-2 mt-2'>
@@ -201,7 +205,7 @@ export default function Practice() {
                         key={service.id}
                         className='bg-primary-100 py-1 px-3 rounded-full self-start'
                       >
-                        <Text size='md' className='text-gray-700'>
+                        <Text size='md' className='text-typography-700'>
                           {service.name}
                         </Text>
                       </Card>
@@ -212,9 +216,9 @@ export default function Practice() {
             )}
 
             {/*Termine */}
-            <Box className='bg-white rounded-lg shadow-lg justify-center mt-4'>
+            <Box className='bg-background-0 rounded-lg shadow-lg justify-center mt-4'>
               <Box className='rounded-lg mx-3 mb-3 mt-2'>
-                <Text size='xl' className='font-bold text-gray-700'>
+                <Text size='xl' className='font-bold text-typography-700'>
                   Termin buchen
                 </Text>
 
@@ -223,7 +227,7 @@ export default function Practice() {
                     <Spinner size='small' />
                   </Box>
                 ) : groupedDates.length === 0 ? (
-                  <Text className='text-gray-500 mt-2'>
+                  <Text className='text-typography-500 mt-2'>
                     Keine freien Termine verfügbar.
                   </Text>
                 ) : (
@@ -253,7 +257,7 @@ export default function Practice() {
                               className={`opacity-80 ${
                                 selectedDateIndex === index
                                   ? 'text-white'
-                                  : 'text-gray-700'
+                                  : 'text-typography-700'
                               }`}
                             >
                               {dateGroup.day}
@@ -263,7 +267,7 @@ export default function Practice() {
                               className={`font-semibold ${
                                 selectedDateIndex === index
                                   ? 'text-white'
-                                  : 'text-gray-700'
+                                  : 'text-typography-700'
                               }`}
                             >
                               {dateGroup.label}
@@ -273,7 +277,7 @@ export default function Practice() {
                               className={`mt-1 opacity-70 ${
                                 selectedDateIndex === index
                                   ? 'text-white'
-                                  : 'text-gray-700'
+                                  : 'text-typography-700'
                               }`}
                             >
                               {dateGroup.slots.length} frei
@@ -284,7 +288,7 @@ export default function Practice() {
                     </Box>
 
                     <Box className='mt-4'>
-                      <Text size='sm' className='text-gray-400 mb-3'>
+                      <Text size='sm' className='text-typography-400 mb-3'>
                         Verfügbare Zeiten
                       </Text>
                       <Box className='flex-row flex-wrap gap-2'>
@@ -303,7 +307,7 @@ export default function Practice() {
                               className={`font-medium ${
                                 selectedAppointmentId === slot.id
                                   ? 'text-white'
-                                  : 'text-gray-700'
+                                  : 'text-typography-700'
                               }`}
                             >
                               {slot.time}

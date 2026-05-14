@@ -11,10 +11,11 @@ import { GluestackUIProvider } from '@src/gluestack-components/ui/gluestack-ui-p
 import { useColorScheme } from '@src/gluestack-components/useColorScheme';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import '@/global.css';
 import { QueryProvider } from '@src/providers/QueryProvider';
 import { useAuthStore } from '@src/stores/authStore';
+import { useThemeStore } from '@src/stores/themeStore';
 
 // --- für ErrorBoundary kannst du deinen bestehenden hängen lassen ---
 export {
@@ -29,6 +30,7 @@ export default function RootLayout() {
     ...FontAwesome.font,
   });
   const hydrateFromStorage = useAuthStore((s) => s.hydrateFromStorage);
+  const hydrateTheme = useThemeStore((s) => s.hydrateFromStorage);
 
   useEffect(() => {
     if (error) throw error;
@@ -36,7 +38,7 @@ export default function RootLayout() {
 
   useEffect(() => {
     if (loaded) {
-      hydrateFromStorage().then(() => {
+      Promise.all([hydrateFromStorage(), hydrateTheme()]).then(() => {
         SplashScreen.hideAsync();
       });
     }
@@ -55,7 +57,8 @@ export default function RootLayout() {
 
 function RootLayoutNav() {
   const systemColorScheme = useColorScheme();
-  const [mode, setMode] = useState<'system' | 'light' | 'dark'>('system');
+  const mode = useThemeStore((s) => s.mode);
+  const setMode = useThemeStore((s) => s.setMode);
 
   const effectiveColorScheme =
     mode === 'system' ? (systemColorScheme ?? 'light') : mode;

@@ -3,18 +3,18 @@ import { vars } from 'nativewind'
 
 export const config = {
   light: vars({
-    '--color-primary-0': '179 179 179',
-    '--color-primary-50': '153 153 153',
-    '--color-primary-100': '212 241 223', // meine neue Farbe
-    '--color-primary-200': '115 115 115',
-    '--color-primary-300': '102 102 102',
-    '--color-primary-400': '84 151 116', // meine neue Farbe
-    '--color-primary-500': '46 138 89', // meine neue Farbe
-    '--color-primary-600': '41 41 41',
-    '--color-primary-700': '31 31 31',
-    '--color-primary-800': '13 13 13',
-    '--color-primary-900': '10 10 10',
-    '--color-primary-950': '8 8 8',
+    '--color-primary-0': '240 252 246',
+    '--color-primary-50': '228 248 237',
+    '--color-primary-100': '212 241 223',
+    '--color-primary-200': '175 222 198',
+    '--color-primary-300': '132 190 162',
+    '--color-primary-400': '84 151 116',
+    '--color-primary-500': '46 138 89',
+    '--color-primary-600': '33 110 68',
+    '--color-primary-700': '22 82 50',
+    '--color-primary-800': '14 58 35',
+    '--color-primary-900': '9 38 23',
+    '--color-primary-950': '5 23 14',
 
     /* Secondary  */
     '--color-secondary-0': '253 253 253',
@@ -155,18 +155,18 @@ export const config = {
     '--color-indicator-error': '185 28 28',
   }),
   dark: vars({
-    '--color-primary-0': '166 166 166',
-    '--color-primary-50': '175 175 175',
-    '--color-primary-100': '186 186 186',
-    '--color-primary-200': '197 197 197',
-    '--color-primary-300': '212 212 212',
-    '--color-primary-400': '221 221 221',
-    '--color-primary-500': '230 230 230',
-    '--color-primary-600': '240 240 240',
-    '--color-primary-700': '250 250 250',
-    '--color-primary-800': '253 253 253',
-    '--color-primary-900': '254 249 249',
-    '--color-primary-950': '253 252 252',
+    '--color-primary-0': '6 15 10',
+    '--color-primary-50': '12 28 18',
+    '--color-primary-100': '22 54 36',
+    '--color-primary-200': '32 75 50',
+    '--color-primary-300': '42 100 65',
+    '--color-primary-400': '57 168 109',
+    '--color-primary-500': '72 196 130',
+    '--color-primary-600': '105 215 158',
+    '--color-primary-700': '148 228 186',
+    '--color-primary-800': '184 239 211',
+    '--color-primary-900': '212 247 229',
+    '--color-primary-950': '235 252 243',
 
     /* Secondary  */
     '--color-secondary-0': '20 20 20',

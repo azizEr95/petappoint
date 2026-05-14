@@ -2,6 +2,7 @@ import { FontAwesomeIcon } from '@/src/custom-components/tabbar-icon'
 import { Box, Card, Spinner, Text } from '@/src/gluestack-components/ui'
 import { useMyAppointments } from '@src/hooks/useMyAppointments'
 import { AnimalAvatar } from '@/src/custom-components/animal-avatar'
+import { useColorScheme } from 'nativewind'
 
 function formatDate(date: Date): string {
   const today = new Date()
@@ -22,6 +23,8 @@ function formatTime(date: Date): string {
 
 export function UpcomingApt() {
   const { future, isLoading } = useMyAppointments()
+  const { colorScheme } = useColorScheme()
+  const iconColor = colorScheme === 'dark' ? '#d1d5db' : '#374151'
 
   const next = [...future].sort((a, b) => a.startTime.getTime() - b.startTime.getTime())[0]
 
@@ -36,7 +39,7 @@ export function UpcomingApt() {
   if (!next) {
     return (
       <Box>
-        <Text className='text-gray-500'>Keine kommenden Termine</Text>
+        <Text className='text-typography-500'>Keine kommenden Termine</Text>
       </Box>
     )
   }
@@ -45,7 +48,7 @@ export function UpcomingApt() {
     <>
       <Box className='mb-6'>
         <Box className='mb-3'>
-          <Text className='text-gray-700 font-semibold text-lg'>Nächster Termin</Text>
+          <Text className='text-typography-700 font-semibold text-lg'>Nächster Termin</Text>
         </Box>
 
         <Box>
@@ -59,26 +62,26 @@ export function UpcomingApt() {
               {/* Inhalt */}
               <Box className='flex-1'>
                 <Box className='flex-row items-center justify-between'>
-                  <Text className='text-gray-700 text-md font-semibold'>
+                  <Text className='text-typography-700 text-md font-semibold'>
                     {next.animal?.name ?? '–'}
                   </Text>
                   <Box className='bg-primary-100 rounded-full px-3 py-1'>
-                    <Text className='text-gray-700'>
+                    <Text className='text-typography-700'>
                       {next.service?.name ?? next.availableServices[0]?.name ?? '–'}
                     </Text>
                   </Box>
                 </Box>
                 <Box className='flex-row items-start gap-1 py-2'>
-                  <FontAwesomeIcon name='map-marker' color='#374151' size={15} />
-                  <Text className='text-gray-700 text-md font-semibold'>
+                  <FontAwesomeIcon name='map-marker' color={iconColor} size={15} />
+                  <Text className='text-typography-700 text-md font-semibold'>
                     {next.veterinaryPractice.name}
                   </Text>
                 </Box>
 
                 {/* Uhrzeit‑Zeile */}
                 <Box className='flex-row items-center gap-1'>
-                  <FontAwesomeIcon name='clock-o' color='#374151' size={15} />
-                  <Text className='text-gray-700 font-semibold'>
+                  <FontAwesomeIcon name='clock-o' color={iconColor} size={15} />
+                  <Text className='text-typography-700 font-semibold'>
                     {formatDate(next.startTime)}, {formatTime(next.startTime)} Uhr
                   </Text>
                 </Box>

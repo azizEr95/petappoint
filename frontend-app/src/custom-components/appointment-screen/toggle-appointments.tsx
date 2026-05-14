@@ -27,9 +27,9 @@ export function ToggleApt({
           <Button
             size='lg'
             onPress={() => setActiveTab(true)}
-            className={`flex rounded-lg font-medium ${activeTab ? 'bg-white shadow-sm' : 'bg-primary-100 shadow-none'}`}
+            className={`flex rounded-lg font-medium ${activeTab ? 'bg-background-0 shadow-sm' : 'bg-primary-100 shadow-none'}`}
           >
-            <ButtonText className='text-gray-700'>
+            <ButtonText className='text-typography-700'>
               Kommend ({futureCount})
             </ButtonText>
           </Button>
@@ -37,9 +37,9 @@ export function ToggleApt({
           <Button
             size='lg'
             onPress={() => setActiveTab(false)}
-            className={`flex rounded-lg font-medium ${!activeTab ? 'bg-white shadow-sm' : 'bg-primary-100 shadow-none'}`}
+            className={`flex rounded-lg font-medium ${!activeTab ? 'bg-background-0 shadow-sm' : 'bg-primary-100 shadow-none'}`}
           >
-            <ButtonText className='text-gray-700'>
+            <ButtonText className='text-typography-700'>
               Vergangen ({pastCount})
             </ButtonText>
           </Button>

@@ -16,6 +16,7 @@ import { ScrollView } from 'react-native'
 import { useMyAnimals } from '@src/hooks/useMyAnimals'
 import { useAnimalTypes } from '@src/hooks/useAnimalTypes'
 import { useStoredImage } from '@src/hooks/useStoredImage'
+import { useColorScheme } from 'nativewind'
 
 const PET_COLORS = ['#dbeafe', '#fce7f3', '#d1fae5', '#fef9c3', '#ede9fe', '#ffedd5']
 
@@ -58,12 +59,14 @@ export default function Pets() {
   const router = useRouter()
   const { data: animals, isLoading, isError } = useMyAnimals()
   const { data: animalTypes } = useAnimalTypes()
+  const { colorScheme } = useColorScheme()
+  const iconColor = colorScheme === 'dark' ? '#d1d5db' : '#374151'
 
   const typeNameById = Object.fromEntries((animalTypes ?? []).map((t) => [t.id, t.name]))
 
   return (
     <>
-      <Box className='bg-slate-100'>
+      <Box className='bg-background-100'>
         <ScrollView>
           <Header />
           <Box className='px-5 -mt-4'>
@@ -83,7 +86,7 @@ export default function Pets() {
 
             {!isLoading && !isError && animals?.length === 0 && (
               <Box className='items-center py-4'>
-                <Text className='text-gray-500'>Noch keine Haustiere hinzugefügt.</Text>
+                <Text className='text-typography-500'>Noch keine Haustiere hinzugefügt.</Text>
               </Box>
             )}
 
@@ -100,10 +103,10 @@ export default function Pets() {
 
                       {/**Pet Daten */}
                       <Box className='flex-1'>
-                        <Text size='lg' className='text-gray-700 font-semibold'>
+                        <Text size='lg' className='text-typography-700 font-semibold'>
                           {pet.name}
                         </Text>
-                        <Text size='lg' className='text-gray-700 mb-1'>
+                        <Text size='lg' className='text-typography-700 mb-1'>
                           {typeNameById[pet.animalTypeId] ?? '–'}
                         </Text>
                         <Box className='flex-row items-start gap-2'>
@@ -125,7 +128,7 @@ export default function Pets() {
                           >
                             <FontAwesomeIcon
                               name='pencil'
-                              color='#374151'
+                              color={iconColor}
                               size={25}
                             />
                           </Button>
@@ -137,8 +140,8 @@ export default function Pets() {
                   {/**Card Body - Pet Details*/}
                   <Box className='flex-1 items-start mt-3'>
                     <Box className='flex-row flex-1 items-center justify-start p-2 gap-1'>
-                      <FontAwesomeIcon name='heart' color='#374151' size={15} />
-                      <Text size='lg' className='text-gray-700 ml-2'>
+                      <FontAwesomeIcon name='heart' color={iconColor} size={15} />
+                      <Text size='lg' className='text-typography-700 ml-2'>
                         Gewicht:
                       </Text>
                       <Text size='lg' className='bg-primary-100 rounded-full px-2'>
@@ -168,8 +171,8 @@ export default function Pets() {
                         className='bg-primary-100 border-primary-100 rounded-lg font-medium px-4'
                         onPress={() => router.push('/(modals)/search')}
                       >
-                        <FontAwesomeIcon name='search' color='#374151' size={15} />
-                        <ButtonText className='text-gray-700'>
+                        <FontAwesomeIcon name='search' color={iconColor} size={15} />
+                        <ButtonText className='text-typography-700'>
                           Termin buchen
                         </ButtonText>
                       </Button>
@@ -186,7 +189,7 @@ export default function Pets() {
                 onPress={() => router.push('/(modals)/add-pet')}
               >
                 <FontAwesomeIcon name='plus' color='#341579' size={18} />
-                <ButtonText className='text-gray-700 text-lg font-medium ml-2'>
+                <ButtonText className='text-typography-700 text-lg font-medium ml-2'>
                   Haustier hinzufügen
                 </ButtonText>
               </Button>

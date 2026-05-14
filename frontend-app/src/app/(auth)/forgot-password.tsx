@@ -1,5 +1,6 @@
 // app/(auth)/forgot-password.tsx
 import { FontAwesomeIcon } from '@/src/custom-components/tabbar-icon'
+import { useColorScheme } from 'nativewind'
 import {
   Box,
   Button,
@@ -16,6 +17,8 @@ import { router } from 'expo-router'
 import { useForgotPassword } from '@src/hooks/useForgotPassword'
 
 export default function ForgotPassword() {
+  const { colorScheme } = useColorScheme()
+  const iconColor = colorScheme === 'dark' ? '#d1d5db' : '#374151'
   const [email, setEmail] = useState('')
   const { mutate: requestReset, isPending, isSuccess, error } = useForgotPassword()
 
@@ -24,7 +27,7 @@ export default function ForgotPassword() {
   }
 
   return (
-    <Box className='flex-1 bg-slate-100'>
+    <Box className='flex-1 bg-background-100'>
       {/* Top green area */}
       <Box className='bg-primary-500 h-[25%] rounded-b-3xl justify-end px-6 pb-8'>
         <Text size='3xl' className='font-bold text-white'>
@@ -43,8 +46,8 @@ export default function ForgotPassword() {
             action='positive'
             className='bg-primary-100 rounded-xl'
           >
-            <FontAwesomeIcon name='key' color='#374151' size={20} />
-            <ButtonText className='text-gray-700 text-2xl'>
+            <FontAwesomeIcon name='key' color={iconColor} size={20} />
+            <ButtonText className='text-typography-700 text-2xl'>
               Petappoint
             </ButtonText>
           </Button>
@@ -59,17 +62,17 @@ export default function ForgotPassword() {
               <Text size='sm' className='text-primary-700 text-center'>
                 Falls ein Konto mit dieser E-Mail-Adresse existiert, erhältst du einen Link zum Zurücksetzen deines Passworts.
               </Text>
-              <Text size='sm' className='text-gray-400 text-center mt-2'>
+              <Text size='sm' className='text-typography-400 text-center mt-2'>
                 Der Link ist 1 Stunde gültig.
               </Text>
             </Box>
           ) : (
             <>
               <VStack className='gap-1'>
-                <Text size='lg' className='font-medium text-gray-600'>
+                <Text size='lg' className='font-medium text-typography-600'>
                   E-Mail
                 </Text>
-                <Input className='bg-white rounded-xl border-0 shadow-sm h-12'>
+                <Input className='bg-background-0 rounded-xl border-0 shadow-sm h-12'>
                   <InputField
                     placeholder='max@mustermann.de'
                     value={email}
@@ -99,7 +102,7 @@ export default function ForgotPassword() {
           )}
 
           <Pressable className='items-center mt-2' onPress={() => router.back()}>
-            <Text size='lg' className='text-gray-500 font-medium'>
+            <Text size='lg' className='text-typography-500 font-medium'>
               Zurück zum Login
             </Text>
           </Pressable>

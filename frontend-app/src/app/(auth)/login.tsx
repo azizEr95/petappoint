@@ -15,11 +15,14 @@ import { useState } from 'react'
 import { router } from 'expo-router'
 import { useLogin } from '@src/hooks/useLogin'
 import { ApiError } from '@src/api/client'
+import { useColorScheme } from 'nativewind'
 
 export default function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const { mutate: login, isPending, error } = useLogin()
+  const { colorScheme } = useColorScheme()
+  const iconColor = colorScheme === 'dark' ? '#d1d5db' : '#374151'
 
   const handleLogin = () => {
     login({ email, password })
@@ -33,7 +36,7 @@ export default function Login() {
         : null
 
   return (
-    <Box className='flex-1 bg-slate-100'>
+    <Box className='flex-1 bg-background-100'>
       {/* Top green area */}
       <Box className='bg-primary-500 h-[25%] rounded-b-3xl justify-end px-6 pb-8'>
         <Text size='3xl' className='font-bold text-white'>
@@ -52,8 +55,8 @@ export default function Login() {
             action='positive'
             className='bg-primary-100 rounded-xl '
           >
-            <FontAwesomeIcon name='paw' color='#374151' size={20} />
-            <ButtonText className='text-gray-700 text-2xl'>
+            <FontAwesomeIcon name='paw' color={iconColor} size={20} />
+            <ButtonText className='text-typography-700 text-2xl'>
               Petappoint
             </ButtonText>
           </Button>
@@ -64,10 +67,10 @@ export default function Login() {
       <Box className='flex-1 px-6 pt-4'>
         <VStack className='gap-4'>
           <VStack className='gap-1'>
-            <Text size='lg' className='font-medium text-gray-600'>
+            <Text size='lg' className='font-medium text-typography-600'>
               E-Mail
             </Text>
-            <Input className='bg-white rounded-xl border-0 shadow-sm h-12'>
+            <Input className='bg-background-0 rounded-xl border-0 shadow-sm h-12'>
               <InputField
                 placeholder='max@mustermann.de'
                 value={email}
@@ -79,10 +82,10 @@ export default function Login() {
           </VStack>
 
           <VStack className='gap-1'>
-            <Text size='lg' className='font-medium text-gray-600'>
+            <Text size='lg' className='font-medium text-typography-600'>
               Passwort
             </Text>
-            <Input className='bg-white rounded-xl border-0 shadow-sm h-12'>
+            <Input className='bg-background-0 rounded-xl border-0 shadow-sm h-12'>
               <InputField
                 placeholder='••••••••'
                 value={password}
@@ -117,7 +120,7 @@ export default function Login() {
 
         {/* Register link */}
         <Box className='flex-row justify-center mt-6'>
-          <Text size='lg' className='text-gray-500'>
+          <Text size='lg' className='text-typography-500'>
             Noch kein Konto?{' '}
           </Text>
           <Pressable onPress={() => router.push('/(auth)/register')}>

@@ -80,7 +80,7 @@ export default function AddPet() {
   }
 
   return (
-    <Box className='flex-1 bg-slate-100'>
+    <Box className='flex-1 bg-background-100'>
       {/* Top green area */}
       <Box className='bg-primary-500 rounded-b-3xl justify-center px-6 pb-4 pt-16'>
         <Box className='flex-row justify-between items-start'>
@@ -103,8 +103,8 @@ export default function AddPet() {
       <ScrollView className='flex-1 px-5' contentContainerStyle={{ paddingTop: 24, paddingBottom: 40 }}>
         <VStack className='gap-4'>
           {/* Tierart */}
-          <Card className='bg-white rounded-xl shadow-sm p-4'>
-            <Text size='sm' className='font-semibold text-gray-500 uppercase mb-3'>
+          <Card className='bg-background-0 rounded-xl shadow-sm p-4'>
+            <Text size='sm' className='font-semibold text-typography-500 uppercase mb-3'>
               Tierart
             </Text>
             <Box className='flex-row flex-wrap gap-2'>
@@ -112,9 +112,9 @@ export default function AddPet() {
                 <Button
                   key={type.id}
                   onPress={() => setAnimalTypeId(type.id)}
-                  className={`rounded-full px-4 h-10 ${animalTypeId === type.id ? 'bg-primary-500' : 'bg-slate-100'}`}
+                  className={`rounded-full px-4 h-10 ${animalTypeId === type.id ? 'bg-primary-500' : 'bg-background-100'}`}
                 >
-                  <ButtonText className={animalTypeId === type.id ? 'text-white' : 'text-gray-700'}>
+                  <ButtonText className={animalTypeId === type.id ? 'text-white' : 'text-typography-700'}>
                     {type.name}
                   </ButtonText>
                 </Button>
@@ -123,12 +123,12 @@ export default function AddPet() {
           </Card>
 
           {/* Name */}
-          <Card className='bg-white rounded-xl shadow-sm p-4'>
-            <Text size='sm' className='font-semibold text-gray-500 uppercase mb-3'>
+          <Card className='bg-background-0 rounded-xl shadow-sm p-4'>
+            <Text size='sm' className='font-semibold text-typography-500 uppercase mb-3'>
               Name
             </Text>
             <VStack className='gap-1'>
-              <Text size='sm' className='font-medium text-gray-600'>Name</Text>
+              <Text size='sm' className='font-medium text-typography-600'>Name</Text>
               <Input className='bg-slate-50 rounded-xl border-0 shadow-sm h-12'>
                 <InputField
                   placeholder='Buddy'
@@ -140,13 +140,13 @@ export default function AddPet() {
           </Card>
 
           {/* Geburtsdatum */}
-          <Card className='bg-white rounded-xl shadow-sm p-4'>
-            <Text size='sm' className='font-semibold text-gray-500 uppercase mb-3'>
+          <Card className='bg-background-0 rounded-xl shadow-sm p-4'>
+            <Text size='sm' className='font-semibold text-typography-500 uppercase mb-3'>
               Geburtsdatum
             </Text>
             <VStack className='gap-3'>
               <VStack className='gap-1'>
-                <Text size='sm' className='font-medium text-gray-600'>Datum</Text>
+                <Text size='sm' className='font-medium text-typography-600'>Datum</Text>
                 <Input className='bg-slate-50 rounded-xl border-0 shadow-sm h-12'>
                   <InputField
                     placeholder='TT.MM.JJJJ (z.B. 15.03.2020)'
@@ -157,21 +157,21 @@ export default function AddPet() {
                 </Input>
               </VStack>
               <VStack className='gap-1'>
-                <Text size='sm' className='font-medium text-gray-600'>Genauigkeit</Text>
+                <Text size='sm' className='font-medium text-typography-600'>Genauigkeit</Text>
                 <Box className='flex-row gap-2'>
                   <Button
                     onPress={() => setDateOfBirthIsExact(true)}
-                    className={`rounded-full px-4 h-10 ${dateOfBirthIsExact ? 'bg-primary-500' : 'bg-slate-100'}`}
+                    className={`rounded-full px-4 h-10 ${dateOfBirthIsExact ? 'bg-primary-500' : 'bg-background-100'}`}
                   >
-                    <ButtonText className={dateOfBirthIsExact ? 'text-white' : 'text-gray-700'}>
+                    <ButtonText className={dateOfBirthIsExact ? 'text-white' : 'text-typography-700'}>
                       Genau
                     </ButtonText>
                   </Button>
                   <Button
                     onPress={() => setDateOfBirthIsExact(false)}
-                    className={`rounded-full px-4 h-10 ${!dateOfBirthIsExact ? 'bg-primary-500' : 'bg-slate-100'}`}
+                    className={`rounded-full px-4 h-10 ${!dateOfBirthIsExact ? 'bg-primary-500' : 'bg-background-100'}`}
                   >
-                    <ButtonText className={!dateOfBirthIsExact ? 'text-white' : 'text-gray-700'}>
+                    <ButtonText className={!dateOfBirthIsExact ? 'text-white' : 'text-typography-700'}>
                       Ungefähr
                     </ButtonText>
                   </Button>
@@ -181,8 +181,8 @@ export default function AddPet() {
           </Card>
 
           {/* Geschlecht */}
-          <Card className='bg-white rounded-xl shadow-sm p-4'>
-            <Text size='sm' className='font-semibold text-gray-500 uppercase mb-3'>
+          <Card className='bg-background-0 rounded-xl shadow-sm p-4'>
+            <Text size='sm' className='font-semibold text-typography-500 uppercase mb-3'>
               Geschlecht
             </Text>
             <Box className='flex-row flex-wrap gap-2'>
@@ -190,9 +190,9 @@ export default function AddPet() {
                 <Button
                   key={opt.value}
                   onPress={() => setSex(opt.value)}
-                  className={`rounded-full px-4 h-10 ${sex === opt.value ? 'bg-primary-500' : 'bg-slate-100'}`}
+                  className={`rounded-full px-4 h-10 ${sex === opt.value ? 'bg-primary-500' : 'bg-background-100'}`}
                 >
-                  <ButtonText className={sex === opt.value ? 'text-white' : 'text-gray-700'}>
+                  <ButtonText className={sex === opt.value ? 'text-white' : 'text-typography-700'}>
                     {opt.label}
                   </ButtonText>
                 </Button>
@@ -201,13 +201,13 @@ export default function AddPet() {
           </Card>
 
           {/* Körperdaten */}
-          <Card className='bg-white rounded-xl shadow-sm p-4'>
-            <Text size='sm' className='font-semibold text-gray-500 uppercase mb-3'>
+          <Card className='bg-background-0 rounded-xl shadow-sm p-4'>
+            <Text size='sm' className='font-semibold text-typography-500 uppercase mb-3'>
               Körperdaten
             </Text>
             <VStack className='gap-3'>
               <VStack className='gap-1'>
-                <Text size='sm' className='font-medium text-gray-600'>Gewicht (g)</Text>
+                <Text size='sm' className='font-medium text-typography-600'>Gewicht (g)</Text>
                 <Input className='bg-slate-50 rounded-xl border-0 shadow-sm h-12'>
                   <InputField
                     placeholder='5000'
@@ -218,7 +218,7 @@ export default function AddPet() {
                 </Input>
               </VStack>
               <VStack className='gap-1'>
-                <Text size='sm' className='font-medium text-gray-600'>Größe (cm)</Text>
+                <Text size='sm' className='font-medium text-typography-600'>Größe (cm)</Text>
                 <Input className='bg-slate-50 rounded-xl border-0 shadow-sm h-12'>
                   <InputField
                     placeholder='30'
@@ -232,24 +232,24 @@ export default function AddPet() {
           </Card>
 
           {/* Kastration */}
-          <Card className='bg-white rounded-xl shadow-sm p-4'>
-            <Text size='sm' className='font-semibold text-gray-500 uppercase mb-3'>
+          <Card className='bg-background-0 rounded-xl shadow-sm p-4'>
+            <Text size='sm' className='font-semibold text-typography-500 uppercase mb-3'>
               Kastration
             </Text>
             <Box className='flex-row gap-2'>
               <Button
                 onPress={() => setIsCastrated(true)}
-                className={`rounded-full px-4 h-10 ${isCastrated ? 'bg-primary-500' : 'bg-slate-100'}`}
+                className={`rounded-full px-4 h-10 ${isCastrated ? 'bg-primary-500' : 'bg-background-100'}`}
               >
-                <ButtonText className={isCastrated ? 'text-white' : 'text-gray-700'}>
+                <ButtonText className={isCastrated ? 'text-white' : 'text-typography-700'}>
                   Kastriert
                 </ButtonText>
               </Button>
               <Button
                 onPress={() => setIsCastrated(false)}
-                className={`rounded-full px-4 h-10 ${!isCastrated ? 'bg-primary-500' : 'bg-slate-100'}`}
+                className={`rounded-full px-4 h-10 ${!isCastrated ? 'bg-primary-500' : 'bg-background-100'}`}
               >
-                <ButtonText className={!isCastrated ? 'text-white' : 'text-gray-700'}>
+                <ButtonText className={!isCastrated ? 'text-white' : 'text-typography-700'}>
                   Nicht kastriert
                 </ButtonText>
               </Button>
@@ -257,8 +257,8 @@ export default function AddPet() {
           </Card>
 
           {/* Lebensweise */}
-          <Card className='bg-white rounded-xl shadow-sm p-4'>
-            <Text size='sm' className='font-semibold text-gray-500 uppercase mb-3'>
+          <Card className='bg-background-0 rounded-xl shadow-sm p-4'>
+            <Text size='sm' className='font-semibold text-typography-500 uppercase mb-3'>
               Lebensweise
             </Text>
             <Box className='flex-row gap-2'>
@@ -266,9 +266,9 @@ export default function AddPet() {
                 <Button
                   key={opt.value}
                   onPress={() => setLifestyle(opt.value)}
-                  className={`rounded-full px-4 h-10 ${lifestyle === opt.value ? 'bg-primary-500' : 'bg-slate-100'}`}
+                  className={`rounded-full px-4 h-10 ${lifestyle === opt.value ? 'bg-primary-500' : 'bg-background-100'}`}
                 >
-                  <ButtonText className={lifestyle === opt.value ? 'text-white' : 'text-gray-700'}>
+                  <ButtonText className={lifestyle === opt.value ? 'text-white' : 'text-typography-700'}>
                     {opt.label}
                   </ButtonText>
                 </Button>

@@ -14,6 +14,7 @@ import {
 } from '@/src/gluestack-components/ui'
 import { router, useLocalSearchParams } from 'expo-router'
 import { useEffect, useState } from 'react'
+import { useColorScheme } from 'nativewind'
 import { useQuery } from '@tanstack/react-query'
 import { getAppointment } from '@src/api/appointments'
 import { useMyAnimals } from '@src/hooks/useMyAnimals'
@@ -65,6 +66,9 @@ export default function Process() {
 
   const typeNameById = Object.fromEntries((animalTypes ?? []).map((t) => [t.id, t.name]))
 
+  const { colorScheme } = useColorScheme()
+  const iconColor = colorScheme === 'dark' ? '#d1d5db' : '#374151'
+
   const [bookingError, setBookingError] = useState<string | null>(null)
   const isLoading = aptLoading || animalsLoading
   const canBook = !!selectedAnimalId && !!selectedServiceId && !isBooking
@@ -76,7 +80,7 @@ export default function Process() {
       { appointmentId: aptId, animalId: selectedAnimalId!, serviceId: selectedServiceId!, practiceId: appointment!.veterinaryPractice.id },
       {
         onSuccess: () => {
-          router.dismissTo('/(tabs)/appointment')
+          router.dismiss()
         },
         onError: (e) => setBookingError(e instanceof Error ? e.message : 'Buchung fehlgeschlagen.'),
       },
@@ -94,7 +98,7 @@ export default function Process() {
   const formatted = appointment ? formatDateTime(appointment.startTime) : null
 
   return (
-    <Box className='flex-1 bg-slate-100'>
+    <Box className='flex-1 bg-background-100'>
       {/** Top green area */}
       <Box className='bg-primary-500 rounded-b-3xl justify-center px-6 pb-4 pt-16'>
         <Box className='flex-row justify-between items-start'>
@@ -118,17 +122,17 @@ export default function Process() {
         <Box className='px-5 pt-6'>
 
           {/* Ort & Zeit */}
-          <Card className='bg-white rounded-xl shadow-sm p-4 mb-3'>
+          <Card className='bg-background-0 rounded-xl shadow-sm p-4 mb-3'>
             <HStack className='items-center gap-2 mb-2'>
               <FontAwesomeIcon name='clock-o' color='#2e8a59' size={18} />
-              <Text size='sm' className='font-semibold text-gray-500 uppercase'>
+              <Text size='sm' className='font-semibold text-typography-500 uppercase'>
                 Ort & Zeit
               </Text>
             </HStack>
-            <Text size='md' className='font-semibold text-gray-800'>
+            <Text size='md' className='font-semibold text-typography-800'>
               {appointment?.veterinaryPractice.name ?? '–'}
             </Text>
-            <Text size='sm' className='text-gray-500 mt-0.5'>
+            <Text size='sm' className='text-typography-500 mt-0.5'>
               {appointment
                 ? `${appointment.veterinaryPractice.address.street}, ${appointment.veterinaryPractice.address.cityCode} ${appointment.veterinaryPractice.address.city}`
                 : '–'}
@@ -136,22 +140,22 @@ export default function Process() {
             {formatted && (
               <>
                 <HStack className='items-center gap-2 mt-2'>
-                  <FontAwesomeIcon name='calendar' color='#374151' size={14} />
-                  <Text size='sm' className='text-gray-700'>{formatted.date}</Text>
+                  <FontAwesomeIcon name='calendar' color={iconColor} size={14} />
+                  <Text size='sm' className='text-typography-700'>{formatted.date}</Text>
                 </HStack>
                 <HStack className='items-center gap-2 mt-1'>
-                  <FontAwesomeIcon name='clock-o' color='#374151' size={14} />
-                  <Text size='sm' className='text-gray-700'>{formatted.time}</Text>
+                  <FontAwesomeIcon name='clock-o' color={iconColor} size={14} />
+                  <Text size='sm' className='text-typography-700'>{formatted.time}</Text>
                 </HStack>
               </>
             )}
           </Card>
 
           {/* Haustier auswählen */}
-          <Card className='bg-white rounded-xl shadow-sm p-4 mb-3'>
+          <Card className='bg-background-0 rounded-xl shadow-sm p-4 mb-3'>
             <HStack className='items-center gap-2 mb-3'>
               <FontAwesomeIcon name='paw' color='#2e8a59' size={18} />
-              <Text size='sm' className='font-semibold text-gray-500 uppercase'>
+              <Text size='sm' className='font-semibold text-typography-500 uppercase'>
                 Haustier
               </Text>
             </HStack>
@@ -165,32 +169,32 @@ export default function Process() {
                     className={`px-3 py-2 rounded-lg border ${
                       isSelected
                         ? 'bg-primary-100 border-primary-400'
-                        : 'bg-gray-50 border-gray-200'
+                        : 'bg-background-50 border-outline-200'
                     }`}
                   >
                     <Text
                       size='sm'
-                      className={`font-semibold ${isSelected ? 'text-primary-600' : 'text-gray-700'}`}
+                      className={`font-semibold ${isSelected ? 'text-primary-600' : 'text-typography-700'}`}
                     >
                       {animal.name}
                     </Text>
-                    <Text size='xs' className='text-gray-400'>
+                    <Text size='xs' className='text-typography-400'>
                       {typeNameById[animal.animalTypeId] ?? '–'}
                     </Text>
                   </Pressable>
                 )
               })}
               {!animals?.length && (
-                <Text className='text-gray-400'>Keine Haustiere gefunden.</Text>
+                <Text className='text-typography-400'>Keine Haustiere gefunden.</Text>
               )}
             </Box>
           </Card>
 
           {/* Behandlung auswählen */}
-          <Card className='bg-white rounded-xl shadow-sm p-4 mb-3'>
+          <Card className='bg-background-0 rounded-xl shadow-sm p-4 mb-3'>
             <HStack className='items-center gap-2 mb-3'>
               <FontAwesomeIcon name='stethoscope' color='#2e8a59' size={18} />
-              <Text size='sm' className='font-semibold text-gray-500 uppercase'>
+              <Text size='sm' className='font-semibold text-typography-500 uppercase'>
                 Behandlung
               </Text>
             </HStack>
@@ -204,12 +208,12 @@ export default function Process() {
                     className={`px-3 py-2 rounded-full border ${
                       isSelected
                         ? 'bg-primary-100 border-primary-400'
-                        : 'bg-gray-50 border-gray-200'
+                        : 'bg-background-50 border-outline-200'
                     }`}
                   >
                     <Text
                       size='sm'
-                      className={`font-medium ${isSelected ? 'text-primary-600' : 'text-gray-700'}`}
+                      className={`font-medium ${isSelected ? 'text-primary-600' : 'text-typography-700'}`}
                     >
                       {service.name}
                     </Text>
@@ -217,7 +221,7 @@ export default function Process() {
                 )
               })}
               {!appointment?.availableServices?.length && (
-                <Text className='text-gray-400'>Keine Leistungen verfügbar.</Text>
+                <Text className='text-typography-400'>Keine Leistungen verfügbar.</Text>
               )}
             </Box>
           </Card>
@@ -226,7 +230,7 @@ export default function Process() {
       </ScrollView>
 
       {/* Bottom button — fixed outside ScrollView */}
-      <Box className='bg-white px-5 py-4 shadow-lg'>
+      <Box className='bg-background-0 px-5 py-4 shadow-lg'>
         {bookingError && (
           <Text className='text-red-500 text-sm mb-2 text-center'>{bookingError}</Text>
         )}
