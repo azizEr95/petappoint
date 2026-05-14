@@ -87,17 +87,19 @@ function RootLayoutNav() {
           {/* Auth screens (login / register) */}
           <Stack.Screen name="(auth)"/>
 
-          {/* Tabs (z.B. in (tabs)) */}
-          <Stack.Screen
-            name="(tabs)"
-            options={{presentation: 'fullScreenModal'}}
-          />
+          {/* Tabs */}
+          <Stack.Screen name="(tabs)"/>
 
-          {/* Modal‑Stack für search / booking */}
-          <Stack.Screen
-            name="(modals)"
-            options={{ presentation: 'fullScreenModal' }}
-          />
+          {/* Modals – direkt im Root‑Stack, damit router.navigate() korrekt zurücknavigiert */}
+          <Stack.Screen name="(modals)/search" options={{ presentation: 'fullScreenModal' }}/>
+          <Stack.Screen name="(modals)/result" options={{ presentation: 'fullScreenModal' }}/>
+          <Stack.Screen name="(modals)/practice" options={{ presentation: 'fullScreenModal' }}/>
+          <Stack.Screen name="(modals)/process" options={{ presentation: 'fullScreenModal' }}/>
+          <Stack.Screen name="(modals)/booking-confirmation" options={{ presentation: 'fullScreenModal' }}/>
+          <Stack.Screen name="(modals)/add-pet" options={{ presentation: 'fullScreenModal' }}/>
+          <Stack.Screen name="(modals)/edit-pet" options={{ presentation: 'fullScreenModal' }}/>
+          <Stack.Screen name="(modals)/edit-profile" options={{ presentation: 'fullScreenModal' }}/>
+          <Stack.Screen name="(modals)/favorite-practices" options={{ presentation: 'fullScreenModal' }}/>
         </Stack>
 
         {/* Deinen Button nur für den Start‑Pfad */}
