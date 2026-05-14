@@ -18,17 +18,19 @@ import { routes } from '@src/constants/routes'
 import { useQuery } from '@tanstack/react-query'
 import { verifyResetTokenApi } from '@src/api/auth'
 import { useResetPassword } from '@src/hooks/useResetPassword'
+import { useTranslation } from 'react-i18next'
 
-function validatePassword(password: string): string | null {
-  if (password.length < 8) return 'Passwort muss mindestens 8 Zeichen lang sein'
-  if (!/[A-Z]/.test(password)) return 'Passwort muss mindestens einen Großbuchstaben enthalten'
-  if (!/[0-9]/.test(password)) return 'Passwort muss mindestens eine Zahl enthalten'
+function validatePassword(password: string, t: (key: string) => string): string | null {
+  if (password.length < 8) return t('auth.reset_password.error_min_length')
+  if (!/[A-Z]/.test(password)) return t('auth.reset_password.error_uppercase')
+  if (!/[0-9]/.test(password)) return t('auth.reset_password.error_number')
   if (!/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password))
-    return 'Passwort muss mindestens ein Sonderzeichen enthalten'
+    return t('auth.reset_password.error_special')
   return null
 }
 
 export default function ResetPassword() {
+  const { t } = useTranslation()
   const { colorScheme } = useColorScheme()
   const iconColor = colorScheme === 'dark' ? '#d1d5db' : '#374151'
   const { token } = useLocalSearchParams<{ token: string }>()
@@ -46,13 +48,13 @@ export default function ResetPassword() {
   const { mutate: resetPassword, isPending, error: resetError } = useResetPassword()
 
   const handleSubmit = () => {
-    const pwError = validatePassword(password)
+    const pwError = validatePassword(password, t)
     if (pwError) {
       setValidationError(pwError)
       return
     }
     if (password !== confirmPassword) {
-      setValidationError('Passwörter stimmen nicht überein')
+      setValidationError(t('common.passwords_mismatch'))
       return
     }
     setValidationError(null)
@@ -64,10 +66,10 @@ export default function ResetPassword() {
       {/* Top green area */}
       <Box className='bg-primary-500 h-[25%] rounded-b-3xl justify-end px-6 pb-8'>
         <Text size='3xl' className='font-bold text-white'>
-          Neues Passwort
+          {t('auth.reset_password.title')}
         </Text>
         <Text size='lg' className='text-white/70 mt-1'>
-          Erstelle ein neues Passwort
+          {t('auth.reset_password.subtitle')}
         </Text>
       </Box>
 
@@ -91,16 +93,16 @@ export default function ResetPassword() {
       <Box className='flex-1 px-6 pt-4'>
         {isLoading ? (
           <Text size='lg' className='text-typography-500 text-center'>
-            Link wird geprüft…
+            {t('auth.reset_password.checking_link')}
           </Text>
         ) : isError || !token ? (
           <VStack className='gap-4 items-center'>
             <Text size='lg' className='text-red-500 text-center font-medium'>
-              Ungültiger oder abgelaufener Link
+              {t('auth.reset_password.invalid_link')}
             </Text>
             <Pressable onPress={() => router.replace(routes.auth.forgotPassword)}>
               <Text size='lg' className='text-primary-500 font-medium'>
-                Neuen Link anfordern
+                {t('auth.reset_password.request_new_link')}
               </Text>
             </Pressable>
           </VStack>
@@ -108,7 +110,7 @@ export default function ResetPassword() {
           <VStack className='gap-4'>
             <VStack className='gap-1'>
               <Text size='lg' className='font-medium text-typography-600'>
-                Neues Passwort
+                {t('auth.reset_password.new_password')}
               </Text>
               <Input className='bg-background-0 rounded-xl border-0 shadow-sm h-12'>
                 <InputField
@@ -122,7 +124,7 @@ export default function ResetPassword() {
 
             <VStack className='gap-1'>
               <Text size='lg' className='font-medium text-typography-600'>
-                Passwort wiederholen
+                {t('auth.reset_password.repeat_password')}
               </Text>
               <Input className='bg-background-0 rounded-xl border-0 shadow-sm h-12'>
                 <InputField
@@ -142,7 +144,7 @@ export default function ResetPassword() {
 
             {resetError && !validationError && (
               <Text size='sm' className='text-red-500 text-center'>
-                Ein Fehler ist aufgetreten. Bitte versuche es erneut.
+                {t('common.error_generic')}
               </Text>
             )}
 
@@ -152,13 +154,13 @@ export default function ResetPassword() {
               disabled={isPending || password.length === 0 || confirmPassword.length === 0}
             >
               <ButtonText className='font-bold'>
-                {isPending ? 'Wird gespeichert…' : 'Passwort setzen'}
+                {isPending ? t('auth.reset_password.submitting') : t('auth.reset_password.submit')}
               </ButtonText>
             </Button>
 
             <Pressable className='items-center mt-2' onPress={() => router.replace(routes.auth.login)}>
               <Text size='lg' className='text-typography-500 font-medium'>
-                Zurück zum Login
+                {t('common.back_to_login')}
               </Text>
             </Pressable>
           </VStack>

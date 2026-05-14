@@ -11,8 +11,10 @@ import {
 import { router, useLocalSearchParams } from 'expo-router'
 import { useColorScheme } from 'nativewind'
 import { routes } from '@src/constants/routes'
+import { useTranslation } from 'react-i18next'
 
 export default function BookingConfirmation() {
+  const { t } = useTranslation()
   const { practiceName, date, time, serviceName, animalName } =
     useLocalSearchParams<{
       practiceName: string
@@ -33,10 +35,10 @@ export default function BookingConfirmation() {
           <FontAwesomeIcon name='check' color='#2e8a59' size={40} />
         </Box>
         <Text size='2xl' className='font-bold text-typography-800 text-center'>
-          Ihr Termin wurde erfolgreich gebucht.
+          {t('booking_confirmation.success_title')}
         </Text>
         <Text size='sm' className='text-typography-500 text-center mt-2'>
-          Sie erhalten eine Bestätigungs-E-Mail.
+          {t('booking_confirmation.success_email')}
         </Text>
       </Box>
 
@@ -50,7 +52,7 @@ export default function BookingConfirmation() {
             <HStack className='items-center gap-2 mb-1'>
               <FontAwesomeIcon name='building' color='#2e8a59' size={16} />
               <Text size='xs' className='font-semibold text-typography-500 uppercase'>
-                Tierarztpraxis
+                {t('booking_confirmation.practice_label')}
               </Text>
             </HStack>
             <Text size='md' className='font-semibold text-typography-800 mb-3'>
@@ -63,7 +65,7 @@ export default function BookingConfirmation() {
             <HStack className='items-center gap-2 mb-1'>
               <FontAwesomeIcon name='calendar' color={iconColor} size={15} />
               <Text size='xs' className='font-semibold text-typography-500 uppercase'>
-                Datum
+                {t('booking_confirmation.date_label')}
               </Text>
             </HStack>
             <Text size='md' className='font-semibold text-typography-800 mb-3'>
@@ -76,7 +78,7 @@ export default function BookingConfirmation() {
             <HStack className='items-center gap-2 mb-1'>
               <FontAwesomeIcon name='clock-o' color={iconColor} size={15} />
               <Text size='xs' className='font-semibold text-typography-500 uppercase'>
-                Uhrzeit
+                {t('booking_confirmation.time_label')}
               </Text>
             </HStack>
             <Text size='md' className='font-semibold text-typography-800 mb-3'>
@@ -89,7 +91,7 @@ export default function BookingConfirmation() {
             <HStack className='items-center gap-2 mb-1'>
               <FontAwesomeIcon name='stethoscope' color={iconColor} size={15} />
               <Text size='xs' className='font-semibold text-typography-500 uppercase'>
-                Behandlung
+                {t('booking_confirmation.treatment_label')}
               </Text>
             </HStack>
             <Text size='md' className='font-semibold text-typography-800 mb-3'>
@@ -102,7 +104,7 @@ export default function BookingConfirmation() {
             <HStack className='items-center gap-2 mb-1'>
               <FontAwesomeIcon name='paw' color={iconColor} size={15} />
               <Text size='xs' className='font-semibold text-typography-500 uppercase'>
-                Tier
+                {t('booking_confirmation.animal_label')}
               </Text>
             </HStack>
             <Text size='md' className='font-semibold text-typography-800'>
@@ -123,7 +125,7 @@ export default function BookingConfirmation() {
             router.push(routes.tabs.appointment)
           }}
         >
-          <ButtonText className='text-white font-bold'>Zu den Terminen</ButtonText>
+          <ButtonText className='text-white font-bold'>{t('booking_confirmation.go_to_appointments')}</ButtonText>
         </Button>
         <Button
           className='w-full h-12 rounded-xl'
@@ -133,7 +135,7 @@ export default function BookingConfirmation() {
             router.push(routes.tabs.home)
           }}
         >
-          <ButtonText className='font-bold'>Zurück zur Startseite</ButtonText>
+          <ButtonText className='font-bold'>{t('booking_confirmation.back_to_home')}</ButtonText>
         </Button>
       </Box>
     </Box>

@@ -13,9 +13,11 @@ import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import '@/global.css';
+import '@src/i18n';
 import { QueryProvider } from '@src/providers/QueryProvider';
 import { useAuthStore } from '@src/stores/authStore';
 import { useThemeStore } from '@src/stores/themeStore';
+import { useLanguageStore } from '@src/stores/languageStore';
 
 // --- für ErrorBoundary kannst du deinen bestehenden hängen lassen ---
 export {
@@ -31,6 +33,7 @@ export default function RootLayout() {
   });
   const hydrateFromStorage = useAuthStore((s) => s.hydrateFromStorage);
   const hydrateTheme = useThemeStore((s) => s.hydrateFromStorage);
+  const hydrateLanguage = useLanguageStore((s) => s.hydrateFromStorage);
 
   useEffect(() => {
     if (error) throw error;
@@ -38,7 +41,7 @@ export default function RootLayout() {
 
   useEffect(() => {
     if (loaded) {
-      Promise.all([hydrateFromStorage(), hydrateTheme()]).then(() => {
+      Promise.all([hydrateFromStorage(), hydrateTheme(), hydrateLanguage()]).then(() => {
         SplashScreen.hideAsync();
       });
     }
@@ -100,6 +103,7 @@ function RootLayoutNav() {
           <Stack.Screen name="(modals)/edit-pet" options={{ presentation: 'fullScreenModal' }}/>
           <Stack.Screen name="(modals)/edit-profile" options={{ presentation: 'fullScreenModal' }}/>
           <Stack.Screen name="(modals)/favorite-practices" options={{ presentation: 'fullScreenModal' }}/>
+          <Stack.Screen name="(modals)/language" options={{ presentation: 'fullScreenModal' }}/>
         </Stack>
 
         {/* Deinen Button nur für den Start‑Pfad */}

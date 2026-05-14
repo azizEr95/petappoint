@@ -1,6 +1,5 @@
 import { Center, Text, Button, ButtonText } from '@src/gluestack-components/ui/'
 import { Link, Stack, usePathname, useRouter } from 'expo-router'
-import * as React from 'react'
 
 export default function NotFoundScreen() {
   const router = useRouter()

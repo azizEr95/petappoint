@@ -6,8 +6,10 @@ import { useFavorites } from '@src/hooks/useFavorites'
 import { AppAvatar } from '../app-avatar'
 import { useColorScheme } from 'nativewind'
 import { routes } from '@src/constants/routes'
+import { useTranslation } from 'react-i18next'
 
 export function NearbyPractices() {
+  const { t } = useTranslation()
   const { data: practices, isLoading, isError } = useAllPractices()
   const { favoriteIds } = useFavorites()
   const { colorScheme } = useColorScheme()
@@ -24,7 +26,7 @@ export function NearbyPractices() {
   if (isError || !practices?.length) {
     return (
       <Box>
-        <Text>Keine Praxen gefunden</Text>
+        <Text>{t('home.no_practices')}</Text>
       </Box>
     )
   }

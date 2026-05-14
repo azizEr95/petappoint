@@ -19,9 +19,11 @@ import { useLogout } from '@src/hooks/useLogout'
 import { useMyAnimals } from '@src/hooks/useMyAnimals'
 import { useMyAppointments } from '@src/hooks/useMyAppointments'
 import { useThemeStore } from '@src/stores/themeStore'
+import { useTranslation } from 'react-i18next'
 
 
 export default function Profile() {
+  const { t } = useTranslation()
   const { mutate: logout, isPending } = useLogout()
   const mode = useThemeStore((s) => s.mode)
   const setMode = useThemeStore((s) => s.setMode)
@@ -29,10 +31,11 @@ export default function Profile() {
   const menuSections = [
     {
       id: 'account',
-      label: 'Konto',
+      label: t('profile.section_account'),
       items: [
-        { icon: 'user', label: 'Persönliche Daten', onPress: () => router.push(routes.modals.editProfile) },
-        { icon: 'heart', label: 'Lieblings-Tierarztpraxen', onPress: () => router.push(routes.modals.favoritePractices) },
+        { icon: 'user', label: t('profile.personal_data'), onPress: () => router.push(routes.modals.editProfile) },
+        { icon: 'heart', label: t('profile.favorites'), onPress: () => router.push(routes.modals.favoritePractices) },
+        { icon: 'globe', label: t('profile.language'), onPress: () => router.push(routes.modals.language) },
       ],
     },
   ]
@@ -55,7 +58,7 @@ export default function Profile() {
                   {animals?.length ?? '–'}
                 </Text>
                 <Text size='xs' className='text-typography-400'>
-                  Haustiere
+                  {t('profile.pets_count')}
                 </Text>
               </VStack>
               <Divider orientation='vertical' className='h-10' />
@@ -64,18 +67,9 @@ export default function Profile() {
                   {totalAppointments}
                 </Text>
                 <Text size='xs' className='text-typography-400'>
-                  Termine
+                  {t('profile.appointments_count')}
                 </Text>
               </VStack>
-              {/*<Divider orientation='vertical' className='h-10' />
-              <VStack className='items-center'>
-                <Text size='2xl' className='font-bold text-primary-500'>
-                  4
-                </Text>
-                <Text size='xs' className='text-gray-400'>
-                  Bewertungen
-                </Text>
-              </VStack>*/}
             </HStack>
           </Card>
 
@@ -113,13 +107,14 @@ export default function Profile() {
                       <Divider className='ml-16' />
                     </Box>
                   ))}
+
                   {/* Erscheinungsbild */}
                   <Box className='flex-row items-center justify-between px-4 py-3'>
                     <HStack className='items-center gap-3'>
                       <Box className='w-10 h-10 rounded-full bg-background-100 items-center justify-center'>
                         <FontAwesomeIcon name={mode === 'dark' ? 'moon-o' : 'sun-o'} color='#2e8a59' size={18} />
                       </Box>
-                      <Text className='font-medium text-typography-800'>Erscheinungsbild</Text>
+                      <Text className='font-medium text-typography-800'>{t('profile.appearance')}</Text>
                     </HStack>
                     <Switch
                       className='ml-4 pt-3'
@@ -128,6 +123,7 @@ export default function Profile() {
                       onValueChange={(val) => setMode(val ? 'dark' : 'system')}
                     />
                   </Box>
+
                 </Card>
               </VStack>
             ))}
@@ -143,14 +139,14 @@ export default function Profile() {
                   <FontAwesomeIcon name='sign-out' color='#ef4444' size={18} />
                 </Box>
                 <Text className='font-medium text-red-500'>
-                  {isPending ? 'Abmelden…' : 'Abmelden'}
+                  {isPending ? t('profile.logging_out') : t('profile.logout')}
                 </Text>
               </Pressable>
             </Card>
 
             {/* Version */}
             <Text size='xs' className='text-center text-typography-400 py-4'>
-              PetAppoint Version 1.0.0
+              {t('profile.version')}
             </Text>
           </VStack>
         </Box>

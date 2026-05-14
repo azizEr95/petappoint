@@ -6,8 +6,10 @@ import { useFavorites } from '@src/hooks/useFavorites'
 import { AppAvatar } from '../app-avatar'
 import { useColorScheme } from 'nativewind'
 import { routes } from '@src/constants/routes'
+import { useTranslation } from 'react-i18next'
 
 export function FavoritePractices() {
+  const { t } = useTranslation()
   const { data: practices } = useAllPractices()
   const { favoriteIds } = useFavorites()
   const { colorScheme } = useColorScheme()
@@ -20,7 +22,7 @@ export function FavoritePractices() {
   return (
     <Box className='mb-4'>
       <Text className='text-typography-700 font-semibold text-lg mb-3'>
-        Lieblings-Tierarztpraxen
+        {t('home.favorites_title')}
       </Text>
       {favorites.map((practice) => (
         <Card key={practice.id} className='border-red-400 border-l-4 shadow-sm mb-3'>

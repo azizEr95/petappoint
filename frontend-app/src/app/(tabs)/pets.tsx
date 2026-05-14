@@ -18,15 +18,10 @@ import { useAnimalTypes } from '@src/hooks/useAnimalTypes'
 import { useStoredImage } from '@src/hooks/useStoredImage'
 import { useColorScheme } from 'nativewind'
 import { routes } from '@src/constants/routes'
+import { useTranslation } from 'react-i18next'
+import i18n from '@src/i18n'
 
 const PET_COLORS = ['#dbeafe', '#fce7f3', '#d1fae5', '#fef9c3', '#ede9fe', '#ffedd5']
-
-const SEX_LABEL: Record<string, string> = {
-  male: 'Männlich',
-  female: 'Weiblich',
-  not_known: 'Unbekannt',
-  not_applicable: 'N/A',
-}
 
 function calcAge(dateOfBirth: Date | null): string {
   if (!dateOfBirth) return '–'
@@ -34,9 +29,9 @@ function calcAge(dateOfBirth: Date | null): string {
   const years = Math.floor(diffMs / (1000 * 60 * 60 * 24 * 365.25))
   if (years < 1) {
     const months = Math.floor(diffMs / (1000 * 60 * 60 * 24 * 30.44))
-    return `${months} Monat${months !== 1 ? 'e' : ''}`
+    return `${months} ${i18n.t('pets.month', { count: months })}`
   }
-  return `${years} Jahr${years !== 1 ? 'e' : ''}`
+  return `${years} ${i18n.t('pets.year', { count: years })}`
 }
 
 function formatWeight(grams: number | null): string {
@@ -57,11 +52,19 @@ function PetAvatar({ animalId, name }: { animalId: number; name: string }) {
 }
 
 export default function Pets() {
+  const { t } = useTranslation()
   const router = useRouter()
   const { data: animals, isLoading, isError } = useMyAnimals()
   const { data: animalTypes } = useAnimalTypes()
   const { colorScheme } = useColorScheme()
   const iconColor = colorScheme === 'dark' ? '#d1d5db' : '#374151'
+
+  const SEX_LABEL: Record<string, string> = {
+    male: t('pets.sex_male'),
+    female: t('pets.sex_female'),
+    not_known: t('pets.sex_unknown'),
+    not_applicable: t('pets.sex_na'),
+  }
 
   const typeNameById = Object.fromEntries((animalTypes ?? []).map((t) => [t.id, t.name]))
 
@@ -81,13 +84,13 @@ export default function Pets() {
 
             {isError && (
               <Box className='items-center py-4'>
-                <Text className='text-red-500'>Fehler beim Laden der Haustiere.</Text>
+                <Text className='text-red-500'>{t('pets.error_loading')}</Text>
               </Box>
             )}
 
             {!isLoading && !isError && animals?.length === 0 && (
               <Box className='items-center py-4'>
-                <Text className='text-typography-500'>Noch keine Haustiere hinzugefügt.</Text>
+                <Text className='text-typography-500'>{t('pets.no_pets')}</Text>
               </Box>
             )}
 
@@ -143,42 +146,13 @@ export default function Pets() {
                     <Box className='flex-row flex-1 items-center justify-start p-2 gap-1'>
                       <FontAwesomeIcon name='heart' color={iconColor} size={15} />
                       <Text size='lg' className='text-typography-700 ml-2'>
-                        Gewicht:
+                        {t('pets.weight')}
                       </Text>
                       <Text size='lg' className='bg-primary-100 rounded-full px-2'>
                         {formatWeight(pet.weightInGram)}
                       </Text>
                     </Box>
                   </Box>
-
-                  {/* * Krankenakte Button und neuen Termin
-                  <Box className='flex-1 mt-4 pt-3 border-t border-border'>
-                    <ButtonGroup className='flex-row justify-center rounded-lg p-2'>
-                      <Button
-                        size='xl'
-                        variant='outline'
-                        className='bg-primary-500 border-primary-500 rounded-lg font-medium px-4'
-                      >
-                        <ButtonText className='text-white'>
-                          Krankenakte
-                        </ButtonText>
-                        <FontAwesomeIcon name='angle-right' color='#fff' size={25} />
-                      </Button>
-
-                      <Button
-                        size='xl'
-                        variant='solid'
-                        action='positive'
-                        className='bg-primary-100 border-primary-100 rounded-lg font-medium px-4'
-                        onPress={() => router.push('/(modals)/search')}
-                      >
-                        <FontAwesomeIcon name='search' color={iconColor} size={15} />
-                        <ButtonText className='text-typography-700'>
-                          Termin buchen
-                        </ButtonText>
-                      </Button>
-                    </ButtonGroup>
-                  </Box> */}
                 </Card>
               ))}
             </Box>
@@ -191,7 +165,7 @@ export default function Pets() {
               >
                 <FontAwesomeIcon name='plus' color='#341579' size={18} />
                 <ButtonText className='text-typography-700 text-lg font-medium ml-2'>
-                  Haustier hinzufügen
+                  {t('pets.add_pet')}
                 </ButtonText>
               </Button>
             </Box>

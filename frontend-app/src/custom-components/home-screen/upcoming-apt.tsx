@@ -3,8 +3,14 @@ import { Box, Card, Spinner, Text } from '@/src/gluestack-components/ui'
 import { useMyAppointments } from '@src/hooks/useMyAppointments'
 import { AnimalAvatar } from '@/src/custom-components/animal-avatar'
 import { useColorScheme } from 'nativewind'
+import { useTranslation } from 'react-i18next'
+import i18n from '@src/i18n'
 
-function formatDate(date: Date): string {
+function getLocale() {
+  return i18n.language === 'en' ? 'en-US' : 'de-DE'
+}
+
+function formatDate(date: Date, todayLabel: string, tomorrowLabel: string): string {
   const today = new Date()
   const tomorrow = new Date(today)
   tomorrow.setDate(today.getDate() + 1)
@@ -12,16 +18,17 @@ function formatDate(date: Date): string {
   const isToday = date.toDateString() === today.toDateString()
   const isTomorrow = date.toDateString() === tomorrow.toDateString()
 
-  if (isToday) return 'Heute'
-  if (isTomorrow) return 'Morgen'
-  return date.toLocaleDateString('de-DE', { day: 'numeric', month: 'long' })
+  if (isToday) return todayLabel
+  if (isTomorrow) return tomorrowLabel
+  return date.toLocaleDateString(getLocale(), { day: 'numeric', month: 'long' })
 }
 
 function formatTime(date: Date): string {
-  return date.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })
+  return date.toLocaleTimeString(getLocale(), { hour: '2-digit', minute: '2-digit' })
 }
 
 export function UpcomingApt() {
+  const { t } = useTranslation()
   const { future, isLoading } = useMyAppointments()
   const { colorScheme } = useColorScheme()
   const iconColor = colorScheme === 'dark' ? '#d1d5db' : '#374151'
@@ -39,7 +46,7 @@ export function UpcomingApt() {
   if (!next) {
     return (
       <Box>
-        <Text className='text-typography-500'>Keine kommenden Termine</Text>
+        <Text className='text-typography-500'>{t('home.no_upcoming')}</Text>
       </Box>
     )
   }
@@ -48,7 +55,7 @@ export function UpcomingApt() {
     <>
       <Box className='mb-6'>
         <Box className='mb-3'>
-          <Text className='text-typography-700 font-semibold text-lg'>Nächster Termin</Text>
+          <Text className='text-typography-700 font-semibold text-lg'>{t('home.next_appointment')}</Text>
         </Box>
 
         <Box>
@@ -82,7 +89,7 @@ export function UpcomingApt() {
                 <Box className='flex-row items-center gap-1'>
                   <FontAwesomeIcon name='clock-o' color={iconColor} size={15} />
                   <Text className='text-typography-700 font-semibold'>
-                    {formatDate(next.startTime)}, {formatTime(next.startTime)} Uhr
+                    {formatDate(next.startTime, t('home.today'), t('home.tomorrow'))}, {formatTime(next.startTime)}{t('common.time_suffix')}
                   </Text>
                 </Box>
               </Box>

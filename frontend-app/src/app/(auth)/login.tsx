@@ -17,8 +17,10 @@ import { routes } from '@src/constants/routes'
 import { useLogin } from '@src/hooks/useLogin'
 import { ApiError } from '@src/api/client'
 import { useColorScheme } from 'nativewind'
+import { useTranslation } from 'react-i18next'
 
 export default function Login() {
+  const { t } = useTranslation()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const { mutate: login, isPending, error } = useLogin()
@@ -31,9 +33,9 @@ export default function Login() {
 
   const errorMessage =
     error instanceof ApiError && error.status === 401
-      ? 'Falsche E-Mail oder Passwort'
+      ? t('auth.login.error_credentials')
       : error
-        ? 'Ein Fehler ist aufgetreten. Bitte versuche es erneut.'
+        ? t('common.error_generic')
         : null
 
   return (
@@ -41,10 +43,10 @@ export default function Login() {
       {/* Top green area */}
       <Box className='bg-primary-500 h-[25%] rounded-b-3xl justify-end px-6 pb-8'>
         <Text size='3xl' className='font-bold text-white'>
-          Willkommen
+          {t('auth.login.title')}
         </Text>
         <Text size='lg' className='text-white/70 mt-1'>
-          Melde dich an, um fortzufahren
+          {t('auth.login.subtitle')}
         </Text>
       </Box>
 
@@ -69,7 +71,7 @@ export default function Login() {
         <VStack className='gap-4'>
           <VStack className='gap-1'>
             <Text size='lg' className='font-medium text-typography-600'>
-              E-Mail
+              {t('common.email_label')}
             </Text>
             <Input className='bg-background-0 rounded-xl border-0 shadow-sm h-12'>
               <InputField
@@ -84,7 +86,7 @@ export default function Login() {
 
           <VStack className='gap-1'>
             <Text size='lg' className='font-medium text-typography-600'>
-              Passwort
+              {t('common.password_label')}
             </Text>
             <Input className='bg-background-0 rounded-xl border-0 shadow-sm h-12'>
               <InputField
@@ -98,7 +100,7 @@ export default function Login() {
 
           <Pressable className='self-end' onPress={() => router.push(routes.auth.forgotPassword)}>
             <Text size='lg' className='text-primary-500 font-medium'>
-              Passwort vergessen?
+              {t('auth.login.forgot_password')}
             </Text>
           </Pressable>
 
@@ -114,7 +116,7 @@ export default function Login() {
             disabled={isPending}
           >
             <ButtonText className='font-bold'>
-              {isPending ? 'Anmelden…' : 'Anmelden'}
+              {isPending ? t('auth.login.submitting') : t('auth.login.submit')}
             </ButtonText>
           </Button>
         </VStack>
@@ -122,11 +124,11 @@ export default function Login() {
         {/* Register link */}
         <Box className='flex-row justify-center mt-6'>
           <Text size='lg' className='text-typography-500'>
-            Noch kein Konto?{' '}
+            {t('auth.login.no_account')}{' '}
           </Text>
           <Pressable onPress={() => router.push(routes.auth.register)}>
             <Text size='lg' className='text-primary-500 font-semibold'>
-              Registrieren
+              {t('auth.login.register')}
             </Text>
           </Pressable>
         </Box>

@@ -18,8 +18,10 @@ import { ScrollView } from 'react-native'
 import { useRegister } from '@src/hooks/useRegister'
 import { ApiError } from '@src/api/client'
 import { sexesType } from 'petappoint-shared/schemas/ZodSchemas'
+import { useTranslation } from 'react-i18next'
 
 export default function Register() {
+  const { t } = useTranslation()
   const { colorScheme } = useColorScheme()
   const iconColor = colorScheme === 'dark' ? '#d1d5db' : '#374151'
   const [firstName, setFirstName] = useState('')
@@ -41,7 +43,7 @@ export default function Register() {
     setLocalError(null)
 
     if (password !== confirmPassword) {
-      setLocalError('Passwörter stimmen nicht überein')
+      setLocalError(t('common.passwords_mismatch'))
       return
     }
 
@@ -69,18 +71,18 @@ export default function Register() {
   }
 
   const SEX_OPTIONS: { value: sexesType; label: string }[] = [
-    { value: 'male', label: 'Männlich' },
-    { value: 'female', label: 'Weiblich' },
-    { value: 'not_known', label: 'Unbekannt' },
-    { value: 'not_applicable', label: 'Keine Angabe' },
+    { value: 'male', label: t('common.male') },
+    { value: 'female', label: t('common.female') },
+    { value: 'not_known', label: t('common.unknown') },
+    { value: 'not_applicable', label: t('common.not_applicable') },
   ]
 
   const errorMessage =
     localError ??
     (error instanceof ApiError && error.status === 409
-      ? 'E-Mail bereits vergeben'
+      ? t('common.email_taken')
       : error
-        ? 'Ein Fehler ist aufgetreten. Bitte versuche es erneut.'
+        ? t('common.error_generic')
         : null)
 
   return (
@@ -88,10 +90,10 @@ export default function Register() {
       {/* Top green area */}
       <Box className='bg-primary-500 h-[20%] rounded-b-3xl justify-end px-6 pb-8'>
         <Text size='3xl' className='font-bold text-white'>
-          Konto erstellen
+          {t('auth.register.title')}
         </Text>
         <Text size='lg' className='text-white/70 mt-1'>
-          Tritt bei
+          {t('auth.register.subtitle')}
         </Text>
       </Box>
 
@@ -116,13 +118,13 @@ export default function Register() {
           {/* Name row */}
           <Box className='flex-row gap-3'>
             <VStack className='flex-1 gap-1'>
-              <Text size='lg' className='font-medium text-typography-600'>Vorname</Text>
+              <Text size='lg' className='font-medium text-typography-600'>{t('common.first_name')}</Text>
               <Input className='bg-background-0 rounded-xl border-0 shadow-sm h-12'>
                 <InputField placeholder='Max' value={firstName} onChangeText={setFirstName} />
               </Input>
             </VStack>
             <VStack className='flex-1 gap-1'>
-              <Text size='lg' className='font-medium text-typography-600'>Nachname</Text>
+              <Text size='lg' className='font-medium text-typography-600'>{t('common.last_name')}</Text>
               <Input className='bg-background-0 rounded-xl border-0 shadow-sm h-12'>
                 <InputField placeholder='Mustermann' value={lastName} onChangeText={setLastName} />
               </Input>
@@ -131,7 +133,7 @@ export default function Register() {
 
           {/* Sex */}
           <VStack className='gap-1'>
-            <Text size='lg' className='font-medium text-typography-600'>Geschlecht</Text>
+            <Text size='lg' className='font-medium text-typography-600'>{t('common.sex')}</Text>
             <Box className='flex-row flex-wrap gap-2'>
               {SEX_OPTIONS.map((opt) => (
                 <Pressable
@@ -152,7 +154,7 @@ export default function Register() {
 
           {/* Date of birth */}
           <VStack className='gap-1'>
-            <Text size='lg' className='font-medium text-typography-600'>Geburtsdatum</Text>
+            <Text size='lg' className='font-medium text-typography-600'>{t('common.date_of_birth')}</Text>
             <Input className='bg-background-0 rounded-xl border-0 shadow-sm h-12'>
               <InputField
                 placeholder='TT.MM.JJJJ (z.B. 15.01.1990)'
@@ -165,7 +167,7 @@ export default function Register() {
 
           {/* Phone */}
           <VStack className='gap-1'>
-            <Text size='lg' className='font-medium text-typography-600'>Telefon</Text>
+            <Text size='lg' className='font-medium text-typography-600'>{t('common.phone')}</Text>
             <Input className='bg-background-0 rounded-xl border-0 shadow-sm h-12'>
               <InputField
                 placeholder='+49 123 456789'
@@ -178,7 +180,7 @@ export default function Register() {
 
           {/* Email */}
           <VStack className='gap-1'>
-            <Text size='lg' className='font-medium text-typography-600'>E-Mail</Text>
+            <Text size='lg' className='font-medium text-typography-600'>{t('common.email_label')}</Text>
             <Input className='bg-background-0 rounded-xl border-0 shadow-sm h-12'>
               <InputField
                 placeholder='max@mustermann.de'
@@ -192,7 +194,7 @@ export default function Register() {
 
           {/* Address */}
           <VStack className='gap-1'>
-            <Text size='lg' className='font-medium text-typography-600'>Straße & Hausnummer</Text>
+            <Text size='lg' className='font-medium text-typography-600'>{t('common.street')}</Text>
             <Input className='bg-background-0 rounded-xl border-0 shadow-sm h-12'>
               <InputField placeholder='Musterstraße 1' value={street} onChangeText={setStreet} />
             </Input>
@@ -200,7 +202,7 @@ export default function Register() {
 
           <Box className='flex-row gap-3'>
             <VStack className='gap-1' style={{ width: 100 }}>
-              <Text size='lg' className='font-medium text-typography-600'>PLZ</Text>
+              <Text size='lg' className='font-medium text-typography-600'>{t('common.zip')}</Text>
               <Input className='bg-background-0 rounded-xl border-0 shadow-sm h-12'>
                 <InputField
                   placeholder='12345'
@@ -211,7 +213,7 @@ export default function Register() {
               </Input>
             </VStack>
             <VStack className='flex-1 gap-1'>
-              <Text size='lg' className='font-medium text-typography-600'>Stadt</Text>
+              <Text size='lg' className='font-medium text-typography-600'>{t('common.city')}</Text>
               <Input className='bg-background-0 rounded-xl border-0 shadow-sm h-12'>
                 <InputField placeholder='Berlin' value={city} onChangeText={setCity} />
               </Input>
@@ -220,7 +222,7 @@ export default function Register() {
 
           {/* Password */}
           <VStack className='gap-1'>
-            <Text size='lg' className='font-medium text-typography-600'>Passwort</Text>
+            <Text size='lg' className='font-medium text-typography-600'>{t('common.password_label')}</Text>
             <Input className='bg-background-0 rounded-xl border-0 shadow-sm h-12'>
               <InputField
                 placeholder='••••••••'
@@ -232,7 +234,7 @@ export default function Register() {
           </VStack>
 
           <VStack className='gap-1'>
-            <Text size='lg' className='font-medium text-typography-600'>Passwort bestätigen</Text>
+            <Text size='lg' className='font-medium text-typography-600'>{t('auth.register.confirm_password')}</Text>
             <Input className='bg-background-0 rounded-xl border-0 shadow-sm h-12'>
               <InputField
                 placeholder='••••••••'
@@ -255,7 +257,7 @@ export default function Register() {
             disabled={isPending}
           >
             <ButtonText className='font-bold'>
-              {isPending ? 'Registrieren…' : 'Registrieren'}
+              {isPending ? t('auth.register.submitting') : t('auth.register.submit')}
             </ButtonText>
           </Button>
         </VStack>
@@ -263,11 +265,11 @@ export default function Register() {
         {/* Login link */}
         <Box className='flex-row justify-center mt-6'>
           <Text size='lg' className='text-typography-500'>
-            Bereits ein Konto?{' '}
+            {t('auth.register.has_account')}{' '}
           </Text>
           <Pressable onPress={() => router.back()}>
             <Text size='lg' className='text-primary-500 font-semibold'>
-              Anmelden
+              {t('auth.register.login')}
             </Text>
           </Pressable>
         </Box>

@@ -22,5 +22,6 @@ export const routes = {
     editPet: '/(modals)/edit-pet' as const,
     editProfile: '/(modals)/edit-profile' as const,
     favoritePractices: '/(modals)/favorite-practices' as const,
+    language: '/(modals)/language' as const,
   },
 } as const

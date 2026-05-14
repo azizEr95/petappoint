@@ -14,8 +14,10 @@ import { AppAvatar } from '@/src/custom-components/app-avatar'
 import { ScrollView } from 'react-native'
 import { usePracticeSearch } from '@src/hooks/usePracticeSearch'
 import { useFavorites } from '@src/hooks/useFavorites'
+import { useTranslation } from 'react-i18next'
 
 export default function ResultModal() {
+  const { t } = useTranslation()
   const router = useRouter()
   const { colorScheme } = useColorScheme()
   const iconColor = colorScheme === 'dark' ? '#d1d5db' : '#374151'
@@ -40,10 +42,10 @@ export default function ResultModal() {
           <Box className='flex-row justify-between items-start'>
             <Box>
               <Text size='3xl' className='font-bold text-white'>
-                Suchergebnisse
+                {t('result.title')}
               </Text>
               <Text size='lg' className='text-white/70 mt-1'>
-                {isLoading ? 'Suche läuft...' : `${practices.length} Praxen gefunden`}
+                {isLoading ? t('result.searching') : t('result.practices_found', { count: practices.length })}
               </Text>
             </Box>
             <ButtonGroup>
@@ -66,13 +68,13 @@ export default function ResultModal() {
 
           {isError && (
             <Box className='items-center py-8'>
-              <Text className='text-red-500'>Fehler beim Laden der Praxen.</Text>
+              <Text className='text-red-500'>{t('result.error_loading')}</Text>
             </Box>
           )}
 
           {!isLoading && !isError && practices.length === 0 && (
             <Box className='items-center py-8'>
-              <Text className='text-typography-500'>Keine Praxen gefunden.</Text>
+              <Text className='text-typography-500'>{t('result.no_results')}</Text>
             </Box>
           )}
 

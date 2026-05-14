@@ -19,9 +19,15 @@ import { useRouter } from 'expo-router'
 import { useCancelAppointment } from '@src/hooks/useCancelAppointment'
 import { useColorScheme } from 'nativewind'
 import { routes } from '@src/constants/routes'
+import { useTranslation } from 'react-i18next'
+import i18n from '@src/i18n'
+
+function getLocale() {
+  return i18n.language === 'en' ? 'en-US' : 'de-DE'
+}
 
 function formatAppointmentDate(date: Date): string {
-  return date.toLocaleDateString('de-DE', {
+  return date.toLocaleDateString(getLocale(), {
     day: 'numeric',
     month: 'long',
     year: 'numeric',
@@ -29,10 +35,11 @@ function formatAppointmentDate(date: Date): string {
 }
 
 function formatTime(date: Date): string {
-  return date.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })
+  return date.toLocaleTimeString(getLocale(), { hour: '2-digit', minute: '2-digit' })
 }
 
 export default function Appointment() {
+  const { t } = useTranslation()
   const router = useRouter()
   const { future, past, isLoading, isError } = useMyAppointments()
   const { mutate: cancel } = useCancelAppointment()
@@ -42,11 +49,11 @@ export default function Appointment() {
 
   function handleCancel(aptId: number, aptName: string) {
     Alert.alert(
-      'Termin absagen',
-      `Möchtest du den Termin für ${aptName} wirklich absagen?`,
+      t('appointments.cancel_title'),
+      t('appointments.cancel_confirm', { name: aptName }),
       [
-        { text: 'Nein', style: 'cancel' },
-        { text: 'Ja, absagen', style: 'destructive', onPress: () => cancel(aptId) },
+        { text: t('appointments.cancel_no'), style: 'cancel' },
+        { text: t('appointments.cancel_yes'), style: 'destructive', onPress: () => cancel(aptId) },
       ],
     )
   }
@@ -78,13 +85,13 @@ export default function Appointment() {
 
             {isError && (
               <Text className='text-red-500 text-center py-4'>
-                Fehler beim Laden der Termine.
+                {t('appointments.error_loading')}
               </Text>
             )}
 
             {!isLoading && !isError && displayed.length === 0 && (
               <Text className='text-gray-500 text-center py-4'>
-                {activeTab ? 'Keine kommenden Termine.' : 'Keine vergangenen Termine.'}
+                {activeTab ? t('appointments.no_upcoming') : t('appointments.no_past')}
               </Text>
             )}
 
@@ -122,7 +129,7 @@ export default function Appointment() {
                     <Box className='flex-row items-center gap-1'>
                       <FontAwesomeIcon name='clock-o' color={iconColor} size={15} />
                       <Text className='text-typography-700 font-semibold'>
-                        {formatAppointmentDate(apt.startTime)}, {formatTime(apt.startTime)} Uhr
+                        {formatAppointmentDate(apt.startTime)}, {formatTime(apt.startTime)}{t('common.time_suffix')}
                       </Text>
                     </Box>
                   </Box>
@@ -136,9 +143,9 @@ export default function Appointment() {
                         variant='outline'
                         action='negative'
                         className='rounded-lg font-medium'
-                        onPress={() => handleCancel(apt.id, apt.animal?.name ?? 'dieses Tier')}
+                        onPress={() => handleCancel(apt.id, apt.animal?.name ?? t('appointments.this_animal'))}
                       >
-                        <ButtonText className='text-red-500'>Absagen</ButtonText>
+                        <ButtonText className='text-red-500'>{t('appointments.cancel_btn')}</ButtonText>
                       </Button>
 
                       <Button
@@ -148,7 +155,7 @@ export default function Appointment() {
                         className='rounded-lg font-medium'
                         onPress={() => router.push({ pathname: routes.modals.process, params: { appointmentId: apt.id } })}
                       >
-                        <ButtonText>Bearbeiten</ButtonText>
+                        <ButtonText>{t('appointments.edit_btn')}</ButtonText>
                       </Button>
                     </ButtonGroup>
                   </Box>
@@ -164,7 +171,7 @@ export default function Appointment() {
                         className='rounded-lg font-medium'
                         onPress={() => router.push({ pathname: routes.modals.practice, params: { id: apt.veterinaryPractice.id, animalId: apt.animal?.id } })}
                       >
-                        <ButtonText className='text-white'>Erneut buchen</ButtonText>
+                        <ButtonText className='text-white'>{t('appointments.rebook_btn')}</ButtonText>
                       </Button>
                     </ButtonGroup>
                   </Box>

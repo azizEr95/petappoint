@@ -18,29 +18,36 @@ import { useFavorites } from '@src/hooks/useFavorites'
 import { useToggleFavorite } from '@src/hooks/useToggleFavorite'
 import { useColorScheme } from 'nativewind'
 import { routes } from '@src/constants/routes'
+import { useTranslation } from 'react-i18next'
+import i18n from '@src/i18n'
 
-function formatDate(date: Date): string {
+function getLocale() {
+  return i18n.language === 'en' ? 'en-US' : 'de-DE'
+}
+
+function formatDate(date: Date, todayLabel: string): string {
   const today = new Date()
   const isToday =
     date.getDate() === today.getDate() &&
     date.getMonth() === today.getMonth() &&
     date.getFullYear() === today.getFullYear()
-  if (isToday) return 'Heute'
-  return date.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' })
+  if (isToday) return todayLabel
+  return date.toLocaleDateString(getLocale(), { day: '2-digit', month: '2-digit' })
 }
 
 function formatDay(date: Date): string {
-  return date.toLocaleDateString('de-DE', { weekday: 'short' })
+  return date.toLocaleDateString(getLocale(), { weekday: 'short' })
 }
 
 function formatTime(date: Date): string {
-  return date.toLocaleTimeString('de-DE', {
+  return date.toLocaleTimeString(getLocale(), {
     hour: '2-digit',
     minute: '2-digit',
   })
 }
 
 export default function Practice() {
+  const { t } = useTranslation()
   const { id, animalId: preselectedAnimalId } = useLocalSearchParams<{ id: string; animalId?: string }>()
   const practiceId = Number(id)
 
@@ -52,10 +59,12 @@ export default function Practice() {
   if (!id || isNaN(practiceId)) {
     return (
       <Box className='flex-1 items-center justify-center'>
-        <Text className='text-red-500'>Ungültige Praxis-ID.</Text>
+        <Text className='text-red-500'>{t('practice.invalid_id')}</Text>
       </Box>
     )
   }
+
+  const todayLabel = t('practice.today')
 
   const groupedDates = useMemo(() => {
     if (!appointments.data) return []
@@ -64,7 +73,7 @@ export default function Practice() {
       { date: Date; slots: { id: number; time: string }[] }
     >()
     for (const apt of appointments.data) {
-      const key = formatDate(apt.startTime)
+      const key = formatDate(apt.startTime, todayLabel)
       if (!map.has(key)) map.set(key, { date: apt.startTime, slots: [] })
       map.get(key)!.slots.push({ id: apt.id, time: formatTime(apt.startTime) })
     }
@@ -73,7 +82,7 @@ export default function Practice() {
       day: formatDay(val.date),
       slots: val.slots,
     }))
-  }, [appointments.data])
+  }, [appointments.data, todayLabel])
 
   const { colorScheme } = useColorScheme()
   const iconColor = colorScheme === 'dark' ? '#d1d5db' : '#374151'
@@ -97,7 +106,7 @@ export default function Practice() {
     return (
       <Box className='flex-1 items-center justify-center'>
         <Text className='text-red-500'>
-          Praxis konnte nicht geladen werden.
+          {t('practice.error_loading')}
         </Text>
       </Box>
     )
@@ -143,7 +152,7 @@ export default function Practice() {
                 </Text>
                 <Box className='bg-primary-100 justify-center rounded-full px-3 py-1'>
                   <Text className='text-primary-500 font-semibold'>
-                    Geöffnet
+                    {t('practice.open')}
                   </Text>
                 </Box>
               </Box>
@@ -166,48 +175,10 @@ export default function Practice() {
               )}
             </Box>
 
-            {/** Oeffnungszeiten */}
-            {/*
-            <Box className='bg-background-0 rounded-lg shadow-lg mt-4'>
-              <Box className='py-2 rounded-lg mx-3 '>
-                <Text size='xl' className='font-bold text-typography-700'>
-                  Öffnungszeiten
-                </Text>
-                <Box className='py-2'>
-                  {vetInfo.openingHours.map((item) => (
-                    <Box key={item.day} className='flex-row justify-between'>
-                      <Text size='lg' className='font-semibold'>
-                        {item.day}
-                      </Text>
-                      <Text size='lg' className='font-semibold'>
-                        {item.hours}
-                      </Text>
-                    </Box>
-                  ))}
-                </Box>
-              </Box>
-            </Box>/*}
-            <Box className='bg-background-0 rounded-lg shadow-lg mt-4'>
-              <Box className='py-2 rounded-lg mx-3'>
-                <Text size='xl' className='font-bold text-typography-700'>
-                  Öffnungszeiten
-                </Text>
-                <Box className='py-2 flex-row items-center gap-2'>
-                  <FontAwesomeIcon name='clock-o' color='#9ca3af' size={16} />
-                  <Text className='text-typography-400 italic'>
-                    Öffnungszeiten müssen noch hinzugefügt werden.
-                  </Text>
-                </Box>
-              </Box>
-            </Box>
-
             {/*Leistungen */}
             {services.data && services.data.length > 0 && (
               <Box className='bg-background-0 mt-4 rounded-lg'>
                 <Box className='m-3'>
-                  <Text size='xl' className='font-bold text-typography-700'>
-                    Leistungen
-                  </Text>
                   <Box className='flex-row flex-wrap gap-2 mt-2'>
                     {services.data.map((service) => (
                       <Card
@@ -228,7 +199,7 @@ export default function Practice() {
             <Box className='bg-background-0 rounded-lg shadow-lg justify-center mt-4'>
               <Box className='rounded-lg mx-3 mb-3 mt-2'>
                 <Text size='xl' className='font-bold text-typography-700'>
-                  Termin buchen
+                  {t('practice.book_btn_selected')}
                 </Text>
 
                 {appointments.isLoading ? (
@@ -237,7 +208,7 @@ export default function Practice() {
                   </Box>
                 ) : groupedDates.length === 0 ? (
                   <Text className='text-typography-500 mt-2'>
-                    Keine freien Termine verfügbar.
+                    {t('practice.no_appointments')}
                   </Text>
                 ) : (
                   <>
@@ -289,7 +260,7 @@ export default function Practice() {
                                   : 'text-typography-700'
                               }`}
                             >
-                              {dateGroup.slots.length} frei
+                              {t('practice.slots_free', { count: dateGroup.slots.length })}
                             </Text>
                           </Pressable>
                         ))}
@@ -298,7 +269,7 @@ export default function Practice() {
 
                     <Box className='mt-4'>
                       <Text size='sm' className='text-typography-400 mb-3'>
-                        Verfügbare Zeiten
+                        {t('practice.available_times')}
                       </Text>
                       <Box className='flex-row flex-wrap gap-2'>
                         {selectedSlots.map((slot) => (
@@ -345,8 +316,8 @@ export default function Practice() {
                   >
                     <ButtonText>
                       {selectedAppointmentId
-                        ? `Termin buchen`
-                        : 'Zeit auswählen'}
+                        ? t('practice.book_btn_selected')
+                        : t('practice.book_btn_unselected')}
                     </ButtonText>
                   </Button>
                 </Box>

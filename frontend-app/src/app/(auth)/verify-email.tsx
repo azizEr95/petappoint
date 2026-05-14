@@ -19,8 +19,10 @@ import { useVerifyEmail } from '@src/hooks/useVerifyEmail'
 import { useResendVerification } from '@src/hooks/useResendVerification'
 import { useAuthStore } from '@src/stores/authStore'
 import { ApiError } from '@src/api/client'
+import { useTranslation } from 'react-i18next'
 
 export default function VerifyEmail() {
+  const { t } = useTranslation()
   const { colorScheme } = useColorScheme()
   const iconColor = colorScheme === 'dark' ? '#d1d5db' : '#374151'
   const { email } = useLocalSearchParams<{ email: string }>()
@@ -45,7 +47,7 @@ export default function VerifyEmail() {
 
   const errorMessage =
     error instanceof ApiError && error.status === 400
-      ? 'Code ist ungültig oder abgelaufen'
+      ? t('auth.verify_email.error_code')
       : error
         ? `${error.message}`
         : null
@@ -55,10 +57,10 @@ export default function VerifyEmail() {
       {/* Top green area */}
       <Box className='bg-primary-500 h-[25%] rounded-b-3xl justify-end px-6 pb-8'>
         <Text size='3xl' className='font-bold text-white'>
-          E-Mail bestätigen
+          {t('auth.verify_email.title')}
         </Text>
         <Text size='lg' className='text-white/70 mt-1'>
-          Gib deinen Bestätigungscode ein
+          {t('auth.verify_email.subtitle')}
         </Text>
       </Box>
 
@@ -83,13 +85,13 @@ export default function VerifyEmail() {
         <VStack className='gap-4'>
           <Text size='sm' className='text-typography-500 text-center'>
             {email
-              ? `Wir haben einen Code an ${email} gesendet.`
-              : 'Wir haben dir einen Bestätigungscode per E-Mail gesendet.'}
+              ? t('auth.verify_email.sent_to', { email })
+              : t('auth.verify_email.sent_generic')}
           </Text>
 
           <VStack className='gap-1'>
             <Text size='lg' className='font-medium text-typography-600'>
-              6-stelliger Code
+              {t('auth.verify_email.code_label')}
             </Text>
             <Input className='bg-background-0 rounded-xl border-0 shadow-sm h-12'>
               <InputField
@@ -110,7 +112,7 @@ export default function VerifyEmail() {
 
           {resendSuccess && (
             <Text size='sm' className='text-primary-500 text-center'>
-              Neuer Code wurde gesendet.
+              {t('auth.verify_email.resent')}
             </Text>
           )}
 
@@ -120,7 +122,7 @@ export default function VerifyEmail() {
             disabled={isPending || code.length < 6}
           >
             <ButtonText className='font-bold'>
-              {isPending ? 'Wird bestätigt…' : 'Bestätigen'}
+              {isPending ? t('auth.verify_email.submitting') : t('auth.verify_email.submit')}
             </ButtonText>
           </Button>
 
@@ -130,7 +132,7 @@ export default function VerifyEmail() {
             disabled={isResending}
           >
             <Text size='lg' className='text-primary-500 font-medium'>
-              {isResending ? 'Wird gesendet…' : 'Code erneut senden'}
+              {isResending ? t('auth.verify_email.resending') : t('auth.verify_email.resend')}
             </Text>
           </Pressable>
 
@@ -138,12 +140,12 @@ export default function VerifyEmail() {
           <Box className='border-t border-outline-200 mt-2' />
 
           <Text size='sm' className='text-typography-400 text-center'>
-            {email ? `Angemeldet als: ${email}` : 'Falsche E-Mail-Adresse?'}
+            {email ? t('auth.verify_email.signed_in_as', { email }) : t('auth.verify_email.wrong_email')}
           </Text>
 
           <Pressable className='items-center' onPress={handleBackToLogin}>
             <Text size='lg' className='text-typography-500 font-medium'>
-              Zurück zum Login
+              {t('common.back_to_login')}
             </Text>
           </Pressable>
         </VStack>

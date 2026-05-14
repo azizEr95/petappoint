@@ -18,8 +18,10 @@ import { ScrollView } from 'react-native'
 import { usePerson } from '@src/hooks/usePerson'
 import { useUpdatePerson } from '@src/hooks/useUpdatePerson'
 import { ApiError } from '@src/api/client'
+import { useTranslation } from 'react-i18next'
 
 export default function EditProfile() {
+  const { t } = useTranslation()
   const { data: person, isLoading } = usePerson()
   const { mutate: update, isPending, error } = useUpdatePerson()
 
@@ -46,10 +48,10 @@ export default function EditProfile() {
   const errorMessage =
     error instanceof ApiError
       ? error.status === 409
-        ? 'E-Mail bereits vergeben'
-        : 'Ein Fehler ist aufgetreten. Bitte versuche es erneut.'
+        ? t('common.email_taken')
+        : t('common.error_generic')
       : error
-        ? 'Ein Fehler ist aufgetreten.'
+        ? t('common.error_short')
         : null
 
   function handleSave() {
@@ -91,10 +93,10 @@ export default function EditProfile() {
         <Box className='flex-row justify-between items-start'>
           <Box>
             <Text size='3xl' className='font-bold text-white'>
-              Profil bearbeiten
+              {t('edit_profile.title')}
             </Text>
             <Text size='lg' className='text-white/70 mt-1'>
-              Persönliche Daten anpassen
+              {t('edit_profile.subtitle')}
             </Text>
           </Box>
           <ButtonGroup>
@@ -110,11 +112,11 @@ export default function EditProfile() {
           {/* Name */}
           <Card className='bg-background-0 rounded-xl shadow-sm p-4'>
             <Text size='sm' className='font-semibold text-typography-500 uppercase mb-3'>
-              Name
+              {t('edit_profile.section_name')}
             </Text>
             <VStack className='gap-3'>
               <VStack className='gap-1'>
-                <Text size='sm' className='font-medium text-typography-600'>Vorname</Text>
+                <Text size='sm' className='font-medium text-typography-600'>{t('common.first_name')}</Text>
                 <Input className='bg-slate-50 rounded-xl border-0 shadow-sm h-12'>
                   <InputField
                     placeholder='Max'
@@ -124,7 +126,7 @@ export default function EditProfile() {
                 </Input>
               </VStack>
               <VStack className='gap-1'>
-                <Text size='sm' className='font-medium text-typography-600'>Nachname</Text>
+                <Text size='sm' className='font-medium text-typography-600'>{t('common.last_name')}</Text>
                 <Input className='bg-slate-50 rounded-xl border-0 shadow-sm h-12'>
                   <InputField
                     placeholder='Mustermann'
@@ -139,11 +141,11 @@ export default function EditProfile() {
           {/* Kontakt */}
           <Card className='bg-background-0 rounded-xl shadow-sm p-4'>
             <Text size='sm' className='font-semibold text-typography-500 uppercase mb-3'>
-              Kontakt
+              {t('edit_profile.section_contact')}
             </Text>
             <VStack className='gap-3'>
               <VStack className='gap-1'>
-                <Text size='sm' className='font-medium text-typography-600'>Telefon</Text>
+                <Text size='sm' className='font-medium text-typography-600'>{t('common.phone')}</Text>
                 <Input className='bg-slate-50 rounded-xl border-0 shadow-sm h-12'>
                   <InputField
                     placeholder='+49 123 456789'
@@ -154,7 +156,7 @@ export default function EditProfile() {
                 </Input>
               </VStack>
               <VStack className='gap-1'>
-                <Text size='sm' className='font-medium text-typography-600'>E-Mail</Text>
+                <Text size='sm' className='font-medium text-typography-600'>{t('common.email_label')}</Text>
                 <Input className='bg-slate-50 rounded-xl border-0 shadow-sm h-12'>
                   <InputField
                     placeholder='max@mustermann.de'
@@ -171,11 +173,11 @@ export default function EditProfile() {
           {/* Adresse */}
           <Card className='bg-background-0 rounded-xl shadow-sm p-4'>
             <Text size='sm' className='font-semibold text-typography-500 uppercase mb-3'>
-              Adresse
+              {t('edit_profile.section_address')}
             </Text>
             <VStack className='gap-3'>
               <VStack className='gap-1'>
-                <Text size='sm' className='font-medium text-typography-600'>Straße & Hausnummer</Text>
+                <Text size='sm' className='font-medium text-typography-600'>{t('common.street')}</Text>
                 <Input className='bg-slate-50 rounded-xl border-0 shadow-sm h-12'>
                   <InputField
                     placeholder='Musterstraße 1'
@@ -186,7 +188,7 @@ export default function EditProfile() {
               </VStack>
               <Box className='flex-row gap-3'>
                 <VStack className='gap-1' style={{ width: 100 }}>
-                  <Text size='sm' className='font-medium text-typography-600'>PLZ</Text>
+                  <Text size='sm' className='font-medium text-typography-600'>{t('common.zip')}</Text>
                   <Input className='bg-slate-50 rounded-xl border-0 shadow-sm h-12'>
                     <InputField
                       placeholder='12345'
@@ -197,7 +199,7 @@ export default function EditProfile() {
                   </Input>
                 </VStack>
                 <VStack className='flex-1 gap-1'>
-                  <Text size='sm' className='font-medium text-typography-600'>Stadt</Text>
+                  <Text size='sm' className='font-medium text-typography-600'>{t('common.city')}</Text>
                   <Input className='bg-slate-50 rounded-xl border-0 shadow-sm h-12'>
                     <InputField
                       placeholder='Berlin'
@@ -224,7 +226,7 @@ export default function EditProfile() {
             {isPending ? (
               <Spinner size='small' />
             ) : (
-              <ButtonText className='text-white font-bold'>Speichern</ButtonText>
+              <ButtonText className='text-white font-bold'>{t('edit_profile.submit')}</ButtonText>
             )}
           </Button>
         </VStack>

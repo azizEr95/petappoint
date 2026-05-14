@@ -17,8 +17,10 @@ import { useFavorites } from '@src/hooks/useFavorites'
 import { useToggleFavorite } from '@src/hooks/useToggleFavorite'
 import { useColorScheme } from 'nativewind'
 import { routes } from '@src/constants/routes'
+import { useTranslation } from 'react-i18next'
 
 export default function FavoritePracticesScreen() {
+  const { t } = useTranslation()
   const { data: practices, isLoading } = useAllPractices()
   const { favoriteIds } = useFavorites()
   const { mutate: toggle } = useToggleFavorite()
@@ -34,10 +36,10 @@ export default function FavoritePracticesScreen() {
         <Box className='flex-row justify-between items-start'>
           <Box>
             <Text size='3xl' className='font-bold text-white'>
-              Lieblings-Tierarztpraxen
+              {t('favorites.title')}
             </Text>
             <Text size='lg' className='text-white/70 mt-1'>
-              Deine favorisierten Praxen
+              {t('favorites.subtitle')}
             </Text>
           </Box>
           <ButtonGroup>
@@ -59,10 +61,10 @@ export default function FavoritePracticesScreen() {
           <Box className='items-center py-8'>
             <FontAwesomeIcon name='heart-o' color='#9ca3af' size={40} />
             <Text className='text-typography-400 mt-3 text-center'>
-              Noch keine Favoriten hinzugefügt.
+              {t('favorites.no_favorites')}
             </Text>
             <Text className='text-typography-400 text-center text-sm mt-1'>
-              Tippe auf das Herz-Symbol bei einer Praxis.
+              {t('favorites.no_favorites_hint')}
             </Text>
           </Box>
         )}

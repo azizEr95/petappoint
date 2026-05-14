@@ -4,6 +4,7 @@ import {
   Button,
   ButtonText,
 } from '@/src/gluestack-components/ui'
+import { useTranslation } from 'react-i18next'
 
 interface ToggleAptProps {
   activeTab: any
@@ -17,6 +18,8 @@ export function ToggleApt({
   futureCount,
   pastCount,
 }: ToggleAptProps) {
+  const { t } = useTranslation()
+
   return (
     <>
       <Box className='flex-row justify-center rounded-lg pb-6'>
@@ -30,7 +33,7 @@ export function ToggleApt({
             className={`flex rounded-lg font-medium ${activeTab ? 'bg-background-0 shadow-sm' : 'bg-primary-100 shadow-none'}`}
           >
             <ButtonText className='text-typography-700'>
-              Kommend ({futureCount})
+              {t('appointments.tab_upcoming', { count: futureCount })}
             </ButtonText>
           </Button>
 
@@ -40,7 +43,7 @@ export function ToggleApt({
             className={`flex rounded-lg font-medium ${!activeTab ? 'bg-background-0 shadow-sm' : 'bg-primary-100 shadow-none'}`}
           >
             <ButtonText className='text-typography-700'>
-              Vergangen ({pastCount})
+              {t('appointments.tab_past', { count: pastCount })}
             </ButtonText>
           </Button>
         </ButtonGroup>

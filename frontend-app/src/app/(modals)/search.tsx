@@ -18,8 +18,10 @@ import { useAnimalTypes } from '@src/hooks/useAnimalTypes'
 import { useServices } from '@src/hooks/useServices'
 import { ScrollView } from 'react-native'
 import { useColorScheme } from 'nativewind'
+import { useTranslation } from 'react-i18next'
 
 export default function SucheModal() {
+  const { t } = useTranslation()
   const { data: animalTypes, isLoading: animalTypesLoading } = useAnimalTypes()
   const { data: services, isLoading: servicesLoading } = useServices()
 
@@ -29,17 +31,18 @@ export default function SucheModal() {
   const router = useRouter()
   const { colorScheme } = useColorScheme()
   const iconColor = colorScheme === 'dark' ? '#d1d5db' : '#374151'
+
   return (
     <Box className='flex-1'>
-      {/** Top green area — fixed, outside ScrollView so % height resolves correctly */}
+      {/** Top green area */}
       <Box className='bg-primary-500 rounded-b-3xl justify-center px-6 pb-4 pt-16'>
         <Box className='flex-row justify-between items-start'>
           <Box>
             <Text size='3xl' className='font-bold text-white'>
-              Termin suchen
+              {t('search.title')}
             </Text>
             <Text size='lg' className='text-white/70 mt-1'>
-              Finde die passende Praxis
+              {t('search.subtitle')}
             </Text>
           </Box>
           <ButtonGroup>
@@ -56,7 +59,7 @@ export default function SucheModal() {
         <Box className='flex-col px-5 py-3'>
           <Box className='p-2'>
             {/** Wo Feld */}
-            <Text className='text-xl font-semibold'>Wo?</Text>
+            <Text className='text-xl font-semibold'>{t('search.where_label')}</Text>
             <Box className='mb-6'>
               <Input
                 variant='outline'
@@ -71,15 +74,14 @@ export default function SucheModal() {
                   />
                 </Button>
                 <InputField
-                  placeholder='Stadt oder PLZ eingeben...'
+                  placeholder={t('search.where_placeholder')}
                   className='text-typography-700 font-semibold'
                 />
               </Input>
             </Box>
             <Box className='mb-6'>
-              <Text className='text-xl font-semibold'>Welches Tier?</Text>
+              <Text className='text-xl font-semibold'>{t('search.which_animal')}</Text>
 
-              {/* Welches Tier Feld */}
               {animalTypesLoading ? (
                 <Spinner size='small' className='mt-4' />
               ) : (
@@ -117,10 +119,9 @@ export default function SucheModal() {
             {/** Behandlungsart Feld */}
             <Box className='mb-6'>
               <Text className='text-xl font-semibold'>
-                Welche Behandlungsart?
+                {t('search.which_treatment')}
               </Text>
 
-              {/* Behandlungsart Feld */}
               {servicesLoading ? (
                 <Spinner size='small' className='mt-4' />
               ) : (
@@ -172,7 +173,7 @@ export default function SucheModal() {
               >
                 <FontAwesomeIcon name='search' color={iconColor} size={20} />
                 <ButtonText className='text-typography-700 text-2xl'>
-                  Praxen suchen
+                  {t('search.submit')}
                 </ButtonText>
               </Button>
             </Card>

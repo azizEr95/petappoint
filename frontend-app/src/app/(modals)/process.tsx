@@ -21,20 +21,27 @@ import { useMyAnimals } from '@src/hooks/useMyAnimals'
 import { useBookAppointment } from '@src/hooks/useBookAppointment'
 import { useAnimalTypes } from '@src/hooks/useAnimalTypes'
 import { routes } from '@src/constants/routes'
+import { useTranslation } from 'react-i18next'
+import i18n from '@src/i18n'
 
-function formatDateTime(date: Date): { date: string; time: string } {
+function getLocale() {
+  return i18n.language === 'en' ? 'en-US' : 'de-DE'
+}
+
+function formatDateTime(date: Date, timeSuffix: string): { date: string; time: string } {
   return {
-    date: date.toLocaleDateString('de-DE', {
+    date: date.toLocaleDateString(getLocale(), {
       weekday: 'long',
       day: '2-digit',
       month: '2-digit',
       year: 'numeric',
     }),
-    time: date.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }) + ' Uhr',
+    time: date.toLocaleTimeString(getLocale(), { hour: '2-digit', minute: '2-digit' }) + timeSuffix,
   }
 }
 
 export default function Process() {
+  const { t } = useTranslation()
   const { appointmentId, animalId: preselectedAnimalId } = useLocalSearchParams<{ appointmentId: string; animalId?: string }>()
 
   const aptId = Number(appointmentId)
@@ -54,7 +61,6 @@ export default function Process() {
   const [selectedAnimalId, setSelectedAnimalId] = useState<number | null>(null)
   const [selectedServiceId, setSelectedServiceId] = useState<number | null>(null)
 
-  // Pre-select current values when editing, or preselected animal when rebooking
   useEffect(() => {
     if (selectedAnimalId === null) {
       const initial = appointment?.animal?.id ?? (preselectedAnimalId ? Number(preselectedAnimalId) : null)
@@ -68,7 +74,7 @@ export default function Process() {
   if (!appointmentId || isNaN(aptId)) {
     return (
       <Box className='flex-1 items-center justify-center'>
-        <Text className='text-red-500'>Ungültige Termin-ID.</Text>
+        <Text className='text-red-500'>{t('process.invalid_id')}</Text>
       </Box>
     )
   }
@@ -82,10 +88,12 @@ export default function Process() {
   const isLoading = aptLoading || animalsLoading
   const canBook = !!selectedAnimalId && !!selectedServiceId && !isBooking
 
+  const timeSuffix = t('common.time_suffix')
+
   function handleBook() {
     if (!canBook) return
     setBookingError(null)
-    const formatted = appointment ? formatDateTime(appointment.startTime) : null
+    const formatted = appointment ? formatDateTime(appointment.startTime, timeSuffix) : null
     const selectedAnimal = (animals ?? []).find((a) => a.id === selectedAnimalId)
     const selectedService = (appointment?.availableServices ?? []).find((s) => s.id === selectedServiceId)
 
@@ -104,7 +112,7 @@ export default function Process() {
             },
           })
         },
-        onError: (e) => setBookingError(e instanceof Error ? e.message : 'Buchung fehlgeschlagen.'),
+        onError: (e) => setBookingError(e instanceof Error ? e.message : t('process.booking_error')),
       },
     )
   }
@@ -117,7 +125,7 @@ export default function Process() {
     )
   }
 
-  const formatted = appointment ? formatDateTime(appointment.startTime) : null
+  const formatted = appointment ? formatDateTime(appointment.startTime, timeSuffix) : null
 
   return (
     <Box className='flex-1 bg-background-100'>
@@ -126,10 +134,10 @@ export default function Process() {
         <Box className='flex-row justify-between items-start'>
           <Box>
             <Text size='3xl' className='font-bold text-white'>
-              {isEditMode ? 'Termin bearbeiten' : 'Buchung bestätigen'}
+              {isEditMode ? t('process.title_edit') : t('process.title_book')}
             </Text>
             <Text size='lg' className='text-white/70 mt-1'>
-              {isEditMode ? 'Tier oder Behandlung ändern' : 'Überprüfe deine Angaben'}
+              {isEditMode ? t('process.subtitle_edit') : t('process.subtitle_book')}
             </Text>
           </Box>
           <ButtonGroup>
@@ -148,7 +156,7 @@ export default function Process() {
             <HStack className='items-center gap-2 mb-2'>
               <FontAwesomeIcon name='clock-o' color='#2e8a59' size={18} />
               <Text size='sm' className='font-semibold text-typography-500 uppercase'>
-                Ort & Zeit
+                {t('process.location_time')}
               </Text>
             </HStack>
             <Text size='md' className='font-semibold text-typography-800'>
@@ -178,7 +186,7 @@ export default function Process() {
             <HStack className='items-center gap-2 mb-3'>
               <FontAwesomeIcon name='paw' color='#2e8a59' size={18} />
               <Text size='sm' className='font-semibold text-typography-500 uppercase'>
-                Haustier
+                {t('process.pet_section')}
               </Text>
             </HStack>
             <Box className='flex-row flex-wrap gap-2'>
@@ -207,7 +215,7 @@ export default function Process() {
                 )
               })}
               {!animals?.length && (
-                <Text className='text-typography-400'>Keine Haustiere gefunden.</Text>
+                <Text className='text-typography-400'>{t('process.no_pets')}</Text>
               )}
             </Box>
           </Card>
@@ -217,7 +225,7 @@ export default function Process() {
             <HStack className='items-center gap-2 mb-3'>
               <FontAwesomeIcon name='stethoscope' color='#2e8a59' size={18} />
               <Text size='sm' className='font-semibold text-typography-500 uppercase'>
-                Behandlung
+                {t('process.treatment_section')}
               </Text>
             </HStack>
             <Box className='flex-row flex-wrap gap-2'>
@@ -243,7 +251,7 @@ export default function Process() {
                 )
               })}
               {!appointment?.availableServices?.length && (
-                <Text className='text-typography-400'>Keine Leistungen verfügbar.</Text>
+                <Text className='text-typography-400'>{t('process.no_services')}</Text>
               )}
             </Box>
           </Card>
@@ -251,7 +259,7 @@ export default function Process() {
         </Box>
       </ScrollView>
 
-      {/* Bottom button — fixed outside ScrollView */}
+      {/* Bottom button */}
       <Box className='bg-background-0 px-5 py-4 shadow-lg'>
         {bookingError && (
           <Text className='text-red-500 text-sm mb-2 text-center'>{bookingError}</Text>
@@ -265,7 +273,7 @@ export default function Process() {
             <Spinner size='small' />
           ) : (
             <ButtonText className='text-white font-bold'>
-              {isEditMode ? 'Änderungen speichern' : canBook ? 'Buchung bestätigen' : 'Haustier & Behandlung wählen'}
+              {isEditMode ? t('process.btn_save') : canBook ? t('process.btn_confirm') : t('process.btn_select')}
             </ButtonText>
           )}
         </Button>

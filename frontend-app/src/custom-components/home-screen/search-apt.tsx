@@ -3,8 +3,10 @@ import { Button, ButtonText, Card } from '@/src/gluestack-components/ui'
 import { FontAwesomeIcon } from '@src/custom-components/tabbar-icon'
 import { useColorScheme } from 'nativewind'
 import { routes } from '@src/constants/routes'
+import { useTranslation } from 'react-i18next'
 
 export function SearchApt() {
+  const { t } = useTranslation()
   const router = useRouter()
   const { colorScheme } = useColorScheme()
   const iconColor = colorScheme === 'dark' ? '#d1d5db' : '#374151'
@@ -20,7 +22,7 @@ export function SearchApt() {
         >
           <FontAwesomeIcon name='search' color={iconColor} size={20} />
           <ButtonText className='text-typography-700 text-2xl'>
-            Termin buchen
+            {t('home.book_appointment')}
           </ButtonText>
         </Button>
       </Card>

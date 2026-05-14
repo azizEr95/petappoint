@@ -15,8 +15,10 @@ import {
 import { useState } from 'react'
 import { router } from 'expo-router'
 import { useForgotPassword } from '@src/hooks/useForgotPassword'
+import { useTranslation } from 'react-i18next'
 
 export default function ForgotPassword() {
+  const { t } = useTranslation()
   const { colorScheme } = useColorScheme()
   const iconColor = colorScheme === 'dark' ? '#d1d5db' : '#374151'
   const [email, setEmail] = useState('')
@@ -31,10 +33,10 @@ export default function ForgotPassword() {
       {/* Top green area */}
       <Box className='bg-primary-500 h-[25%] rounded-b-3xl justify-end px-6 pb-8'>
         <Text size='3xl' className='font-bold text-white'>
-          Passwort vergessen?
+          {t('auth.forgot_password.title')}
         </Text>
         <Text size='lg' className='text-white/70 mt-1'>
-          Wir senden dir einen Reset-Link
+          {t('auth.forgot_password.subtitle')}
         </Text>
       </Box>
 
@@ -60,17 +62,17 @@ export default function ForgotPassword() {
           {isSuccess ? (
             <Box className='bg-primary-50 border border-primary-200 rounded-xl p-4'>
               <Text size='sm' className='text-primary-700 text-center'>
-                Falls ein Konto mit dieser E-Mail-Adresse existiert, erhältst du einen Link zum Zurücksetzen deines Passworts.
+                {t('auth.forgot_password.success_message')}
               </Text>
               <Text size='sm' className='text-typography-400 text-center mt-2'>
-                Der Link ist 1 Stunde gültig.
+                {t('auth.forgot_password.link_validity')}
               </Text>
             </Box>
           ) : (
             <>
               <VStack className='gap-1'>
                 <Text size='lg' className='font-medium text-typography-600'>
-                  E-Mail
+                  {t('common.email_label')}
                 </Text>
                 <Input className='bg-background-0 rounded-xl border-0 shadow-sm h-12'>
                   <InputField
@@ -85,7 +87,7 @@ export default function ForgotPassword() {
 
               {error && (
                 <Text size='sm' className='text-red-500 text-center'>
-                  Ein Fehler ist aufgetreten. Bitte versuche es erneut.
+                  {t('common.error_generic')}
                 </Text>
               )}
 
@@ -95,7 +97,7 @@ export default function ForgotPassword() {
                 disabled={isPending || email.length === 0}
               >
                 <ButtonText className='font-bold'>
-                  {isPending ? 'Wird gesendet…' : 'Link senden'}
+                  {isPending ? t('auth.forgot_password.submitting') : t('auth.forgot_password.submit')}
                 </ButtonText>
               </Button>
             </>
@@ -103,7 +105,7 @@ export default function ForgotPassword() {
 
           <Pressable className='items-center mt-2' onPress={() => router.back()}>
             <Text size='lg' className='text-typography-500 font-medium'>
-              Zurück zum Login
+              {t('common.back_to_login')}
             </Text>
           </Pressable>
         </VStack>

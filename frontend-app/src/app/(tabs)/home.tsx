@@ -5,8 +5,11 @@ import { NearbyPractices } from '@/src/custom-components/home-screen/nearby-prac
 import { FavoritePractices } from '@/src/custom-components/home-screen/favorite-practices'
 import { SearchApt } from '@/src/custom-components/home-screen/search-apt'
 import { UpcomingApt } from '@/src/custom-components/home-screen/upcoming-apt'
+import { useTranslation } from 'react-i18next'
 
 export default function Home() {
+  const { t } = useTranslation()
+
   return (
     <>
       <Box className='h-full bg-background-100'>
@@ -18,7 +21,7 @@ export default function Home() {
             <FavoritePractices />
             <Box className='mb-3'>
               <Text className='text-typography-700 font-semibold text-lg'>
-                Tierarztpraxen in der Nähe
+                {t('home.nearby_practices')}
               </Text>
             </Box>
             <NearbyPractices />
