@@ -9,7 +9,6 @@ import {
   Text,
 } from '@/src/gluestack-components/ui'
 import { router, useLocalSearchParams } from 'expo-router'
-import { useColorScheme } from 'nativewind'
 import { routes } from '@src/constants/routes'
 import { useTranslation } from 'react-i18next'
 
@@ -23,9 +22,6 @@ export default function BookingConfirmation() {
       serviceName: string
       animalName: string
     }>()
-
-  const { colorScheme } = useColorScheme()
-  const iconColor = colorScheme === 'dark' ? '#d1d5db' : '#374151'
 
   return (
     <Box className='flex-1 bg-background-100'>
@@ -63,7 +59,7 @@ export default function BookingConfirmation() {
 
             {/* Datum */}
             <HStack className='items-center gap-2 mb-1'>
-              <FontAwesomeIcon name='calendar' color={iconColor} size={15} />
+              <FontAwesomeIcon name='calendar' size={15} />
               <Text size='xs' className='font-semibold text-typography-500 uppercase'>
                 {t('booking_confirmation.date_label')}
               </Text>
@@ -76,7 +72,7 @@ export default function BookingConfirmation() {
 
             {/* Uhrzeit */}
             <HStack className='items-center gap-2 mb-1'>
-              <FontAwesomeIcon name='clock-o' color={iconColor} size={15} />
+              <FontAwesomeIcon name='clock-o' size={15} />
               <Text size='xs' className='font-semibold text-typography-500 uppercase'>
                 {t('booking_confirmation.time_label')}
               </Text>
@@ -89,7 +85,7 @@ export default function BookingConfirmation() {
 
             {/* Behandlung */}
             <HStack className='items-center gap-2 mb-1'>
-              <FontAwesomeIcon name='stethoscope' color={iconColor} size={15} />
+              <FontAwesomeIcon name='stethoscope' size={15} />
               <Text size='xs' className='font-semibold text-typography-500 uppercase'>
                 {t('booking_confirmation.treatment_label')}
               </Text>
@@ -102,7 +98,7 @@ export default function BookingConfirmation() {
 
             {/* Tier */}
             <HStack className='items-center gap-2 mb-1'>
-              <FontAwesomeIcon name='paw' color={iconColor} size={15} />
+              <FontAwesomeIcon name='paw' size={15} />
               <Text size='xs' className='font-semibold text-typography-500 uppercase'>
                 {t('booking_confirmation.animal_label')}
               </Text>

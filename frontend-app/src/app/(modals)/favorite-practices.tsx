@@ -15,7 +15,6 @@ import { ScrollView } from 'react-native'
 import { useAllPractices } from '@src/hooks/useAllPractices'
 import { useFavorites } from '@src/hooks/useFavorites'
 import { useToggleFavorite } from '@src/hooks/useToggleFavorite'
-import { useColorScheme } from 'nativewind'
 import { routes } from '@src/constants/routes'
 import { useTranslation } from 'react-i18next'
 
@@ -24,9 +23,6 @@ export default function FavoritePracticesScreen() {
   const { data: practices, isLoading } = useAllPractices()
   const { favoriteIds } = useFavorites()
   const { mutate: toggle } = useToggleFavorite()
-  const { colorScheme } = useColorScheme()
-  const iconColor = colorScheme === 'dark' ? '#d1d5db' : '#374151'
-
   const favorites = (practices ?? []).filter((p) => favoriteIds.has(p.id))
 
   return (
@@ -83,7 +79,7 @@ export default function FavoritePracticesScreen() {
                   <Box className='flex-1'>
                     <Text className='text-typography-700 text-md font-semibold'>{practice.name}</Text>
                     <Box className='flex-row items-start gap-1 py-3'>
-                      <FontAwesomeIcon name='map-marker' color={iconColor} size={15} />
+                      <FontAwesomeIcon name='map-marker' size={15} />
                       <Text className='text-typography-700 text-md font-semibold'>
                         {practice.address.street}, {practice.address.cityCode} {practice.address.city}
                       </Text>

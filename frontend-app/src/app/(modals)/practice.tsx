@@ -16,7 +16,6 @@ import { useMemo, useState } from 'react'
 import { usePracticeDetails } from '@src/hooks/usePracticeDetails'
 import { useFavorites } from '@src/hooks/useFavorites'
 import { useToggleFavorite } from '@src/hooks/useToggleFavorite'
-import { useColorScheme } from 'nativewind'
 import { routes } from '@src/constants/routes'
 import { useTranslation } from 'react-i18next'
 import i18n from '@src/i18n'
@@ -83,9 +82,6 @@ export default function Practice() {
       slots: val.slots,
     }))
   }, [appointments.data, todayLabel])
-
-  const { colorScheme } = useColorScheme()
-  const iconColor = colorScheme === 'dark' ? '#d1d5db' : '#374151'
 
   const [selectedDateIndex, setSelectedDateIndex] = useState(0)
   const [selectedAppointmentId, setSelectedAppointmentId] = useState<
@@ -157,19 +153,19 @@ export default function Practice() {
                 </Box>
               </Box>
               <HStack className='flex-row mx-3 mb-3'>
-                <FontAwesomeIcon name='map-marker' color={iconColor} size={20} />
+                <FontAwesomeIcon name='map-marker' size={20} />
                 <Text className='text-typography-700 ml-2'>
                   {vet.address.street}, {vet.address.cityCode}{' '}
                   {vet.address.city}
                 </Text>
               </HStack>
               <HStack className='flex-row mx-3 mb-3'>
-                <FontAwesomeIcon name='phone' color={iconColor} size={20} />
+                <FontAwesomeIcon name='phone' size={20} />
                 <Text className='text-typography-700 ml-2'>{vet.phone}</Text>
               </HStack>
               {vet.website && (
                 <HStack className='flex-row mx-3 mb-3'>
-                  <FontAwesomeIcon name='globe' color={iconColor} size={20} />
+                  <FontAwesomeIcon name='globe' size={20} />
                   <Text className='text-typography-700 ml-2'>{vet.website}</Text>
                 </HStack>
               )}

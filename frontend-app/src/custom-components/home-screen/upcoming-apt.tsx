@@ -2,7 +2,6 @@ import { FontAwesomeIcon } from '@/src/custom-components/tabbar-icon'
 import { Box, Card, Spinner, Text } from '@/src/gluestack-components/ui'
 import { useMyAppointments } from '@src/hooks/useMyAppointments'
 import { AnimalAvatar } from '@/src/custom-components/animal-avatar'
-import { useColorScheme } from 'nativewind'
 import { useTranslation } from 'react-i18next'
 import i18n from '@src/i18n'
 
@@ -30,9 +29,6 @@ function formatTime(date: Date): string {
 export function UpcomingApt() {
   const { t } = useTranslation()
   const { future, isLoading } = useMyAppointments()
-  const { colorScheme } = useColorScheme()
-  const iconColor = colorScheme === 'dark' ? '#d1d5db' : '#374151'
-
   const next = [...future].sort((a, b) => a.startTime.getTime() - b.startTime.getTime())[0]
 
   if (isLoading) {
@@ -79,7 +75,7 @@ export function UpcomingApt() {
                   </Box>
                 </Box>
                 <Box className='flex-row items-start gap-1 py-2'>
-                  <FontAwesomeIcon name='map-marker' color={iconColor} size={15} />
+                  <FontAwesomeIcon name='map-marker' size={15} />
                   <Text className='text-typography-700 text-md font-semibold'>
                     {next.veterinaryPractice.name}
                   </Text>
@@ -87,7 +83,7 @@ export function UpcomingApt() {
 
                 {/* Uhrzeit‑Zeile */}
                 <Box className='flex-row items-center gap-1'>
-                  <FontAwesomeIcon name='clock-o' color={iconColor} size={15} />
+                  <FontAwesomeIcon name='clock-o' size={15} />
                   <Text className='text-typography-700 font-semibold'>
                     {formatDate(next.startTime, t('home.today'), t('home.tomorrow'))}, {formatTime(next.startTime)}{t('common.time_suffix')}
                   </Text>

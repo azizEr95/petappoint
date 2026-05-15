@@ -1,6 +1,5 @@
 // app/(auth)/reset-password.tsx
 import { FontAwesomeIcon } from '@/src/custom-components/tabbar-icon'
-import { useColorScheme } from 'nativewind'
 import {
   Box,
   Button,
@@ -31,8 +30,6 @@ function validatePassword(password: string, t: (key: string) => string): string 
 
 export default function ResetPassword() {
   const { t } = useTranslation()
-  const { colorScheme } = useColorScheme()
-  const iconColor = colorScheme === 'dark' ? '#d1d5db' : '#374151'
   const { token } = useLocalSearchParams<{ token: string }>()
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -81,7 +78,7 @@ export default function ResetPassword() {
             action='positive'
             className='bg-primary-100 rounded-xl'
           >
-            <FontAwesomeIcon name='lock' color={iconColor} size={20} />
+            <FontAwesomeIcon name='lock' size={20} />
             <ButtonText className='text-typography-700 text-2xl'>
               Petappoint
             </ButtonText>

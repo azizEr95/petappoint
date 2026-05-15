@@ -17,7 +17,6 @@ import { ToggleApt } from '@/src/custom-components/appointment-screen/toggle-app
 import { useMyAppointments } from '@src/hooks/useMyAppointments'
 import { useRouter } from 'expo-router'
 import { useCancelAppointment } from '@src/hooks/useCancelAppointment'
-import { useColorScheme } from 'nativewind'
 import { routes } from '@src/constants/routes'
 import { useTranslation } from 'react-i18next'
 import i18n from '@src/i18n'
@@ -44,9 +43,6 @@ export default function Appointment() {
   const { future, past, isLoading, isError } = useMyAppointments()
   const { mutate: cancel } = useCancelAppointment()
   const [activeTab, setActiveTab] = useState<boolean>(true)
-  const { colorScheme } = useColorScheme()
-  const iconColor = colorScheme === 'dark' ? '#d1d5db' : '#374151'
-
   function handleCancel(aptId: number, aptName: string) {
     Alert.alert(
       t('appointments.cancel_title'),
@@ -119,7 +115,7 @@ export default function Appointment() {
                       </Box>
                     </Box>
                     <Box className='flex-row items-start gap-1 py-2'>
-                      <FontAwesomeIcon name='map-marker' color={iconColor} size={15} />
+                      <FontAwesomeIcon name='map-marker' size={15} />
                       <Text className='text-typography-700 text-md font-semibold'>
                         {apt.veterinaryPractice.name}
                       </Text>
@@ -127,7 +123,7 @@ export default function Appointment() {
 
                     {/* Uhrzeit‑Zeile */}
                     <Box className='flex-row items-center gap-1'>
-                      <FontAwesomeIcon name='clock-o' color={iconColor} size={15} />
+                      <FontAwesomeIcon name='clock-o' size={15} />
                       <Text className='text-typography-700 font-semibold'>
                         {formatAppointmentDate(apt.startTime)}, {formatTime(apt.startTime)}{t('common.time_suffix')}
                       </Text>

@@ -17,7 +17,6 @@ import { routes } from '@src/constants/routes'
 import { useAnimalTypes } from '@src/hooks/useAnimalTypes'
 import { useServices } from '@src/hooks/useServices'
 import { ScrollView } from 'react-native'
-import { useColorScheme } from 'nativewind'
 import { useTranslation } from 'react-i18next'
 
 export default function SucheModal() {
@@ -29,8 +28,6 @@ export default function SucheModal() {
   const [selectedTreatment, setSelectedTreatment] = useState('')
 
   const router = useRouter()
-  const { colorScheme } = useColorScheme()
-  const iconColor = colorScheme === 'dark' ? '#d1d5db' : '#374151'
 
   return (
     <Box className='flex-1'>
@@ -69,7 +66,6 @@ export default function SucheModal() {
                 <Button size='xs' className='bg-background-0 rounded-lg'>
                   <FontAwesomeIcon
                     name='map-marker'
-                    color={iconColor}
                     size={20}
                   />
                 </Button>
@@ -171,7 +167,7 @@ export default function SucheModal() {
                 }
                 className='bg-primary-100 rounded-xl '
               >
-                <FontAwesomeIcon name='search' color={iconColor} size={20} />
+                <FontAwesomeIcon name='search' size={20} />
                 <ButtonText className='text-typography-700 text-2xl'>
                   {t('search.submit')}
                 </ButtonText>

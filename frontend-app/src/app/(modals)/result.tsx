@@ -1,7 +1,6 @@
 import { useRouter, useLocalSearchParams, Link } from 'expo-router'
 import { routes } from '@src/constants/routes'
 import { FontAwesomeIcon } from '@/src/custom-components/tabbar-icon'
-import { useColorScheme } from 'nativewind'
 import {
   Box,
   Text,
@@ -19,8 +18,6 @@ import { useTranslation } from 'react-i18next'
 export default function ResultModal() {
   const { t } = useTranslation()
   const router = useRouter()
-  const { colorScheme } = useColorScheme()
-  const iconColor = colorScheme === 'dark' ? '#d1d5db' : '#374151'
   const { animalTypeId, serviceId } = useLocalSearchParams<{
     animalTypeId?: string
     serviceId?: string
@@ -97,7 +94,7 @@ export default function ResultModal() {
                         )}
                       </Box>
                       <Box className='flex-row items-start gap-1 py-3'>
-                        <FontAwesomeIcon name='map-marker' color={iconColor} size={15} />
+                        <FontAwesomeIcon name='map-marker' size={15} />
                         <Text className='text-typography-700 text-md font-semibold'>
                           {practice.address.street}, {practice.address.cityCode} {practice.address.city}
                         </Text>

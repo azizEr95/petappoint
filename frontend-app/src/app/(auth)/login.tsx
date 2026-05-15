@@ -16,7 +16,6 @@ import { router } from 'expo-router'
 import { routes } from '@src/constants/routes'
 import { useLogin } from '@src/hooks/useLogin'
 import { ApiError } from '@src/api/client'
-import { useColorScheme } from 'nativewind'
 import { useTranslation } from 'react-i18next'
 
 export default function Login() {
@@ -24,9 +23,6 @@ export default function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const { mutate: login, isPending, error } = useLogin()
-  const { colorScheme } = useColorScheme()
-  const iconColor = colorScheme === 'dark' ? '#d1d5db' : '#374151'
-
   const handleLogin = () => {
     login({ email, password })
   }
@@ -58,7 +54,7 @@ export default function Login() {
             action='positive'
             className='bg-primary-100 rounded-xl '
           >
-            <FontAwesomeIcon name='paw' color={iconColor} size={20} />
+            <FontAwesomeIcon name='paw' size={20} />
             <ButtonText className='text-typography-700 text-2xl'>
               Petappoint
             </ButtonText>

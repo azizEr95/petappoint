@@ -16,7 +16,6 @@ import { ScrollView } from 'react-native'
 import { useMyAnimals } from '@src/hooks/useMyAnimals'
 import { useAnimalTypes } from '@src/hooks/useAnimalTypes'
 import { useStoredImage } from '@src/hooks/useStoredImage'
-import { useColorScheme } from 'nativewind'
 import { routes } from '@src/constants/routes'
 import { useTranslation } from 'react-i18next'
 import i18n from '@src/i18n'
@@ -56,9 +55,6 @@ export default function Pets() {
   const router = useRouter()
   const { data: animals, isLoading, isError } = useMyAnimals()
   const { data: animalTypes } = useAnimalTypes()
-  const { colorScheme } = useColorScheme()
-  const iconColor = colorScheme === 'dark' ? '#d1d5db' : '#374151'
-
   const SEX_LABEL: Record<string, string> = {
     male: t('pets.sex_male'),
     female: t('pets.sex_female'),
@@ -132,7 +128,6 @@ export default function Pets() {
                           >
                             <FontAwesomeIcon
                               name='pencil'
-                              color={iconColor}
                               size={25}
                             />
                           </Button>
@@ -144,7 +139,7 @@ export default function Pets() {
                   {/**Card Body - Pet Details*/}
                   <Box className='flex-1 items-start mt-3'>
                     <Box className='flex-row flex-1 items-center justify-start p-2 gap-1'>
-                      <FontAwesomeIcon name='heart' color={iconColor} size={15} />
+                      <FontAwesomeIcon name='heart' size={15} />
                       <Text size='lg' className='text-typography-700 ml-2'>
                         {t('pets.weight')}
                       </Text>

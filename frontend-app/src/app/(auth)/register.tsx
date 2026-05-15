@@ -1,6 +1,5 @@
 // app/(auth)/register.tsx
 import { FontAwesomeIcon } from '@/src/custom-components/tabbar-icon'
-import { useColorScheme } from 'nativewind'
 import {
   Box,
   Button,
@@ -22,8 +21,6 @@ import { useTranslation } from 'react-i18next'
 
 export default function Register() {
   const { t } = useTranslation()
-  const { colorScheme } = useColorScheme()
-  const iconColor = colorScheme === 'dark' ? '#d1d5db' : '#374151'
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
   const [sex, setSex] = useState<sexesType>('not_known')
@@ -105,7 +102,7 @@ export default function Register() {
             action='positive'
             className='bg-primary-100 rounded-xl '
           >
-            <FontAwesomeIcon name='paw' color={iconColor} size={20} />
+            <FontAwesomeIcon name='paw' size={20} />
             <ButtonText className='text-typography-700 text-2xl'>
               Petappoint
             </ButtonText>

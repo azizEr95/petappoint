@@ -14,7 +14,6 @@ import {
 } from '@/src/gluestack-components/ui'
 import { router, useLocalSearchParams } from 'expo-router'
 import { useEffect, useState } from 'react'
-import { useColorScheme } from 'nativewind'
 import { useQuery } from '@tanstack/react-query'
 import { getAppointment } from '@src/api/appointments'
 import { useMyAnimals } from '@src/hooks/useMyAnimals'
@@ -80,9 +79,6 @@ export default function Process() {
   }
 
   const typeNameById = Object.fromEntries((animalTypes ?? []).map((t) => [t.id, t.name]))
-
-  const { colorScheme } = useColorScheme()
-  const iconColor = colorScheme === 'dark' ? '#d1d5db' : '#374151'
 
   const [bookingError, setBookingError] = useState<string | null>(null)
   const isLoading = aptLoading || animalsLoading
@@ -170,11 +166,11 @@ export default function Process() {
             {formatted && (
               <>
                 <HStack className='items-center gap-2 mt-2'>
-                  <FontAwesomeIcon name='calendar' color={iconColor} size={14} />
+                  <FontAwesomeIcon name='calendar' size={14} />
                   <Text size='sm' className='text-typography-700'>{formatted.date}</Text>
                 </HStack>
                 <HStack className='items-center gap-2 mt-1'>
-                  <FontAwesomeIcon name='clock-o' color={iconColor} size={14} />
+                  <FontAwesomeIcon name='clock-o' size={14} />
                   <Text size='sm' className='text-typography-700'>{formatted.time}</Text>
                 </HStack>
               </>
