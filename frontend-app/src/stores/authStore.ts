@@ -4,6 +4,7 @@ import { Platform } from 'react-native'
 import { LoginType } from 'petappoint-shared/schemas/ZodSchemas'
 
 const TOKEN_KEY = 'access_token'
+const USER_KEY = 'auth_user'
 
 // expo-secure-store is native-only — fall back to localStorage on web
 const storage = {
@@ -37,7 +38,10 @@ export const useAuthStore = create<AuthState>((set) => ({
   isLoading: true,
 
   setAuth: async (user, token) => {
-    await storage.setItem(TOKEN_KEY, token)
+    await Promise.all([
+      storage.setItem(TOKEN_KEY, token),
+      storage.setItem(USER_KEY, JSON.stringify(user)),
+    ])
     set({ user, token })
   },
 
@@ -48,12 +52,19 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
 
   clearAuth: async () => {
-    await storage.deleteItem(TOKEN_KEY)
+    await Promise.all([
+      storage.deleteItem(TOKEN_KEY),
+      storage.deleteItem(USER_KEY),
+    ])
     set({ user: null, token: null })
   },
 
   hydrateFromStorage: async () => {
-    const token = await storage.getItem(TOKEN_KEY)
-    set({ token: token ?? null, isLoading: false })
+    const [token, userJson] = await Promise.all([
+      storage.getItem(TOKEN_KEY),
+      storage.getItem(USER_KEY),
+    ])
+    const user: LoginType | null = userJson ? JSON.parse(userJson) : null
+    set({ token: token ?? null, user, isLoading: false })
   },
 }))
