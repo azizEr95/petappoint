@@ -63,8 +63,8 @@ function RootLayoutNav() {
   const mode = useThemeStore((s) => s.mode);
   const setMode = useThemeStore((s) => s.setMode);
 
-  const effectiveColorScheme =
-    mode === 'system' ? (systemColorScheme ?? 'light') : mode;
+  const effectiveColorScheme: 'light' | 'dark' =
+    mode === 'system' ? (systemColorScheme === 'dark' ? 'dark' : 'light') : mode;
 
   const handleToggleTheme = () => {
     if (mode === 'system') {
@@ -77,7 +77,7 @@ function RootLayoutNav() {
   };
 
   return (
-    <GluestackUIProvider mode={mode}>
+    <GluestackUIProvider mode={effectiveColorScheme}>
       <ThemeProvider
         value={effectiveColorScheme === 'dark' ? DarkTheme : DefaultTheme}
       >
