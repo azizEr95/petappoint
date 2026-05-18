@@ -108,7 +108,7 @@ function RootLayoutNav() {
         </Stack>
 
         {/* Deinen Button nur für den Start‑Pfad */}
-        {usePathname() === '/login' && (
+        {/* {usePathname() === '/login' && (
           <Fab onPress={handleToggleTheme} className="m-6" size="lg" placement="bottom left">
             <FabIcon
               as={
@@ -120,7 +120,7 @@ function RootLayoutNav() {
               }
             />
           </Fab>
-        )}
+        )} */}
       </ThemeProvider>
     </GluestackUIProvider>
   );
