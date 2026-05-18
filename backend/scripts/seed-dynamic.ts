@@ -183,20 +183,12 @@ async function seedDynamic() {
       const serviceIds = vetServiceMap.get(appt.veterinaryId) ?? [];
       if (serviceIds.length === 0) continue;
 
-      if (appt.animalId === null) {
-        // Available appointment (75%): link ALL services
-        for (const sId of serviceIds) {
-          appointmentHasService.push({
-            appointmentId: appt.id,
-            serviceId: sId,
-          });
-        }
-      } else {
-        // Booked appointment (25%): link ONE random service
-        const randomService = serviceIds[Math.floor(Math.random() * serviceIds.length)];
+      // Link ALL services for every appointment (booked and available alike),
+      // so users can change treatment when editing a booked appointment.
+      for (const sId of serviceIds) {
         appointmentHasService.push({
           appointmentId: appt.id,
-          serviceId: randomService,
+          serviceId: sId,
         });
       }
     }
