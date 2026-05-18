@@ -1,5 +1,4 @@
 // app/(auth)/reset-password.tsx
-import { FontAwesomeIcon } from '@/src/custom-components/tabbar-icon'
 import {
   Box,
   Button,
@@ -7,11 +6,14 @@ import {
   Card,
   Input,
   InputField,
+  InputSlot,
   Pressable,
   Text,
   VStack,
 } from '@/src/gluestack-components/ui'
 import { useState } from 'react'
+import { KeyboardAvoidingView, Platform } from 'react-native'
+import { FontAwesomeIcon } from '@/src/custom-components/tabbar-icon'
 import { useLocalSearchParams, router } from 'expo-router'
 import { routes } from '@src/constants/routes'
 import { useQuery } from '@tanstack/react-query'
@@ -34,6 +36,8 @@ export default function ResetPassword() {
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [validationError, setValidationError] = useState<string | null>(null)
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
   const { isLoading, isError } = useQuery({
     queryKey: ['reset-token', token],
@@ -87,6 +91,7 @@ export default function ResetPassword() {
       </Box>
 
       {/* Content */}
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
       <Box className='flex-1 px-6 pt-4'>
         {isLoading ? (
           <Text size='lg' className='text-typography-500 text-center'>
@@ -114,8 +119,11 @@ export default function ResetPassword() {
                   placeholder='••••••••'
                   value={password}
                   onChangeText={setPassword}
-                  secureTextEntry
+                  secureTextEntry={!showPassword}
                 />
+                <InputSlot onPress={() => setShowPassword(p => !p)} className='pr-3'>
+                  <FontAwesomeIcon name={showPassword ? 'eye-slash' : 'eye'} size={18} />
+                </InputSlot>
               </Input>
             </VStack>
 
@@ -128,8 +136,11 @@ export default function ResetPassword() {
                   placeholder='••••••••'
                   value={confirmPassword}
                   onChangeText={setConfirmPassword}
-                  secureTextEntry
+                  secureTextEntry={!showConfirmPassword}
                 />
+                <InputSlot onPress={() => setShowConfirmPassword(p => !p)} className='pr-3'>
+                  <FontAwesomeIcon name={showConfirmPassword ? 'eye-slash' : 'eye'} size={18} />
+                </InputSlot>
               </Input>
             </VStack>
 
@@ -163,6 +174,7 @@ export default function ResetPassword() {
           </VStack>
         )}
       </Box>
+      </KeyboardAvoidingView>
     </Box>
   )
 }

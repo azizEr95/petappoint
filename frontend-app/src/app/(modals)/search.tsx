@@ -16,7 +16,7 @@ import { useState } from 'react'
 import { routes } from '@src/constants/routes'
 import { useAnimalTypes } from '@src/hooks/useAnimalTypes'
 import { useServices } from '@src/hooks/useServices'
-import { ScrollView } from 'react-native'
+import { KeyboardAvoidingView, Platform, ScrollView } from 'react-native'
 import { useTranslation } from 'react-i18next'
 
 export default function SucheModal() {
@@ -52,6 +52,7 @@ export default function SucheModal() {
           </ButtonGroup>
         </Box>
       </Box>
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
       <ScrollView contentContainerStyle={{ paddingBottom: 32 }}>
         <Box className='flex-col px-5 py-3'>
           <Box className='p-2'>
@@ -176,6 +177,7 @@ export default function SucheModal() {
           </Box>
         </Box>
       </ScrollView>
+      </KeyboardAvoidingView>
     </Box>
   )
 }

@@ -12,6 +12,7 @@ import {
   VStack,
 } from '@/src/gluestack-components/ui'
 import { useState } from 'react'
+import { KeyboardAvoidingView, Platform } from 'react-native'
 import { router } from 'expo-router'
 import { useForgotPassword } from '@src/hooks/useForgotPassword'
 import { useTranslation } from 'react-i18next'
@@ -54,6 +55,7 @@ export default function ForgotPassword() {
       </Box>
 
       {/* Form */}
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
       <Box className='flex-1 px-6 pt-4'>
         <VStack className='gap-4'>
           {isSuccess ? (
@@ -107,6 +109,7 @@ export default function ForgotPassword() {
           </Pressable>
         </VStack>
       </Box>
+      </KeyboardAvoidingView>
     </Box>
   )
 }

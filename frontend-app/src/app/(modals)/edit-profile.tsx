@@ -14,7 +14,7 @@ import {
 } from '@/src/gluestack-components/ui'
 import { router } from 'expo-router'
 import { useEffect, useState } from 'react'
-import { ScrollView } from 'react-native'
+import { KeyboardAvoidingView, Platform, ScrollView } from 'react-native'
 import { usePerson } from '@src/hooks/usePerson'
 import { useUpdatePerson } from '@src/hooks/useUpdatePerson'
 import { ApiError } from '@src/api/client'
@@ -107,6 +107,7 @@ export default function EditProfile() {
         </Box>
       </Box>
 
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
       <ScrollView className='flex-1 px-5' contentContainerStyle={{ paddingTop: 24, paddingBottom: 40 }}>
         <VStack className='gap-4'>
           {/* Name */}
@@ -231,6 +232,7 @@ export default function EditProfile() {
           </Button>
         </VStack>
       </ScrollView>
+      </KeyboardAvoidingView>
     </Box>
   )
 }

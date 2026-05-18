@@ -13,15 +13,21 @@
     "first_name": "First name",
     "last_name": "Last name",
     "phone": "Phone",
-    "street": "Street & house number",
+    "street": "Street",
+    "house_number": "House no.",
+    "country": "Country",
+    "country_placeholder": "Select country",
     "zip": "ZIP code",
     "city": "City",
     "sex": "Gender",
     "date_of_birth": "Date of birth",
     "male": "Male",
     "female": "Female",
+    "divers": "Diverse",
     "unknown": "Unknown",
     "not_applicable": "Not specified",
+    "required_fields": "Please fill in all required fields.",
+    "required_field_hint": "Required field",
     "time_suffix": ""
   },
   "auth": {
@@ -42,7 +48,11 @@
       "submit": "Register",
       "submitting": "Registering…",
       "has_account": "Already have an account?",
-      "login": "Sign in"
+      "login": "Sign in",
+      "pw_min_length": "At least 8 characters",
+      "pw_uppercase": "At least 1 uppercase letter",
+      "pw_number": "At least 1 number",
+      "pw_special": "At least 1 special character"
     },
     "verify_email": {
       "title": "Verify email",

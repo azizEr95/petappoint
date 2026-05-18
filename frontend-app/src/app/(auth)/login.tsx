@@ -7,11 +7,13 @@ import {
   Card,
   Input,
   InputField,
+  InputSlot,
   Pressable,
   Text,
   VStack,
 } from '@/src/gluestack-components/ui'
 import { useState } from 'react'
+import { KeyboardAvoidingView, Platform } from 'react-native'
 import { router } from 'expo-router'
 import { routes } from '@src/constants/routes'
 import { useLogin } from '@src/hooks/useLogin'
@@ -22,6 +24,7 @@ export default function Login() {
   const { t } = useTranslation()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const { mutate: login, isPending, error } = useLogin()
   const handleLogin = () => {
     login({ email, password })
@@ -63,6 +66,7 @@ export default function Login() {
       </Box>
 
       {/* Form */}
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
       <Box className='flex-1 px-6 pt-4'>
         <VStack className='gap-4'>
           <VStack className='gap-1'>
@@ -89,8 +93,11 @@ export default function Login() {
                 placeholder='••••••••'
                 value={password}
                 onChangeText={setPassword}
-                secureTextEntry
+                secureTextEntry={!showPassword}
               />
+              <InputSlot onPress={() => setShowPassword(p => !p)} className='pr-3'>
+                <FontAwesomeIcon name={showPassword ? 'eye-slash' : 'eye'} size={18} />
+              </InputSlot>
             </Input>
           </VStack>
 
@@ -129,6 +136,7 @@ export default function Login() {
           </Pressable>
         </Box>
       </Box>
+      </KeyboardAvoidingView>
     </Box>
   )
 }

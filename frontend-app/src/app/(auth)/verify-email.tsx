@@ -12,6 +12,7 @@ import {
   VStack,
 } from '@/src/gluestack-components/ui'
 import { useState } from 'react'
+import { KeyboardAvoidingView, Platform } from 'react-native'
 import { useLocalSearchParams, router } from 'expo-router'
 import { routes } from '@src/constants/routes'
 import { useVerifyEmail } from '@src/hooks/useVerifyEmail'
@@ -78,6 +79,7 @@ export default function VerifyEmail() {
       </Box>
 
       {/* Form */}
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
       <Box className='flex-1 px-6 pt-4'>
         <VStack className='gap-4'>
           <Text size='sm' className='text-typography-500 text-center'>
@@ -147,6 +149,7 @@ export default function VerifyEmail() {
           </Pressable>
         </VStack>
       </Box>
+      </KeyboardAvoidingView>
     </Box>
   )
 }

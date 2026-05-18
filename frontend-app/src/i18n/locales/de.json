@@ -13,15 +13,21 @@
     "first_name": "Vorname",
     "last_name": "Nachname",
     "phone": "Telefon",
-    "street": "Straße & Hausnummer",
+    "street": "Straße",
+    "house_number": "Hausnr.",
+    "country": "Land",
+    "country_placeholder": "Land auswählen",
     "zip": "PLZ",
     "city": "Stadt",
     "sex": "Geschlecht",
     "date_of_birth": "Geburtsdatum",
     "male": "Männlich",
     "female": "Weiblich",
+    "divers": "Divers",
     "unknown": "Unbekannt",
     "not_applicable": "Keine Angabe",
+    "required_fields": "Bitte fülle alle Pflichtfelder aus.",
+    "required_field_hint": "Pflichtfeld",
     "time_suffix": " Uhr"
   },
   "auth": {
@@ -42,7 +48,11 @@
       "submit": "Registrieren",
       "submitting": "Registrieren…",
       "has_account": "Bereits ein Konto?",
-      "login": "Anmelden"
+      "login": "Anmelden",
+      "pw_min_length": "Mindestens 8 Zeichen",
+      "pw_uppercase": "Mindestens 1 Großbuchstabe",
+      "pw_number": "Mindestens 1 Zahl",
+      "pw_special": "Mindestens 1 Sonderzeichen"
     },
     "verify_email": {
       "title": "E-Mail bestätigen",
