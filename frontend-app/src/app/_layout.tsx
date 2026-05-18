@@ -109,7 +109,7 @@ function RootLayoutNav() {
 
         {/* Deinen Button nur für den Start‑Pfad */}
         {usePathname() === '/login' && (
-          <Fab onPress={handleToggleTheme} className="m-6" size="lg">
+          <Fab onPress={handleToggleTheme} className="m-6" size="lg" placement="bottom left">
             <FabIcon
               as={
                 mode === 'system'

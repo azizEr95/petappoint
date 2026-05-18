@@ -6,8 +6,7 @@ import {
   Text,
   ButtonText,
   ScrollView,
-  Card,
-  HStack,
+HStack,
   Pressable,
   Spinner,
 } from '@/src/gluestack-components/ui'
