@@ -6,6 +6,10 @@ import {
   ButtonGroup,
   ButtonText,
   Card,
+  FormControl,
+  FormControlLabel,
+  FormControlLabelAstrick,
+  FormControlLabelText,
   Input,
   InputField,
   Spinner,
@@ -88,7 +92,7 @@ export default function EditProfile() {
 
   return (
     <Box className='flex-1 bg-background-100'>
-      {/* Top green area */}
+      {/* Header */}
       <Box className='bg-primary-500 rounded-b-3xl justify-center px-6 pb-4 pt-16'>
         <Box className='flex-row justify-between items-start'>
           <Box>
@@ -108,130 +112,152 @@ export default function EditProfile() {
       </Box>
 
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
-      <ScrollView className='flex-1 px-5' contentContainerStyle={{ paddingTop: 24, paddingBottom: 40 }}>
-        <VStack className='gap-4'>
-          {/* Name */}
-          <Card className='bg-background-0 rounded-xl shadow-sm p-4'>
-            <Text size='sm' className='font-semibold text-typography-500 uppercase mb-3'>
-              {t('edit_profile.section_name')}
-            </Text>
-            <VStack className='gap-3'>
-              <VStack className='gap-1'>
-                <Text size='sm' className='font-medium text-typography-600'>{t('common.first_name')}</Text>
-                <Input className='bg-slate-50 rounded-xl border-0 shadow-sm h-12'>
-                  <InputField
-                    placeholder='Max'
-                    value={firstName}
-                    onChangeText={setFirstName}
-                  />
-                </Input>
-              </VStack>
-              <VStack className='gap-1'>
-                <Text size='sm' className='font-medium text-typography-600'>{t('common.last_name')}</Text>
-                <Input className='bg-slate-50 rounded-xl border-0 shadow-sm h-12'>
-                  <InputField
-                    placeholder='Mustermann'
-                    value={lastName}
-                    onChangeText={setLastName}
-                  />
-                </Input>
-              </VStack>
-            </VStack>
-          </Card>
+        <ScrollView className='flex-1 px-5' contentContainerStyle={{ paddingTop: 24, paddingBottom: 40 }}>
+          <VStack className='gap-4'>
 
-          {/* Kontakt */}
-          <Card className='bg-background-0 rounded-xl shadow-sm p-4'>
-            <Text size='sm' className='font-semibold text-typography-500 uppercase mb-3'>
-              {t('edit_profile.section_contact')}
-            </Text>
-            <VStack className='gap-3'>
-              <VStack className='gap-1'>
-                <Text size='sm' className='font-medium text-typography-600'>{t('common.phone')}</Text>
-                <Input className='bg-slate-50 rounded-xl border-0 shadow-sm h-12'>
-                  <InputField
-                    placeholder='+49 123 456789'
-                    value={phone}
-                    onChangeText={setPhone}
-                    keyboardType='phone-pad'
-                  />
-                </Input>
-              </VStack>
-              <VStack className='gap-1'>
-                <Text size='sm' className='font-medium text-typography-600'>{t('common.email_label')}</Text>
-                <Input className='bg-slate-50 rounded-xl border-0 shadow-sm h-12'>
-                  <InputField
-                    placeholder='max@mustermann.de'
-                    value={email}
-                    onChangeText={setEmail}
-                    keyboardType='email-address'
-                    autoCapitalize='none'
-                  />
-                </Input>
-              </VStack>
-            </VStack>
-          </Card>
-
-          {/* Adresse */}
-          <Card className='bg-background-0 rounded-xl shadow-sm p-4'>
-            <Text size='sm' className='font-semibold text-typography-500 uppercase mb-3'>
-              {t('edit_profile.section_address')}
-            </Text>
-            <VStack className='gap-3'>
-              <VStack className='gap-1'>
-                <Text size='sm' className='font-medium text-typography-600'>{t('common.street')}</Text>
-                <Input className='bg-slate-50 rounded-xl border-0 shadow-sm h-12'>
-                  <InputField
-                    placeholder='Musterstraße 1'
-                    value={street}
-                    onChangeText={setStreet}
-                  />
-                </Input>
-              </VStack>
-              <Box className='flex-row gap-3'>
-                <VStack className='gap-1' style={{ width: 100 }}>
-                  <Text size='sm' className='font-medium text-typography-600'>{t('common.zip')}</Text>
+            {/* Name */}
+            <Card className='bg-background-0 rounded-xl shadow-sm p-4'>
+              <Text size='sm' className='font-semibold text-typography-500 uppercase mb-3'>
+                {t('edit_profile.section_name')}
+              </Text>
+              <VStack className='gap-3'>
+                <FormControl isRequired>
+                  <FormControlLabel className='mb-1'>
+                    <FormControlLabelText size='sm' className='font-medium text-typography-600'>{t('common.first_name')}</FormControlLabelText>
+                    <FormControlLabelAstrick className='text-red-500' />
+                  </FormControlLabel>
                   <Input className='bg-slate-50 rounded-xl border-0 shadow-sm h-12'>
                     <InputField
-                      placeholder='12345'
-                      value={cityCode}
-                      onChangeText={setCityCode}
-                      keyboardType='numeric'
+                      placeholder='Max'
+                      value={firstName}
+                      onChangeText={setFirstName}
                     />
                   </Input>
-                </VStack>
-                <VStack className='flex-1 gap-1'>
-                  <Text size='sm' className='font-medium text-typography-600'>{t('common.city')}</Text>
+                </FormControl>
+                <FormControl isRequired>
+                  <FormControlLabel className='mb-1'>
+                    <FormControlLabelText size='sm' className='font-medium text-typography-600'>{t('common.last_name')}</FormControlLabelText>
+                    <FormControlLabelAstrick className='text-red-500' />
+                  </FormControlLabel>
                   <Input className='bg-slate-50 rounded-xl border-0 shadow-sm h-12'>
                     <InputField
-                      placeholder='Berlin'
-                      value={city}
-                      onChangeText={setCity}
+                      placeholder='Mustermann'
+                      value={lastName}
+                      onChangeText={setLastName}
                     />
                   </Input>
-                </VStack>
-              </Box>
-            </VStack>
-          </Card>
+                </FormControl>
+              </VStack>
+            </Card>
 
-          {errorMessage && (
-            <Text size='sm' className='text-red-500 text-center'>
-              {errorMessage}
-            </Text>
-          )}
+            {/* Kontakt */}
+            <Card className='bg-background-0 rounded-xl shadow-sm p-4'>
+              <Text size='sm' className='font-semibold text-typography-500 uppercase mb-3'>
+                {t('edit_profile.section_contact')}
+              </Text>
+              <VStack className='gap-3'>
+                <FormControl isRequired>
+                  <FormControlLabel className='mb-1'>
+                    <FormControlLabelText size='sm' className='font-medium text-typography-600'>{t('common.phone')}</FormControlLabelText>
+                    <FormControlLabelAstrick className='text-red-500' />
+                  </FormControlLabel>
+                  <Input className='bg-slate-50 rounded-xl border-0 shadow-sm h-12'>
+                    <InputField
+                      placeholder='+49 123 456789'
+                      value={phone}
+                      onChangeText={setPhone}
+                      keyboardType='phone-pad'
+                    />
+                  </Input>
+                </FormControl>
+                <FormControl isRequired>
+                  <FormControlLabel className='mb-1'>
+                    <FormControlLabelText size='sm' className='font-medium text-typography-600'>{t('common.email_label')}</FormControlLabelText>
+                    <FormControlLabelAstrick className='text-red-500' />
+                  </FormControlLabel>
+                  <Input className='bg-slate-50 rounded-xl border-0 shadow-sm h-12'>
+                    <InputField
+                      placeholder='max@mustermann.de'
+                      value={email}
+                      onChangeText={setEmail}
+                      keyboardType='email-address'
+                      autoCapitalize='none'
+                    />
+                  </Input>
+                </FormControl>
+              </VStack>
+            </Card>
 
-          <Button
-            className='w-full h-12 rounded-xl bg-primary-500'
-            onPress={handleSave}
-            disabled={isPending}
-          >
-            {isPending ? (
-              <Spinner size='small' />
-            ) : (
-              <ButtonText className='text-white font-bold'>{t('edit_profile.submit')}</ButtonText>
+            {/* Adresse */}
+            <Card className='bg-background-0 rounded-xl shadow-sm p-4'>
+              <Text size='sm' className='font-semibold text-typography-500 uppercase mb-3'>
+                {t('edit_profile.section_address')}
+              </Text>
+              <VStack className='gap-3'>
+                <FormControl isRequired>
+                  <FormControlLabel className='mb-1'>
+                    <FormControlLabelText size='sm' className='font-medium text-typography-600'>{t('common.street')}</FormControlLabelText>
+                    <FormControlLabelAstrick className='text-red-500' />
+                  </FormControlLabel>
+                  <Input className='bg-slate-50 rounded-xl border-0 shadow-sm h-12'>
+                    <InputField
+                      placeholder='Musterstraße 1'
+                      value={street}
+                      onChangeText={setStreet}
+                    />
+                  </Input>
+                </FormControl>
+                <Box className='flex-row gap-3'>
+                  <FormControl isRequired style={{ width: 100 }}>
+                    <FormControlLabel className='mb-1'>
+                      <FormControlLabelText size='sm' className='font-medium text-typography-600'>{t('common.zip')}</FormControlLabelText>
+                      <FormControlLabelAstrick className='text-red-500' />
+                    </FormControlLabel>
+                    <Input className='bg-slate-50 rounded-xl border-0 shadow-sm h-12'>
+                      <InputField
+                        placeholder='12345'
+                        value={cityCode}
+                        onChangeText={setCityCode}
+                        keyboardType='numeric'
+                      />
+                    </Input>
+                  </FormControl>
+                  <FormControl isRequired className='flex-1'>
+                    <FormControlLabel className='mb-1'>
+                      <FormControlLabelText size='sm' className='font-medium text-typography-600'>{t('common.city')}</FormControlLabelText>
+                      <FormControlLabelAstrick className='text-red-500' />
+                    </FormControlLabel>
+                    <Input className='bg-slate-50 rounded-xl border-0 shadow-sm h-12'>
+                      <InputField
+                        placeholder='Berlin'
+                        value={city}
+                        onChangeText={setCity}
+                      />
+                    </Input>
+                  </FormControl>
+                </Box>
+              </VStack>
+            </Card>
+
+            {errorMessage && (
+              <Text size='sm' className='text-red-500 text-center'>
+                {errorMessage}
+              </Text>
             )}
-          </Button>
-        </VStack>
-      </ScrollView>
+
+            <Button
+              className='w-full h-12 rounded-xl bg-primary-500'
+              onPress={handleSave}
+              disabled={isPending}
+            >
+              {isPending ? (
+                <Spinner size='small' />
+              ) : (
+                <ButtonText className='text-white font-bold'>{t('edit_profile.submit')}</ButtonText>
+              )}
+            </Button>
+          </VStack>
+        </ScrollView>
       </KeyboardAvoidingView>
     </Box>
   )

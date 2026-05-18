@@ -18,7 +18,6 @@ import { useQuery } from '@tanstack/react-query'
 import { getAppointment } from '@src/api/appointments'
 import { useMyAnimals } from '@src/hooks/useMyAnimals'
 import { useBookAppointment } from '@src/hooks/useBookAppointment'
-import { useAnimalTypes } from '@src/hooks/useAnimalTypes'
 import { routes } from '@src/constants/routes'
 import { useTranslation } from 'react-i18next'
 import i18n from '@src/i18n'
@@ -41,7 +40,7 @@ function formatDateTime(date: Date, timeSuffix: string): { date: string; time: s
 
 export default function Process() {
   const { t } = useTranslation()
-  const { appointmentId, animalId: preselectedAnimalId } = useLocalSearchParams<{ appointmentId: string; animalId?: string }>()
+  const { appointmentId, animalId: preselectedAnimalId, serviceId: preselectedServiceId } = useLocalSearchParams<{ appointmentId: string; animalId?: string; serviceId?: string }>()
 
   const aptId = Number(appointmentId)
 
@@ -52,7 +51,6 @@ export default function Process() {
   })
 
   const { data: animals, isLoading: animalsLoading } = useMyAnimals()
-  const { data: animalTypes } = useAnimalTypes()
   const { mutate: book, isPending: isBooking } = useBookAppointment()
 
   const isEditMode = !!(appointment?.animal?.id)
@@ -62,13 +60,24 @@ export default function Process() {
 
   useEffect(() => {
     if (selectedAnimalId === null) {
-      const initial = appointment?.animal?.id ?? (preselectedAnimalId ? Number(preselectedAnimalId) : null)
+      const preselected = preselectedAnimalId ? Number(preselectedAnimalId) : null
+      const onlyAnimal = animals?.length === 1 ? animals[0].id : null
+      const initial = appointment?.animal?.id ?? preselected ?? onlyAnimal
       if (initial) setSelectedAnimalId(initial)
     }
-    if (appointment?.service?.id && selectedServiceId === null) {
-      setSelectedServiceId(appointment.service.id)
+    if (selectedServiceId === null) {
+      const fromAppointment = appointment?.service?.id ?? null
+      const availableIds = (appointment?.availableServices ?? []).map((s) => s.id)
+      const preselectedIds = preselectedServiceId
+        ? preselectedServiceId.split(',').map(Number).filter((n) => !isNaN(n) && n > 0)
+        : []
+      const matchingPreselected = preselectedIds.filter((id) => availableIds.includes(id))
+      const fromPreselected = matchingPreselected.length === 1 ? matchingPreselected[0] : null
+      const onlyService = availableIds.length === 1 ? availableIds[0] : null
+      const initial = fromAppointment ?? fromPreselected ?? onlyService
+      if (initial) setSelectedServiceId(initial)
     }
-  }, [appointment, preselectedAnimalId])
+  }, [appointment, preselectedAnimalId, preselectedServiceId, animals])
 
   if (!appointmentId || isNaN(aptId)) {
     return (
@@ -77,8 +86,6 @@ export default function Process() {
       </Box>
     )
   }
-
-  const typeNameById = Object.fromEntries((animalTypes ?? []).map((t) => [t.id, t.name]))
 
   const [bookingError, setBookingError] = useState<string | null>(null)
   const isLoading = aptLoading || animalsLoading
@@ -192,27 +199,32 @@ export default function Process() {
                   <Pressable
                     key={animal.id}
                     onPress={() => setSelectedAnimalId(animal.id)}
-                    className={`px-3 py-2 rounded-lg border ${
-                      isSelected
-                        ? 'bg-primary-100 border-primary-400'
-                        : 'bg-background-50 border-outline-200'
-                    }`}
+                    className='px-3 py-2 rounded-lg border'
+                    style={{
+                      backgroundColor: isSelected ? '#2e8a59' : undefined,
+                      borderColor: isSelected ? '#2e8a59' : '#e5e7eb',
+                    }}
                   >
                     <Text
                       size='sm'
-                      className={`font-semibold ${isSelected ? 'text-primary-600' : 'text-typography-700'}`}
+                      className='font-semibold'
+                      style={{ color: isSelected ? '#ffffff' : '#374151' }}
                     >
                       {animal.name}
-                    </Text>
-                    <Text size='xs' className='text-typography-400'>
-                      {typeNameById[animal.animalTypeId] ?? '–'}
                     </Text>
                   </Pressable>
                 )
               })}
-              {!animals?.length && (
-                <Text className='text-typography-400'>{t('process.no_pets')}</Text>
-              )}
+              <Button
+                variant='outline'
+                className='rounded-xl border-dashed border-primary-400'
+                onPress={() => router.push(routes.modals.addPet)}
+              >
+                <FontAwesomeIcon name='plus' color='#2e8a59' size={14} />
+                <ButtonText className='text-primary-600 font-semibold ml-1'>
+                  {t('process.add_pet_btn')}
+                </ButtonText>
+              </Button>
             </Box>
           </Card>
 
@@ -231,15 +243,16 @@ export default function Process() {
                   <Pressable
                     key={service.id}
                     onPress={() => setSelectedServiceId(service.id)}
-                    className={`px-3 py-2 rounded-full border ${
-                      isSelected
-                        ? 'bg-primary-100 border-primary-400'
-                        : 'bg-background-50 border-outline-200'
-                    }`}
+                    className='px-3 py-2 rounded-full border'
+                    style={{
+                      backgroundColor: isSelected ? '#2e8a59' : undefined,
+                      borderColor: isSelected ? '#2e8a59' : '#e5e7eb',
+                    }}
                   >
                     <Text
                       size='sm'
-                      className={`font-medium ${isSelected ? 'text-primary-600' : 'text-typography-700'}`}
+                      className='font-medium'
+                      style={{ color: isSelected ? '#ffffff' : '#374151' }}
                     >
                       {service.name}
                     </Text>

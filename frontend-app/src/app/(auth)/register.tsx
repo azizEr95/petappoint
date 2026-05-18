@@ -18,6 +18,7 @@ import {
   SelectContent,
   SelectDragIndicator,
   SelectDragIndicatorWrapper,
+  SelectFlatList,
   SelectIcon,
   SelectInput,
   SelectItem,
@@ -336,9 +337,17 @@ export default function Register() {
                       <SelectDragIndicatorWrapper>
                         <SelectDragIndicator />
                       </SelectDragIndicatorWrapper>
-                      {(countries ?? []).map((c) => (
-                        <SelectItem key={c.id} label={c.name} value={String(c.id)} />
-                      ))}
+                      <SelectFlatList
+                        data={countries ?? []}
+                        keyExtractor={(item) => String((item as { id: number }).id)}
+                        renderItem={({ item }) => (
+                          <SelectItem
+                            label={(item as { id: number; name: string }).name}
+                            value={String((item as { id: number }).id)}
+                          />
+                        )}
+                        style={{ maxHeight: 350 }}
+                      />
                     </SelectContent>
                   </SelectPortal>
                 </Select>

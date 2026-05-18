@@ -18,12 +18,16 @@ import { useTranslation } from 'react-i18next'
 export default function ResultModal() {
   const { t } = useTranslation()
   const router = useRouter()
-  const { animalTypeId, serviceId } = useLocalSearchParams<{
+  const { query, animalTypeId, serviceId, animalId } = useLocalSearchParams<{
+    query?: string
     animalTypeId?: string
     serviceId?: string
+    animalId?: string
   }>()
 
   const { data, isLoading, isError } = usePracticeSearch({
+    name: query ?? undefined,
+    address: query ?? undefined,
     animalTypeId: animalTypeId ?? undefined,
     serviceId: serviceId ?? undefined,
   })
@@ -80,7 +84,7 @@ export default function ResultModal() {
             return (
               <Card key={practice.id} className='border-primary-500 border-l-4 shadow-sm mb-3'>
                 <Link
-                  href={{ pathname: routes.modals.practice, params: { id: String(practice.id) } }}
+                  href={{ pathname: routes.modals.practice, params: { id: String(practice.id), ...(animalId ? { animalId } : {}), ...(serviceId ? { serviceId } : {}) } }}
                 >
                   <Box className='flex-row items-start gap-3'>
                     <Box>

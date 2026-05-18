@@ -172,7 +172,20 @@
     "castrated": "Kastriert",
     "not_castrated": "Nicht kastriert",
     "lifestyle_section": "Lebensweise",
-    "submit": "Hinzufügen"
+    "submit": "Hinzufügen",
+    "type_placeholder": "Tierart auswählen",
+    "dob_known_question": "Kennst du das Geburtsdatum?",
+    "dob_known_yes": "Ja",
+    "dob_known_no": "Nein",
+    "dob_approx_label": "Ungefähres Alter (optional)",
+    "age_0_3m": "0–3 Monate",
+    "age_4_6m": "4–6 Monate",
+    "age_7_12m": "7–12 Monate",
+    "age_1_2y": "1–2 Jahre",
+    "age_3_5y": "3–5 Jahre",
+    "age_5y_plus": "5+ Jahre",
+    "race_section": "Rasse",
+    "race_placeholder": "Rasse auswählen (optional)"
   },
   "edit_pet": {
     "title": "Tier bearbeiten",
@@ -189,10 +202,12 @@
   "search": {
     "title": "Termin suchen",
     "subtitle": "Finde die passende Praxis",
-    "where_label": "Wo?",
-    "where_placeholder": "Stadt oder PLZ eingeben...",
-    "which_animal": "Welches Tier?",
+    "query_label": "Suche",
+    "query_placeholder": "Name, Adresse, Stadt oder PLZ...",
+    "which_animal": "Welches Haustier?",
+    "select_pet": "Haustier auswählen...",
     "which_treatment": "Welche Behandlungsart?",
+    "treatment_done": "Fertig",
     "submit": "Praxen suchen"
   },
   "result": {
@@ -231,6 +246,7 @@
     "pet_section": "Haustier",
     "treatment_section": "Behandlung",
     "no_pets": "Keine Haustiere gefunden.",
+    "add_pet_btn": "Haustier hinzufügen",
     "no_services": "Keine Leistungen verfügbar.",
     "booking_error": "Buchung fehlgeschlagen.",
     "btn_save": "Änderungen speichern",

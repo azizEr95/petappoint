@@ -172,7 +172,20 @@
     "castrated": "Castrated",
     "not_castrated": "Not castrated",
     "lifestyle_section": "Lifestyle",
-    "submit": "Add"
+    "submit": "Add",
+    "type_placeholder": "Select animal type",
+    "dob_known_question": "Do you know the date of birth?",
+    "dob_known_yes": "Yes",
+    "dob_known_no": "No",
+    "dob_approx_label": "Approximate age (optional)",
+    "age_0_3m": "0–3 months",
+    "age_4_6m": "4–6 months",
+    "age_7_12m": "7–12 months",
+    "age_1_2y": "1–2 years",
+    "age_3_5y": "3–5 years",
+    "age_5y_plus": "5+ years",
+    "race_section": "Breed",
+    "race_placeholder": "Select breed (optional)"
   },
   "edit_pet": {
     "title": "Edit animal",
@@ -189,10 +202,12 @@
   "search": {
     "title": "Search appointment",
     "subtitle": "Find the right practice",
-    "where_label": "Where?",
-    "where_placeholder": "Enter city or ZIP...",
-    "which_animal": "Which animal?",
+    "query_label": "Search",
+    "query_placeholder": "Name, address, city or ZIP...",
+    "which_animal": "Which pet?",
+    "select_pet": "Select pet...",
     "which_treatment": "Which treatment?",
+    "treatment_done": "Done",
     "submit": "Search practices"
   },
   "result": {
@@ -231,6 +246,7 @@
     "pet_section": "Pet",
     "treatment_section": "Treatment",
     "no_pets": "No pets found.",
+    "add_pet_btn": "Add pet",
     "no_services": "No services available.",
     "booking_error": "Booking failed.",
     "btn_save": "Save changes",

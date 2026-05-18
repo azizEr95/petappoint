@@ -47,7 +47,7 @@ function formatTime(date: Date): string {
 
 export default function Practice() {
   const { t } = useTranslation()
-  const { id, animalId: preselectedAnimalId } = useLocalSearchParams<{ id: string; animalId?: string }>()
+  const { id, animalId: preselectedAnimalId, serviceId } = useLocalSearchParams<{ id: string; animalId?: string; serviceId?: string }>()
   const practiceId = Number(id)
 
   const { practice, services, appointments } = usePracticeDetails(practiceId)
@@ -65,13 +65,23 @@ export default function Practice() {
 
   const todayLabel = t('practice.today')
 
+  const filterServiceIds = useMemo(() => {
+    if (!serviceId) return []
+    return serviceId.split(',').map(Number).filter((n) => !isNaN(n) && n > 0)
+  }, [serviceId])
+
   const groupedDates = useMemo(() => {
     if (!appointments.data) return []
+    const filtered = filterServiceIds.length > 0
+      ? appointments.data.filter((apt) =>
+          apt.availableServices?.some((s) => filterServiceIds.includes(s.id))
+        )
+      : appointments.data
     const map = new Map<
       string,
       { date: Date; slots: { id: number; time: string }[] }
     >()
-    for (const apt of appointments.data) {
+    for (const apt of filtered) {
       const key = formatDate(apt.startTime, todayLabel)
       if (!map.has(key)) map.set(key, { date: apt.startTime, slots: [] })
       map.get(key)!.slots.push({ id: apt.id, time: formatTime(apt.startTime) })
@@ -81,7 +91,7 @@ export default function Practice() {
       day: formatDay(val.date),
       slots: val.slots,
     }))
-  }, [appointments.data, todayLabel])
+  }, [appointments.data, todayLabel, filterServiceIds])
 
   const [selectedDateIndex, setSelectedDateIndex] = useState(0)
   const [selectedAppointmentId, setSelectedAppointmentId] = useState<
@@ -306,6 +316,7 @@ export default function Practice() {
                           appointmentId: String(selectedAppointmentId),
                           practiceId: String(practiceId),
                           ...(preselectedAnimalId ? { animalId: preselectedAnimalId } : {}),
+                          ...(serviceId ? { serviceId } : {}),
                         },
                       })
                     }
