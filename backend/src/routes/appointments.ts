@@ -91,7 +91,14 @@ appointmentRouter.put("/:id", requiresAuthentication, checkVerified, async (req,
     validatedData.serviceId
   );
 
-  await emailService.sendAppointmentEmail(req.userId!, bookedAppointment.id, "confirmation");
+  try {
+    await emailService.sendAppointmentEmail(req.userId!, bookedAppointment.id, "confirmation");
+  } catch (emailError) {
+    console.error(
+      `[appointments] Failed to send confirmation email for appointment ${bookedAppointment.id}:`,
+      emailError
+    );
+  }
 
   res.status(201).send(bookedAppointment);
 });

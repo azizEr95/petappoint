@@ -155,6 +155,7 @@ export const emailService = {
                     clinicName: appointment.veterinaryPractice.name
                 }
                 message.subject = "Dein Termin wurde erfolgreich storniert!";
+                break;
             case "reminder":
                 emailtype = "appointmentReminder";
                 appointmentData = {
