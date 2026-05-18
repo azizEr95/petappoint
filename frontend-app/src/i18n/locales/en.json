@@ -228,7 +228,8 @@
     "slots_free_one": "1 free",
     "slots_free_other": "{{count}} free",
     "book_btn_selected": "Book appointment",
-    "book_btn_unselected": "Select time"
+    "book_btn_unselected": "Select time",
+    "services_title": "Services Offered"
   },
   "favorites": {
     "title": "Favorite veterinary practices",

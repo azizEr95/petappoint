@@ -228,7 +228,8 @@
     "slots_free_one": "1 frei",
     "slots_free_other": "{{count}} frei",
     "book_btn_selected": "Termin buchen",
-    "book_btn_unselected": "Zeit auswählen"
+    "book_btn_unselected": "Zeit auswählen",
+    "services_title": "Anzubietende Leistungen"
   },
   "favorites": {
     "title": "Lieblings-Tierarztpraxen",

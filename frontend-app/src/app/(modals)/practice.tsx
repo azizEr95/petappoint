@@ -31,7 +31,10 @@ function formatDate(date: Date, todayLabel: string): string {
     date.getMonth() === today.getMonth() &&
     date.getFullYear() === today.getFullYear()
   if (isToday) return todayLabel
-  return date.toLocaleDateString(getLocale(), { day: '2-digit', month: '2-digit' })
+  return date.toLocaleDateString(getLocale(), {
+    day: '2-digit',
+    month: '2-digit',
+  })
 }
 
 function formatDay(date: Date): string {
@@ -47,7 +50,15 @@ function formatTime(date: Date): string {
 
 export default function Practice() {
   const { t } = useTranslation()
-  const { id, animalId: preselectedAnimalId, serviceId } = useLocalSearchParams<{ id: string; animalId?: string; serviceId?: string }>()
+  const {
+    id,
+    animalId: preselectedAnimalId,
+    serviceId,
+  } = useLocalSearchParams<{
+    id: string
+    animalId?: string
+    serviceId?: string
+  }>()
   const practiceId = Number(id)
 
   const { practice, services, appointments } = usePracticeDetails(practiceId)
@@ -67,16 +78,20 @@ export default function Practice() {
 
   const filterServiceIds = useMemo(() => {
     if (!serviceId) return []
-    return serviceId.split(',').map(Number).filter((n) => !isNaN(n) && n > 0)
+    return serviceId
+      .split(',')
+      .map(Number)
+      .filter((n) => !isNaN(n) && n > 0)
   }, [serviceId])
 
   const groupedDates = useMemo(() => {
     if (!appointments.data) return []
-    const filtered = filterServiceIds.length > 0
-      ? appointments.data.filter((apt) =>
-          apt.availableServices?.some((s) => filterServiceIds.includes(s.id))
-        )
-      : appointments.data
+    const filtered =
+      filterServiceIds.length > 0
+        ? appointments.data.filter((apt) =>
+            apt.availableServices?.some((s) => filterServiceIds.includes(s.id)),
+          )
+        : appointments.data
     const map = new Map<
       string,
       { date: Date; slots: { id: number; time: string }[] }
@@ -111,9 +126,7 @@ export default function Practice() {
   if (practice.isError || !practice.data) {
     return (
       <Box className='flex-1 items-center justify-center'>
-        <Text className='text-red-500'>
-          {t('practice.error_loading')}
-        </Text>
+        <Text className='text-red-500'>{t('practice.error_loading')}</Text>
       </Box>
     )
   }
@@ -153,7 +166,10 @@ export default function Practice() {
             {/**Vorstellung*/}
             <Box className='bg-background-0 rounded-lg shadow-lg justify-center'>
               <Box className='flex-row rounded-lg mx-3 mb-3 mt-2 justify-between'>
-                <Text size='xl' className='font-bold text-typography-700 flex-1 mr-2'>
+                <Text
+                  size='xl'
+                  className='font-bold text-typography-700 flex-1 mr-2'
+                >
                   {vet.name}
                 </Text>
                 <Box className='bg-primary-100 justify-center rounded-full px-3 py-1'>
@@ -176,27 +192,30 @@ export default function Practice() {
               {vet.website && (
                 <HStack className='flex-row mx-3 mb-3'>
                   <FontAwesomeIcon name='globe' size={20} />
-                  <Text className='text-typography-700 ml-2'>{vet.website}</Text>
+                  <Text className='text-typography-700 ml-2'>
+                    {vet.website}
+                  </Text>
                 </HStack>
               )}
             </Box>
 
             {/*Leistungen */}
             {services.data && services.data.length > 0 && (
-              <Box className='bg-background-0 mt-4 rounded-lg'>
-                <Box className='m-3'>
-                  <Box className='flex-row flex-wrap gap-2 mt-2'>
-                    {services.data.map((service) => (
-                      <Card
-                        key={service.id}
-                        className='bg-primary-100 py-1 px-3 rounded-full self-start'
-                      >
-                        <Text size='md' className='text-typography-700'>
-                          {service.name}
-                        </Text>
-                      </Card>
-                    ))}
-                  </Box>
+              <Box className='bg-background-0 mt-4 rounded-lg shadow-lg px-4 py-3'>
+                <Text size='xl' className='font-bold text-typography-700 mb-3'>
+                  {t('practice.services_title')}
+                </Text>
+                <Box className='flex-row flex-wrap gap-2'>
+                  {services.data.map((service) => (
+                    <Box
+                      key={service.id}
+                      className='bg-primary-50 border border-primary-200 py-1 px-3 rounded-full'
+                    >
+                      <Text size='sm' className='text-primary-700 font-medium'>
+                        {service.name}
+                      </Text>
+                    </Box>
+                  ))}
                 </Box>
               </Box>
             )}
@@ -266,7 +285,9 @@ export default function Practice() {
                                   : 'text-typography-700'
                               }`}
                             >
-                              {t('practice.slots_free', { count: dateGroup.slots.length })}
+                              {t('practice.slots_free', {
+                                count: dateGroup.slots.length,
+                              })}
                             </Text>
                           </Pressable>
                         ))}
@@ -315,7 +336,9 @@ export default function Practice() {
                         params: {
                           appointmentId: String(selectedAppointmentId),
                           practiceId: String(practiceId),
-                          ...(preselectedAnimalId ? { animalId: preselectedAnimalId } : {}),
+                          ...(preselectedAnimalId
+                            ? { animalId: preselectedAnimalId }
+                            : {}),
                           ...(serviceId ? { serviceId } : {}),
                         },
                       })
