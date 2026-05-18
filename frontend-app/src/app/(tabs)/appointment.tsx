@@ -9,14 +9,13 @@ import {
 } from '@src/gluestack-components/ui'
 import { AnimalAvatar } from '@/src/custom-components/animal-avatar'
 import { useState } from 'react'
-import { Alert, ScrollView } from 'react-native'
+import { ScrollView } from 'react-native'
 import { FontAwesomeIcon } from '@/src/custom-components/tabbar-icon'
 import { SearchApt } from '@/src/custom-components/home-screen/search-apt'
 import { Header } from '@/src/custom-components/header'
 import { ToggleApt } from '@/src/custom-components/appointment-screen/toggle-appointments'
 import { useMyAppointments } from '@src/hooks/useMyAppointments'
 import { useRouter } from 'expo-router'
-import { useCancelAppointment } from '@src/hooks/useCancelAppointment'
 import { routes } from '@src/constants/routes'
 import { useTranslation } from 'react-i18next'
 import i18n from '@src/i18n'
@@ -41,17 +40,12 @@ export default function Appointment() {
   const { t } = useTranslation()
   const router = useRouter()
   const { future, past, isLoading, isError } = useMyAppointments()
-  const { mutate: cancel } = useCancelAppointment()
   const [activeTab, setActiveTab] = useState<boolean>(true)
   function handleCancel(aptId: number, aptName: string) {
-    Alert.alert(
-      t('appointments.cancel_title'),
-      t('appointments.cancel_confirm', { name: aptName }),
-      [
-        { text: t('appointments.cancel_no'), style: 'cancel' },
-        { text: t('appointments.cancel_yes'), style: 'destructive', onPress: () => cancel(aptId) },
-      ],
-    )
+    router.push({
+      pathname: routes.modals.cancelAppointment,
+      params: { aptId: String(aptId), aptName },
+    })
   }
 
   const displayed = activeTab ? future : past

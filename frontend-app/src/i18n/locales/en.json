@@ -44,7 +44,7 @@
     "register": {
       "title": "Create account",
       "subtitle": "Join",
-      "confirm_password": "Confirm password",
+      "repeat_password": "Confirm password",
       "submit": "Register",
       "submitting": "Registering…",
       "has_account": "Already have an account?",
@@ -108,7 +108,8 @@
     "next_appointment": "Next appointment",
     "no_upcoming": "No upcoming appointments",
     "today": "Today",
-    "tomorrow": "Tomorrow"
+    "tomorrow": "Tomorrow",
+    "no_nearby_practices": "No practices found in your city."
   },
   "appointments": {
     "cancel_title": "Cancel appointment",

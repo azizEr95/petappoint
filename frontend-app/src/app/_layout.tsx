@@ -104,6 +104,7 @@ function RootLayoutNav() {
           <Stack.Screen name="(modals)/edit-profile" options={{ presentation: 'fullScreenModal' }}/>
           <Stack.Screen name="(modals)/favorite-practices" options={{ presentation: 'fullScreenModal' }}/>
           <Stack.Screen name="(modals)/language" options={{ presentation: 'fullScreenModal' }}/>
+          <Stack.Screen name="(modals)/cancel-appointment" options={{ presentation: 'fullScreenModal' }}/>
         </Stack>
 
         {/* Deinen Button nur für den Start‑Pfad */}

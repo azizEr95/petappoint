@@ -44,7 +44,7 @@
     "register": {
       "title": "Konto erstellen",
       "subtitle": "Tritt bei",
-      "confirm_password": "Passwort bestätigen",
+      "repeat_password": "Passwort wiederholen",
       "submit": "Registrieren",
       "submitting": "Registrieren…",
       "has_account": "Bereits ein Konto?",
@@ -108,7 +108,8 @@
     "next_appointment": "Nächster Termin",
     "no_upcoming": "Keine kommenden Termine",
     "today": "Heute",
-    "tomorrow": "Morgen"
+    "tomorrow": "Morgen",
+    "no_nearby_practices": "Keine Praxen in deiner Stadt gefunden."
   },
   "appointments": {
     "cancel_title": "Termin absagen",

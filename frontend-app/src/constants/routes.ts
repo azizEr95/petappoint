@@ -23,5 +23,6 @@ export const routes = {
     editProfile: '/(modals)/edit-profile' as const,
     favoritePractices: '/(modals)/favorite-practices' as const,
     language: '/(modals)/language' as const,
+    cancelAppointment: '/(modals)/cancel-appointment' as const,
   },
 } as const

@@ -7,7 +7,7 @@ import { prisma } from "../src/singletonPC";
  * Run once per fresh DB, data persists across restarts
  *
  * Data volumes:
- * - 15 practices (fixed, exact)
+ * - 15 practices (6 in Berlin, 9 in anderen Städten)
  * - 6 test accounts (fixed)
  * - 24 animals (1 per race, good variation across all 7 animal types)
  * - ~40 veterinarians (2-3 per practice with varied specializations)
@@ -28,11 +28,11 @@ const FIXED_PRACTICES = [
   { email: "kontakt@leipzig-vet.de", name: "Tierarztpraxis Leipzig", city: "Leipzig", cityCode: "04103", phone: "+49 341 123456", latitude: 51.3397, longitude: 12.3731 },
   { email: "kontakt@dresden-vet.de", name: "Tierarztpraxis Dresden", city: "Dresden", cityCode: "01067", phone: "+49 351 123456", latitude: 51.0504, longitude: 13.7372 },
   { email: "kontakt@hannover-vet.de", name: "Tierarztpraxis Hannover", city: "Hannover", cityCode: "30159", phone: "+49 511 123456", latitude: 52.3759, longitude: 9.732 },
-  { email: "kontakt@nuernberg-vet.de", name: "Tierarztpraxis Nürnberg", city: "Nürnberg", cityCode: "90402", phone: "+49 911 123456", latitude: 49.4521, longitude: 11.0767 },
-  { email: "kontakt@bremen-vet.de", name: "Tierarztpraxis Bremen", city: "Bremen", cityCode: "28195", phone: "+49 421 123456", latitude: 53.0793, longitude: 8.8017 },
-  { email: "kontakt@essen-vet.de", name: "Tierarztpraxis Essen", city: "Essen", cityCode: "45127", phone: "+49 201 123456", latitude: 51.4556, longitude: 7.0116 },
-  { email: "kontakt@dortmund-vet.de", name: "Tierarztpraxis Dortmund", city: "Dortmund", cityCode: "44135", phone: "+49 231 123456", latitude: 51.5136, longitude: 7.4653 },
-  { email: "kontakt@bonn-vet.de", name: "Tierarztpraxis Bonn", city: "Bonn", cityCode: "53111", phone: "+49 228 123456", latitude: 50.7374, longitude: 7.0982 },
+  { email: "kontakt@berlin-prenzlauer.de", name: "Tierarztpraxis Berlin Prenzlauer Berg", city: "Berlin", cityCode: "10119", phone: "+49 30 234567", latitude: 52.538, longitude: 13.418 },
+  { email: "kontakt@berlin-charlottenburg.de", name: "Tierarztpraxis Berlin Charlottenburg", city: "Berlin", cityCode: "10623", phone: "+49 30 345678", latitude: 52.510, longitude: 13.326 },
+  { email: "kontakt@berlin-kreuzberg.de", name: "Tierarztpraxis Berlin Kreuzberg", city: "Berlin", cityCode: "10965", phone: "+49 30 456789", latitude: 52.498, longitude: 13.385 },
+  { email: "kontakt@berlin-schoeneberg.de", name: "Tierarztpraxis Berlin Schöneberg", city: "Berlin", cityCode: "10777", phone: "+49 30 567890", latitude: 52.494, longitude: 13.349 },
+  { email: "kontakt@berlin-friedrichshain.de", name: "Tierarztpraxis Berlin Friedrichshain", city: "Berlin", cityCode: "10243", phone: "+49 30 678901", latitude: 52.512, longitude: 13.454 },
 ];
 
 const FIXED_PERSONS = [

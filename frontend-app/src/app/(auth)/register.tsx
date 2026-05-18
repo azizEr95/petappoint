@@ -378,7 +378,7 @@ export default function Register() {
           {/* Confirm password */}
           <FormControl isRequired>
             <FormControlLabel className='mb-1'>
-              <FormControlLabelText size='lg' className='font-medium text-typography-600'>{t('auth.register.confirm_password')}</FormControlLabelText>
+              <FormControlLabelText size='lg' className='font-medium text-typography-600'>{t('auth.register.repeat_password')}</FormControlLabelText>
               <FormControlLabelAstrick className='text-red-500' />
             </FormControlLabel>
             <Input className='bg-background-0 rounded-xl border-0 shadow-sm h-12'>

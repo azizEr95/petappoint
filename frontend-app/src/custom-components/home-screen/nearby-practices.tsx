@@ -7,6 +7,8 @@ import { AppAvatar } from '../app-avatar'
 import { routes } from '@src/constants/routes'
 import { useTranslation } from 'react-i18next'
 
+const NEARBY_CITY = 'Berlin'
+
 export function NearbyPractices() {
   const { t } = useTranslation()
   const { data: practices, isLoading, isError } = useAllPractices()
@@ -27,9 +29,21 @@ export function NearbyPractices() {
     )
   }
 
+  const displayedPractices = practices.filter(
+    (p) => p.address.city.toLowerCase() === NEARBY_CITY.toLowerCase(),
+  )
+
+  if (!displayedPractices.length) {
+    return (
+      <Box>
+        <Text>{t('home.no_nearby_practices')}</Text>
+      </Box>
+    )
+  }
+
   return (
     <Box className='mb-6'>
-      {practices.map((practice) => {
+      {displayedPractices.map((practice) => {
         const isFav = favoriteIds.has(practice.id)
         return (
           <Card key={practice.id} className='border-primary-500 border-l-4 shadow-sm mb-3'>
